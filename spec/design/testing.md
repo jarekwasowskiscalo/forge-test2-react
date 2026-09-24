@@ -987,8 +987,9 @@ text rule, which [`architecture.md`](architecture.md) moves out of the guestbook
 claim it makes is a verdict or a length relative to a bound, a bound belongs to a context, and
 no module outside the contexts may import one. So it is proved from both sides by the two
 readers that each hold one context's bound — `frontend/src/contexts/guestbook/lib/entryText.test.ts`,
-which **stays** in the guestbook's folder and changes one import line, and the to-do list's
-**frontend/src/contexts/todo_list/lib/todoTask.test.ts**. A reader moved up beside the rule would
+which **stays** in the guestbook's folder and changes one import line
+([`conventions.md`](conventions.md) § Frontend — where a file goes: "Only the rule moves up"),
+and the to-do list's **frontend/src/contexts/todo_list/lib/todoTask.test.ts**. A reader moved up beside the rule would
 have to import the guestbook's bounds from there, which
 `tests/fitness/test_context_boundaries.py::test_no_screen_reaches_into_another_contexts_folder`
 refuses; the one file allowed to read `text-measurement.json`, and `D-04`'s witness, therefore
@@ -1094,7 +1095,7 @@ files without a test of their own are named there, each with its reason.
 |---|---|
 | `build-tests-unit` | **tests/unit/test_todo_task_text_rules.py**, **tests/unit/test_todo_task_model.py** (new) · edits to `tests/unit/test_guestbook_entry_model.py` (the schema holds two tables), `tests/fitness/test_golden_set.py` (the to-do files' rules, the line-break rule scoped to entries, and a second browser reader allowed its own context's file alone) and `tests/fitness/test_length_constants.py` (the 200 and the seven line breaks against their browser copies) |
 | `build-tests-integration` | **tests/integration/test_todo_tasks_service.py**, **tests/integration/test_todo_tasks_concurrency.py**, **tests/integration/test_todo_tasks_router.py**, **tests/integration/test_todo_tasks_corpus.py**, **tests/integration/test_todo_tasks_contract.py** (new) · edits to `tests/integration/test_migrations.py` (the second table and its index) and `tests/tooling/test_seed_golden_set.py` (each list filled on its own) · **the corpus's fixture half**: the four to-do files under `golden-set/fixtures/`, and their names, with the example-task file's, in `tests/_golden_set.py` |
-| `build-tests-frontend` | **frontend/src/contexts/todo_list/lib/todoTask.test.ts**, **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx**, **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx**, **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx**, **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx**, **frontend/src/router.test.tsx**, **frontend/src/components/shell/PageFrame.test.tsx**, **frontend/src/pages/StatusPages.test.tsx** (new) · edits to `frontend/src/contexts/guestbook/lib/entryText.test.ts` (one import line, to wherever the shared rule moves; its place and its cases stay) |
+| `build-tests-frontend` | **frontend/src/contexts/todo_list/lib/todoTask.test.ts**, **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx**, **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx**, **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx**, **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx**, **frontend/src/router.test.tsx**, **frontend/src/components/shell/PageFrame.test.tsx**, **frontend/src/pages/StatusPages.test.tsx** (new) · edits to `frontend/src/contexts/guestbook/lib/entryText.test.ts` (one import line, to `frontend/src/lib/text.ts`, where the shared rule moves; its place and its cases stay) |
 | `build-tests-e2e` | **e2e/suite/features/todo_list.feature**, **e2e/suite/steps/todo_list_steps.py** (new) · edits to `e2e/suite/test_scenarios.py` (binds the feature and imports the steps) and `e2e/ui/test_smoke.py` (the to-do screen's smoke, and the locators `A-4` lets follow the approved names) |
 
 The four are disjoint by tree and by shape: `tests/unit/` and `tests/fitness/`; `tests/integration/`,

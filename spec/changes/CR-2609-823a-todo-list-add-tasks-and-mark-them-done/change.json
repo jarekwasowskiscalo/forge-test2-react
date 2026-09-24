@@ -422,6 +422,11 @@
   "cr_id": "CR-2609-823a",
   "created_at": "2026-09-24T11:26:53Z",
   "critique": {
+    "design_critique": {
+      "at": "2026-09-24T16:00:39Z",
+      "findings_at_round": 8,
+      "rounds": 1
+    },
     "requirements_critique": {
       "at": "2026-09-24T12:46:20Z",
       "findings_at_round": 9,
@@ -444,8 +449,8 @@
       "state": "returned"
     },
     "design-architecture": {
-      "assumptions": "- design-data: aligned with its in-progress data-model.md (TodoTask in app.contexts.todo_list.models.todo_task, TODO_TASK_TEXT_MAX_LENGTH, id/text/done/created_at, single-statement UPDATE/DELETE…RETURNING, ix_todo_tasks_created_at_id).\n- design-api: one resource router module `routers/todo_tasks.py` for every to-do route; a not-found refusal for R-8; the empty, too-long and not-one-line refusals come from the schema as a 422 (BR-06 and BR-07 are one schema text type: normalize, then one-line, then measure). The wire spelling is api.md's.\n- design-ui: the route value, the nav, lockup and footer copy, and a done control that is a checkbox (ui primitive Checkbox.tsx); the hook writes its cache only from server answers (no optimistic update, R-10).\n- design-testing: picks the suites, and the locator registers `golden-set/seed/todo-tasks-example.json`.\n- design-plan: orders build-frontend's schema.d.ts regeneration after build-backend.\n- The browser text rule moves from frontend/src/contexts/guestbook/lib/entryText.ts to frontend/src/lib/text.ts (conventions § Frontend); golden-set/README.md lines 104 and 156 name the moved entryText.test.ts and no member's writes cover that README (PROC-18, filed on the template).\n- todo_list.md's `screens: []`/`features: []` will turn the two claim tests red during implement once the screen doc and the .feature file exist, and no implement member writes spec/contexts/.",
-      "at": "2026-09-24T13:24:23Z",
+      "assumptions": "- Applied COH-design-3 to the fragment (Decision 4: entryText.test.ts stays put; the text.test.ts row removed; the entryText.test.ts row reads \"one import line\"; Found-outside items 1 and 3 trimmed; the \"moved frontend reader\" clause dropped from the tests/fitness/ row).\n- Applied COH-design-4: router.test.tsx added to build-tests-frontend's set and to § This change owns after router.tsx; the \"if testing.md puts...\" guesses on PageFrame/StatusPages deleted; build-frontend ∩ build-tests-frontend is still ∅ (modules against *.test.*).\n- Also applied COH-design-1 (Q-17 = A) although the preflight did not list it: its artifacts name spec/design/architecture.md and conventions.md § Layers now says the text is judged in services/. BR-06/07/10/13 rows, the router paragraph, the schemas/services file rows, fragment Decision 2 and rows R-1/R-2/R-6 changed. No exception class is named beyond TodoTaskNotFoundError, because api.md names none.\n- Nothing added to § Who writes what: review-converge already wrote the router.test.tsx paragraph there.",
+      "at": "2026-09-24T16:12:47Z",
       "state": "returned"
     },
     "design-data": {
@@ -464,18 +469,13 @@
       "state": "returned"
     },
     "design-testing": {
-      "assumptions": "- Used design-api's five codes, design-data's statement-shape writes and TODO_TASK_TEXT_MAX_LENGTH.\n- Used design-architecture's module names: TodoListPage, TodoTaskComposer, TodoTaskRow, useTodoTasks, todoTask.ts, lib/text.ts, and todo-tasks-example.json for the seed file.\n- CONTRADICTS architecture Decision 4: the corpus reader cannot move to frontend/src/lib/text.test.ts; it needs the guestbook's bounds, and test_no_screen_reaches_into_another_contexts_folder refuses that import from lib/. So entryText.test.ts stays where it is and changes one import line. For the coherence gate.\n- For coherence: test_every_feature_file_is_claimed_by_exactly_one_context goes red when todo_list.feature is written in implement wave 1, and no implement author can write spec/contexts/; the screen claim has the same timing in design. Options A/B/C are in the fragment.\n- golden-set/README.md has no author, and this change makes two of its sentences false.\n- The task's text cases get their own file, todo-task-text.json, instead of scenarios.md's additions to text-measurement.json (the additions would turn existing guestbook cases red mid-wave, force an import that does not exist yet, and be deleted with the guestbook).\n- The corpus-reading seeds are not bound in e2e, because they need e2e/suite/golden_set.py, which nobody may write.\n- R-11 stays `Verified-by: manual`, with uat.md steps plus tooling and fitness proof that owns no citation.",
-      "at": "2026-09-24T13:24:23Z",
+      "assumptions": "- Applied COH-design-3 as two small edits: the \"No test file of their own\" paragraph cites conventions.md § Frontend — where a file goes (\"Only the rule moves up\"); the build-tests-frontend row in § Four file sets names the rule's new home, frontend/src/lib/text.ts. The fragment's § Where this departs from design/delta/architecture.md records \"Resolved as COH-design-3\" and no longer claims frontend/src/lib/text.test.ts stays in the boundary.\n- The architecture fragment's ready patch (Decision 4, write set, This change owns, Found outside) belonged to design-architecture's write set and was left to it.\n- conventions.md § Frontend (lines 184-187) reads as converge.md records.",
+      "at": "2026-09-24T16:12:47Z",
       "state": "returned"
     },
     "design-ui": {
       "assumptions": "- Every binding is to the live spec/design/api.md: GET /api/todo-tasks via useTodoTasks() -> total (header count, not items.length), items[].id/.text/.done (rows, shown in arrival order), items empty (empty state); POST /api/todo-tasks sends text and gets a TodoTaskRead; PATCH /api/todo-tasks/{todo_task_id} sends done alone (the chosen state) for a tick, or text alone for a correction; DELETE -> 204. A refused write has detail.code (decides where it shows) and detail.message (the words). Refusals shown: todo_task_text_empty/multiline/too_long (under the field), todo_task_not_found (notice). created_at is not shown. The mutation names inside useTodoTasks.ts are left to build-frontend.\n- The Q-15 rule (\"...the service answered with an error.\") depends on design-api keeping every coded to-do refusal in {detail:{code,message}}, and on a server error carrying no detail.message; \"no sentence of its own\" is read as an answer with no refusal message, not a 5xx status code.\n- The Q-16 rule (focus back where the person was) applies only when focus was on the control that was locked or closed; a person who tabbed elsewhere keeps focus where they put it. It lives once, in § Keyboard and accessibility.\n- The navigation, the lockup (\"Product name\"/\"P\", mock-up C-1 approved in Q-14) and the 404 page live in system-states.md (the frame), not in the to-do document, because no context owns them; guestbook.md's opening sentence, region 1 and footer copy row changed with them.\n- The screen is in the live tree with info_ref S-02. No scenario ids (S-nn) appear in spec/design/ui/ (frozen-ids would read them as screen ids; PROC-23).\n- A failed correction keeps the editor open with what was typed and the stored text unchanged; build-tests-e2e: after a failed correction, the old text stays as the box's accessible name and comes back on Cancel.\n- Handed to the orchestrator (fragment § Found outside): spec/contexts/todo_list.md `screens: []` must claim spec/design/ui/todo-list.md, or test_every_registered_screen_is_claimed_by_exactly_one_context goes red; and the UI smoke's comment about \"the only navigation\" is now false.",
       "at": "2026-09-24T14:43:42Z",
-      "state": "returned"
-    },
-    "review-coherence": {
-      "assumptions": "none -- this skill reads and produces no artefact others depend on",
-      "at": "2026-09-24T14:54:34Z",
       "state": "returned"
     },
     "review-converge": {
@@ -1340,6 +1340,11 @@
           "at": "2026-09-24T16:00:31Z",
           "note": "Nothing in the process says who claims a black-box file, and when. The context template (.specconf/templates/system/context.md) is silent, and no implement member may write spec/contexts/. So every new context with a feature file carries a structural red across a stage boundary (COH-design-6, which cost a HITL question).",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T16:01:07Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/314#issuecomment-5817621132",
+          "state": "filed"
         }
       ],
       "id": "PROC-28",
@@ -1349,6 +1354,58 @@
       "seen": 1,
       "signal": "Nothing in the process says who claims a black-box file, and when. The context template (.specconf/templates/system/context.md) is silent, and no implement member may write spec/contexts/. So every new context with a feature file carries a structural red across a stage boundary (COH-design-6, which cost a HITL question).",
       "signature": "Nothing in the process says who claims a black-box file, and when. The context template (.specconf· is silent, and no im",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/314#issuecomment-5817621132"
+    },
+    {
+      "at": "2026-09-24T16:12:47Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T16:12:47Z",
+          "note": "The preflight's RESOLUTIONS list comes from skill_brief.py:_resolutions_for_author (lines 312-328), which matches finding artifacts only against contract.produces (the fragment). So COH-design-1, whose artifacts name the live spec/design/architecture.md that this skill edits, was left out of the convergence brief.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-29",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "design-architecture",
+      "seen": 1,
+      "signal": "The preflight's RESOLUTIONS list comes from skill_brief.py:_resolutions_for_author (lines 312-328), which matches finding artifacts only against contract.produces (the fragment). So COH-design-1, whose artifacts name the live spec/design/architecture.md that this skill edits, was left out of the convergence brief.",
+      "signature": "The preflight's RESOLUTIONS list comes from skill_brief.py:_resolutions_for_author (lines ·-·), which matches finding ar",
+      "stage": "design",
+      "state": "reported",
+      "url": null
+    },
+    {
+      "at": "2026-09-24T16:12:47Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T16:12:47Z",
+          "note": "sdd-skill design-testing verify refuses because a stage question (Q-20) is unanswered, but preflight for the same dispatch passed moments earlier. The unanswered question blocks verification of a convergence edit, not the start of the work, even though the refusal text says \"cannot start\".",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-30",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "design-testing",
+      "seen": 1,
+      "signal": "sdd-skill design-testing verify refuses because a stage question (Q-20) is unanswered, but preflight for the same dispatch passed moments earlier. The unanswered question blocks verification of a convergence edit, not the start of the work, even though the refusal text says \"cannot start\".",
+      "signature": "sdd-skill design-testing verify refuses because a stage question (Q-·) is unanswered, but preflight for the same dispatc",
       "stage": "design",
       "state": "reported",
       "url": null
@@ -1367,16 +1424,23 @@
     },
     "requirements": {
       "approved": true,
-      "approved_at": "2026-09-24T12:50:16Z",
+      "approved_at": "2026-09-24T16:12:10Z",
       "approved_by": "user",
       "artifact": "requirements.md",
-      "artifact_sha256": "2ae18b07e80b6bfb0b3cd7f26210edb50601c1d7140c1a2cf14164c8aee14f29",
+      "artifact_sha256": "9b58df92fd928849eb85ecd8552f73db9a42388ef93c664a83449e5d056b3cd5",
       "note": ""
     }
   },
   "green_by_design": [],
   "kind": "feature",
   "ladders": {
+    "design_critique": {
+      "last_error": "convergence round: 8 findings, all resolved",
+      "max_attempts": 3,
+      "repeats": 1,
+      "rung": "attempt_1_failed",
+      "signature": "convergence round: · findings, all resolved"
+    },
     "requirements_critique": {
       "last_error": "convergence round: 6 findings, all resolved",
       "max_attempts": 3,
@@ -2164,6 +2228,41 @@
       "stage": "design",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T16:12:10Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T16:00:59Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "The requirements gate is closed again over the current file, and A-2 stands confirmed: tasks are kept until somebody deletes them.",
+          "key": "A",
+          "label": "Approve the requirements again",
+          "recommended": true
+        },
+        {
+          "consequence": "Tell me how long a task should be kept; the requirements go back for that change before the design can be approved.",
+          "key": "B",
+          "label": "Not yet: A-2 is not what I want",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-20",
+      "question": "Your approval of the requirements no longer covers the file, because the design's reconciliation edited it in four places, all about assumption A-2: a task stays until someone deletes it, with no automatic expiry and no retention policy (as for a guestbook entry). The document used to say A-2 was awaiting you; it now records A-2 as confirmed by your approval, and the standing 'no retention policy' non-goal names tasks too. Nothing else changed. Do you approve the requirements again as they now stand?",
+      "stage": "design",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -2421,7 +2520,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 156,
+  "revision": 164,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -2471,7 +2570,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T16:00:31Z",
+  "updated_at": "2026-09-24T16:12:47Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {

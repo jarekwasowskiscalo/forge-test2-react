@@ -92,9 +92,13 @@ the moved `frontend/src/lib/text.ts` has no test file of its own, with the reaso
 live document. Consequences, all simplifications: the fitness allow-list for
 `text-measurement.json`, `D-04`'s witness path in `contracts/invariants/guestbook.md`, and
 `golden-set/README.md`'s two mentions of the reader stay true, so items 3 and the reader half of
-item 1 in that fragment's "Found outside every write set" disappear. `frontend/src/lib/text.test.ts`
-is in the recorded boundary and is simply never written; the edit to `entryText.test.ts` is
-inside the boundary as it stands.
+item 1 in that fragment's "Found outside every write set" disappear. The edit to
+`entryText.test.ts` is inside the boundary as it stands.
+
+**Resolved as COH-design-3** (AUTO, on `spec/design/conventions.md` § Frontend — where a file
+goes, which now says "Only the rule moves up"): the reader stays, and the architecture fragment
+follows this reading. The live document cites that rule where it keeps the reader in place, and
+§ Four file sets names `frontend/src/lib/text.ts` as the import's target.
 
 The architecture's build-tests-unit set also lists `tests/unit/test_entry_text_rules.py`; with the
 separate corpus file it needs no edit.

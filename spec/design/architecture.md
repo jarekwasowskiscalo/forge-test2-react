@@ -585,22 +585,22 @@ rule, which file holds each layer, and which implementer writes each file.
 
 | Rule | Where it is held | Why that layer |
 |---|---|---|
-| `BR-06` — a task needs text, at most 200 code points | the task's text type in the context's `schemas/`; the bound, `TODO_TASK_TEXT_MAX_LENGTH`, beside `TodoTask` in `models/`; the browser's copy in the context's `lib/` | every text bound this API has is a schema-layer fact applied after the shared normalization — `NormalizedText` runs ahead of the bound — with the number beside the model. The guestbook's worked example, applied unchanged |
-| `BR-07` — a task is one line | the same text type, between the normalization and the measurement; `LINE_BREAKS` beside `TodoTask`; the browser's copy beside the browser's bound | its precedence over `BR-06` — a text both too long and on two lines is refused as two lines — is one sequence, and it can be one sequence only where the length is decided. A check in the service would run after the schema had already refused the text as too long |
+| `BR-06` — a task needs text, at most 200 code points | the context's `services/todo_tasks.py`, which judges the text before any write (normalize, then empty, then one line, then measure) and raises one domain exception per verdict; the bound, `TODO_TASK_TEXT_MAX_LENGTH`, beside `TodoTask` in `models/`; the browser's copy in the context's `lib/` | a business rule is decided in `services/` (`conventions.md` § Layers); a constraint in the schema would answer with FastAPI's list and no code ([`api.md`](api.md) § Shapes, `TodoTaskCreate`) |
+| `BR-07` — a task is one line | the same judgement in the service, after the empty check and before the measurement; `LINE_BREAKS` beside `TodoTask`; the browser's copy beside the browser's bound | its precedence over `BR-06` — a text both too long and on two lines is refused as two lines — is one sequence, and it is one sequence because the schema carries no length bound to answer first |
 | `BR-08` — a new task is not done, and its moment of adding is set once | the service's add, which writes `done` false and `created_at` from its own clock on every insert; the create shape carries the text alone | the service owns the write and the clock, so nothing a caller sends reaches either column |
 | `BR-09` — marking records the chosen state | the service's mark: one statement naming `done` alone, carrying the value the person chose | the store holds it through the statement's shape ([`data-model.md`](data-model.md) § Two writers on one task), and only the service writes |
-| `BR-10` — the text and the state change separately | the service's correction: one statement naming `text` alone; the add and the correction share the one text type in `schemas/` | the same statement shape; one text type for both is what makes "a correction is held to `BR-06` and `BR-07` exactly as an addition is" true by construction rather than by care |
+| `BR-10` — the text and the state change separately | the service's correction: one statement naming `text` alone; the add and the correction share the one judgement in the service | the same statement shape; one judgement for both is what makes "a correction is held to `BR-06` and `BR-07` exactly as an addition is" true by construction rather than by care |
 | `BR-11` — one order, total, with no pages | the service's read: every row, by `created_at` then `id`, both descending; the index in the model and in the revision | the order is a rule, and the service is where a rule meets the store |
 | `BR-12` — the same text twice is two tasks | nowhere, deliberately: no layer holds a uniqueness check | a rule that forbids nothing needs no holder, and a unique index would be the defect |
-| `BR-13` — deletion is permanent; a task that is gone stays gone | the service raises its one domain exception, `TodoTaskNotFoundError`, when a statement returns no row, and never writes on absence; the router turns it into the not-found refusal | a service never names a status code (`conventions.md` § Layers), and the sentence belongs beside the endpoint that produces it |
+| `BR-13` — deletion is permanent; a task that is gone stays gone | the service raises `TodoTaskNotFoundError` when a statement returns no row, and never writes on absence; the router turns it into the not-found refusal | a service never names a status code (`conventions.md` § Layers), and the sentence belongs beside the endpoint that produces it |
 | The way between the two screens, the main address, the not-found page | the frame and the composition root: `frontend/src/components/shell/PageFrame.tsx`, `frontend/src/routes.ts`, `frontend/src/router.tsx`, `frontend/src/pages/StatusPages.tsx` | no context owns them ([`contexts/todo_list.md`](../contexts/todo_list.md) § Neighbours); the frame is the one file that learns about a second screen ([`ui/system-states.md`](ui/system-states.md) § One column) |
 | A change not stored is never shown as made; a list that failed to load is not an empty list | the context's query hook, which writes its cache only from the server's answer and never ahead of it; the page tells a failed load from an empty list | the hook is the one place the cache is written (`conventions.md` § Frontend), so it is the one place a change could be shown before it was stored |
 | Example tasks in a new environment | the seeder, `scripts/seed_golden_set.py`, and one file in `golden-set/seed/` | § What a new environment starts with |
 
 The router decides nothing on that list. It binds the routes [`api.md`](api.md) publishes,
-declares every refusal it can answer with, and turns the service's one domain exception into
-the not-found refusal, explicitly; the empty, too-long and more-than-one-line refusals never
-reach it, because the schema refuses them before the route runs.
+declares every refusal it can answer with, and turns each of the service's domain exceptions
+into its coded refusal, explicitly: the not-found refusal and the three about a task's text,
+with the sentences [`api.md`](api.md) § The to-do list's refusals gives.
 
 ### The files
 
@@ -610,8 +610,8 @@ Paths in the second column are relative to the tree in the first.
 |---|---|---|---|
 | `app/contexts/` | `todo_list/__init__.py` | the context's public API — `TodoTask`, the bound, `LINE_BREAKS` — and, by importing the model, `todo_tasks` on the shared `Base` | build-backend |
 | | `todo_list/models/todo_task.py` | `TodoTask`, `TODO_TASK_TEXT_MAX_LENGTH`, `LINE_BREAKS` written as code-point numbers the way the trim set is, and the ordering index | build-backend |
-| | `todo_list/schemas/todo_tasks.py` | the task's text type — normalize, then one line, then measure — and the read and write shapes [`api.md`](api.md) names, read and write kept apart | build-backend |
-| | `todo_list/services/todo_tasks.py` | add, read, correct, mark and delete; the session and the transaction; `TodoTaskNotFoundError` | build-backend |
+| | `todo_list/schemas/todo_tasks.py` | no text rule, only the read and write shapes [`api.md`](api.md) names, read and write kept apart | build-backend |
+| | `todo_list/services/todo_tasks.py` | add, read, correct, mark and delete; the session and the transaction; `TodoTaskNotFoundError`, and the text's judgement with its three domain exceptions | build-backend |
 | | `todo_list/routers/todo_tasks.py` | the HTTP binding of every to-do route, the declared refusals and their sentences | build-backend |
 | | `todo_list/{models,schemas,services,routers}/__init__.py` | each layer's docstring, as the guestbook's say it | build-backend |
 | | `__init__.py` | one appended line registering `todo_list` | build-backend |

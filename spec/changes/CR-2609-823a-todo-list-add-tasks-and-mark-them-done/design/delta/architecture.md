@@ -42,21 +42,25 @@ what the change leaves alone, what nobody in this composition can write, and the
    qualifies the identifier (`todo_task`, never a bare `task`) because *task* is also a process
    word. **ADR:** none — `conventions.md` § Backend and § Frontend applied; the context itself is
    `design-domain`'s ADR.
-2. **`BR-06` and `BR-07` are held in the schema layer, by one text type, with the one-line check
-   between the normalization and the measurement.** Rejected: the one-line check as a domain
-   exception in the service — Pydantic's length bound runs before the route and refuses a
-   long two-line text as too long, so `BR-07`'s precedence could hold only if `BR-06` left the
-   schema too, which departs from the worked example every text field of this API follows;
-   an after-validator in the schema — the length constraint pre-empts it for the same reason.
-   **ADR:** none — a placement inside two modules of one context, reversed by editing those two;
-   the wire shape of the refusal is `design-api`'s, in `spec/design/api.md`.
+2. **`BR-06` and `BR-07` are judged in the service, before any write, as one sequence —
+   normalize, then empty, then one line, then measure — with one domain exception per verdict,
+   which the router translates into its coded refusal; the request shapes carry `text` with no
+   bound.** Rejected: one text type in the schema — a constraint there answers before the route
+   runs, with FastAPI's list and no code, while `spec/design/api.md` § Shapes gives each of the
+   three text refusals a code; a validator in the schema — it answers inside the same list.
+   **ADR:** none — the decision is design-adr's draft
+   `task-text-refusals-are-coded-not-schema-constraints.md`, taken by the user (`Q-17`: "The
+   service checks it, with a coded reason"); `conventions.md` § Layers states the placement rule
+   that follows from it.
 3. **`LINE_BREAKS` lives beside `TodoTask`, not in `app/platform/schemas/text.py`.** Rejected:
    Platform — the guestbook keeps line breaks as content, so the set is one context's fact
    (`spec/contexts/todo_list.md` § Neighbours keeps it on the to-do side), and the test for a
    Platform file is "a fact about every one of these". **ADR:** none — `conventions.md`
    § Backend's own test, applied.
 4. **The browser text rule moves from `frontend/src/contexts/guestbook/lib/entryText.ts` to
-   `frontend/src/lib/text.ts`, and its corpus-reading test moves with it.** Rejected: a copy in
+   `frontend/src/lib/text.ts`.** Its corpus-reading test, `entryText.test.ts`, stays in the
+   guestbook's folder and changes one import line, because it needs the guestbook's bounds and
+   `frontend/src/lib/` imports no context (`conventions.md` § Frontend). Rejected: a copy in
    the to-do context (a rule with two homes, the `D-04` defect's shape); importing the
    guestbook's folder (refused by `test_no_screen_reaches_into_another_contexts_folder`);
    `textMeasurement.ts` (names the corpus rather than the rule). `text.ts` pairs by name with
@@ -79,12 +83,12 @@ what the change leaves alone, what nobody in this composition can write, and the
 
 | Requirement | Layer | Why that one |
 |---|---|---|
-| R-1 (add) | schemas (text type, create shape) → service (insert, `done` false, clock) → router (binding); screen: composer + hook | the service owns the write and the clock; `R-1.4` holds because nothing the caller sends reaches `done` |
-| R-2 (text refused) | schema's text type over `NormalizedText`; browser: `lib/todoTask.ts` over `frontend/src/lib/text.ts` | one sequence, normalize → one line → measure, on each side of the wire (Decision 2) |
+| R-1 (add) | schemas (create shape) → service (text judgement, insert, `done` false, clock) → router (binding); screen: composer + hook | the service owns the write and the clock; `R-1.4` holds because nothing the caller sends reaches `done` |
+| R-2 (text refused) | service's judgement over `app/platform/schemas/text.py`, one domain exception per verdict, each translated by the router into its coded refusal; browser: `lib/todoTask.ts` over `frontend/src/lib/text.ts` | one sequence, normalize → empty → one line → measure, on each side of the wire (Decision 2) |
 | R-3 (one list, one order) | service's read (`created_at DESC, id DESC`, no pages); index in model + revision; screen: page | the order is a rule meeting the store |
 | R-4 (mark) | service: one `UPDATE` naming `done` alone with the chosen value; screen: row + `Checkbox` | the store holds `R-4` clause 3 through the statement's shape (`data-model.md` § Two writers on one task) |
 | R-5 (two screens) | frame `PageFrame.tsx`, `routes.ts`, `router.tsx`, `StatusPages.tsx` | no context owns it; the frame is the one file that learns about a second screen |
-| R-6 (correct) | service: one `UPDATE` naming `text` alone; the same text type as the add | a correction held to `R-2` by construction |
+| R-6 (correct) | service: one `UPDATE` naming `text` alone; the same judgement as the add | a correction held to `R-2` by construction |
 | R-7 (delete) | service: one `DELETE … RETURNING`; screen: row + dialog | the confirmation is the screen's; the deletion the service's |
 | R-8 (gone) | service raises `TodoTaskNotFoundError` on no row returned; router translates to the not-found refusal; hook reports it | a service never names a status code |
 | R-9 (concurrent) | service, by the statement shape `data-model.md` names — no read before any write | only the store can hold it; no router or screen can |
@@ -99,9 +103,9 @@ what the change leaves alone, what nobody in this composition can write, and the
 | `app/contexts/todo_list/models/__init__.py` | created | the layer's docstring | R-1 | build-backend |
 | `app/contexts/todo_list/models/todo_task.py` | created | `TodoTask`, `TODO_TASK_TEXT_MAX_LENGTH`, `LINE_BREAKS`, the ordering index | R-1, R-2, R-3, R-4 | build-backend |
 | `app/contexts/todo_list/schemas/__init__.py` | created | the layer's docstring | R-1 | build-backend |
-| `app/contexts/todo_list/schemas/todo_tasks.py` | created | the text type and the shapes `api.md` names | R-1, R-2, R-4, R-6 | build-backend |
+| `app/contexts/todo_list/schemas/todo_tasks.py` | created | the shapes `api.md` names, with no text rule | R-1, R-2, R-4, R-6 | build-backend |
 | `app/contexts/todo_list/services/__init__.py` | created | the layer's docstring | R-1 | build-backend |
-| `app/contexts/todo_list/services/todo_tasks.py` | created | add, read, correct, mark, delete; `TodoTaskNotFoundError` | R-1, R-3, R-4, R-6, R-7, R-8, R-9 | build-backend |
+| `app/contexts/todo_list/services/todo_tasks.py` | created | add, read, correct, mark, delete; `TodoTaskNotFoundError`; the text's judgement and its three domain exceptions | R-1, R-2, R-3, R-4, R-6, R-7, R-8, R-9 | build-backend |
 | `app/contexts/todo_list/routers/__init__.py` | created | the layer's docstring | R-1 | build-backend |
 | `app/contexts/todo_list/routers/todo_tasks.py` | created | the HTTP binding, the declared refusals, the sentences | R-1, R-2, R-3, R-4, R-6, R-7, R-8 | build-backend |
 | `app/contexts/__init__.py` | modified | one appended registration | R-1, R-3 | build-backend |
@@ -135,7 +139,7 @@ what the change leaves alone, what nobody in this composition can write, and the
 |---|---|
 | build-tests-integration | `tests/integration/` (new to-do files), `tests/tooling/test_seed_golden_set.py`, `tests/_golden_set.py`, `golden-set/fixtures/` (new to-do files) |
 | build-tests-unit | `tests/unit/` (new to-do files; `test_guestbook_entry_model.py`, `test_entry_text_rules.py`), `tests/fitness/test_golden_set.py`, `tests/fitness/test_length_constants.py` |
-| build-tests-frontend | `frontend/src/lib/text.test.ts` (moved in), `frontend/src/contexts/guestbook/lib/entryText.test.ts` (moved out), `frontend/src/contexts/todo_list/**/*.test.ts(x)`, `frontend/src/components/shell/PageFrame.test.tsx`, `frontend/src/pages/StatusPages.test.tsx` |
+| build-tests-frontend | `frontend/src/contexts/guestbook/lib/entryText.test.ts` (one import line), `frontend/src/contexts/todo_list/**/*.test.ts(x)`, `frontend/src/components/shell/PageFrame.test.tsx`, `frontend/src/pages/StatusPages.test.tsx`, `frontend/src/router.test.tsx` |
 | build-tests-e2e | `e2e/suite/features/todo_list.feature`, `e2e/suite/steps/todo_list_steps.py`, `e2e/suite/test_scenarios.py`, `e2e/ui/` |
 | build-tests-uat | this record's `uat.md` |
 | build-backend | every `app/` row above, `golden-set/seed/todo-tasks-example.json`, `scripts/seed_golden_set.py`, `scripts/seed.sh` |
@@ -204,9 +208,8 @@ half (`tests/fitness/test_golden_set.py`).
 ## Found outside every write set — for the orchestrator
 
 1. **`golden-set/README.md` has no author in this composition, and this change needs it
-   edited.** Its § `seed/` says "One file: `entries-welcome.json`", which `R-11` makes false,
-   and lines 104 and 156 name `frontend/src/contexts/guestbook/lib/entryText.test.ts`, which
-   moves — `backtick-paths` reads every Markdown file and goes red on it. build-tests-integration
+   edited.** Its § `seed/` says "One file: `entries-welcome.json`", which `R-11` makes false.
+   build-tests-integration
    holds `golden-set/fixtures/`, build-backend `golden-set/seed/`, and reconcile-docs the root
    `README.md` only. It is left out of § This change owns because `set-boundary --from-design`
    refuses a row with no author. Proposed owner: build-tests-integration, which owns the locator
@@ -215,10 +218,8 @@ half (`tests/fitness/test_golden_set.py`).
    the corpus, and it re-exports only the guestbook's fixture files. If `spec/design/testing.md`
    gives the to-do scenarios fixture files, the re-export has to grow there. Proposed owner:
    build-tests-e2e.
-3. **Other documents name the moved test path**, and the new path cannot exist before implement:
-   `contracts/invariants/guestbook.md` line 115 (`D-04`'s witness — review-converge writes
-   `contracts/`), `spec/design/testing.md` lines 488 and 697 (design-testing now, reconcile-design
-   later). `spec/design/conventions.md` § Frontend lines 168–176 says `entryText.ts` "stays in the
+3. **One document still keeps the browser's text rule in the guestbook.**
+   `spec/design/conventions.md` § Frontend lines 188–190 says `entryText.ts` "stays in the
    context because the browser has exactly one" caller, which the move makes false —
    reconcile-design's, since this skill does not write `conventions.md`.
 4. **The to-do list's front matter against three fitness tests.**
@@ -240,26 +241,26 @@ half (`tests/fitness/test_golden_set.py`).
 | `alembic/versions/` | the one revision that creates `todo_tasks` and its ordering index (build-migration) |
 | `frontend/src/contexts/todo_list/` | the to-do screen, whole: page, components, hook, lib, and the vitest files beside them (build-frontend, build-tests-frontend) |
 | `frontend/src/lib/text.ts` | the shared text rule's browser half, moved up because a second context needs it (build-frontend) |
-| `frontend/src/lib/text.test.ts` | the text-measurement corpus's one browser reader, moved with the rule it proves (build-tests-frontend) |
 | `frontend/src/contexts/guestbook/lib/entryText.ts` | removed: the rule's old home inside the guestbook (build-frontend) |
-| `frontend/src/contexts/guestbook/lib/entryText.test.ts` | removed: the corpus reader's old home (build-tests-frontend) |
+| `frontend/src/contexts/guestbook/lib/entryText.test.ts` | one import line, to the rule's new home (build-tests-frontend) |
 | `frontend/src/contexts/guestbook/lib/guestbookEntry.ts` | one import path, to the rule's new home (build-frontend) |
 | `frontend/src/contexts/guestbook/components/EntryComposer.tsx` | one import path, to the rule's new home (build-frontend) |
 | `frontend/src/contexts/guestbook/hooks/useEntryQueryParams.ts` | one import path, to the rule's new home (build-frontend) |
 | `frontend/src/components/ui/Checkbox.tsx` | the done control, a design-system primitive with its first caller (build-frontend) |
 | `frontend/src/components/shell/PageFrame.tsx` | the way between the two screens and the frame's words for two of them (build-frontend) |
-| `frontend/src/components/shell/PageFrame.test.tsx` | the vitest cases for the way between screens, if testing.md puts R-5's proof there (build-tests-frontend) |
+| `frontend/src/components/shell/PageFrame.test.tsx` | the vitest cases for the way between screens (build-tests-frontend) |
 | `frontend/src/pages/StatusPages.tsx` | a not-found page that no longer says there is one screen (build-frontend) |
-| `frontend/src/pages/StatusPages.test.tsx` | the vitest case for the not-found copy, if testing.md puts R-5.4's proof there (build-tests-frontend) |
+| `frontend/src/pages/StatusPages.test.tsx` | the vitest case for the not-found copy (build-tests-frontend) |
 | `frontend/src/routes.ts` | the to-do list's route constant (build-frontend) |
 | `frontend/src/router.tsx` | one appended route binding the constant to the screen (build-frontend) |
+| `frontend/src/router.test.tsx` | the vitest cases for the to-do list's own address, the main address and an unknown address (`R-5`) (build-tests-frontend) |
 | `frontend/src/api/schema.d.ts` | regenerated from the backend's schemas, never edited (build-frontend) |
 | `golden-set/seed/todo-tasks-example.json` | the example tasks a new environment opens with (build-backend) |
 | `scripts/seed_golden_set.py` | filling each list on its own, adding then marking an example task (build-backend) |
 | `scripts/seed.sh` | its header and `--help`, which name the guest book alone today (build-backend) |
 | `.github/CODEOWNERS` | the to-do list's rows in the per-context pattern the file states (build-platform) |
-| `tests/unit/` | the text type and the model's constants, and the one-table assertion a second table turns red (build-tests-unit) |
-| `tests/fitness/` | the corpus rules scoped to entries, the moved frontend reader, and the two new browser copies (build-tests-unit) |
+| `tests/unit/` | the text rule and the model's constants, and the one-table assertion a second table turns red (build-tests-unit) |
+| `tests/fitness/` | the corpus rules scoped to entries and the two new browser copies (build-tests-unit) |
 | `tests/integration/` | the service, router, contract, concurrency and corpus tests of the to-do list (build-tests-integration) |
 | `tests/tooling/` | the seeder's per-list filling (build-tests-integration) |
 | `tests/_golden_set.py` | registers the example-task file and any to-do fixture file (build-tests-integration) |
