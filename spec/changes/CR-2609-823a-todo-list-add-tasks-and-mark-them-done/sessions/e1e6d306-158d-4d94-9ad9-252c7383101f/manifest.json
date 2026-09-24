@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "session_id": "e1e6d306-158d-4d94-9ad9-252c7383101f",
+  "captured_at": "2026-09-24T20:59:53Z",
+  "total_bytes": 845511,
+  "source_bytes": 845511,
+  "file_count": 3,
+  "personal_data_shapes": {
+    "email": 6,
+    "iban": 0,
+    "phone": 0,
+    "pesel": 0
+  },
+  "snapshots": [
+    {
+      "seq": 1,
+      "captured_at": "2026-09-24T20:59:28Z",
+      "total_bytes": 626665
+    },
+    {
+      "seq": 2,
+      "captured_at": "2026-09-24T20:59:53Z",
+      "total_bytes": 845511
+    }
+  ],
+  "files": [
+    {
+      "path": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/sessions/e1e6d306-158d-4d94-9ad9-252c7383101f/transcript.jsonl",
+      "source": "/Users/jaroslawwasowski/.claude/projects/-Users-jaroslawwasowski-Projects-Forge-forge-test2-react/e1e6d306-158d-4d94-9ad9-252c7383101f.jsonl",
+      "bytes": 783311,
+      "sha256": "3111f19d4afc6e1a93485b5b5eeb0333483ed58e0f3ef257e27439f0150be7a3"
+    },
+    {
+      "path": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/sessions/e1e6d306-158d-4d94-9ad9-252c7383101f/sidecar/tool-results/bn591pcyc.txt",
+      "source": "/Users/jaroslawwasowski/.claude/projects/-Users-jaroslawwasowski-Projects-Forge-forge-test2-react/e1e6d306-158d-4d94-9ad9-252c7383101f/tool-results/bn591pcyc.txt",
+      "bytes": 37699,
+      "sha256": "34b9f3df1446ccbd368d6b1a04dc79ec24314060aa4a854aaa049712262551ff"
+    },
+    {
+      "path": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/sessions/e1e6d306-158d-4d94-9ad9-252c7383101f/sidecar/tool-results/hook-d0d387db-f711-4456-b04a-4dc6ba7b7e9f-stdout.txt",
+      "source": "/Users/jaroslawwasowski/.claude/projects/-Users-jaroslawwasowski-Projects-Forge-forge-test2-react/e1e6d306-158d-4d94-9ad9-252c7383101f/tool-results/hook-d0d387db-f711-4456-b04a-4dc6ba7b7e9f-stdout.txt",
+      "bytes": 24501,
+      "sha256": "58a6242ca4428bbf9d2596e2af5a9bdf85c5af29c53dc3e189885fa74b5d0646"
+    }
+  ],
+  "capture": {
+    "mode": "retro",
+    "trigger": "sdd-retro",
+    "partial": false
+  },
+  "cr_dir": "CR-2609-823a-todo-list-add-tasks-and-mark-them-done",
+  "branch": "sdd/CR-2609-823a-todo-list-add-tasks-and-mark-them-done"
+}

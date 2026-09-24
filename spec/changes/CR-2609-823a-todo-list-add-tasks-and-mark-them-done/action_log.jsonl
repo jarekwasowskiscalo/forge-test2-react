@@ -869,3 +869,5 @@
 {"timestamp": "2026-09-24T20:40:06Z", "agent": "sdd-retro", "action": "session_archive_committed", "details": "archive committed for session 76720804-74cc-4a32-b0f2-3b64b73aa9dd", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T20:56:49Z", "agent": "sdd", "action": "evidence_recorded", "details": "cleanroom: VERDICT GREEN (from scratch, 4 steps)", "session_id": "e1e6d306-158d-4d94-9ad9-252c7383101f"}
 {"timestamp": "2026-09-24T20:59:17Z", "agent": "sdd", "action": "stage_closed", "details": "closed clean_room, opened spec_sync (boundary -> GREEN; delta.md from 8 fragments (40 current, 0 superseded))", "session_id": "e1e6d306-158d-4d94-9ad9-252c7383101f"}
+{"timestamp": "2026-09-24T20:59:28Z", "agent": "sdd-retro", "action": "session_captured", "details": "2 files, 626665 bytes, session e1e6d306-158d-4d94-9ad9-252c7383101f", "session_id": "e1e6d306-158d-4d94-9ad9-252c7383101f"}
+{"timestamp": "2026-09-24T20:59:53Z", "agent": "sdd-retro", "action": "session_archive_committed", "details": "archive committed for session e1e6d306-158d-4d94-9ad9-252c7383101f", "session_id": "e1e6d306-158d-4d94-9ad9-252c7383101f"}
