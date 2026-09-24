@@ -1,0 +1,30 @@
+{
+  "story": "todo-tasks-ordinary",
+  "demonstrates": "Ordinary tasks, in ADDING order, each with the done mark it ends with. The reader adds all of them in file order and only then marks the done ones, because a new task is never born done (BR-08), and expects the reversal of this file with these marks (BR-11). A repeated text is two tasks (BR-12), characters outside ASCII survive the whole stack, a one-character task is the minimum as an ordinary value, and no text holds a line break (BR-07).",
+  "tasks": [
+    {
+      "text": "Water the plants",
+      "done": false
+    },
+    {
+      "text": "Buy bread",
+      "done": true
+    },
+    {
+      "text": "Check that café · naïve · Ærø · 日本語 · Ωμέγα survive the whole stack",
+      "done": false
+    },
+    {
+      "text": "x",
+      "done": false
+    },
+    {
+      "text": "Buy bread",
+      "done": false
+    },
+    {
+      "text": "Call the plumber",
+      "done": true
+    }
+  ]
+}

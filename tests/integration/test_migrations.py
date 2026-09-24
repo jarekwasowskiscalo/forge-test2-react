@@ -13,6 +13,7 @@ containment would wave it through.
 
 import datetime
 
+import pytest
 import sqlalchemy as sa
 from alembic.autogenerate import compare_metadata
 from alembic.config import Config
@@ -24,14 +25,23 @@ from alembic import command
 from app.db.alembic_url import for_alembic_config
 from app.db.base import Base
 
-#: The one table this schema has, and the columns `spec/design/data-model.md`
-#: gives it.
+#: The guestbook's table, and the columns `spec/design/data-model.md` gives it.
 GUESTBOOK_COLUMNS = {"id", "author", "message", "created_at", "updated_at"}
 
 #: The index behind the ordering the list contract publishes (`BR-04`). Named
 #: here so a migration that drops it fails with a sentence about the rule rather
 #: than as a slow query nobody measures.
 ORDERING_INDEX = "ix_guestbook_entries_created_at_id"
+
+#: The to-do list's one table (`CR-2609-823a`), and the four columns
+#: `spec/design/data-model.md` § `todo_tasks` gives it -- a text, a state, a moment
+#: of adding and the identifier, and deliberately no `updated_at`, no `deleted_at`,
+#: no position and nobody. Hand-written, like the guestbook's mirror above, so a
+#: fifth column the specification never named fails here rather than shipping.
+TODO_TASKS_COLUMNS = {"id", "text", "done", "created_at"}
+
+#: The index behind the to-do list's one order, newest first (`BR-11`).
+TODO_ORDERING_INDEX = "ix_todo_tasks_created_at_id"
 
 
 def _config_for(url: str) -> Config:
@@ -128,6 +138,53 @@ def test_the_ordering_the_contract_publishes_has_an_index_behind_it() -> None:
     # `id` is in the index for the same reason it is in the ORDER BY: it is what
     # makes the order total.
     assert indexes[ORDERING_INDEX] == ["created_at", "id"]
+
+
+@pytest.mark.req("CR-2609-823a/R-1")
+@pytest.mark.req("CR-2609-823a/R-4")
+def test_upgrade_head_creates_the_todo_tasks_table_with_exactly_these_columns() -> None:
+    """What Alembic CREATES, as against what the model declares (`tests/unit/`).
+
+    Equality, never containment, and every column not null: a task is always a text,
+    a state and a moment of adding. The moment carries its zone, because the list's
+    one order has to settle across an offset change, and the state is a boolean --
+    one state with two values, switched both ways, and no third (`P-02`).
+    """
+    _, engine = _upgraded()
+
+    inspector = sa.inspect(engine)
+    assert "todo_tasks" in inspector.get_table_names(), (
+        "upgrading to head creates no todo_tasks table"
+    )
+    columns = {col["name"]: col for col in inspector.get_columns("todo_tasks")}
+
+    assert set(columns) == TODO_TASKS_COLUMNS
+    assert set(inspector.get_pk_constraint("todo_tasks")["constrained_columns"]) == {"id"}
+    for name in TODO_TASKS_COLUMNS:
+        assert columns[name]["nullable"] is False, f"todo_tasks.{name} is nullable"
+    assert isinstance(columns["text"]["type"], sa.String)
+    assert isinstance(columns["done"]["type"], sa.Boolean)
+    assert isinstance(columns["created_at"]["type"], sa.DateTime)
+    assert columns["created_at"]["type"].timezone is True, "the moment of adding has no zone"
+
+
+@pytest.mark.req("CR-2609-823a/R-3")
+def test_the_todo_list_order_has_an_index_behind_it() -> None:
+    """The list is read whole on every opening of the screen. An order with no index
+    behind it is a sort of the whole table each time -- invisible while it is small.
+    Both keys in one direction, so one backward scan answers `created_at DESC, id DESC`."""
+    _, engine = _upgraded()
+
+    inspector = sa.inspect(engine)
+    assert "todo_tasks" in inspector.get_table_names(), (
+        "upgrading to head creates no todo_tasks table"
+    )
+    indexes = {
+        index["name"]: list(index["column_names"]) for index in inspector.get_indexes("todo_tasks")
+    }
+
+    assert TODO_ORDERING_INDEX in indexes, f"todo_tasks has the indexes {sorted(indexes)}"
+    assert indexes[TODO_ORDERING_INDEX] == ["created_at", "id"]
 
 
 def test_both_timestamps_are_stored_with_a_time_zone() -> None:

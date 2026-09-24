@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, expect, it } from 'vitest'
 
-import { TRIMMED, normalizeText, textLength } from './entryText'
+import { TRIMMED, normalizeText, textLength } from '@/lib/text'
 import { AUTHOR_MAX_LENGTH, MESSAGE_MAX_LENGTH, QUERY_MAX_LENGTH } from './guestbookEntry'
 
 /**

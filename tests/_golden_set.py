@@ -92,14 +92,59 @@ WELCOME: Final[pathlib.Path] = SEED / "entries-welcome.json"
 #: frontend and this corpus carries the exception and its reason.
 TEXT_RULES: Final[pathlib.Path] = FIXTURES / "text-measurement.json"
 
+# --------------------------------------------------------------------------- #
+# The to-do list's files (`CR-2609-823a`). Every one holds TASKS or cases of a
+# task's text, never guest book entries, which is why they sit under a key of
+# their own -- `tasks` -- and are read by `tasks_of` rather than `entries_of`.
+# Named `todo-task...` and never a bare `task`, because *task* is also a word of
+# the change process (`spec/glossary.md` § Task (process)).
+# --------------------------------------------------------------------------- #
+
+#: Ordinary tasks, in ADDING order, each with the done mark it ends with. A reader
+#: adds every one in file order and only then marks the done ones -- a new task is
+#: never born done (`BR-08`) -- and asserts the reversal of the file with its marks
+#: (`BR-11`), which is a claim about the rule rather than a second copy of the data.
+TODO_TASKS_ORDINARY: Final[pathlib.Path] = FIXTURES / "todo-tasks-ordinary.json"
+
+#: Task texts exactly on the bound, each ACCEPTED, each with the text it is
+#: `stored` as once normalized and trimmed. The other side of the bound is
+#: `TODO_TASKS_REFUSED`, one code point further.
+TODO_TASKS_BOUNDARY: Final[pathlib.Path] = FIXTURES / "todo-tasks-boundary.json"
+
+#: Task texts the rules refuse, each naming the `refusal` code the contract gives
+#: it (`spec/design/api.md` § The to-do list's refusals) -- a contract code, unlike
+#: `REFUSED`, whose key names the mechanism because a schema refusal has no code.
+TODO_TASKS_REFUSED: Final[pathlib.Path] = FIXTURES / "todo-tasks-refused.json"
+
+#: How a task's text is judged -- the bound in code points and the seven line
+#: breaks of `BR-07` -- as CASES, with a fourth verdict, `multiline`, beside the
+#: three `TEXT_RULES` knows. Read by the server's rule test and by exactly one
+#: module of the to-do list's browser folder, against the same bytes, for the
+#: reason `TEXT_RULES` is read by both: agreement cannot be checked from one side.
+TODO_TASK_TEXT: Final[pathlib.Path] = FIXTURES / "todo-task-text.json"
+
+#: The example tasks a new environment's to-do list opens with. Written with the
+#: seeder that posts it; named here first, because the locator is the one place
+#: that decides where the corpus lies and no implementer may edit it.
+TODO_TASKS_EXAMPLE: Final[pathlib.Path] = SEED / "todo-tasks-example.json"
+
 #: The fixture half, for a test that wants to sweep all of it.
-FIXTURE_FILES: Final[tuple[pathlib.Path, ...]] = (ORDINARY, BOUNDARY, REFUSED, TEXT_RULES)
+FIXTURE_FILES: Final[tuple[pathlib.Path, ...]] = (
+    ORDINARY,
+    BOUNDARY,
+    REFUSED,
+    TEXT_RULES,
+    TODO_TASKS_ORDINARY,
+    TODO_TASKS_BOUNDARY,
+    TODO_TASKS_REFUSED,
+    TODO_TASK_TEXT,
+)
 
 #: The seed half. Read by `scripts/seed_golden_set.py`, which also reaches for
 #: `BOUNDARY` under `--boundary` -- the one crossing between the halves --
 #: `tests/fitness/test_golden_set.py` refuses a suite that names it, because a
 #: test asserting about the seed corpus has quietly undone the split.
-SEED_FILES: Final[tuple[pathlib.Path, ...]] = (WELCOME,)
+SEED_FILES: Final[tuple[pathlib.Path, ...]] = (WELCOME, TODO_TASKS_EXAMPLE)
 
 #: Every file the corpus holds, both halves. A file absent from this tuple is a
 #: file the locator cannot hand out, and `tests/fitness/test_golden_set.py`
@@ -148,14 +193,32 @@ def entries_of(path: pathlib.Path) -> list[dict[str, Any]]:
     return entries
 
 
+def tasks_of(path: pathlib.Path) -> list[dict[str, Any]]:
+    """Just the tasks of one to-do corpus file, in file order.
+
+    A reader of its own beside `entries_of` and `cases_of`, for the reason those two
+    are apart: a task is neither a guest book entry nor an input to a rule. It is a
+    `text` and, in a sequence, the `done` mark it ends with -- so a caller that swept
+    "whatever list the file has" would hold a task to the rules about `author` and
+    `message`, or skip the rules that fit it.
+    """
+    tasks = story_of(path)["tasks"]
+    if not isinstance(tasks, list) or not tasks:
+        raise AssertionError(
+            f"{path.name} carries no tasks -- a corpus file with none proves nothing"
+        )
+    return tasks
+
+
 def cases_of(path: pathlib.Path) -> list[dict[str, Any]]:
-    """Just the cases of `TEXT_RULES`, in file order.
+    """Just the cases of `TEXT_RULES` or of `TODO_TASK_TEXT`, in file order.
 
     A separate reader from `entries_of` rather than one that accepts either key,
     because the two shapes are different data: an entry is a guest book entry and
     carries `author` and `message`; a case is one input to the trimming and length
-    rule, and carries the field it is about, the verdict expected of it and the
-    length expected after normalization. A single reader returning "whatever list
+    rule, and carries the verdict expected of it, the length expected after
+    normalization, and -- in `TEXT_RULES`, which serves three fields -- the field it
+    is about. A single reader returning "whatever list
     the file has" would let a caller sweep both and assert about neither.
     """
     cases = story_of(path)["cases"]
