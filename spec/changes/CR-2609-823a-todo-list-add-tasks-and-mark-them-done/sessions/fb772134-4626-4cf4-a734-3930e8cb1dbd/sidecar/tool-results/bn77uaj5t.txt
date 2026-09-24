@@ -1,0 +1,276 @@
+diff --git a/spec/README.md b/spec/README.md
+index 5e890dc..a0ad73c 100644
+--- a/spec/README.md
++++ b/spec/README.md
+@@ -55,9 +55,10 @@ Document templates live in `.specconf/templates/{change,system}/`, editable per
+ 
+ ## This directory describes a template
+ 
+-The only domain context is the **guestbook**, and it is deliberately trivial: four operations,
+-one table, one screen. It exists so that every document here has content that shows its shape
+-— and so that it can be deleted when the first real feature replaces it.
++The example domain context is the **guestbook**, and it is deliberately trivial: four
++operations, one table, one screen. The to-do list beside it is not an example and stays when
++the guestbook is deleted. The guestbook exists so that every document here has content that
++shows its shape — and so that it can be deleted when the first real feature replaces it.
+ 
+ Deleting the example deletes with it: `contexts/guestbook.md`, `design/ui/guestbook.md`, the
+ entries in `design/api.md` and `design/data-model.md`, the contracts
+diff --git a/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/testing.md b/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/testing.md
+index 16a4e84..7a14ff1 100644
+--- a/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/testing.md
++++ b/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/testing.md
+@@ -92,9 +92,13 @@ the moved `frontend/src/lib/text.ts` has no test file of its own, with the reaso
+ live document. Consequences, all simplifications: the fitness allow-list for
+ `text-measurement.json`, `D-04`'s witness path in `contracts/invariants/guestbook.md`, and
+ `golden-set/README.md`'s two mentions of the reader stay true, so items 3 and the reader half of
+-item 1 in that fragment's "Found outside every write set" disappear. `frontend/src/lib/text.test.ts`
+-is in the recorded boundary and is simply never written; the edit to `entryText.test.ts` is
+-inside the boundary as it stands.
++item 1 in that fragment's "Found outside every write set" disappear. The edit to
++`entryText.test.ts` is inside the boundary as it stands.
++
++**Resolved as COH-design-3** (AUTO, on `spec/design/conventions.md` § Frontend — where a file
++goes, which now says "Only the rule moves up"): the reader stays, and the architecture fragment
++follows this reading. The live document cites that rule where it keeps the reader in place, and
++§ Four file sets names `frontend/src/lib/text.ts` as the import's target.
+ 
+ The architecture's build-tests-unit set also lists `tests/unit/test_entry_text_rules.py`; with the
+ separate corpus file it needs no edit.
+diff --git a/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md b/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md
+index 7285b70..31451fd 100644
+--- a/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md
++++ b/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md
+@@ -523,8 +523,8 @@ anything to judge (`Q-8`).
+     so their wording no longer covers everything the system stores. Only the convergence round
+     edits this file (its own § Deliberate non-goals), so this is reported and not fixed.
+     Converged by COH-requirements-5: the authentication item now names any to-do task (`Q-9`),
+-    and the retention item stays worded for entries while `A-2` (§ Named assumptions) waits for
+-    the user.
++    and, since the user approved this document with `A-2` standing, the retention item names
++    tasks too (`design/delta/converge.md`).
+   - `contracts/invariants/guestbook.md`. `D-01`: consistent. A done task stays one record in
+     its place (`Q-4`, `R-3.4`). A design that moved done tasks into a second store would breach
+     it, and `tests/fitness/test_data_invariants.py::test_no_table_is_shaped_like_an_archive`
+@@ -671,8 +671,8 @@ anything to judge (`Q-8`).
+ - **A mobile design of the new screen.** This is the standing non-goal (`spec/invariants.md`
+   § Deliberate non-goals, "A mobile version").
+ - **A retention policy for tasks.** A task lives until somebody deletes it, as an entry does
+-  under the standing non-goal. For tasks this is assumed, not decided (`A-2`, § Named
+-  assumptions).
++  under the standing non-goal. For tasks this was assumption `A-2` (§ Named assumptions),
++  confirmed at this document's approval.
+ - **Detecting a duplicate caused by a retried add.** The same text twice is two tasks by
+   decision (`Q-9`, `R-1` clause 5), so `E-20` leaves a duplicate for a person to delete.
+ 
+@@ -734,8 +734,8 @@ at the approval of this document, which ends the stage.*
+   task except a person deleting it, with no expiry and no retention policy, as for a guestbook
+   entry (`spec/invariants.md` § Deliberate non-goals, "A data retention policy"). Say so if not.
+   `Q-9` settled that anybody may delete any task and that a deleted task is gone for good. It did
+-  not settle whether a task can go without anybody deleting it. Until this is confirmed, that
+-  non-goal keeps its wording for entries alone. **Status:** assumed, awaiting the user.
++  not settle whether a task can go without anybody deleting it. **Status:** confirmed at this
++  document's approval; `spec/invariants.md` § Deliberate non-goals names tasks since.
+ - **`A-3`: where the inside of a task's text ends (`R-2` clauses 4 and 6, `R-6` clause 4).**
+   Assumed: the line-break rule reads the text as `R-2` clause 1 has trimmed it, so a line break
+   the trim leaves in the text is refused wherever it sits. A character that shows nothing but is
+@@ -834,7 +834,7 @@ at the approval of this document, which ends the stage.*
+ 23. [Coherence] [Gap] Do the non-goals in `spec/invariants.md`, worded for entries, bind the to-do
+     list? By intent yes, by wording no. Only the convergence round edits that file, so the finding
+     goes there. It went there as COH-requirements-5: authentication now covers tasks, and
+-    retention waits on `A-2`.
++    retention covers them too since the user approved this document with `A-2` standing.
+ 24. [Compliance] [Gap] Which bounded context owns a task? That is not a requirement: it is
+     design-domain's call. If tasks live inside the guestbook context, the closing sentence of
+     `P-01` ("An entry either exists or it does not") stops describing that context.
+diff --git a/spec/contexts/todo_list.md b/spec/contexts/todo_list.md
+index 7d09145..e72cdf4 100644
+--- a/spec/contexts/todo_list.md
++++ b/spec/contexts/todo_list.md
+@@ -4,8 +4,8 @@ classification: supporting
+ owns: [todo_tasks]
+ neighbours: [guestbook:peer:shared-kernel]
+ processes: [P-02]
+-screens: []
+-features: []
++screens: [spec/design/ui/todo-list.md]
++features: [e2e/suite/features/todo_list.feature]
+ ---
+ 
+ # To-do list
+@@ -20,9 +20,16 @@ how a new environment is filled, or how a screen shows a failure (§ Neighbours,
+ owns). The shapes on the wire are in [`spec/design/api.md`](../design/api.md); what is stored
+ is in [`spec/design/data-model.md`](../design/data-model.md). This document is the rules.
+ 
+-**The header claims a screen and a black-box file only once they exist.** `screens` and
+-`features` name files, and a file that is not there yet is not claimed by writing its name
+-down early — the header is read, not admired.
++**The header claims a screen once its document exists, and the black-box file at the end of
++design, before the file exists.** `screens` and `features` name files. No author who writes
++one of those files writes this document, so the design stage's convergence round writes both
++claims. The screen's document is written in design, so it is claimed in the same stage. The
++black-box file is written only in implementation, where no author writes `spec/contexts/`. So
++it is listed at the end of design, as the user decided in `CR-2609-823a` (`Q-19`): "List it
++now, at the end of design". The header is read, not admired, so that early claim is a declared
++red and not a silent one: the plan declares
++`test_every_screen_and_feature_a_context_names_is_on_disk` red on the task that writes the file.
++The declaration expires when that task writes the file in the first implementation wave.
+ 
+ ## Strategic classification
+ 
+diff --git a/spec/design/architecture.md b/spec/design/architecture.md
+index ac89a7a..a732326 100644
+--- a/spec/design/architecture.md
++++ b/spec/design/architecture.md
+@@ -585,22 +585,22 @@ rule, which file holds each layer, and which implementer writes each file.
+ 
+ | Rule | Where it is held | Why that layer |
+ |---|---|---|
+-| `BR-06` — a task needs text, at most 200 code points | the task's text type in the context's `schemas/`; the bound, `TODO_TASK_TEXT_MAX_LENGTH`, beside `TodoTask` in `models/`; the browser's copy in the context's `lib/` | every text bound this API has is a schema-layer fact applied after the shared normalization — `NormalizedText` runs ahead of the bound — with the number beside the model. The guestbook's worked example, applied unchanged |
+-| `BR-07` — a task is one line | the same text type, between the normalization and the measurement; `LINE_BREAKS` beside `TodoTask`; the browser's copy beside the browser's bound | its precedence over `BR-06` — a text both too long and on two lines is refused as two lines — is one sequence, and it can be one sequence only where the length is decided. A check in the service would run after the schema had already refused the text as too long |
++| `BR-06` — a task needs text, at most 200 code points | the context's `services/todo_tasks.py`, which judges the text before any write (normalize, then empty, then one line, then measure) and raises one domain exception per verdict; the bound, `TODO_TASK_TEXT_MAX_LENGTH`, beside `TodoTask` in `models/`; the browser's copy in the context's `lib/` | a business rule is decided in `services/` (`conventions.md` § Layers); a constraint in the schema would answer with FastAPI's list and no code ([`api.md`](api.md) § Shapes, `TodoTaskCreate`) |
++| `BR-07` — a task is one line | the same judgement in the service, after the empty check and before the measurement; `LINE_BREAKS` beside `TodoTask`; the browser's copy beside the browser's bound | its precedence over `BR-06` — a text both too long and on two lines is refused as two lines — is one sequence, and it is one sequence because the schema carries no length bound to answer first |
+ | `BR-08` — a new task is not done, and its moment of adding is set once | the service's add, which writes `done` false and `created_at` from its own clock on every insert; the create shape carries the text alone | the service owns the write and the clock, so nothing a caller sends reaches either column |
+ | `BR-09` — marking records the chosen state | the service's mark: one statement naming `done` alone, carrying the value the person chose | the store holds it through the statement's shape ([`data-model.md`](data-model.md) § Two writers on one task), and only the service writes |
+-| `BR-10` — the text and the state change separately | the service's correction: one statement naming `text` alone; the add and the correction share the one text type in `schemas/` | the same statement shape; one text type for both is what makes "a correction is held to `BR-06` and `BR-07` exactly as an addition is" true by construction rather than by care |
++| `BR-10` — the text and the state change separately | the service's correction: one statement naming `text` alone; the add and the correction share the one judgement in the service | the same statement shape; one judgement for both is what makes "a correction is held to `BR-06` and `BR-07` exactly as an addition is" true by construction rather than by care |
+ | `BR-11` — one order, total, with no pages | the service's read: every row, by `created_at` then `id`, both descending; the index in the model and in the revision | the order is a rule, and the service is where a rule meets the store |
+ | `BR-12` — the same text twice is two tasks | nowhere, deliberately: no layer holds a uniqueness check | a rule that forbids nothing needs no holder, and a unique index would be the defect |
+-| `BR-13` — deletion is permanent; a task that is gone stays gone | the service raises its one domain exception, `TodoTaskNotFoundError`, when a statement returns no row, and never writes on absence; the router turns it into the not-found refusal | a service never names a status code (`conventions.md` § Layers), and the sentence belongs beside the endpoint that produces it |
++| `BR-13` — deletion is permanent; a task that is gone stays gone | the service raises `TodoTaskNotFoundError` when a statement returns no row, and never writes on absence; the router turns it into the not-found refusal | a service never names a status code (`conventions.md` § Layers), and the sentence belongs beside the endpoint that produces it |
+ | The way between the two screens, the main address, the not-found page | the frame and the composition root: `frontend/src/components/shell/PageFrame.tsx`, `frontend/src/routes.ts`, `frontend/src/router.tsx`, `frontend/src/pages/StatusPages.tsx` | no context owns them ([`contexts/todo_list.md`](../contexts/todo_list.md) § Neighbours); the frame is the one file that learns about a second screen ([`ui/system-states.md`](ui/system-states.md) § One column) |
+ | A change not stored is never shown as made; a list that failed to load is not an empty list | the context's query hook, which writes its cache only from the server's answer and never ahead of it; the page tells a failed load from an empty list | the hook is the one place the cache is written (`conventions.md` § Frontend), so it is the one place a change could be shown before it was stored |
+ | Example tasks in a new environment | the seeder, `scripts/seed_golden_set.py`, and one file in `golden-set/seed/` | § What a new environment starts with |
+ 
+ The router decides nothing on that list. It binds the routes [`api.md`](api.md) publishes,
+-declares every refusal it can answer with, and turns the service's one domain exception into
+-the not-found refusal, explicitly; the empty, too-long and more-than-one-line refusals never
+-reach it, because the schema refuses them before the route runs.
++declares every refusal it can answer with, and turns each of the service's domain exceptions
++into its coded refusal, explicitly: the not-found refusal and the three about a task's text,
++with the sentences [`api.md`](api.md) § The to-do list's refusals gives.
+ 
+ ### The files
+ 
+@@ -610,8 +610,8 @@ Paths in the second column are relative to the tree in the first.
+ |---|---|---|---|
+ | `app/contexts/` | `todo_list/__init__.py` | the context's public API — `TodoTask`, the bound, `LINE_BREAKS` — and, by importing the model, `todo_tasks` on the shared `Base` | build-backend |
+ | | `todo_list/models/todo_task.py` | `TodoTask`, `TODO_TASK_TEXT_MAX_LENGTH`, `LINE_BREAKS` written as code-point numbers the way the trim set is, and the ordering index | build-backend |
+-| | `todo_list/schemas/todo_tasks.py` | the task's text type — normalize, then one line, then measure — and the read and write shapes [`api.md`](api.md) names, read and write kept apart | build-backend |
+-| | `todo_list/services/todo_tasks.py` | add, read, correct, mark and delete; the session and the transaction; `TodoTaskNotFoundError` | build-backend |
++| | `todo_list/schemas/todo_tasks.py` | no text rule, only the read and write shapes [`api.md`](api.md) names, read and write kept apart | build-backend |
++| | `todo_list/services/todo_tasks.py` | add, read, correct, mark and delete; the session and the transaction; `TodoTaskNotFoundError`, and the text's judgement with its three domain exceptions | build-backend |
+ | | `todo_list/routers/todo_tasks.py` | the HTTP binding of every to-do route, the declared refusals and their sentences | build-backend |
+ | | `todo_list/{models,schemas,services,routers}/__init__.py` | each layer's docstring, as the guestbook's say it | build-backend |
+ | | `__init__.py` | one appended line registering `todo_list` | build-backend |
+@@ -661,6 +661,17 @@ another and from every builder's in the same way: `tests/unit/` with `tests/fitn
+ `tests/integration/`, `tests/tooling/`, `tests/_golden_set.py` and `golden-set/fixtures/`; the
+ vitest files; `e2e/`.
+ 
++**[`testing.md`](testing.md) decides which files a test author writes, and the change's boundary
++names every one of them.** The trees above say where each test author may write, not which
++files it writes. The testing document decides the files. The change's table of the paths it
++owns (§ This change owns in its architecture fragment, from which the boundary is recorded)
++covers each of those files by path or by a row that holds it, even when both documents are
++written in the same wave. For the to-do list that includes **frontend/src/router.test.tsx**,
++build-tests-frontend's vitest cases for the to-do list's own address, the main address and an
++unknown address (`CR-2609-823a/R-5`). It sits beside the composition root it proves, outside
++every context folder, so no row that names a folder holds it. The user decided it in
++`CR-2609-823a` (`Q-18`) in these words: "Add the file to the change's list."
++
+ **Disjoint is not independent.** Three edges cross the sets, and none of them is a shared file:
+ 
+ 1. `schema.d.ts` is generated from build-backend's schemas and routers, so build-frontend
+diff --git a/spec/design/conventions.md b/spec/design/conventions.md
+index 2c3df86..454ad6f 100644
+--- a/spec/design/conventions.md
++++ b/spec/design/conventions.md
+@@ -39,6 +39,18 @@ knows nothing about the domain. The sentence an operator reads belongs beside th
+ produced it, not in a shared table one edit away from telling somebody the wrong column to
+ correct. The worked example is `_not_found` in `app/contexts/guestbook/routers/guestbook_entries.py`.
+ 
++**A rule whose refusal carries a code of its own is judged in `services/`, and `schemas/` holds
++no part of it.** A constraint or a validator in a schema answers before the route runs, with
++FastAPI's list of `{loc, msg, type}` and no code. So a schema holds only a bound whose refusal
++needs no code of its own. The guestbook's `BR-01` bounds are that case, and the guestbook is the
++worked example of that case, not of every bound. Where [`api.md`](api.md) gives a refusal a
++code, the request shapes carry the field with no bound, so a shape built from a refused value is
++still a valid shape. The service judges the value before any write and raises one domain
++exception per verdict, and the router translates each one into its coded refusal, as above. A
++to-do task's text is such a rule: normalize, then empty, then one line, then measure. The user
++decided it in `CR-2609-823a` (`Q-17`) in these words: "The service checks it, with a coded
++reason."
++
+ ## Backend — where a file goes
+ 
+ **The outermost cut is the bounded context; the layer is a directory inside it.** A new domain
+@@ -74,9 +86,9 @@ app/
+   with the function that binds it to a URL. One line per context, listed rather than
+   discovered — so the registration can be checked in both directions.
+ - **`app/contexts/<name>/routers/`** — HTTP binding only, one module per resource, each
+-  exposing `router`. `guestbook` is the **only** domain context of this template and at the
+-  same time its worked example through every layer: copy it, and when your own context replaces
+-  it, delete it.
++  exposing `router`. `guestbook` is this template's worked example through every layer: copy
++  it, and when your own context replaces it, delete it. The to-do list (`todo_list`) is a second
++  domain context and is not an example.
+ - **`app/contexts/<name>/services/`** — business rules. Owns the session and the transaction
+   boundary.
+ - **`app/contexts/<name>/models/` + `alembic/versions/`** — one class per file, `Base` from
+@@ -169,6 +181,10 @@ frontend/src/
+   (`contexts/guestbook/lib/guestbookEntry.ts`, `contexts/guestbook/lib/entryListCopy.ts`,
+   `contexts/guestbook/lib/entryText.ts`), and moves up here the day a second context needs it —
+   never before, because a shared module with one caller is a boundary drawn in the wrong place.
++  **Only the rule moves up.** A test that proves it through one context's bounds stays beside
++  that context's modules and changes one import. The corpus reader
++  `frontend/src/contexts/guestbook/lib/entryText.test.ts` is one such test. Moved up here, it
++  would have to import a context's bound, and nothing here imports from `contexts/`.
+   `entryText.ts` is the case worth naming: its Python counterpart sits in `app/platform/`
+   because the server has more than one caller for it, and this one stays in the context because
+   the browser has exactly one. The asymmetry is each tree following its own rule rather than an
+diff --git a/spec/design/testing.md b/spec/design/testing.md
+index ee92f5b..58cdec8 100644
+--- a/spec/design/testing.md
++++ b/spec/design/testing.md
+@@ -756,7 +756,7 @@ it does not exist until then. The contract the tests hold the application to is
+ | Requirement | Owner | Proof |
+ |---|---|---|
+ | `CR-2609-823a/R-1` — adding a task | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (an added task is stored with its text, not done, with a moment of adding from the service's clock; the same text added twice is two tasks, and marking one leaves the other not done) · **tests/integration/test_todo_tasks_router.py** (a `POST` carrying `done: true` answers `201` with a task that is not done, and stores it not done) · **tests/unit/test_todo_task_model.py** (`done` is declared not null, `False` by the model's default, with no server default) · **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx** (an added task is shown first with no reload) · **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx** (a change that went through refetches the list) · **e2e/suite/features/todo_list.feature** ("Adding the first task", "The same text added twice makes two separate tasks", "A task sent as already done is still saved as not done"). Fixtures: the inline values "Water the plants", "Buy bread", "Already finished". Clause 2 — no account — gets no test of its own: every test here runs with nobody signed in |
+-| `CR-2609-823a/R-2` — what is not a task is refused | `tests/unit/` | **tests/unit/test_todo_task_text_rules.py** (every case of `todo-task-text.json` gets its verdict and, when accepted, its length — through the rule and through the create and update shapes, so a path that skips the shared rule is seen; the seven line breaks are the written set and every one is in the trim set; a text both too long and on two lines is refused as `multiline`; the bound read from `TODO_TASK_TEXT_MAX_LENGTH`, from both sides; and a **generator**, because `BR-06` and `BR-07` are rules about a value: any text drawn is either refused or kept NFC, trimmed, on one line and 1–200 code points long) · **tests/integration/test_todo_tasks_corpus.py** (every case of `todo-tasks-boundary.json` is accepted and stored as the file states; every case of `todo-tasks-refused.json` is refused with its code and stores nothing) · **tests/integration/test_todo_tasks_service.py** (a decomposed, a padded and an emoji text read back from the column NFC, trimmed, on one line and within the bound in code points; whitespace inside a text is stored as typed) · **tests/integration/test_todo_tasks_router.py** (each of the three `todo_task_text_*` codes, on `POST` and on `PATCH`) · **tests/unit/test_todo_task_model.py** (`text` is declared `String(TODO_TASK_TEXT_MAX_LENGTH)`, not null) · **frontend/src/contexts/todo_list/lib/todoTask.test.ts** (the same `todo-task-text.json`, the same verdicts and lengths, through the browser's rule) · **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx** (the field carries no `maxLength`; 200 pasted emoji are held whole and the task can be added; 201 are held, the screen says the text is too long and sends nothing; a pasted U+2028 between two words gets the one-line sentence and sends nothing) · **e2e/suite/features/todo_list.feature** ("Spaces between the words of a task are kept as typed", "A line break after the last word is trimmed, not refused"). Supplementary, owning no citation: `tests/fitness/test_length_constants.py` (the 200 and the seven line breaks equal their browser copies), `tests/fitness/test_golden_set.py` (the to-do files obey the corpus rules), and the UI smoke (200 and 201 emoji typed into the built screen) |
++| `CR-2609-823a/R-2` — what is not a task is refused | `tests/unit/` | **tests/unit/test_todo_task_text_rules.py** (every case of `todo-task-text.json` gets its verdict and, when accepted, its length — through the rule, while every case builds a valid create and update shape, so only the rule can refuse a text; the seven line breaks are the written set and every one is in the trim set; a text both too long and on two lines is refused as `multiline`; the bound read from `TODO_TASK_TEXT_MAX_LENGTH`, from both sides; and a **generator**, because `BR-06` and `BR-07` are rules about a value: any text drawn is either refused or kept NFC, trimmed, on one line and 1–200 code points long) · **tests/integration/test_todo_tasks_corpus.py** (every case of `todo-tasks-boundary.json` is accepted and stored as the file states; every case of `todo-tasks-refused.json` is refused with its code and stores nothing) · **tests/integration/test_todo_tasks_service.py** (a decomposed, a padded and an emoji text read back from the column NFC, trimmed, on one line and within the bound in code points; whitespace inside a text is stored as typed) · **tests/integration/test_todo_tasks_router.py** (each of the three `todo_task_text_*` codes, on `POST` and on `PATCH`) · **tests/unit/test_todo_task_model.py** (`text` is declared `String(TODO_TASK_TEXT_MAX_LENGTH)`, not null) · **frontend/src/contexts/todo_list/lib/todoTask.test.ts** (the same `todo-task-text.json`, the same verdicts and lengths, through the browser's rule) · **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx** (the field carries no `maxLength`; 200 pasted emoji are held whole and the task can be added; 201 are held, the screen says the text is too long and sends nothing; a pasted U+2028 between two words gets the one-line sentence and sends nothing) · **e2e/suite/features/todo_list.feature** ("Spaces between the words of a task are kept as typed", "A line break after the last word is trimmed, not refused"). Supplementary, owning no citation: `tests/fitness/test_length_constants.py` (the 200 and the seven line breaks equal their browser copies), `tests/fitness/test_golden_set.py` (the to-do files obey the corpus rules), and the UI smoke (200 and 201 emoji typed into the built screen) |
+ | `CR-2609-823a/R-3` — one shared list, in one order | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (newest first; two tasks stored with one `created_at` come back in the same order on two reads, the tie settled by `id` descending — the equal moment is arranged, through the service's clock or rows written directly as the guestbook's tie test does, never hoped for from two quick calls; 101 tasks, "Task 001" to "Task 101", done and not done, all in one read; marking and correcting leave the order and `created_at` as they were) · **tests/integration/test_todo_tasks_router.py** (the `GET` answers every task in one envelope whose `total` equals the length of `items`, and ignores `limit` and `offset`) · **tests/integration/test_todo_tasks_corpus.py** (`todo-tasks-ordinary.json`, added in file order with the done ones then marked, reads back as the reversal of the file with its marks) · **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx** (the tasks are shown in the order they arrive and never sorted again; an empty list says it is empty and how to begin, with no error; a list whose tasks are all done is shown and not called empty) · **e2e/suite/features/todo_list.feature** ("The list shows the newest task at the top", "A hundred and one tasks are all shown on one list", "Marking a task done leaves it where it was", "Correcting a task's text leaves it where it was", "A task somebody else added appears after a reload"). Supplementary: `tests/integration/test_migrations.py` (the ordering index exists) |
+ | `CR-2609-823a/R-4` — marking done and not done | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (marking records the state chosen for all four pairs of stored and chosen state, so a flip shows on done over done and not done over not done; marking leaves the text and `created_at` alone) · **tests/integration/test_todo_tasks_router.py** (a `PATCH` carrying `done` alone writes `done` alone) · **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx** (a done task is shown differently: its checkbox is checked and its text carries the done style, and a not-done task has neither; ticking sends the state the person chose) · **e2e/suite/features/todo_list.feature** ("A task marked done stays done after a reload", "A task marked done by mistake goes back to not done", "Marking done a task that is already done leaves it done", "Marking not done a task that is already not done leaves it not done"). Clause 6, the contrast floor, is measured by no suite that owns a citation, because jsdom loads no application CSS: the UI smoke measures a done task's text against the surface it is painted on, opacity included, at 4.5:1 or more; `tests/fitness/test_design_tokens.py` holds every text token to the floor; and a step in this change's `uat.md` looks. A gap in citation, named, and not a gap in proof |
+ | `CR-2609-823a/R-5` — two screens and the way between them | `frontend` | **frontend/src/router.test.tsx** (the to-do list's own address opens the to-do list; the main address opens the guestbook; an unknown address gets the page that says nothing is there) · **frontend/src/components/shell/PageFrame.test.tsx** (on each screen the frame offers the way to the other one) · **frontend/src/pages/StatusPages.test.tsx** (the not-found page does not say the application has one screen). Supplementary: `tests/unit/test_spa_fallback.py` already answers any address with the shell, `/no-such-page` included, so the server half of clause 1 needs no case of its own; the UI smoke opens the to-do address directly in the built bundle and walks the way between the screens in both directions |
+@@ -856,8 +856,9 @@ application answers.
+ 
+ - **tests/unit/test_todo_task_text_rules.py** — `test_every_case_gets_the_verdict_the_corpus_states`
+   and `test_every_accepted_case_has_the_length_the_corpus_states` (per case, through the rule);
+-  `test_the_create_and_update_shapes_give_every_case_the_same_verdict` (a refused case is refused
+-  with the code of its verdict and an accepted one comes out as the stated text);
++  `test_the_create_and_update_shapes_carry_no_bound` (every case, refused ones included, builds a
++  valid shape; the code each verdict earns is proved on the wire by
++  **tests/integration/test_todo_tasks_corpus.py**);
+   `test_a_text_too_long_and_on_two_lines_is_refused_as_multiline` (201 letters with a line feed
+   after the hundredth); `test_the_bound_stands_where_the_constant_says` (exactly
+   `TODO_TASK_TEXT_MAX_LENGTH` code points accepted and one more refused, both built from the
+@@ -987,8 +988,9 @@ text rule, which [`architecture.md`](architecture.md) moves out of the guestbook
+ claim it makes is a verdict or a length relative to a bound, a bound belongs to a context, and
+ no module outside the contexts may import one. So it is proved from both sides by the two
+ readers that each hold one context's bound — `frontend/src/contexts/guestbook/lib/entryText.test.ts`,
+-which **stays** in the guestbook's folder and changes one import line, and the to-do list's
+-**frontend/src/contexts/todo_list/lib/todoTask.test.ts**. A reader moved up beside the rule would
++which **stays** in the guestbook's folder and changes one import line
++([`conventions.md`](conventions.md) § Frontend — where a file goes: "Only the rule moves up"),
++and the to-do list's **frontend/src/contexts/todo_list/lib/todoTask.test.ts**. A reader moved up beside the rule would
+ have to import the guestbook's bounds from there, which
+ `tests/fitness/test_context_boundaries.py::test_no_screen_reaches_into_another_contexts_folder`
+ refuses; the one file allowed to read `text-measurement.json`, and `D-04`'s witness, therefore
+@@ -1094,7 +1096,7 @@ files without a test of their own are named there, each with its reason.
+ |---|---|
+ | `build-tests-unit` | **tests/unit/test_todo_task_text_rules.py**, **tests/unit/test_todo_task_model.py** (new) · edits to `tests/unit/test_guestbook_entry_model.py` (the schema holds two tables), `tests/fitness/test_golden_set.py` (the to-do files' rules, the line-break rule scoped to entries, and a second browser reader allowed its own context's file alone) and `tests/fitness/test_length_constants.py` (the 200 and the seven line breaks against their browser copies) |
+ | `build-tests-integration` | **tests/integration/test_todo_tasks_service.py**, **tests/integration/test_todo_tasks_concurrency.py**, **tests/integration/test_todo_tasks_router.py**, **tests/integration/test_todo_tasks_corpus.py**, **tests/integration/test_todo_tasks_contract.py** (new) · edits to `tests/integration/test_migrations.py` (the second table and its index) and `tests/tooling/test_seed_golden_set.py` (each list filled on its own) · **the corpus's fixture half**: the four to-do files under `golden-set/fixtures/`, and their names, with the example-task file's, in `tests/_golden_set.py` |
+-| `build-tests-frontend` | **frontend/src/contexts/todo_list/lib/todoTask.test.ts**, **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx**, **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx**, **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx**, **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx**, **frontend/src/router.test.tsx**, **frontend/src/components/shell/PageFrame.test.tsx**, **frontend/src/pages/StatusPages.test.tsx** (new) · edits to `frontend/src/contexts/guestbook/lib/entryText.test.ts` (one import line, to wherever the shared rule moves; its place and its cases stay) |
++| `build-tests-frontend` | **frontend/src/contexts/todo_list/lib/todoTask.test.ts**, **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx**, **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx**, **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx**, **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx**, **frontend/src/router.test.tsx**, **frontend/src/components/shell/PageFrame.test.tsx**, **frontend/src/pages/StatusPages.test.tsx** (new) · edits to `frontend/src/contexts/guestbook/lib/entryText.test.ts` (one import line, to **frontend/src/lib/text.ts**, where the shared rule moves; its place and its cases stay) |
+ | `build-tests-e2e` | **e2e/suite/features/todo_list.feature**, **e2e/suite/steps/todo_list_steps.py** (new) · edits to `e2e/suite/test_scenarios.py` (binds the feature and imports the steps) and `e2e/ui/test_smoke.py` (the to-do screen's smoke, and the locators `A-4` lets follow the approved names) |
+ 
+ The four are disjoint by tree and by shape: `tests/unit/` and `tests/fitness/`; `tests/integration/`,

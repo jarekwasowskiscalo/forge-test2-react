@@ -1,0 +1,232 @@
+744:### CR-2609-823a, the to-do list
+### CR-2609-823a, the to-do list
+
+The map the test authors of `CR-2609-823a` write from. The citation is always fully qualified and
+names a requirement, never an acceptance criterion: `@pytest.mark.req("CR-2609-823a/R-n")` in
+`tests/unit/` and `tests/integration/`, the tag `@req:CR-2609-823a/R-n` on a Gherkin scenario, and
+`[req:CR-2609-823a/R-n]` in a vitest test's name. A test that proves two requirements carries two
+citations. A file the test wave will create is named in bold rather than in backticks, because
+it does not exist until then. The contract the tests hold the application to is
+[`api.md`](api.md) § The to-do list's refusals, the schema and the write shapes are
+[`data-model.md`](data-model.md) § `todo_tasks`, and the files and their writers are
+[`architecture.md`](architecture.md) § The to-do list — where each rule lives.
+
+| Requirement | Owner | Proof |
+|---|---|---|
+| `CR-2609-823a/R-1` — adding a task | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (an added task is stored with its text, not done, with a moment of adding from the service's clock; the same text added twice is two tasks, and marking one leaves the other not done) · **tests/integration/test_todo_tasks_router.py** (a `POST` carrying `done: true` answers `201` with a task that is not done, and stores it not done) · **tests/unit/test_todo_task_model.py** (`done` is declared not null, `False` by the model's default, with no server default) · **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx** (an added task is shown first with no reload) · **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx** (a change that went through refetches the list) · **e2e/suite/features/todo_list.feature** ("Adding the first task", "The same text added twice makes two separate tasks", "A task sent as already done is still saved as not done"). Fixtures: the inline values "Water the plants", "Buy bread", "Already finished". Clause 2 — no account — gets no test of its own: every test here runs with nobody signed in |
+| `CR-2609-823a/R-2` — what is not a task is refused | `tests/unit/` | **tests/unit/test_todo_task_text_rules.py** (every case of `todo-task-text.json` gets its verdict and, when accepted, its length — through the rule and through the create and update shapes, so a path that skips the shared rule is seen; the seven line breaks are the written set and every one is in the trim set; a text both too long and on two lines is refused as `multiline`; the bound read from `TODO_TASK_TEXT_MAX_LENGTH`, from both sides; and a **generator**, because `BR-06` and `BR-07` are rules about a value: any text drawn is either refused or kept NFC, trimmed, on one line and 1–200 code points long) · **tests/integration/test_todo_tasks_corpus.py** (every case of `todo-tasks-boundary.json` is accepted and stored as the file states; every case of `todo-tasks-refused.json` is refused with its code and stores nothing) · **tests/integration/test_todo_tasks_service.py** (a decomposed, a padded and an emoji text read back from the column NFC, trimmed, on one line and within the bound in code points; whitespace inside a text is stored as typed) · **tests/integration/test_todo_tasks_router.py** (each of the three `todo_task_text_*` codes, on `POST` and on `PATCH`) · **tests/unit/test_todo_task_model.py** (`text` is declared `String(TODO_TASK_TEXT_MAX_LENGTH)`, not null) · **frontend/src/contexts/todo_list/lib/todoTask.test.ts** (the same `todo-task-text.json`, the same verdicts and lengths, through the browser's rule) · **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx** (the field carries no `maxLength`; 200 pasted emoji are held whole and the task can be added; 201 are held, the screen says the text is too long and sends nothing; a pasted U+2028 between two words gets the one-line sentence and sends nothing) · **e2e/suite/features/todo_list.feature** ("Spaces between the words of a task are kept as typed", "A line break after the last word is trimmed, not refused"). Supplementary, owning no citation: `tests/fitness/test_length_constants.py` (the 200 and the seven line breaks equal their browser copies), `tests/fitness/test_golden_set.py` (the to-do files obey the corpus rules), and the UI smoke (200 and 201 emoji typed into the built screen) |
+| `CR-2609-823a/R-3` — one shared list, in one order | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (newest first; two tasks stored with one `created_at` come back in the same order on two reads, the tie settled by `id` descending — the equal moment is arranged, through the service's clock or rows written directly as the guestbook's tie test does, never hoped for from two quick calls; 101 tasks, "Task 001" to "Task 101", done and not done, all in one read; marking and correcting leave the order and `created_at` as they were) · **tests/integration/test_todo_tasks_router.py** (the `GET` answers every task in one envelope whose `total` equals the length of `items`, and ignores `limit` and `offset`) · **tests/integration/test_todo_tasks_corpus.py** (`todo-tasks-ordinary.json`, added in file order with the done ones then marked, reads back as the reversal of the file with its marks) · **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx** (the tasks are shown in the order they arrive and never sorted again; an empty list says it is empty and how to begin, with no error; a list whose tasks are all done is shown and not called empty) · **e2e/suite/features/todo_list.feature** ("The list shows the newest task at the top", "A hundred and one tasks are all shown on one list", "Marking a task done leaves it where it was", "Correcting a task's text leaves it where it was", "A task somebody else added appears after a reload"). Supplementary: `tests/integration/test_migrations.py` (the ordering index exists) |
+| `CR-2609-823a/R-4` — marking done and not done | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (marking records the state chosen for all four pairs of stored and chosen state, so a flip shows on done over done and not done over not done; marking leaves the text and `created_at` alone) · **tests/integration/test_todo_tasks_router.py** (a `PATCH` carrying `done` alone writes `done` alone) · **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx** (a done task is shown differently: its checkbox is checked and its text carries the done style, and a not-done task has neither; ticking sends the state the person chose) · **e2e/suite/features/todo_list.feature** ("A task marked done stays done after a reload", "A task marked done by mistake goes back to not done", "Marking done a task that is already done leaves it done", "Marking not done a task that is already not done leaves it not done"). Clause 6, the contrast floor, is measured by no suite that owns a citation, because jsdom loads no application CSS: the UI smoke measures a done task's text against the surface it is painted on, opacity included, at 4.5:1 or more; `tests/fitness/test_design_tokens.py` holds every text token to the floor; and a step in this change's `uat.md` looks. A gap in citation, named, and not a gap in proof |
+| `CR-2609-823a/R-5` — two screens and the way between them | `frontend` | **frontend/src/router.test.tsx** (the to-do list's own address opens the to-do list; the main address opens the guestbook; an unknown address gets the page that says nothing is there) · **frontend/src/components/shell/PageFrame.test.tsx** (on each screen the frame offers the way to the other one) · **frontend/src/pages/StatusPages.test.tsx** (the not-found page does not say the application has one screen). Supplementary: `tests/unit/test_spa_fallback.py` already answers any address with the shell, `/no-such-page` included, so the server half of clause 1 needs no case of its own; the UI smoke opens the to-do address directly in the built bundle and walks the way between the screens in both directions |
+| `CR-2609-823a/R-6` — editing a task's text | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (a correction changes the text and nothing else; a done task is corrected exactly as a not-done one is; a refused correction keeps the text it had) · **tests/integration/test_todo_tasks_corpus.py** (every case of `todo-tasks-refused.json`, sent as a correction, is refused with its code and the task keeps its text) · **tests/integration/test_todo_tasks_router.py** (a `PATCH` carrying `text` alone writes `text` alone; a refused `text` in a `PATCH` that also carries `done` writes neither) · **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx** (a corrected text is shown in the task's place; a refused correction shows the old text and the reason) · **e2e/suite/features/todo_list.feature** ("Correcting a typo in a task", "Editing a done task keeps it done and where it was") |
+| `CR-2609-823a/R-7` — deleting a task | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (the row is gone and every other task is as it was) · **tests/integration/test_todo_tasks_router.py** (`204` with no body) · **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx** (asking to delete opens the confirmation and sends nothing; cancelling sends nothing and leaves the task as it was; confirming sends the one deletion) — clauses 1 and 3 exist only on the screen, so this file is their only proof · **e2e/suite/features/todo_list.feature** ("Deleting one task leaves the others and does not come back", where "deletes and confirms" binds to one deletion, because the confirmation is the screen's) |
+| `CR-2609-823a/R-8` — a task that no longer exists | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (a marking, a correction and a deletion aimed at a deleted task are refused as not found, change nothing and create nothing — no row carries the new text either) · **tests/integration/test_todo_tasks_concurrency.py** (a correction and a marking queued behind a deletion of the same task are refused as not found and leave no row: an upsert would bring the task back, and a load-modify-flush would end in a stale-data error instead of the refusal) · **tests/integration/test_todo_tasks_router.py** (`todo_task_not_found`, `404`, with the identifier, on a marking, a correction and a second deletion; an identifier that is not a UUID gets the validation `422`, never the `404`) · **e2e/suite/features/todo_list.feature** ("Marking done a task that somebody else deleted", "Editing a task that somebody else deleted creates nothing", "Deleting the same task twice") |
+| `CR-2609-823a/R-9` — two people changing one task at once | `tests/integration/` | **tests/integration/test_todo_tasks_concurrency.py** (two writers interleaved on one row, below: a correction and a marking queued on one task are both kept, in either order; of two queued corrections the text of the one applied later stays; of two queued markings the state of the one applied later stays, done after done included) · **e2e/suite/features/todo_list.feature** ("An edit and a tick sent at the same moment are both kept", "Two people marking the same task done at the same moment leave it done" — both requests sent before either is answered). The scenarios are supplementary: nothing outside the application can make two requests meet in the store, so they pass on a correct system every time and catch the defect only on the runs where the requests do meet. The two scenario seeds that name which change is applied later are not bound in the black box at all — only a test holding the database can arrange that, and the concurrency file does |
+| `CR-2609-823a/R-10` — a change that did not go through is not shown as made | `frontend` | **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx** (with the client failing: a marking says it was not made and the task stays not done; an add says the task was not added and no row appears; a correction and a deletion say they were not made and the task stays as it was; a list that cannot be read says it failed to load, and not that it is empty; a marking refused with `todo_task_not_found` says the task no longer exists and does not show it done) · **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx** (nothing is written into the cached list before the application answers, and nothing after a failure) |
+| `CR-2609-823a/R-11` — example tasks in a new environment | manual — the requirement carries `**Verified-by:** manual` with its reason | this change's `uat.md`, a step per scenario seed: a fresh environment shows at least three example tasks, one of them done; filling again adds nothing to a list that holds a task; production gets none; a guestbook with its welcome entries and an empty list gets the tasks and keeps its entries; a list with a task and an empty guestbook gets only the welcome entries. Supplementary, owning no citation because they prove a tool and the corpus rather than the product: `tests/tooling/test_seed_golden_set.py` (each list filled on its own condition, the done example added and then marked, production refused for both lists, a list that holds a task left alone) and `tests/fitness/test_golden_set.py` (the example file holds at least three tasks, one done, one text above U+007F, each under 150 code points and accepted by `BR-06` and `BR-07`) |
+
+**Every refusal the contract names has a test that makes the application give it.** Five codes,
+five rows, and the two rules around them; a code added to [`api.md`](api.md) § The to-do list's
+refusals with no row here is a contradiction for the coherence gate, not an oversight.
+
+| Refusal | The test that makes the application give it |
+|---|---|
+| `todo_task_not_found` | **tests/integration/test_todo_tasks_router.py** `test_a_change_to_a_missing_task_answers_404_with_its_code` — a marking, a correction and the second of two deletions, each with the identifier in the body |
+| `todo_task_empty_patch` | the same file, `test_a_patch_setting_neither_field_is_refused` — `{}` and a body whose two fields are `null` alike |
+| `todo_task_text_empty` | the same file, `test_each_text_refusal_answers_with_its_own_code`, on `POST` and on `PATCH`; and every `todo_task_text_empty` case of `todo-tasks-refused.json` in **tests/integration/test_todo_tasks_corpus.py** |
+| `todo_task_text_multiline` | the same two, and `test_a_text_too_long_and_on_two_lines_is_refused_as_multiline` |
+| `todo_task_text_too_long` | the same two |
+| the standard validation `422` | the router file's `test_a_body_of_the_wrong_shape_gets_the_standard_validation_refusal` — no `text` on a `POST`, a `text` that is `null` or a number, a `done` that is not a boolean, an identifier that is not a UUID |
+| the order of the refusals | the router file's `test_a_request_is_refused_for_what_it_is_whatever_its_identifier_names` — an empty text, or a body setting neither field, sent to an identifier no task has, gets its own code and never `404` |
+| the shape of every answer above | **tests/integration/test_todo_tasks_contract.py** — every real answer, refusals included, validates against the schema `app.openapi()` publishes for its operation and its status, both shapes of `422` among them |
+
+**How two writers are interleaved (`CR-2609-823a/R-8`, `CR-2609-823a/R-9`).** A sequential test passes over a whole-row
+write-back, a flip and an upsert exactly as it passes over the statement shape
+[`data-model.md`](data-model.md) § Two writers on one task names, so every case in
+**tests/integration/test_todo_tasks_concurrency.py** runs two changes against one row with the
+second waiting on the first. A third connection opens a transaction and takes the row's lock
+(`SELECT … FOR UPDATE`). Change A starts on a thread of its own, through the service with its own
+session, and the test waits until `pg_stat_activity` shows one backend of this database waiting
+on a lock; change B starts, and the test waits for two. The holder commits, both changes finish,
+and the row is read. Postgres hands the row to its waiters in the order they queued, so A is
+applied first and B later — "applied later" is a fact the test arranged rather than one it hoped
+for. A case that sends one change after the other, or starts two threads with no lock held, is not
+this proof. Every wait is bounded at a few seconds and fails with its own message rather than
+hanging, and a case that needs a re-run to pass goes to quarantine, not to a retry
+(§ A test that flickers is not a gate). The rule these cases prove is held by the shape of a write,
+not by an index, so there is nothing here for a concurrent insert to prove: the to-do list has no
+uniqueness rule, on purpose (`BR-12`).
+
+**The witness for a task's text.** [`data-model.md`](data-model.md) calls for a data invariant of
+the to-do list's own, the counterpart of `D-04` for a task's text — NFC, trimmed at both ends,
+1 to 200 code points, no line break inside — and the convergence round writes it. Its witnesses
+are named here: `test_a_stored_text_is_normalized_one_line_and_within_the_bound_in_code_points` in
+**tests/integration/test_todo_tasks_service.py**, a round trip that only a real database can
+answer; `test_every_case_gets_the_verdict_the_corpus_states` in
+**tests/unit/test_todo_task_text_rules.py**, whose file the browser's rule test reads too, which
+answers whether the two sides agree; and the generator in the same unit file, which draws from
+the space the rule speaks about. Three kinds, because the invariant is about a value, about
+agreement, and about every text rather than the ones somebody listed. `D-01` to `D-03` need no new
+witness: the sweeps over `Base.metadata` in `tests/fitness/test_data_invariants.py` reach
+`todo_tasks` because it is on the metadata.
+
+**What the black box binds, and why fewer seeds than the scenarios hold.** The scenarios observed
+through the application whose values are inline in `scenarios.md` § Inline values — or produced by
+a rule, as "Task 001" to "Task 101" are — become scenarios in
+**e2e/suite/features/todo_list.feature**, with their steps in **e2e/suite/steps/todo_list_steps.py**
+and their binding in `e2e/suite/test_scenarios.py`. The seeds that look a text up in a to-do
+fixture file by its sentence — the boundary outline, the refused outline, the one-line refusal,
+the whole ordinary list and the refused corrections — are proved by
+**tests/integration/test_todo_tasks_corpus.py** and not bound in the black box, for two reasons.
+Their deciding claim is a rule over a corpus, which the cheaper suite reads directly. And the
+black box reaches the corpus only through `e2e/suite/golden_set.py`, which re-exports the
+guestbook's files alone and which no test author may write, so binding them would need a file
+nobody is allowed to touch. A seed observed only on the screen is proved by the vitest file its
+row names above; a seed a person observes is a step in `uat.md`.
+
+**Green by design, and not red first.** Two kinds, each with the promise it pins:
+
+- **frontend/src/router.test.tsx**, "opens the guestbook at the main address
+  [req:CR-2609-823a/R-5]" — a characterisation test. It pins
+  [`ui/system-states.md`](ui/system-states.md) § Interactions, "entering `/` — a redirect to
+  `/guestbook`", which `CR-2609-823a/R-5` clause 3 restates. Today only the UI smoke asserts it, and the smoke
+  owns no citation, so nothing that counts holds the system to it; it is green on its first run
+  because the redirect already stands, and it is reported so.
+- The rules `tests/fitness/test_golden_set.py` gains over the to-do files that read nothing but
+  the files — every file one story, the key a task carries, case names and sentences given once,
+  the closed set of verdicts of `todo-task-text.json` with a length stated exactly when one
+  exists, every input written in escapes, each of the seven line breaks present, and the case of
+  101 emoji that a counter of UTF-16 units refuses. They pin
+  [`golden-set/README.md`](../../golden-set/README.md) and § The reference corpus above, which
+  already say what every corpus file owes. They are green on the first run because
+  build-tests-integration writes the files before build-tests-unit runs, and their subject is test
+  data rather than code, so there is no red to observe.
+
+**Red first — each case seen failing before any code exists.** Every case below asserts
+behaviour this change introduces and is declared before the run that shows it failing. It has to
+fail as itself: a missing module, a route nobody answers or a wrong value, never a collection
+error. So a pytest module imports what the implementers have not written yet inside the test or a
+fixture, never at the top of the module — a failed top-level import un-collects every case in it,
+and a declared failure the runner does not collect fails the gate (constitution, article X). A
+vitest file reaches a module that does not exist yet the same way, from inside the test: the
+import still fails, and it fails as that test. A Gherkin scenario is collected whatever the
+application answers.
+
+- **tests/unit/test_todo_task_text_rules.py** — `test_every_case_gets_the_verdict_the_corpus_states`
+  and `test_every_accepted_case_has_the_length_the_corpus_states` (per case, through the rule);
+  `test_the_create_and_update_shapes_give_every_case_the_same_verdict` (a refused case is refused
+  with the code of its verdict and an accepted one comes out as the stated text);
+  `test_a_text_too_long_and_on_two_lines_is_refused_as_multiline` (201 letters with a line feed
+  after the hundredth); `test_the_bound_stands_where_the_constant_says` (exactly
+  `TODO_TASK_TEXT_MAX_LENGTH` code points accepted and one more refused, both built from the
+  constant); `test_the_line_breaks_are_the_seven_written_code_points_and_all_are_trimmed`;
+  `test_any_text_is_either_refused_or_kept_normalized_one_line_and_within_the_bound` (the
+  generator, with whitespace, line breaks, combining marks and characters beyond the Basic
+  Multilingual Plane weighted into what it draws).
+- **tests/unit/test_todo_task_model.py** — `test_the_text_column_is_as_long_as_the_bound`,
+  `test_a_new_task_is_not_done_by_the_models_default`,
+  `test_the_moment_of_adding_is_stored_with_its_zone`,
+  `test_the_order_has_an_index_the_model_declares`.
+- **tests/integration/test_todo_tasks_service.py** —
+  `test_an_added_task_is_stored_not_done_with_its_moment_of_adding`,
+  `test_the_same_text_added_twice_is_two_tasks_marked_apart`,
+  `test_a_stored_text_is_normalized_one_line_and_within_the_bound_in_code_points`,
+  `test_inner_whitespace_is_stored_as_typed`, `test_the_list_comes_back_newest_first`,
+  `test_tasks_sharing_a_moment_of_adding_still_have_a_total_order`,
+  `test_every_task_is_read_at_once_done_and_not_done`,
+  `test_marking_and_correcting_leave_a_task_in_its_place`,
+  `test_marking_records_the_state_chosen_whatever_is_stored` (all four pairs),
+  `test_marking_leaves_the_text_and_the_moment_of_adding_alone`,
+  `test_a_correction_changes_the_text_and_nothing_else`,
+  `test_a_done_task_is_corrected_as_a_not_done_one_is`,
+  `test_a_refused_correction_keeps_the_text_it_had`,
+  `test_deleting_removes_the_row_and_leaves_every_other_task`,
+  `test_a_change_to_a_deleted_task_changes_nothing_and_creates_nothing` (a marking, a correction,
+  a deletion).
+- **tests/integration/test_todo_tasks_concurrency.py** —
+  `test_a_correction_and_a_marking_queued_on_one_task_are_both_kept` (either order),
+  `test_of_two_queued_corrections_the_one_applied_later_wins`,
+  `test_of_two_queued_markings_the_one_applied_later_wins` (done after done, not done after done,
+  done after not done), `test_a_change_queued_behind_a_deletion_creates_nothing` (a correction, a
+  marking).
+- **tests/integration/test_todo_tasks_router.py** — `test_adding_answers_201_with_the_task_as_stored`,
+  `test_a_done_sent_with_a_new_task_is_ignored`,
+  `test_the_list_is_one_envelope_with_every_task_and_its_count`,
+  `test_a_patch_carrying_done_alone_writes_done_alone`,
+  `test_a_patch_carrying_text_alone_writes_text_alone`,
+  `test_a_refused_text_in_a_patch_that_also_carries_done_writes_neither`,
+  `test_deleting_answers_204_with_no_body`, and the refusal cases of the table above.
+- **tests/integration/test_todo_tasks_corpus.py** —
+  `test_every_boundary_task_is_accepted_and_stored_as_the_file_states`,
+  `test_every_refused_task_is_refused_with_its_code_and_stores_nothing`,
+  `test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text`,
+  `test_the_ordinary_tasks_read_back_as_the_reversal_of_the_file_with_their_marks`.
+- **tests/integration/test_todo_tasks_contract.py** —
+  `test_the_body_matches_the_schema_published_for_the_status_it_returned`, over every to-do case.
+- **frontend/src/contexts/todo_list/lib/todoTask.test.ts** — "gives each case of the task's
+  corpus the verdict it states", "measures each accepted case in code points, as the server
+  does", "refuses a text both too long and on two lines as one line", each with
+  `[req:CR-2609-823a/R-2]`.
+- **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx** — "takes 200 pasted
+  emoji whole and lets the task be added", "holds 201 emoji, says the text is too long and sends
+  nothing", "says a text with a line break inside is one line and sends nothing" (`[req:CR-2609-823a/R-2]`); "sends
+  the text as the shared rule leaves it" (`[req:CR-2609-823a/R-1]`).
+- **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx** — "shows a done task
+  differently from a not-done one", "sends the state the person chose" (`[req:CR-2609-823a/R-4]`); "shows a corrected
+  text in the task's place", "keeps the old text and says why when a correction is refused"
+  (`[req:CR-2609-823a/R-6]`); "asks before deleting and sends nothing until confirmed", "leaves the task as it was
+  when the deletion is cancelled" (`[req:CR-2609-823a/R-7]`).
+- **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx** — "writes nothing into the
+  list before the application answers" (`[req:CR-2609-823a/R-10]`), "refetches the list after a change that went
+  through" (`[req:CR-2609-823a/R-1]`).
+- **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx** — "shows an added task first
+  without a reload" (`[req:CR-2609-823a/R-1]`); "shows the tasks in the order they arrive", "says the list is empty
+  and how to begin, with no error", "shows a list whose tasks are all done and does not call it
+  empty" (`[req:CR-2609-823a/R-3]`); "says a marking that did not go through was not made", "says a task that did
+  not go through was not added", "says a correction or a deletion that did not go through was not
+  made", "says the list failed to load, not that it is empty", "says a task refused as gone no
+  longer exists and does not show it done" (`[req:CR-2609-823a/R-10]`).
+- **frontend/src/router.test.tsx** — "opens the to-do list at its own address", "answers an
+  unknown address with the page that says nothing is there" (`[req:CR-2609-823a/R-5]`).
+- **frontend/src/components/shell/PageFrame.test.tsx** — "offers the way to the other screen on
+  each screen" (`[req:CR-2609-823a/R-5]`).
+- **frontend/src/pages/StatusPages.test.tsx** — "does not say the application has one screen"
+  (`[req:CR-2609-823a/R-5]`) — red today on the sentence "There is one screen in this application: the guestbook."
+- **e2e/suite/features/todo_list.feature** — every scenario it holds, by title, as listed in the
+  map above.
+- Edits of existing tests, red until the code they wait for: in `tests/unit/test_guestbook_entry_model.py`,
+  `test_this_schema_holds_exactly_one_table`, renamed for the two tables it expects,
+  `guestbook_entries` and `todo_tasks`, until `TodoTask` is registered; in
+  `tests/integration/test_migrations.py`, the new cases for the `todo_tasks` columns and its
+  ordering index, until the revision; in `tests/tooling/test_seed_golden_set.py`,
+  `test_a_guest_book_with_entries_is_left_alone` rewritten under `Q-10` (its entries are left
+  alone and the empty to-do list still gets its examples), and new cases for a list filled
+  whatever the guestbook holds, a list with a task left alone, the done example added and then
+  marked, and production refused for tasks too, until the seeder changes; in
+  `tests/fitness/test_length_constants.py`, the case holding the 200 and the seven line breaks to
+  their browser copies, until both exist; in `tests/fitness/test_golden_set.py`, the rules over
+  the to-do files that read `TODO_TASK_TEXT_MAX_LENGTH` — boundary tasks exactly on it, refused
+  ones over it by exactly one, example tasks under three quarters of it — until the constant
+  exists; and in `e2e/ui/test_smoke.py`, every new case for the to-do screen, and any locator
+  made to follow a name the screen specification changes (`A-4`), until the screen is built.
+
+**Existing detectors that go red on the way, and what turns each green.** The specification and
+the corpus locator run ahead of the code on purpose, and these structural cases show the gap
+until the code arrives; each is declared on the task whose product closes it:
+
+- `tests/fitness/test_context_boundaries.py::test_every_context_document_has_code_and_every_context_directory_has_a_document`
+  — red since `spec/contexts/todo_list.md` exists (measured on 2026-09-24 with
+  `./scripts/test.sh fitness`: 1 failed, 338 passed), green when build-backend creates the context's directory
+  under `app/contexts/` and, once the header claims a screen, build-frontend creates its folder
+  under `frontend/src/contexts/`.
+- The corpus locator names the example-task file in the test wave, and build-backend writes the
+  file in the implementation wave: between them every case that opens each seed file is red —
+  in `tests/fitness/test_golden_set.py` at least
+  `test_each_half_agrees_with_the_locator_about_what_is_in_it`,
+  `test_every_file_says_which_story_it_is_and_what_it_demonstrates`,
+  `test_every_file_is_utf8_json_and_ends_with_a_newline`,
+  `test_no_seed_entry_stands_near_a_published_limit` and
+  `test_the_seed_half_shows_a_list_rather_than_an_entry`, and in
+  `tests/tooling/test_seed_golden_set.py` `test_an_empty_environment_gets_the_whole_seed_corpus`.
+  Registering the name first is the only order in which the implementation stage can end green:
+  the other one leaves a file on disk that the locator does not name, and no implementer may

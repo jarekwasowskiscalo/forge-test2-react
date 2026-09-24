@@ -2,7 +2,8 @@
   "adrs": [],
   "artifacts": {
     "session-7ec2cbab": "sessions/7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6/summary.md",
-    "session-870fece5": "sessions/870fece5-b8f9-4a47-84da-b3456aa1de97/summary.md"
+    "session-870fece5": "sessions/870fece5-b8f9-4a47-84da-b3456aa1de97/summary.md",
+    "session-fb772134": "sessions/fb772134-4626-4cf4-a734-3930e8cb1dbd/summary.md"
   },
   "attempt": {
     "heartbeat_at": "2026-09-24T13:01:36Z",
@@ -1694,6 +1695,37 @@
       "stage": "design",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/352"
+    },
+    {
+      "at": "2026-09-24T16:49:30Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T16:49:30Z",
+          "note": "orchestrator at the design close: loop close has no --accept-red, so a red boundary closes only through close_stage --verification; the user's sign-off, recorded as an answered question AFTER the gate showed which gates are red, changed the tree (change.json/action_log are in the content digest), so close_stage refused the report (\"taken over content 1a4df6a1 and the tree now holds 1db9c2e0\") and a second full boundary gate run (155 s) was needed before the close.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T16:49:43Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/355",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-33",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "orchestrator at the design close: loop close has no --accept-red, so a red boundary closes only through close_stage --verification; the user's sign-off, recorded as an answered question AFTER the gate showed which gates are red, changed the tree (change.json/action_log are in the content digest), so close_stage refused the report (\"taken over content 1a4df6a1 and the tree now holds 1db9c2e0\") and a second full boundary gate run (155 s) was needed before the close.",
+      "signature": "orchestrator at the design close: loop close has no --accept-red, so a red boundary closes only through close_stage --ve",
+      "stage": "plan",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/355"
     }
   ],
   "files_changed": [],
@@ -3128,7 +3160,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 218,
+  "revision": 221,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -3196,7 +3228,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T16:49:17Z",
+  "updated_at": "2026-09-24T16:59:13Z",
   "verification_last": {
     "content_digest": "1db9c2e03917e023fd003ed70cc96c83a49fc95d0f400aa631f47f9aac1e3cf3",
     "counts": {
