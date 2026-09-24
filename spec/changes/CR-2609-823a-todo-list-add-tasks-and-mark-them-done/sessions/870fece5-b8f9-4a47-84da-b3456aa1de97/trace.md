@@ -81,3 +81,5 @@
 - [14:54] fanout_recorded: dispatched: review-converge
 - [14:55] reconciliation_added: 1 reconciliation(s): REC-11
 - [14:56] fanout_recorded: returned: review-converge; 1 process fault(s): PROC-12
+- [14:56] process_fault_resolved: PROC-12 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/311
+- [14:58] stage_closed: closed requirements, opened design (boundary -> GREEN; delta.md from 1 fragments (1 current, 0 superseded))

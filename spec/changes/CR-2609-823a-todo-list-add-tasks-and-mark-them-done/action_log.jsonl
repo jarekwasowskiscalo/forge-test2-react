@@ -88,3 +88,5 @@
 {"timestamp": "2026-09-24T12:54:39Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-converge", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
 {"timestamp": "2026-09-24T12:55:43Z", "agent": "review-converge", "action": "reconciliation_added", "details": "1 reconciliation(s): REC-11", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
 {"timestamp": "2026-09-24T12:56:08Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-converge; 1 process fault(s): PROC-12", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:56:12Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-12 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/311", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:58:40Z", "agent": "sdd", "action": "stage_closed", "details": "closed requirements, opened design (boundary -> GREEN; delta.md from 1 fragments (1 current, 0 superseded))", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}

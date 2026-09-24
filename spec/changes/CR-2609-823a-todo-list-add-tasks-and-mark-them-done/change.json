@@ -262,34 +262,7 @@
   "deferred_findings": [],
   "docs_touched": [],
   "expected_red": [],
-  "fanout": {
-    "cr-impact": {
-      "assumptions": "cr-requirements and cr-scenarios read impact.md as the pre-change trunk. impact.md lines 57-59 quote spec/invariants.md as it stood on the trunk (\"any entry\"). This change's own convergence edit has since reworded it to \"anything the system stores: any guestbook entry and any to-do task\". No resolution names that section, so I left it as a description of today. For the same reason I left untouched the pre-Q-8 sentence at impact.md line 345 in § What I could not determine (\"`tooling_touched` is recorded absent on that basis\").",
-      "at": "2026-09-24T12:33:33Z",
-      "nil_return": "COH-requirements-6 was already applied to impact.md by review-converge (commit a014ab4); the smallest edit that satisfies the resolution was no edit, and the note was checked against the record, the brainstorm, the requirements and the tier arithmetic.",
-      "state": "returned"
-    },
-    "cr-requirements": {
-      "assumptions": "scenarios.md covers the converged clauses as they stand: S-8 and S-9 (R-2 cl.6), S-33 (R-6 cl.4), S-49 (R-11 cl.6), S-52 and S-53 (R-11 cl.1/5). Its line-break data uses U+000A only, which fits within A-1's seven. No scenario asserts which refusal wins for a text that is both over 200 and multi-line. No scenario covers the new E-21 half-filled case, and it does not need one: it is a recorded exposure, not a requirement.",
-      "at": "2026-09-24T12:33:33Z",
-      "state": "returned"
-    },
-    "cr-scenarios": {
-      "assumptions": "requirements.md as reconciled is the authority: R-2 clause 6 with R-2.7, R-6 clause 4 with R-6.3, R-11 clauses 1, 5 and 6 with R-11.5, R-11.6 and R-11.7, and A-1 still assumed and waiting for the user. If the user overrules A-1 with U+000A and U+000D only, five of the new rows flip to accepted, and the paragraph says so. The rest of cr-requirements' boundaries are unchanged since pass 1, so the remaining unstated bounds still stand: which refusal wins when a text breaks two rules, the largest number of tasks, and the floor on not-done examples.",
-      "at": "2026-09-24T12:33:33Z",
-      "state": "returned"
-    },
-    "review-coherence": {
-      "assumptions": "none -- this skill reads and produces nothing another member depends on; the cr-impact and review-converge assumptions were checked against impact.md and spec/invariants.md and hold.",
-      "at": "2026-09-24T12:47:35Z",
-      "state": "returned"
-    },
-    "review-converge": {
-      "assumptions": "The gate record's note field is empty. The only record that the user confirmed A-2 is the approval itself (approved true, digest matches), read together with requirements.md § Named assumptions, which says \"The user confirms or overrules each one at the approval of this document\". The words the dispatch quotes (\"as written, including the four assumptions A-1 to A-4\") are not in the record. The approval of the unchanged document is the evidence I cited.",
-      "at": "2026-09-24T12:56:08Z",
-      "state": "returned"
-    }
-  },
+  "fanout": {},
   "faults": [
     {
       "at": "2026-09-24T11:42:41Z",
@@ -650,6 +623,11 @@
           "at": "2026-09-24T12:56:08Z",
           "note": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]` (reads as nargs=+); the CLI accepts only a repeated `--edited` flag, so the call as the usage line suggests was refused with exit 2 -- seen again on REC-11, same fault as issue #311.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T12:56:12Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/311",
+          "state": "filed"
         }
       ],
       "id": "PROC-12",
@@ -660,8 +638,8 @@
       "signal": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]` (reads as nargs=+); the CLI accepts only a repeated `--edited` flag, so the call as the usage line suggests was refused with exit 2 -- seen again on REC-11, same fault as issue #311.",
       "signature": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]` (reads as nargs=+); the CLI",
       "stage": "requirements",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/311"
     }
   ],
   "files_changed": [],
@@ -700,6 +678,11 @@
       "at": "2026-09-24T11:45:58Z",
       "fingerprint": "6c9cf93f7899251a",
       "stage": "requirements"
+    },
+    {
+      "at": "2026-09-24T12:58:40Z",
+      "fingerprint": "fb99f5bb309245be",
+      "stage": "design"
     }
   ],
   "legacy_spec": null,
@@ -1193,7 +1176,7 @@
   ],
   "parent_cr_id": null,
   "parent_merge_commit": null,
-  "previous_stage": "intake",
+  "previous_stage": "requirements",
   "reconciliations": [
     {
       "at": "2026-09-24T12:30:43Z",
@@ -1354,7 +1337,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 87,
+  "revision": 89,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1376,12 +1359,13 @@
     "unmeasured": []
   },
   "slug": "todo-list-add-tasks-and-mark-them-done",
-  "stage": "requirements",
-  "stage_entered_at": "2026-09-24T11:45:58Z",
+  "stage": "design",
+  "stage_entered_at": "2026-09-24T12:58:40Z",
   "stage_entries": {
+    "design": 1,
     "requirements": 1
   },
-  "stage_status": "in_progress",
+  "stage_status": "not_started",
   "status": "draft",
   "supersedes": [],
   "tasks": [],
@@ -1403,9 +1387,9 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T12:56:08Z",
+  "updated_at": "2026-09-24T12:58:40Z",
   "verification_last": {
-    "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
+    "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {
       "Suite backend": {
         "collected": 748,
@@ -1428,12 +1412,12 @@
         "skipped": 0
       }
     },
-    "duration_s": 130.68,
+    "duration_s": 142.69,
     "gaps": [],
-    "git_head": "6ccb49af3828fb250fb2d188ddbd87758004c403",
-    "git_tree": "2211d01f4ca65d7da7b3034de3393d8bab22fbb9",
+    "git_head": "1c51b889573d629b9cb433ae1c9389359a62a262",
+    "git_tree": "e71ce8cb2898550b8b8bec66cc57cfc6225878b7",
     "profile": "boundary",
-    "started_at": "2026-09-24T11:43:47Z",
+    "started_at": "2026-09-24T12:56:17Z",
     "verdict": "GREEN",
     "worktree_dirty": true
   }
