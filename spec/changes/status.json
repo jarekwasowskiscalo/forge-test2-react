@@ -8,7 +8,7 @@
         "adrs": 0,
         "coherence_open": 0,
         "docs_touched": 0,
-        "expected_red": 0,
+        "expected_red": 119,
         "files_changed": 0,
         "questions_open": 0,
         "requirements": 11,
@@ -31,7 +31,7 @@
       "status": "draft",
       "title": "Todo list - add tasks and mark them done",
       "tracker": "",
-      "updated_at": "2026-09-24T18:22:36Z"
+      "updated_at": "2026-09-24T18:44:38Z"
     },
     "CR-2609-8ef9": {
       "base_branch": "audit/2026-09-08",

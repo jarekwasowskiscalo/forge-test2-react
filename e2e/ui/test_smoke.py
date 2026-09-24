@@ -18,21 +18,35 @@ the controls the HTTP suite can only exercise as query parameters are actually
 wired to something a person can click.
 """
 
+import re
 from typing import Final
 
-from playwright.sync_api import Page, Route, expect
+from playwright.sync_api import Locator, Page, Route, expect
 
 from e2e.harness.client import ApiClient
 from e2e.ui.conftest import UI_BASE_URL
-from e2e.ui.styles import AA_NORMAL_TEXT, focus_ring_of_active_element, text_contrast
+from e2e.ui.styles import (
+    AA_NORMAL_TEXT,
+    computed,
+    contrast_ratio,
+    focus_ring_of_active_element,
+    painted_background,
+    parse_rgb,
+    text_contrast,
+)
 
 #: The heading that says the screen arrived. Asserted by role and name -- fixed
 #: UI copy, never a value off the page.
 _HEADING: Final[str] = "Leave a note"
 
-#: The lockup, which is a link on every screen. It is the way back from the 404,
-#: and the only navigation this application has (`spec/design/ui/system-states.md`
-#: § One column).
+#: The exact link "Guestbook", which is on every screen and on the 404: the way back
+#: to the guestbook. It used to be the lockup. Since the to-do list arrived it is
+#: the navigation's link to the guestbook, and the lockup reads "Product name"
+#: (`spec/design/ui/system-states.md` § Regions and § The navigation between the
+#: screens). The constant keeps its name, and every assertion that uses it keeps
+#: asserting what it asserted -- that the way to the guestbook is on screen -- which
+#: is what the to-do list's change allowed a locator naming the lockup to do
+#: (its assumption `A-4`).
 #:
 #: Matched exactly wherever it is used: the 404 also carries "Go to the guestbook",
 #: and a substring match resolves to both links and fails as ambiguous rather than
@@ -68,6 +82,56 @@ _MAX_TAB_STOPS: Final[int] = 30
 #: after three would otherwise report a screen with rings everywhere it looked.
 _EXPECTED_TAB_STOPS: Final[int] = 10
 
+#: The to-do list's own address (`spec/design/ui/system-states.md` § Interactions).
+_TODO_LIST: Final[str] = "/todo-list"
+
+#: The to-do screen's title and the navigation's link to it -- fixed UI copy
+#: (`spec/design/ui/todo-list.md` § Copy, `spec/design/ui/system-states.md` § Copy).
+_TODO_HEADING: Final[str] = "Things to do"
+_TODO_LINK: Final[str] = "To-do list"
+
+#: What the to-do list says when it holds no task (`todo-list.md` § Copy).
+_NO_TASKS: Final[str] = "No tasks yet. Add the first one above."
+
+#: The add field's name for assistive technology, and its button
+#: (`todo-list.md` § Accessibility labels and § Copy).
+_NEW_TASK: Final[str] = "New task"
+_ADD_TASK: Final[str] = "Add task"
+
+#: The longest a task's text may be, in code points (`spec/design/api.md` § The
+#: to-do list's refusals). Written here rather than imported, for the reason
+#: `_ONE_READ_MAX` gives.
+_TASK_MAX: Final[int] = 200
+
+#: The sentence a text one past that bound earns -- on the screen exactly as from
+#: the service, word for word (`todo-list.md` § The refusals this screen can show).
+_TOO_LONG: Final[str] = "A task can be at most 200 characters. Shorten it and try again."
+
+#: One code point and two UTF-16 code units: the character that tells the two
+#: units apart.
+_GRINNING_FACE: Final[str] = "\U0001f600"
+
+#: A task this suite puts on the list itself, and so may look for by its words.
+_DONE_TASK: Final[str] = "Call the plumber"
+
+#: The to-do list's resource, for seeding through the API rather than the screen.
+_TASKS: Final[str] = "/todo-tasks"
+
+#: The alpha of a computed colour that carries one -- `rgba(r, g, b, a)` or
+#: `rgb(r g b / a)`. A colour with three channels only is opaque.
+_COLOUR_ALPHA: Final = re.compile(r"rgba?\(\s*\d+[,\s]+\d+[,\s]+\d+\s*[,/]\s*([\d.]+)\s*\)")
+
+#: The opacity an element is painted with once every ancestor's is multiplied in.
+_OPACITY_THROUGH_THE_TREE: Final[str] = """
+(element) => {
+  let opacity = 1
+  for (let node = element; node; node = node.parentElement) {
+    opacity *= parseFloat(getComputedStyle(node).opacity)
+  }
+  return opacity
+}
+"""
+
 
 def _seed(api: ApiClient, author: str, message: str) -> str:
     """One entry through the harness; returns its id.
@@ -78,6 +142,45 @@ def _seed(api: ApiClient, author: str, message: str) -> str:
     answer = api.send("POST", "/guestbook-entries", body={"author": author, "message": message})
     assert answer.status == 201, f"seeding failed: the write answered {answer}"
     return str(answer.record()["id"])
+
+
+def _seed_task(api: ApiClient, text: str, *, done: bool = False) -> None:
+    """One task through the harness, marked done afterwards when asked.
+
+    Two writes for a done task, because a task is never born done: the add would
+    ignore a done mark sent with it.
+    """
+    answer = api.send("POST", _TASKS, body={"text": text})
+    assert answer.status == 201, f"seeding failed: the add answered {answer}"
+    if done:
+        marked = api.send("PATCH", f"{_TASKS}/{answer.record()['id']}", body={"done": True})
+        assert marked.status == 200, f"seeding failed: the marking answered {marked}"
+
+
+def _contrast_opacity_included(locator: Locator) -> float:
+    """An element's text against the surface it is painted on, with every fade applied.
+
+    `text_contrast` reads the colour as opaque, so a text greyed with `opacity` --
+    the one way a done task is told it must never be drawn
+    (`spec/design/ui/todo-list.md` § A task's row) -- would measure as though it had
+    not been. Here the colour's own alpha and the opacity of the element and of
+    every ancestor are multiplied, and the colour is blended over the painted
+    background by that much before it is measured. Every ancestor, because opacity
+    on the row or on the list fades the text as surely as opacity on the text; an
+    ancestor above the painted surface fades that surface too, so the blend is the
+    conservative reading of it.
+    """
+    colour = computed(locator, "color")
+    background = painted_background(locator)
+    carried = _COLOUR_ALPHA.search(colour)
+    alpha = (float(carried.group(1)) if carried else 1.0) * float(
+        locator.first.evaluate(_OPACITY_THROUGH_THE_TREE)
+    )
+    red, green, blue = (
+        round(alpha * text + (1 - alpha) * surface)
+        for text, surface in zip(parse_rgb(colour), parse_rgb(background), strict=True)
+    )
+    return contrast_ratio(f"rgb({red}, {green}, {blue})", background)
 
 
 def test_the_built_spa_boots_and_a_deep_link_resolves(page: Page) -> None:
@@ -497,4 +600,121 @@ def test_the_only_label_the_composer_fields_have_clears_the_floor(page: Page) ->
     assert not failures, (
         f"a placeholder below {AA_NORMAL_TEXT}:1. It is the field's only label, so it is "
         "text under 1.4.3 rather than decoration. Found:\n  " + "\n  ".join(failures)
+    )
+
+
+# --------------------------------------------------------------------------
+# The to-do list -- the second screen, and the way between the two
+# --------------------------------------------------------------------------
+
+
+def test_the_todo_list_opens_at_its_own_address(page: Page, empty_application: ApiClient) -> None:
+    """`spec/design/ui/todo-list.md` (S-02): the to-do list entered straight at its address.
+
+    The deep-link smoke, for the second screen. Entered directly rather than reached
+    through the navigation, because that is the case the SPA catch-all has to serve
+    and the router has to resolve: a screen that opens only by clicking is one a link
+    somebody sent cannot open. The empty list's sentence is asked for as well as the
+    title, because it is only there once the screen has read its list -- a screen that
+    came up and could not reach its data does not pass.
+    """
+    page.goto(f"{UI_BASE_URL}{_TODO_LIST}")
+
+    expect(page.get_by_role("heading", level=1, name=_TODO_HEADING)).to_be_visible()
+    expect(page.get_by_role("link", name=_TODO_LINK, exact=True)).to_have_attribute(
+        "aria-current", "page"
+    )
+    expect(page.get_by_text(_NO_TASKS)).to_be_visible()
+
+
+def test_the_way_between_the_screens_leads_both_ways(page: Page) -> None:
+    """`spec/design/ui/system-states.md` § The navigation between the screens: from the
+    guestbook to the to-do list and back, by the frame's links, with no address typed.
+
+    And with no reload, which only a browser can tell apart from a navigation: a flag
+    set on the page before the first click is still there after the second, which it
+    would not be if either link had fetched the page again. `_LOCKUP` is the exact
+    link "Guestbook", the navigation's link back (see its comment).
+    """
+    page.goto(f"{UI_BASE_URL}{_GUESTBOOK}")
+    expect(page.get_by_role("heading", level=1, name=_HEADING)).to_be_visible()
+    page.evaluate("() => { window.__smokeNeverReloaded = true }")
+
+    page.get_by_role("link", name=_TODO_LINK, exact=True).click()
+    expect(page.get_by_role("heading", level=1, name=_TODO_HEADING)).to_be_visible()
+    expect(page).to_have_url(f"{UI_BASE_URL}{_TODO_LIST}")
+
+    page.get_by_role("link", name=_LOCKUP, exact=True).click()
+    expect(page.get_by_role("heading", level=1, name=_HEADING)).to_be_visible()
+    expect(page).to_have_url(f"{UI_BASE_URL}{_GUESTBOOK}")
+
+    assert page.evaluate("() => window.__smokeNeverReloaded === true"), (
+        "following a link between the screens reloaded the page: the frame's links are to "
+        "navigate inside the application (spec/design/ui/system-states.md § Interactions)"
+    )
+
+
+def test_a_task_of_emoji_is_bounded_in_the_unit_the_server_uses(
+    page: Page, empty_application: ApiClient
+) -> None:
+    """`spec/design/ui/todo-list.md` § The add field: the guestbook's emoji defect,
+    kept out of the second screen from its first day.
+
+    Two hundred grinning faces are 200 code points and 400 UTF-16 code units. A
+    field bounded by the DOM's `maxLength`, or a rule counting `.length`, stops at a
+    hundred or calls two hundred too long -- while the service stores the same text.
+    So what is asserted is what the field HOLDS after typing and that the task can
+    be added whole; then that one more is held too, refused in the service's own
+    words, and not added.
+
+    The values quoted are the ones this suite typed, which is why quoting them is
+    allowed.
+    """
+    page.goto(f"{UI_BASE_URL}{_TODO_LIST}")
+    field = page.get_by_role("textbox", name=_NEW_TASK)
+    add = page.get_by_role("button", name=_ADD_TASK)
+
+    at_the_bound = _GRINNING_FACE * _TASK_MAX
+    field.fill(at_the_bound)
+    expect(field).to_have_value(at_the_bound)
+    expect(add).to_be_enabled()
+    add.click()
+    # Stored whole: the box on a task's row is named by the task's text.
+    expect(page.get_by_role("checkbox")).to_have_count(1)
+    expect(page.get_by_role("checkbox", name=at_the_bound, exact=True)).to_be_visible()
+
+    one_past = _GRINNING_FACE * (_TASK_MAX + 1)
+    field.fill(one_past)
+    expect(field).to_have_value(one_past)
+    expect(add).to_be_disabled()
+    field.press("Enter")
+    expect(page.get_by_text(_TOO_LONG)).to_be_visible()
+    expect(page.get_by_role("checkbox")).to_have_count(1)
+
+
+def test_a_done_tasks_text_clears_the_contrast_floor_where_it_is_painted(
+    page: Page, empty_application: ApiClient
+) -> None:
+    """`spec/design/ui/todo-list.md` § A task's row: a done task's text stays exactly
+    as readable as any other text -- struck through in `--color-muted`, never greyed.
+
+    The screen's own tests cannot ask this: jsdom loads no application CSS, so they
+    read class names. `tests/fitness/test_design_tokens.py` holds the token to the
+    floor on every surface; this holds the one place a done task's text actually
+    lands, against the background actually painted behind it, with every opacity on
+    the way applied (`_contrast_opacity_included`), because greying with opacity is
+    the one way the screen document forbids.
+    """
+    _seed_task(empty_application, _DONE_TASK, done=True)
+
+    page.goto(f"{UI_BASE_URL}{_TODO_LIST}")
+    # Measured on a task that is shown done, not on whatever row came up first.
+    expect(page.get_by_role("checkbox", name=_DONE_TASK, exact=True)).to_be_checked()
+
+    ratio = _contrast_opacity_included(page.get_by_text(_DONE_TASK, exact=True))
+    assert ratio >= AA_NORMAL_TEXT, (
+        f"a done task's text measures {ratio:.2f}:1 against the surface it is painted on, "
+        f"under the {AA_NORMAL_TEXT}:1 floor of WCAG 1.4.3. It is drawn in --color-muted "
+        "and never faded with --color-disabled or with opacity "
+        "(spec/design/ui/todo-list.md § A task's row)."
     )

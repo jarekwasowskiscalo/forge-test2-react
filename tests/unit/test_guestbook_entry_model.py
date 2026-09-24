@@ -10,9 +10,11 @@ table, its columns and their types are readable as data.
 """
 
 import datetime
+import importlib
 import uuid
 from typing import Final
 
+import pytest
 import sqlalchemy as sa
 from sqlalchemy.sql.schema import CallableColumnDefault
 
@@ -61,10 +63,23 @@ def test_the_entity_has_exactly_these_columns() -> None:
     assert {column.name for column in _table().columns} == COLUMNS
 
 
-def test_this_schema_holds_exactly_one_table() -> None:
-    """The template's whole schema. A second table appearing without a document is
-    the drift this file exists to notice at the cheapest possible level."""
-    assert set(Base.metadata.tables) == {"guestbook_entries"}
+@pytest.mark.req("CR-2609-823a/R-1")
+def test_this_schema_holds_exactly_two_tables() -> None:
+    """The template's whole schema: the guestbook's table and the to-do list's.
+
+    A third table appearing without a document is the drift this file exists to
+    notice at the cheapest possible level. The second arrived with `CR-2609-823a`,
+    and it is asked for through `app.contexts` -- the aggregate that imports every
+    context, which is how `Base.metadata` comes to know every table before Alembic
+    autogenerates against it (`alembic/env.py`). A context whose model exists but
+    whose registration line was never appended leaves its table out of exactly that
+    import, so the aggregate is the honest thing to ask. Imported inside the test,
+    because a registration that fails to import must fail as this case rather than
+    un-collect the module.
+    """
+    importlib.import_module("app.contexts")
+
+    assert set(Base.metadata.tables) == {"guestbook_entries", "todo_tasks"}
 
 
 def test_the_primary_key_is_a_uuid_the_application_generates() -> None:

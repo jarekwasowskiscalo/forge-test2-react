@@ -5,3 +5,250 @@
 ## Log
 - [20:07] fanout_recorded: dispatched: build-tests-integration, build-tests-frontend, build-tests-uat
 - [20:22] fanout_recorded: returned: build-tests-integration, build-tests-frontend, build-tests-uat; 2 process fault(s): PROC-37, PROC-38
+- [20:23] process_fault_resolved: PROC-38 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_maximum]: TDD red for T-1: no to-do route answers yet, so no boundary
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_maximum_in_emoji]: TDD red for T-1: no to-do route answers yet, so no
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_maximum_decomposed]: TDD red for T-1: no to-do route answers yet, so 
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_padded_to_maximum]: TDD red for T-1: no to-do route answers yet, so no b
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_minimum]: TDD red for T-1: no to-do route answers yet, so no boundary
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_absent]: TDD red for T-1: no to-do route answers yet, so no refusal cod
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_three_spaces]: TDD red for T-1: no to-do route answers yet, so no refus
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_all_whitespace]: TDD red for T-1: no to-do route answers yet, so no ref
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_spaces_past_maximum]: TDD red for T-1: no to-do route answers yet, so n
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_one_past_maximum]: TDD red for T-1: no to-do route answers yet, so no r
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_one_past_maximum_in_emoji]: TDD red for T-1: no to-do route answers yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_one_past_maximum_decomposed]: TDD red for T-1: no to-do route answers y
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_padded_one_past_maximum]: TDD red for T-1: no to-do route answers yet, 
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_line_break_inside]: TDD red for T-1: no to-do route answers yet, so no 
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_absent]: TDD red for T-1: no to-do route answers yet, so the
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_three_spaces]: TDD red for T-1: no to-do route answers yet, 
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_all_whitespace]: TDD red for T-1: no to-do route answers yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_spaces_past_maximum]: TDD red for T-1: no to-do route answer
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_one_past_maximum]: TDD red for T-1: no to-do route answers y
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_one_past_maximum_in_emoji]: TDD red for T-1: no to-do route 
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_one_past_maximum_decomposed]: TDD red for T-1: no to-do rout
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_padded_one_past_maximum]: TDD red for T-1: no to-do route an
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_line_break_inside]: TDD red for T-1: no to-do route answers 
+- [20:25] red_declared: tests.integration.test_todo_tasks_corpus::test_the_ordinary_tasks_read_back_as_the_reversal_of_the_file_with_their_marks: TDD red for T-1: no to-do route answers yet, so the ordinary tas
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_an_added_task_is_stored_not_done_with_its_moment_of_adding: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside th
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_the_same_text_added_twice_is_two_tasks_marked_apart: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_a_stored_text_is_normalized_one_line_and_within_the_bound_in_code_points: TDD red for T-2: app.contexts.todo_list does not exist yet (impo
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_inner_whitespace_is_stored_as_typed: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_the_list_comes_back_newest_first: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_tasks_sharing_a_moment_of_adding_still_have_a_total_order: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_every_task_is_read_at_once_done_and_not_done: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_marking_and_correcting_leave_a_task_in_its_place: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_marking_records_the_state_chosen_whatever_is_stored: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_marking_leaves_the_text_and_the_moment_of_adding_alone: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the te
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_a_correction_changes_the_text_and_nothing_else: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_a_done_task_is_corrected_as_a_not_done_one_is: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_a_refused_correction_keeps_the_text_it_had: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_deleting_removes_the_row_and_leaves_every_other_task: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the test
+- [20:25] red_declared: tests.integration.test_todo_tasks_service::test_a_change_to_a_deleted_task_changes_nothing_and_creates_nothing: TDD red for T-2: app.contexts.todo_list does not exist yet (imported insid
+- [20:25] red_declared: tests.integration.test_todo_tasks_concurrency::test_a_correction_and_a_marking_queued_on_one_task_are_both_kept: TDD red for T-2: app.contexts.todo_list does not exist yet (imported insi
+- [20:25] red_declared: tests.integration.test_todo_tasks_concurrency::test_of_two_queued_corrections_the_one_applied_later_wins: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the 
+- [20:25] red_declared: tests.integration.test_todo_tasks_concurrency::test_of_two_queued_markings_the_one_applied_later_wins: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the tes
+- [20:25] red_declared: tests.integration.test_todo_tasks_concurrency::test_a_change_queued_behind_a_deletion_creates_nothing: TDD red for T-2: app.contexts.todo_list does not exist yet (imported inside the tes
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_adding_answers_201_with_the_task_as_stored: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_a_done_sent_with_a_new_task_is_ignored: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_the_list_is_one_envelope_with_every_task_and_its_count: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_a_patch_carrying_done_alone_writes_done_alone: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_a_patch_carrying_text_alone_writes_text_alone: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_a_refused_text_in_a_patch_that_also_carries_done_writes_neither: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_deleting_answers_204_with_no_body: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_a_change_to_a_missing_task_answers_404_with_its_code: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_a_patch_setting_neither_field_is_refused: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_each_text_refusal_answers_with_its_own_code: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_a_text_too_long_and_on_two_lines_is_refused_as_multiline: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_a_body_of_the_wrong_shape_gets_the_standard_validation_refusal: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_router::test_a_request_is_refused_for_what_it_is_whatever_its_identifier_names: TDD red for T-3: no to-do route is served yet
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[list_answers]: TDD red for T-3: no to-do operation is served or publishe
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[create_succeeds]: TDD red for T-3: no to-do operation is served or publi
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[create_refuses_an_empty_text]: TDD red for T-3: no to-do operation is se
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[create_refuses_a_text_that_is_not_a_string]: TDD red for T-3: no to-do o
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_marks]: TDD red for T-3: no to-do operation is served or published
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_corrects]: TDD red for T-3: no to-do operation is served or publis
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_refuses_an_empty_patch]: TDD red for T-3: no to-do operation is se
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_refuses_a_text_on_two_lines]: TDD red for T-3: no to-do operation 
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_refuses_a_done_that_is_not_a_boolean]: TDD red for T-3: no to-do o
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_task_is_absent]: TDD red for T-3: no to-do operation is served or 
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_id_is_not_a_uuid]: TDD red for T-3: no to-do operation is served o
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[delete_succeeds]: TDD red for T-3: no to-do operation is served or publi
+- [20:25] red_declared: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[delete_is_absent]: TDD red for T-3: no to-do operation is served or publ
+- [20:25] red_declared: tests.integration.test_migrations::test_upgrade_head_creates_the_todo_tasks_table_with_exactly_these_columns: TDD red for T-4: no todo_tasks table until T-13 writes the revision
+- [20:25] red_declared: tests.integration.test_migrations::test_the_todo_list_order_has_an_index_behind_it: TDD red for T-4: no todo_tasks table or ordering index until T-13 writes the revision
+- [20:25] red_declared: tests.tooling.test_seed_golden_set::test_a_guest_book_with_entries_is_left_alone: TDD red for T-4: the seeder does not fill the to-do list yet (T-17)
+- [20:25] red_declared: tests.tooling.test_seed_golden_set::test_an_empty_environment_gets_the_whole_seed_corpus: TDD red for T-4: SEED_FILES names golden-set/seed/todo-tasks-example.json, which T-17 writes and
+- [20:25] red_declared: tests.tooling.test_seed_golden_set::test_a_to_do_list_holding_a_task_is_left_alone: TDD red for T-4: SEED_FILES names golden-set/seed/todo-tasks-example.json, which T-17 writes and teach
+- [20:25] red_declared: tests.tooling.test_seed_golden_set::test_the_done_example_is_added_then_marked: TDD red for T-4: SEED_FILES names golden-set/seed/todo-tasks-example.json, which T-17 writes and teaches t
+- [20:25] red_declared: tests.tooling.test_seed_golden_set::test_the_boundary_corpus_is_opt_in: unedited case, red because T-1's SEED_FILES names golden-set/seed/todo-tasks-example.json before T-17 writes it
+- [20:25] red_declared: tests.tooling.test_seed_golden_set::test_a_trailing_slash_on_the_base_url_is_tolerated: unedited case, red because T-1's SEED_FILES names golden-set/seed/todo-tasks-example.json before T
+- [20:25] red_declared: src/contexts/todo_list/lib/todoTask.test.ts::gives each case of the task's corpus the verdict it states [req:CR-2609-823a/R-2]: TDD red for T-5: contexts/todo_list/lib/todoTask does not 
+- [20:25] red_declared: src/contexts/todo_list/lib/todoTask.test.ts::measures each accepted case in code points, as the server does [req:CR-2609-823a/R-2]: TDD red for T-5: contexts/todo_list/lib/todoTask does 
+- [20:25] red_declared: src/contexts/todo_list/lib/todoTask.test.ts::refuses a text both too long and on two lines as one line [req:CR-2609-823a/R-2]: TDD red for T-5: contexts/todo_list/lib/todoTask does not e
+- [20:25] red_declared: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::takes 200 pasted emoji whole and lets the task be added [req:CR-2609-823a/R-2]: TDD red for T-5: TodoTaskComposer does not ex
+- [20:25] red_declared: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::holds 201 emoji, says the text is too long and sends nothing [req:CR-2609-823a/R-2]: TDD red for T-5: TodoTaskComposer does n
+- [20:25] red_declared: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::says a text with a line break inside is one line and sends nothing [req:CR-2609-823a/R-2]: TDD red for T-5: TodoTaskComposer 
+- [20:25] red_declared: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::sends the text as the shared rule leaves it [req:CR-2609-823a/R-1]: TDD red for T-5: TodoTaskComposer does not exist yet
+- [20:25] red_declared: src/contexts/guestbook/lib/entryText.test.ts::src/contexts/guestbook/lib/entryText.test.ts: T-5 moved the import to @/lib/text, which T-18 creates; the file fails to load until then
+- [20:25] red_declared: src/contexts/todo_list/components/TodoTaskRow.test.tsx::shows a done task differently from a not-done one [req:CR-2609-823a/R-4]: TDD red for T-6: TodoTaskRow does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/components/TodoTaskRow.test.tsx::sends the state the person chose [req:CR-2609-823a/R-4]: TDD red for T-6: TodoTaskRow does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/components/TodoTaskRow.test.tsx::shows a corrected text in the task's place [req:CR-2609-823a/R-6]: TDD red for T-6: TodoTaskRow does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/components/TodoTaskRow.test.tsx::keeps the old text and says why when a correction is refused [req:CR-2609-823a/R-6]: TDD red for T-6: TodoTaskRow does not exist y
+- [20:25] red_declared: src/contexts/todo_list/components/TodoTaskRow.test.tsx::asks before deleting and sends nothing until confirmed [req:CR-2609-823a/R-7]: TDD red for T-6: TodoTaskRow does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/components/TodoTaskRow.test.tsx::leaves the task as it was when the deletion is cancelled [req:CR-2609-823a/R-7]: TDD red for T-6: TodoTaskRow does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/hooks/useTodoTasks.test.tsx::writes nothing into the list before the application answers [req:CR-2609-823a/R-10]: TDD red for T-6: hooks/useTodoTasks does not exis
+- [20:25] red_declared: src/contexts/todo_list/hooks/useTodoTasks.test.tsx::refetches the list after a change that went through [req:CR-2609-823a/R-1]: TDD red for T-6: hooks/useTodoTasks does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/pages/TodoListPage.test.tsx::shows an added task first without a reload [req:CR-2609-823a/R-1]: TDD red for T-6: TodoListPage does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/pages/TodoListPage.test.tsx::shows the tasks in the order they arrive [req:CR-2609-823a/R-3]: TDD red for T-6: TodoListPage does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/pages/TodoListPage.test.tsx::says the list is empty and how to begin, with no error [req:CR-2609-823a/R-3]: TDD red for T-6: TodoListPage does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/pages/TodoListPage.test.tsx::shows a list whose tasks are all done and does not call it empty [req:CR-2609-823a/R-3]: TDD red for T-6: TodoListPage does not exist 
+- [20:25] red_declared: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a marking that did not go through was not made [req:CR-2609-823a/R-10]: TDD red for T-6: TodoListPage does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a task that did not go through was not added [req:CR-2609-823a/R-10]: TDD red for T-6: TodoListPage does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a correction or a deletion that did not go through was not made [req:CR-2609-823a/R-10]: TDD red for T-6: TodoListPage does not e
+- [20:25] red_declared: src/contexts/todo_list/pages/TodoListPage.test.tsx::says the list failed to load, not that it is empty [req:CR-2609-823a/R-10]: TDD red for T-6: TodoListPage does not exist yet
+- [20:25] red_declared: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a task refused as gone no longer exists and does not show it done [req:CR-2609-823a/R-10]: TDD red for T-6: TodoListPage does not
+- [20:25] red_declared: src/router.test.tsx::opens the to-do list at its own address [req:CR-2609-823a/R-5]: TDD red for T-7: no /todo-list route exists yet
+- [20:25] red_declared: src/router.test.tsx::answers an unknown address with the page that says nothing is there [req:CR-2609-823a/R-5]: TDD red for T-7: the not-found page does not say nothing is at this addre
+- [20:25] red_declared: src/components/shell/PageFrame.test.tsx::offers the way to the other screen on each screen [req:CR-2609-823a/R-5]: TDD red for T-7: the frame has no Screens group linking the two screens
+- [20:25] red_declared: src/pages/StatusPages.test.tsx::does not say the application has one screen [req:CR-2609-823a/R-5]: TDD red for T-7: the status page still says the application has one screen
+- [20:25] red_declared: tests.fitness.test_golden_set::test_every_corpus_file_is_named_by_the_locator: T-1's locator names golden-set/seed/todo-tasks-example.json in SEED_FILES before T-17 writes it
+- [20:25] red_declared: tests.fitness.test_golden_set::test_each_half_agrees_with_the_locator_about_what_is_in_it: T-1's locator names golden-set/seed/todo-tasks-example.json in SEED_FILES before T-17 writes it
+- [20:25] red_declared: tests.fitness.test_golden_set::test_every_file_says_which_story_it_is_and_what_it_demonstrates: T-1's locator names golden-set/seed/todo-tasks-example.json in SEED_FILES before T-17 writ
+- [20:25] red_declared: tests.fitness.test_golden_set::test_every_file_is_utf8_json_and_ends_with_a_newline: T-1's locator names golden-set/seed/todo-tasks-example.json in SEED_FILES before T-17 writes it
+- [20:25] red_declared: tests.fitness.test_golden_set::test_the_seed_half_shows_a_list_rather_than_an_entry: T-1's locator names golden-set/seed/todo-tasks-example.json in SEED_FILES before T-17 writes it
+- [20:25] red_declared: tests.fitness.test_golden_set::test_no_seed_entry_stands_near_a_published_limit: T-1's locator names golden-set/seed/todo-tasks-example.json before T-17 writes it, and the bound T-14 dec
+- [20:25] red_declared: tests.fitness.test_golden_set::test_every_entry_carries_the_keys_an_entry_has: T-1 registered the example-task seed file in SEED_FILES, which this entry rule sweeps; T-10 rescopes it to 
+- [20:25] red_declared: tests.fitness.test_golden_set::test_the_sequence_files_have_no_case_names: T-1 registered the example-task seed file in SEED_FILES, which this sequence rule sweeps; T-10 rescopes it in w
+- [20:25] red_declared: tests.fitness.test_golden_set::test_every_entry_meant_to_pass_really_passes: T-1 registered the example-task seed file in SEED_FILES, which this entry rule sweeps; T-10 rescopes it to th
+- [20:25] red_declared: tests.fitness.test_golden_set::test_the_corpus_exercises_characters_outside_ascii: T-1 registered the example-task seed file in SEED_FILES, which this corpus rule sweeps; T-10 rescopes i
+- [20:25] red_declared: tests.fitness.test_golden_set::test_the_corpus_exercises_a_message_with_line_breaks: T-1 registered the example-task seed file in SEED_FILES, which this sequence rule sweeps; T-10 makes 
+- [20:25] red_declared: tests.fitness.test_golden_set::test_no_corpus_value_looks_like_a_real_person: T-1 registered the example-task seed file in SEED_FILES, which this corpus rule sweeps; T-10 rescopes it in 
+- [20:25] red_declared: tests.fitness.test_golden_set::test_the_frontend_reads_no_corpus_file: T-5's todoTask.test.ts reads golden-set/fixtures/todo-task-text.json; T-10 names it as the second allowed reader in
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_maximum] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_maximum_in_emoji] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_maximum_decomposed] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_padded_to_maximum] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_minimum] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_absent] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_three_spaces] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_all_whitespace] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_spaces_past_maximum] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_one_past_maximum] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_one_past_maximum_in_emoji] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_one_past_maximum_decomposed] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_padded_one_past_maximum] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_line_break_inside] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_absent] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_three_spaces] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_all_whitespace] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_spaces_past_maximum] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_one_past_maximum] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_one_past_maximum_in_emoji] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_one_past_maximum_decomposed] in gate run 2026-09-24T18:25:52
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_padded_one_past_maximum] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_line_break_inside] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_corpus::test_the_ordinary_tasks_read_back_as_the_reversal_of_the_file_with_their_marks in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_an_added_task_is_stored_not_done_with_its_moment_of_adding in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_the_same_text_added_twice_is_two_tasks_marked_apart in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_a_stored_text_is_normalized_one_line_and_within_the_bound_in_code_points in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_inner_whitespace_is_stored_as_typed in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_the_list_comes_back_newest_first in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_tasks_sharing_a_moment_of_adding_still_have_a_total_order in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_every_task_is_read_at_once_done_and_not_done in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_marking_and_correcting_leave_a_task_in_its_place in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_marking_records_the_state_chosen_whatever_is_stored in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_marking_leaves_the_text_and_the_moment_of_adding_alone in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_a_correction_changes_the_text_and_nothing_else in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_a_done_task_is_corrected_as_a_not_done_one_is in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_a_refused_correction_keeps_the_text_it_had in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_deleting_removes_the_row_and_leaves_every_other_task in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_service::test_a_change_to_a_deleted_task_changes_nothing_and_creates_nothing in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_concurrency::test_a_correction_and_a_marking_queued_on_one_task_are_both_kept in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_concurrency::test_of_two_queued_corrections_the_one_applied_later_wins in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_concurrency::test_of_two_queued_markings_the_one_applied_later_wins in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_concurrency::test_a_change_queued_behind_a_deletion_creates_nothing in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_adding_answers_201_with_the_task_as_stored in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_a_done_sent_with_a_new_task_is_ignored in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_the_list_is_one_envelope_with_every_task_and_its_count in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_a_patch_carrying_done_alone_writes_done_alone in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_a_patch_carrying_text_alone_writes_text_alone in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_a_refused_text_in_a_patch_that_also_carries_done_writes_neither in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_deleting_answers_204_with_no_body in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_a_change_to_a_missing_task_answers_404_with_its_code in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_a_patch_setting_neither_field_is_refused in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_each_text_refusal_answers_with_its_own_code in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_a_text_too_long_and_on_two_lines_is_refused_as_multiline in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_a_body_of_the_wrong_shape_gets_the_standard_validation_refusal in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_router::test_a_request_is_refused_for_what_it_is_whatever_its_identifier_names in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[list_answers] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[create_succeeds] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[create_refuses_an_empty_text] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[create_refuses_a_text_that_is_not_a_string] in gate run 2026-09-24T18:25
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_marks] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_corrects] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_refuses_an_empty_patch] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_refuses_a_text_on_two_lines] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_refuses_a_done_that_is_not_a_boolean] in gate run 2026-09-24T18:25
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_task_is_absent] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_id_is_not_a_uuid] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[delete_succeeds] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[delete_is_absent] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_migrations::test_upgrade_head_creates_the_todo_tasks_table_with_exactly_these_columns in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.integration.test_migrations::test_the_todo_list_order_has_an_index_behind_it in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.tooling.test_seed_golden_set::test_a_guest_book_with_entries_is_left_alone in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.tooling.test_seed_golden_set::test_an_empty_environment_gets_the_whole_seed_corpus in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.tooling.test_seed_golden_set::test_a_to_do_list_holding_a_task_is_left_alone in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.tooling.test_seed_golden_set::test_the_done_example_is_added_then_marked in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.tooling.test_seed_golden_set::test_the_boundary_corpus_is_opt_in in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.tooling.test_seed_golden_set::test_a_trailing_slash_on_the_base_url_is_tolerated in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/lib/todoTask.test.ts::gives each case of the task's corpus the verdict it states [req:CR-2609-823a/R-2] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/lib/todoTask.test.ts::measures each accepted case in code points, as the server does [req:CR-2609-823a/R-2] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/lib/todoTask.test.ts::refuses a text both too long and on two lines as one line [req:CR-2609-823a/R-2] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::takes 200 pasted emoji whole and lets the task be added [req:CR-2609-823a/R-2] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::holds 201 emoji, says the text is too long and sends nothing [req:CR-2609-823a/R-2] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::says a text with a line break inside is one line and sends nothing [req:CR-2609-823a/R-2] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::sends the text as the shared rule leaves it [req:CR-2609-823a/R-1] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/guestbook/lib/entryText.test.ts::src/contexts/guestbook/lib/entryText.test.ts in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/components/TodoTaskRow.test.tsx::shows a done task differently from a not-done one [req:CR-2609-823a/R-4] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/components/TodoTaskRow.test.tsx::sends the state the person chose [req:CR-2609-823a/R-4] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/components/TodoTaskRow.test.tsx::shows a corrected text in the task's place [req:CR-2609-823a/R-6] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/components/TodoTaskRow.test.tsx::keeps the old text and says why when a correction is refused [req:CR-2609-823a/R-6] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/components/TodoTaskRow.test.tsx::asks before deleting and sends nothing until confirmed [req:CR-2609-823a/R-7] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/components/TodoTaskRow.test.tsx::leaves the task as it was when the deletion is cancelled [req:CR-2609-823a/R-7] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/hooks/useTodoTasks.test.tsx::writes nothing into the list before the application answers [req:CR-2609-823a/R-10] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/hooks/useTodoTasks.test.tsx::refetches the list after a change that went through [req:CR-2609-823a/R-1] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/pages/TodoListPage.test.tsx::shows an added task first without a reload [req:CR-2609-823a/R-1] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/pages/TodoListPage.test.tsx::shows the tasks in the order they arrive [req:CR-2609-823a/R-3] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/pages/TodoListPage.test.tsx::says the list is empty and how to begin, with no error [req:CR-2609-823a/R-3] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/pages/TodoListPage.test.tsx::shows a list whose tasks are all done and does not call it empty [req:CR-2609-823a/R-3] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a marking that did not go through was not made [req:CR-2609-823a/R-10] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a task that did not go through was not added [req:CR-2609-823a/R-10] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a correction or a deletion that did not go through was not made [req:CR-2609-823a/R-10] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/pages/TodoListPage.test.tsx::says the list failed to load, not that it is empty [req:CR-2609-823a/R-10] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a task refused as gone no longer exists and does not show it done [req:CR-2609-823a/R-10] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/router.test.tsx::opens the to-do list at its own address [req:CR-2609-823a/R-5] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/router.test.tsx::answers an unknown address with the page that says nothing is there [req:CR-2609-823a/R-5] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/components/shell/PageFrame.test.tsx::offers the way to the other screen on each screen [req:CR-2609-823a/R-5] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: src/pages/StatusPages.test.tsx::does not say the application has one screen [req:CR-2609-823a/R-5] in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_every_corpus_file_is_named_by_the_locator in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_each_half_agrees_with_the_locator_about_what_is_in_it in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_every_file_says_which_story_it_is_and_what_it_demonstrates in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_every_file_is_utf8_json_and_ends_with_a_newline in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_the_seed_half_shows_a_list_rather_than_an_entry in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_no_seed_entry_stands_near_a_published_limit in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_every_entry_carries_the_keys_an_entry_has in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_the_sequence_files_have_no_case_names in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_every_entry_meant_to_pass_really_passes in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_the_corpus_exercises_characters_outside_ascii in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_the_corpus_exercises_a_message_with_line_breaks in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_no_corpus_value_looks_like_a_real_person in gate run 2026-09-24T18:25:52Z
+- [20:32] red_observed: tests.fitness.test_golden_set::test_the_frontend_reads_no_corpus_file in gate run 2026-09-24T18:25:52Z
+- [20:32] green_by_design_recorded: tests.tooling.test_seed_golden_set::test_production_is_refused: T-4: the seeder refuses production before it reads either list, so no task can be posted there today; the case
+- [20:32] green_by_design_recorded: src/router.test.tsx::opens the guestbook at the main address [req:CR-2609-823a/R-5]: T-7: the redirect from / to /guestbook already stands in frontend/src/router.tsx; this ch
+- [20:32] process_fault_reported: PROC-39 (engine): loop next row 31 (implement, RED proof) renders the recipe as "sdd-engine gate run --profile unit ..
+- [20:32] process_fault_reported: PROC-40 (engine): declare-red, observe-red and green-by-design take exactly one --case-id per call and there is no bat
+- [20:33] process_fault_resolved: PROC-39 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/365
+- [20:33] process_fault_resolved: PROC-40 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/366
+- [20:33] fanout_recorded: dispatched: build-tests-unit, build-tests-e2e
+- [20:44] fanout_recorded: returned: build-tests-unit, build-tests-e2e; 2 process fault(s): PROC-41, PROC-42

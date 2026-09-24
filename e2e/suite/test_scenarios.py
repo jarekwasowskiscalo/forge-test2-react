@@ -23,5 +23,6 @@ step module nobody imports here would leave its scenarios unbound.
 from pytest_bdd import scenarios
 
 from e2e.suite.steps.guestbook_steps import *  # noqa: F403
+from e2e.suite.steps.todo_list_steps import *  # noqa: F403
 
 scenarios("features")

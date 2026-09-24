@@ -27,7 +27,26 @@ The boundary file is checked **against the constants the model publishes**, not
 against literals repeated here. A test that writes `80` is a test that keeps
 proving the old number after the rule moves.
 
-Reads the source and the data; opens no database and imports no application.
+**Three shapes of item, and a rule reaches only the shape it is about.** A guest
+book file lists `entries` (a signature and a message); `text-measurement.json` and
+`todo-task-text.json` list `cases` of a rule (an input and the verdict expected of
+it); the to-do list's files list `tasks` (a text, and in a sequence the done mark it
+ends with, `CR-2609-823a`). A rule written for one shape and swept over another
+either fails on a key the file never had, or -- worse -- passes over it in silence.
+So the rules that index `author` and `message` sweep the guest book's files alone,
+the rule demanding a line break in every sequence is the guest book's alone (a task
+is one line, `BR-07`), and the to-do list's files get rules of their own below.
+
+**The to-do list's constants are imported inside the cases that read them.**
+`TODO_TASK_TEXT_MAX_LENGTH` and `LINE_BREAKS` live beside `TodoTask`
+(`spec/design/data-model.md` § `todo_tasks`), which the implementation wave writes
+after these rules; an import at the top of this module would un-collect every rule
+in it until then, the guest book's included (`spec/design/testing.md`
+§ CR-2609-823a, "Red first"). The rules that read only the to-do list's fixture
+files import nothing from it, which is why they hold from the first run.
+
+Reads the source and the data, and imports the application only for the constants
+it compares against; opens no database.
 """
 
 import json
@@ -50,8 +69,15 @@ from tests._golden_set import (
     SEED,
     SEED_FILES,
     TEXT_RULES,
+    TODO_TASK_TEXT,
+    TODO_TASKS_BOUNDARY,
+    TODO_TASKS_EXAMPLE,
+    TODO_TASKS_ORDINARY,
+    TODO_TASKS_REFUSED,
+    WELCOME,
     cases_of,
     entries_of,
+    tasks_of,
 )
 
 #: The keys every entry carries, whatever file it is in.
@@ -62,15 +88,79 @@ _REQUIRED_KEYS: Final[frozenset[str]] = frozenset({"author", "message"})
 #: situations.
 _CASE_FILES: Final[tuple[pathlib.Path, ...]] = (BOUNDARY, REFUSED)
 
-#: The files whose entries are a sequence somebody wrote, in order -- one per
-#: half. Neither may carry a `case` key.
-_SEQUENCE_FILES: Final[tuple[pathlib.Path, ...]] = (ORDINARY, *SEED_FILES)
+#: The guest book's files whose entries are a sequence somebody wrote, in order --
+#: one per half. Neither may carry a `case` key. Named file by file rather than as
+#: `SEED_FILES`: the seed half now holds the to-do list's example tasks as well, and
+#: a rule about signatures swept over a file of tasks fails on a key it never had.
+_SEQUENCE_FILES: Final[tuple[pathlib.Path, ...]] = (ORDINARY, WELCOME)
 
-#: Every file whose items are guest book ENTRIES, which is every file but one.
-#: `text-measurement.json` holds cases of the trimming and length rule -- an input,
-#: the field it is about, the verdict expected of it -- so the rules about `author`
-#: and `message` do not reach it and the rules below give it its own.
+#: Every file whose items are guest book ENTRIES. `text-measurement.json` holds cases
+#: of the trimming and length rule -- an input, the field it is about, the verdict
+#: expected of it -- and the to-do list's files hold tasks or cases of a task's text,
+#: so the rules about `author` and `message` reach none of them and the rules below
+#: give each its own.
 _ENTRY_FILES: Final[tuple[pathlib.Path, ...]] = _CASE_FILES + _SEQUENCE_FILES
+
+#: The to-do list's files whose tasks are a sequence -- ordinary tasks in adding
+#: order, and the example tasks a new environment opens with, one per half. Each task
+#: is a `text` and the `done` mark it ends with, and nothing else.
+_TASK_SEQUENCE_FILES: Final[tuple[pathlib.Path, ...]] = (TODO_TASKS_ORDINARY, TODO_TASKS_EXAMPLE)
+
+#: The keys a task in a sequence carries -- exactly these, so a sequence can carry
+#: neither a `case` nor a `description` for a test to reach for by name.
+_TASK_SEQUENCE_KEYS: Final[frozenset[str]] = frozenset({"text", "done"})
+
+#: The to-do list's files of named tasks, and exactly the keys each of their tasks
+#: carries (`spec/design/testing.md` § CR-2609-823a, "The fixture half this change
+#: adds"): the boundary file states the text each task is `stored` as, the refused
+#: file the `refusal` code the contract gives it.
+_TASK_CASE_KEYS: Final[dict[pathlib.Path, frozenset[str]]] = {
+    TODO_TASKS_BOUNDARY: frozenset({"case", "description", "text", "stored"}),
+    TODO_TASKS_REFUSED: frozenset({"case", "description", "text", "refusal"}),
+}
+
+#: Every file whose items are TASKS, in either half -- the fixture half first, so a sweep
+#: that meets a missing seed file has already held every fixture file to its rule.
+_TASK_FILES: Final[tuple[pathlib.Path, ...]] = (
+    TODO_TASKS_ORDINARY,
+    *_TASK_CASE_KEYS,
+    TODO_TASKS_EXAMPLE,
+)
+
+#: The codes a refused task may name: the three the contract gives a task's text
+#: (`spec/design/api.md` § The to-do list's refusals). A closed set, for the reason
+#: `_REFUSAL_MECHANISMS` is one. Unlike the guest book's refused file, these are
+#: stable codes rather than mechanisms, because a task's text is refused by the
+#: service with a code of its own and never by the schema.
+_TASK_TEXT_REFUSALS: Final[frozenset[str]] = frozenset(
+    {"todo_task_text_empty", "todo_task_text_too_long", "todo_task_text_multiline"}
+)
+
+#: What a case in `todo-task-text.json` may say the rule does with its input: the
+#: three verdicts of `text-measurement.json` and a fourth, `multiline` (`BR-07`).
+_TASK_TEXT_VERDICTS: Final[frozenset[str]] = frozenset(
+    {"accepted", "empty", "too_long", "multiline"}
+)
+
+#: The keys a case of a task's text carries. No `field`, because there is one field;
+#: `length` is conditional -- present exactly when the verdict is `accepted` -- so it
+#: is checked separately rather than listed here.
+_TASK_TEXT_CASE_KEYS: Final[frozenset[str]] = frozenset({"case", "description", "input", "verdict"})
+
+#: The seven line breaks as the requirement writes them (`CR-2609-823a/R-2` clause 6,
+#: confirmed as `A-1`; `spec/contexts/todo_list.md` § Language). The rules that read
+#: only the to-do list's fixture files hold the corpus to THIS list rather than to
+#: `LINE_BREAKS` beside the model, so they need nothing the implementation writes;
+#: `tests/unit/test_todo_task_text_rules.py` holds the model's constant to it.
+_WRITTEN_LINE_BREAKS: Final[tuple[int, ...]] = (
+    0x000A,
+    0x000B,
+    0x000C,
+    0x000D,
+    0x0085,
+    0x2028,
+    0x2029,
+)
 
 #: What a case in `text-measurement.json` may say the rule does with its input.
 #: A closed set, for the reason `_REFUSAL_MECHANISMS` is one: an open string was
@@ -88,13 +178,17 @@ _BOUNDS: Final[dict[str, int]] = {
 #: verdict is `accepted` -- so it is checked separately rather than listed here.
 _CASE_KEYS: Final[frozenset[str]] = frozenset({"case", "description", "field", "input", "verdict"})
 
-#: The one module under `frontend/src` allowed to name a corpus file, and the only
-#: file it may name is `text-measurement.json`. Written as a path rather than a
-#: pattern so that widening it is an edit somebody has to make and defend, exactly
-#: as `_MAY_READ_THE_SEED_HALF` is below.
-_MAY_READ_THE_TEXT_RULES: Final[frozenset[str]] = frozenset(
-    {"frontend/src/contexts/guestbook/lib/entryText.test.ts"}
-)
+#: The two modules under `frontend/src` allowed to name a corpus file, each with the
+#: ONE file it may name: its own context's cases, and never the other context's. The
+#: guest book's reader holds the guest book's bounds and the to-do list's reader the
+#: to-do list's, and a module of one context may not import the other's folder
+#: (`tests/fitness/test_context_boundaries.py`), so a reader of both files could not
+#: check either verdict. Written as paths rather than a pattern so that widening it is
+#: an edit somebody has to make and defend, exactly as the seed guard's list is below.
+_MAY_READ_ONE_CORPUS_FILE: Final[dict[str, str]] = {
+    "frontend/src/contexts/guestbook/lib/entryText.test.ts": TEXT_RULES.name,
+    "frontend/src/contexts/todo_list/lib/todoTask.test.ts": TODO_TASK_TEXT.name,
+}
 
 #: A corpus file's name: lower case, hyphen-separated, `.json`. Enforced rather
 #: than described so the twentieth file is named like the first.
@@ -123,6 +217,61 @@ def _files_on_disk() -> list[pathlib.Path]:
 
 def _text_of(entry: dict[str, Any]) -> str:
     return f"{entry.get('author', '')} {entry.get('message', '')}"
+
+
+def _items_of(path: pathlib.Path) -> list[dict[str, Any]]:
+    """The items of one sequence file -- guest book entries or tasks, by the key it lists.
+
+    For the rules both halves owe whatever their items are (a seed file shows a list,
+    nothing in it stands near a limit). A file listing neither key is a shape no rule
+    here knows, and says so rather than reading as empty.
+    """
+    story = _golden_set.story_of(path)
+    if "tasks" in story:
+        return tasks_of(path)
+    assert "entries" in story, f"{path.name} lists neither `entries` nor `tasks`"
+    return entries_of(path)
+
+
+def _task_case(path: pathlib.Path, name: str) -> dict[str, Any]:
+    """One named task out of a to-do list file of named tasks, by name and not by index."""
+    for task in tasks_of(path):
+        if task.get("case") == name:
+            return task
+    available = ", ".join(sorted(str(task.get("case")) for task in tasks_of(path)))
+    raise AssertionError(f"no case {name!r} in {path.name}. Available: {available}")
+
+
+def _task_bound() -> int:
+    """`TODO_TASK_TEXT_MAX_LENGTH`, read from beside `TodoTask` at the moment a rule asks.
+
+    Imported here rather than at the top of the module: the constant arrives with the
+    implementation, and a failed import at the top would un-collect every rule in this
+    file. Never `QUERY_MAX_LENGTH`, which is also 200 -- two rules sharing a number,
+    and a corpus held to the phrase's bound proves the wrong one.
+    """
+    from app.contexts.todo_list.models.todo_task import TODO_TASK_TEXT_MAX_LENGTH
+
+    bound: int = TODO_TASK_TEXT_MAX_LENGTH
+    return bound
+
+
+def _task_text_verdict(text: str) -> str:
+    """`BR-06` and `BR-07` over one text, through the shared kernel and the model's constants.
+
+    Normalized and trimmed first; then empty; then a line break of `LINE_BREAKS` left
+    inside; then longer than the bound in code points -- the order
+    `spec/contexts/todo_list.md` gives, so a text too long and on two lines is
+    `multiline`. The same verdict names `todo-task-text.json` uses.
+    """
+    from app.contexts.todo_list.models.todo_task import LINE_BREAKS
+
+    trimmed = normalize(text)
+    if not trimmed:
+        return "empty"
+    if {chr(code) for code in LINE_BREAKS} & set(trimmed):
+        return "multiline"
+    return "too_long" if length(trimmed) > _task_bound() else "accepted"
 
 
 # --------------------------------------------------------------------------- #
@@ -319,6 +468,10 @@ def test_the_corpus_exercises_a_message_with_line_breaks() -> None:
     diverge safely: the seed corpus stopped being the fixture corpus, so the
     properties that made the fixture worth looking at are now properties the seed
     corpus owes in its own right rather than ones it inherited.
+
+    **The guest book's alone.** A message keeps its line breaks; a task is one line
+    and a text with a line break inside it is refused (`BR-07`), so the to-do list's
+    sequences owe the opposite -- `test_every_task_in_a_sequence_is_a_text_and_a_done_mark_on_one_line`.
     """
     for path in _SEQUENCE_FILES:
         assert any("\n" in e["message"] for e in entries_of(path)), (
@@ -552,6 +705,360 @@ def test_the_cases_reach_past_what_a_runtime_default_can_see() -> None:
 
 
 # --------------------------------------------------------------------------- #
+# The to-do list's files (`CR-2609-823a`): tasks, and cases of a task's text
+# --------------------------------------------------------------------------- #
+
+
+def test_every_task_in_a_sequence_is_a_text_and_a_done_mark_on_one_line() -> None:
+    """The third key, `tasks`, as a sequence: `{text, done}` and nothing else, one line each.
+
+    Exactly those two keys, so a sequence carries neither a `case` nor a
+    `description` for a test to reach for by name -- its tasks are an order somebody
+    added them in, and the ordinary file's reader asserts the reversal of that order
+    (`BR-11`). `done` is a JSON boolean, because the file is read as the state a task
+    ENDS with and a reader marks exactly the ones it names. And no line break anywhere
+    in a text, from the seven the requirement writes: a task is one line (`BR-07`), and
+    a sequence that carried one would make its reader's first addition a refusal
+    nobody wrote. Owed by both halves -- the ordinary tasks and the example tasks a new
+    environment opens with.
+    """
+    breaks = {chr(code) for code in _WRITTEN_LINE_BREAKS}
+    for path in _TASK_SEQUENCE_FILES:
+        for index, task in enumerate(tasks_of(path)):
+            assert set(task) == _TASK_SEQUENCE_KEYS, (
+                f"{path.name}[{index}] carries {sorted(task)}; a task in a sequence is "
+                f"exactly {sorted(_TASK_SEQUENCE_KEYS)}"
+            )
+            assert isinstance(task["text"], str), f"{path.name}[{index}] has no text"
+            assert isinstance(task["done"], bool), (
+                f"{path.name}[{index}] marks done as {task['done']!r}, not a boolean"
+            )
+            carried = sorted(f"U+{ord(c):04X}" for c in breaks & set(task["text"]))
+            assert not carried, f"{path.name}[{index}] carries the line breaks {carried}"
+
+
+def test_the_task_sequences_exercise_characters_outside_ascii() -> None:
+    """The encoding path, end to end, for the to-do list's sequences as for the guest book's.
+
+    A task is sent, stored and shown like an entry, so a corpus of ASCII tasks would
+    let a single-byte code page decode the file into different characters with every
+    assertion still passing. Owed by each half, the example tasks included: a preview
+    whose tasks are all ASCII shows a reviewer nothing about how the list renders
+    anything else (`CR-2609-823a/R-11`, "one text above U+007F").
+    """
+    for path in _TASK_SEQUENCE_FILES:
+        text = " ".join(str(task["text"]) for task in tasks_of(path))
+
+        assert any(ord(character) > 127 for character in text), (
+            f"every character in {path.name} is ASCII -- the encoding path is then "
+            "proved by nothing. Keep at least one task outside ASCII."
+        )
+
+
+def test_the_ordinary_tasks_repeat_a_text_and_end_both_done_and_not_done() -> None:
+    """What the ordinary file exists to show its reader, held rather than hoped for.
+
+    A repeated text, because the same text twice is two tasks (`BR-12`) and a file
+    without one lets a uniqueness check pass its reader unseen. Both marks, because
+    the reader adds every task and only then marks the done ones -- a new task is never
+    born done (`BR-08`) -- so a file with no done task never exercises a marking, and a
+    file with no task left not done never shows a marking that stays put.
+    """
+    tasks = tasks_of(TODO_TASKS_ORDINARY)
+    texts = [str(task["text"]) for task in tasks]
+
+    assert len(texts) != len(set(texts)), (
+        f"{TODO_TASKS_ORDINARY.name} repeats no text, so it cannot show that the same "
+        "text twice is two tasks"
+    )
+    assert {task["done"] for task in tasks} == {True, False}, (
+        f"{TODO_TASKS_ORDINARY.name} must end with some tasks done and some not"
+    )
+
+
+def test_every_named_task_carries_the_keys_its_file_gives_it() -> None:
+    """The boundary file states what each task is `stored` as, the refused file the
+    `refusal` it earns -- exactly those keys, each, so a reader indexing one never meets
+    a task that lacks it, and a key nobody reads is not smuggled in beside them."""
+    for path, keys in _TASK_CASE_KEYS.items():
+        for index, task in enumerate(tasks_of(path)):
+            assert set(task) == keys, (
+                f"{path.name}[{index}] carries {sorted(task)}; each of its tasks is "
+                f"exactly {sorted(keys)}"
+            )
+
+
+def test_files_of_named_tasks_name_every_case_and_sentence_once() -> None:
+    """Cases are reached by name and by sentence, so a duplicate silences one of them.
+
+    The sentence is what a scenario would read mid-sentence -- lower case, no double
+    spaces -- the same bridge `test_every_named_case_carries_a_sentence_a_scenario_can_use`
+    holds for the guest book's files.
+    """
+    for path in _TASK_CASE_KEYS:
+        names = [task.get("case") for task in tasks_of(path)]
+        sentences = [task.get("description") for task in tasks_of(path)]
+
+        assert all(names), f"{path.name} has a task with no `case` name"
+        assert len(names) == len(set(names)), f"{path.name} repeats a case name: {names}"
+        assert all(sentences), f"{path.name} has a task with no `description`"
+        assert len(sentences) == len(set(sentences)), f"{path.name} repeats a sentence"
+        for sentence in sentences:
+            assert str(sentence) == str(sentence).lower().replace("  ", " "), (
+                f"{path.name}: {sentence!r} -- a scenario reads it mid-sentence, so it is "
+                "lower case and has no double spaces"
+            )
+
+
+def test_every_refused_task_names_a_code_the_contract_gives() -> None:
+    """A closed set: an open string was checked for truthiness alone and could read anything."""
+    for task in tasks_of(TODO_TASKS_REFUSED):
+        assert task["refusal"] in _TASK_TEXT_REFUSALS, (
+            f"{task['case']} names the refusal {task['refusal']!r}, which is not one of "
+            f"{sorted(_TASK_TEXT_REFUSALS)} -- the codes spec/design/api.md gives a task's text"
+        )
+
+
+def test_every_ordinary_task_is_one_the_rules_accept() -> None:
+    """`BR-06` and `BR-07`, applied to the ordinary tasks themselves.
+
+    An ordinary task the service would refuse turns the reader that adds all six into a
+    refusal test nobody wrote, and the failure surfaces as the list read back being
+    wrong. Through the shared kernel and the model's constants, never a literal here.
+    """
+    refused = {
+        f"{TODO_TASKS_ORDINARY.name}[{index}]": verdict
+        for index, task in enumerate(tasks_of(TODO_TASKS_ORDINARY))
+        if (verdict := _task_text_verdict(str(task["text"]))) != "accepted"
+    }
+
+    assert refused == {}, f"ordinary tasks the rules refuse: {refused}"
+
+
+def test_every_boundary_task_sits_exactly_on_the_task_bound() -> None:
+    """Read from `TODO_TASK_TEXT_MAX_LENGTH`, never from a literal, and never from `QUERY_MAX_LENGTH`.
+
+    Every boundary task stands exactly on a bound -- the maximum or the one-code-point
+    minimum -- once normalized and trimmed, is accepted, and is `stored` as the shared
+    rule leaves it. Both ends are present, and the padded task really is padded: it is
+    over the bound as sent and on it once trimmed, which is the order `BR-06` gives. A
+    value one code point off passes identically whether the comparison is `>` or `>=`;
+    a value on the bound is the only one that tells them apart.
+    """
+    bound = _task_bound()
+    off: list[str] = []
+    for task in tasks_of(TODO_TASKS_BOUNDARY):
+        kept = normalize(str(task["text"]))
+        if kept != task["stored"]:
+            off.append(f"{task['case']}: `stored` is not the text as the rule leaves it")
+        if length(kept) not in {bound, 1}:
+            off.append(f"{task['case']}: {length(kept)} code points, on neither bound")
+        if (verdict := _task_text_verdict(str(task["text"]))) != "accepted":
+            off.append(f"{task['case']}: the rules refuse it as {verdict}")
+
+    assert off == [], f"boundary tasks off the bound: {off}"
+    lengths = {length(normalize(str(task["text"]))) for task in tasks_of(TODO_TASKS_BOUNDARY)}
+    assert lengths == {bound, 1}, f"the boundary tasks stand on {sorted(lengths)} only"
+
+    padded = _task_case(TODO_TASKS_BOUNDARY, "text_padded_to_maximum")
+    assert length(str(padded["text"])) > bound, "the padded task is not padded"
+
+
+def test_every_task_refused_as_too_long_is_over_the_bound_by_exactly_one() -> None:
+    """One past the bound, never ten past it, once normalized and trimmed.
+
+    The off-by-one is the defect a boundary test exists to catch, and a value an order
+    of magnitude out passes identically whether the comparison is `>` or `>=`. Measured
+    after the trim: two hundred and five spaces are an empty text, not a long one
+    (`BR-06`), and a padded text is over by one only once its padding is gone.
+    """
+    bound = _task_bound()
+    too_long = [
+        task
+        for task in tasks_of(TODO_TASKS_REFUSED)
+        if task["refusal"] == "todo_task_text_too_long"
+    ]
+
+    assert too_long, f"{TODO_TASKS_REFUSED.name} refuses no task as too long"
+    off = {
+        str(task["case"]): length(normalize(str(task["text"])))
+        for task in too_long
+        if length(normalize(str(task["text"]))) != bound + 1
+    }
+    assert off == {}, f"tasks refused as too long, not over the bound by exactly one: {off}"
+
+
+def test_every_refused_task_really_breaks_the_rule_its_code_names() -> None:
+    """The mirror of the ordinary tasks' rule, and the one that matters more.
+
+    A refused task the rules happen to accept -- or refuse for a different reason -- is a
+    test that passes for the wrong reason: its reader expects one code and the service
+    gives another, or none. The verdict the rules give, through the model's constants,
+    has to be the one the task's code stands for.
+    """
+    code_for = {
+        "empty": "todo_task_text_empty",
+        "multiline": "todo_task_text_multiline",
+        "too_long": "todo_task_text_too_long",
+        "accepted": "(accepted)",
+    }
+    wrong = {
+        str(task["case"]): f"names {task['refusal']}, the rules give {given}"
+        for task in tasks_of(TODO_TASKS_REFUSED)
+        if (given := code_for[_task_text_verdict(str(task["text"]))]) != task["refusal"]
+    }
+
+    assert wrong == {}, f"refused tasks the rules treat otherwise: {wrong}"
+
+
+def test_the_example_tasks_show_one_done_and_every_one_is_accepted() -> None:
+    """The seed half's to-do file: tasks a reviewer can judge, and one of them done.
+
+    At least one example task is done (`CR-2609-823a/R-11` clause 6), so a new
+    environment shows a reviewer what a done task looks like without anybody ticking
+    one. And every example task is one the rules accept (`BR-06`, `BR-07`, through the
+    shared kernel and the model's constants): the seeder posts them through the
+    application, so a refused one would stop the filling of a live environment on its
+    first non-201, and the preview a reviewer was waiting for would come up empty with
+    the reason in a log nobody reads.
+    """
+    tasks = tasks_of(TODO_TASKS_EXAMPLE)
+
+    assert any(task.get("done") is True for task in tasks), (
+        f"no example task in {TODO_TASKS_EXAMPLE.name} is done"
+    )
+    refused = {
+        f"{TODO_TASKS_EXAMPLE.name}[{index}]": verdict
+        for index, task in enumerate(tasks)
+        if (verdict := _task_text_verdict(str(task.get("text", "")))) != "accepted"
+    }
+    assert refused == {}, f"example tasks the rules refuse: {refused}"
+
+
+def test_every_task_text_case_carries_the_keys_a_case_has() -> None:
+    """The shape the server's reader and the browser's reader agree on, held here.
+
+    Both readers index these keys; a case missing one would fail in whichever suite ran
+    first, with a message about that language rather than about the corpus. No `field`,
+    because a task has one text: a key nobody reads invites a reader that branches on it.
+    """
+    for index, case in enumerate(cases_of(TODO_TASK_TEXT)):
+        extra = set(case) - _TASK_TEXT_CASE_KEYS - {"length"}
+        missing = _TASK_TEXT_CASE_KEYS - set(case)
+        assert not missing, f"{TODO_TASK_TEXT.name}[{index}] is missing {sorted(missing)}"
+        assert not extra, f"{TODO_TASK_TEXT.name}[{index}] carries {sorted(extra)} as well"
+
+
+def test_every_task_text_case_is_named_and_described_exactly_once() -> None:
+    """Cases are reached by name in both languages, so a duplicate silences one."""
+    names = [case["case"] for case in cases_of(TODO_TASK_TEXT)]
+    sentences = [case["description"] for case in cases_of(TODO_TASK_TEXT)]
+
+    assert all(names), f"{TODO_TASK_TEXT.name} has a case with no name"
+    assert len(names) == len(set(names)), f"{TODO_TASK_TEXT.name} repeats a case name"
+    assert all(sentences), f"{TODO_TASK_TEXT.name} has a case with no sentence"
+    assert len(sentences) == len(set(sentences)), f"{TODO_TASK_TEXT.name} repeats a sentence"
+
+
+def test_every_task_text_case_states_one_of_the_four_verdicts() -> None:
+    """A closed set of four, and every one of the four present.
+
+    Closed, because an open string could claim anything. All four, because a corpus that
+    lost a whole verdict lets a rule that never gives it pass on both sides -- a suite of
+    zero disagreements over zero cases reads exactly like one that agreed.
+    """
+    stated = [case["verdict"] for case in cases_of(TODO_TASK_TEXT)]
+    unknown = sorted({str(verdict) for verdict in stated} - _TASK_TEXT_VERDICTS)
+
+    assert unknown == [], f"{TODO_TASK_TEXT.name} states verdicts outside the four: {unknown}"
+    assert set(stated) == _TASK_TEXT_VERDICTS, (
+        f"{TODO_TASK_TEXT.name} never states {sorted(_TASK_TEXT_VERDICTS - set(stated))}"
+    )
+
+
+def test_a_task_text_length_is_stated_exactly_when_the_case_is_accepted() -> None:
+    """`accepted` without a length would let a case pass under the wrong unit.
+
+    A hundred and one emoji are accepted whether they are counted as 101 code points or
+    as 202 UTF-16 units under a bound of 400; the length is what names the unit, so it
+    is required -- and forbidden on a refusal, where a number would be read as one.
+    """
+    for case in cases_of(TODO_TASK_TEXT):
+        if case["verdict"] == "accepted":
+            assert isinstance(case.get("length"), int), (
+                f"{case['case']} is accepted and states no length"
+            )
+        else:
+            assert "length" not in case, (
+                f"{case['case']} is {case['verdict']} and states a length anyway"
+            )
+
+
+def test_the_task_text_cases_are_written_in_escapes_rather_than_bytes() -> None:
+    """Pure ASCII on disk, for the reason `text-measurement.json` is.
+
+    What this file proves is what a rule does to particular code points -- seven of them
+    line breaks -- so the code points have to arrive unaltered, and `.gitattributes`
+    already rewrites line endings in this repository. A case whose input is a raw
+    U+2028 would be data one checkout setting could change.
+    """
+    raw = TODO_TASK_TEXT.read_bytes()
+    above_ascii = [index for index, byte in enumerate(raw) if byte > 0x7F]
+
+    assert above_ascii == [], (
+        f"{TODO_TASK_TEXT.name} carries {len(above_ascii)} bytes above U+007F; every input "
+        "is written as an escape so that no tool in the chain is part of the data"
+    )
+    assert json.loads(raw.decode("ascii"))["cases"], "and it still parses"
+
+
+def test_the_task_text_cases_carry_every_one_of_the_seven_line_breaks_inside_a_text() -> None:
+    """Each of the seven, left inside a text after the trim, in a case refused as `multiline`.
+
+    The screen and the service read one written set, and a corpus missing one of the
+    seven could not see the side that dropped it -- the two languages' own line-break
+    defaults disagree about U+000B, U+000C and U+0085 among others, which is why the
+    set is written down at all (`A-1`). Inside the text, because a line break at an end
+    is trimmed and never refused.
+    """
+    inside: set[int] = set()
+    for case in cases_of(TODO_TASK_TEXT):
+        if case["verdict"] == "multiline":
+            inside |= {ord(c) for c in normalize(str(case["input"]))} & set(_WRITTEN_LINE_BREAKS)
+    missing = sorted(f"U+{code:04X}" for code in set(_WRITTEN_LINE_BREAKS) - inside)
+
+    assert missing == [], f"no multiline case of {TODO_TASK_TEXT.name} carries {missing} inside"
+
+
+def test_the_task_text_cases_hold_a_text_a_utf16_counter_would_refuse() -> None:
+    """The known positive for the unit: a text well under the bound that UTF-16 puts over it.
+
+    An accepted case whose length in code points is under the longest length the corpus
+    accepts, and whose length in UTF-16 code units is over it -- a hundred and one emoji.
+    A browser counting `.length` refuses it and the service stores it, so a corpus
+    without such a case cannot see the defect `D-04` records. A case exactly ON the bound
+    does not serve: whatever a rule counts, a text of emoji on the bound tells only
+    whether it stops at the bound, not what it counts below it.
+    """
+    accepted = [case for case in cases_of(TODO_TASK_TEXT) if case["verdict"] == "accepted"]
+    longest = max(int(case["length"]) for case in accepted)
+
+    def utf16_units(value: str) -> int:
+        return len(value.encode("utf-16-le")) // 2
+
+    seen_by_unit: list[str] = []
+    for case in accepted:
+        kept = normalize(str(case["input"]))
+        if length(kept) < longest < utf16_units(kept):
+            seen_by_unit.append(str(case["case"]))
+
+    assert seen_by_unit, (
+        f"no accepted case of {TODO_TASK_TEXT.name} is under the bound in code points and "
+        "over it in UTF-16 units, so the corpus cannot tell the two counts apart"
+    )
+
+
+# --------------------------------------------------------------------------- #
 # The seam between the halves
 # --------------------------------------------------------------------------- #
 
@@ -615,14 +1122,17 @@ def test_the_frontend_reads_no_corpus_file() -> None:
     by what the server must prove; a component asserting against it acquires a
     dependency on a file whose reason to change lives in another suite entirely.
 
-    **One exception, and it is the opposite case rather than a hole in this one.**
-    `text-measurement.json` is not sized by what the server must prove -- it is
-    sized by what the two sides must AGREE about, and a claim about agreement
+    **One exception per context, and it is the opposite case rather than a hole in
+    this one.** `text-measurement.json` is not sized by what the server must prove --
+    it is sized by what the two sides must AGREE about, and a claim about agreement
     cannot be checked from one side. Giving the browser its own copy would be the
     very defect this corpus exists to end, wearing a second file name: two lists
-    that have to stay equal and nothing making them. So exactly one module may
-    read exactly that file, it is named below, and every other file in
-    `frontend/src` is refused as before.
+    that have to stay equal and nothing making them. `todo-task-text.json` is the
+    same kind of file for the to-do list's own rule (`CR-2609-823a`). So exactly two
+    modules may each read exactly their own context's file -- the directory it lies
+    in, and that one name -- they are named in `_MAY_READ_ONE_CORPUS_FILE`, and every
+    other file in `frontend/src` is refused as before, as is either reader reaching
+    for the other's file or any other.
     """
     names = {path.name for path in ALL_FILES} | {"golden-set", "golden_set"}
     offenders: list[str] = []
@@ -630,10 +1140,13 @@ def test_the_frontend_reads_no_corpus_file() -> None:
         if source_file.suffix not in {".ts", ".tsx"} or not source_file.is_file():
             continue
         relative = source_file.relative_to(_golden_set.REPO_ROOT).as_posix()
-        if relative in _MAY_READ_THE_TEXT_RULES:
-            continue
+        allowed = (
+            {"golden-set", "golden_set", _MAY_READ_ONE_CORPUS_FILE[relative]}
+            if relative in _MAY_READ_ONE_CORPUS_FILE
+            else set()
+        )
         text = source_file.read_text(encoding="utf-8")
-        named = sorted(name for name in names if name in text)
+        named = sorted(name for name in names - allowed if name in text)
         if named:
             offenders.append(f"{relative} names {named}")
 
@@ -663,7 +1176,12 @@ def test_no_suite_reads_the_seed_corpus() -> None:
     # `for path in ALL_FILES:` asserts about the seed half while containing none of
     # `SEED_FILES`, `WELCOME` or the file's own name. `SEED` is the same hole one
     # step earlier -- `SEED.glob("*.json")` needs no other name at all.
-    seed_names = {"SEED_FILES", "SEED", "ALL_FILES", "WELCOME"} | {p.name for p in SEED_FILES}
+    # `TODO_TASKS_EXAMPLE` is the to-do list's seed file by its locator name
+    # (`CR-2609-823a`): a suite asserting about the example tasks would re-couple the
+    # halves exactly as one asserting about the welcome entries would.
+    seed_names = {"SEED_FILES", "SEED", "ALL_FILES", "WELCOME", "TODO_TASKS_EXAMPLE"} | {
+        p.name for p in SEED_FILES
+    }
     permitted = {
         # The seeder is what the seed half is for.
         "scripts/seed_golden_set.py",
@@ -719,10 +1237,24 @@ def test_no_seed_entry_stands_near_a_published_limit() -> None:
     a screen nobody can judge -- which is the job the seed half has. The margin is
     generous rather than exact: what is being refused is the habit, not a
     particular character count.
+
+    An example task is held under three quarters of `TODO_TASK_TEXT_MAX_LENGTH` --
+    under 150 code points while the bound is 200 (`CR-2609-823a/R-11` clause 2) --
+    read from the constant, so the margin moves with the bound.
     """
     room = 0.75
+    task_bound = _task_bound()
 
     for path in SEED_FILES:
+        story = _golden_set.story_of(path)
+        if "tasks" in story:
+            for index, task in enumerate(tasks_of(path)):
+                assert len(task["text"]) < task_bound * room, (
+                    f"{path.name}[{index}] has a task near the limit. The seed corpus "
+                    "is looked at; boundary values belong in "
+                    "golden-set/fixtures/todo-tasks-boundary.json."
+                )
+            continue
         for index, entry in enumerate(entries_of(path)):
             assert len(entry["author"]) < AUTHOR_MAX_LENGTH * room, (
                 f"{path.name}[{index}] has a signature near the limit. The seed "
@@ -739,10 +1271,13 @@ def test_no_seed_entry_stands_near_a_published_limit() -> None:
 def test_the_seed_half_shows_a_list_rather_than_an_entry() -> None:
     """One entry proves the screen renders; it does not show what a LIST looks
     like -- the spacing, the ordering, the ragged right edge of messages of
-    different lengths. That is most of what a reviewer opens a preview for."""
+    different lengths. That is most of what a reviewer opens a preview for.
+
+    The same holds for a list of tasks, done and not done side by side, so the
+    example tasks owe at least three as well (`CR-2609-823a/R-11` clause 1)."""
     for path in SEED_FILES:
-        assert len(entries_of(path)) >= 3, (
-            f"{path.name} holds fewer than three entries; a new environment then "
+        assert len(_items_of(path)) >= 3, (
+            f"{path.name} holds fewer than three items; a new environment then "
             "opens on a screen that does not show what a list looks like"
         )
 
@@ -766,14 +1301,35 @@ def test_no_corpus_value_looks_like_a_real_person() -> None:
                 if pattern.search(_text_of(entry)):
                     offenders.append(f"{path.name}: {entry.get('case', entry['author'])} -- {what}")
     # Article XI reaches every committed value, whatever shape its file holds. The
-    # cases file carries one string per item rather than two, and an assertion
+    # cases files carry one string per item rather than two, and an assertion
     # message quoting a case is as public as one quoting an entry.
-    for case in cases_of(TEXT_RULES):
-        for what, pattern in _LOOKS_PERSONAL:
-            if pattern.search(str(case["input"])):
-                offenders.append(f"{TEXT_RULES.name}: {case['case']} -- {what}")
+    for cases_file in (TEXT_RULES, TODO_TASK_TEXT):
+        for case in cases_of(cases_file):
+            for what, pattern in _LOOKS_PERSONAL:
+                if pattern.search(str(case["input"])):
+                    offenders.append(f"{cases_file.name}: {case['case']} -- {what}")
 
     assert offenders == [], f"corpus values that look like real personal data: {offenders}"
+
+
+def test_no_task_looks_like_a_real_person() -> None:
+    """Article XI for the to-do list's tasks, in both halves.
+
+    A task is one line anybody may type, and the example tasks are shown to everybody
+    who opens a preview, so they are held to the same "unmistakably synthetic" as the
+    guest book's entries -- the text as sent, and the text a boundary task is stored as.
+    A rule of its own rather than a branch of the one above: a task carries a `text`,
+    and a sweep that read `author` and `message` from it would find nothing to check.
+    """
+    offenders: list[str] = []
+    for path in _TASK_FILES:
+        for index, task in enumerate(tasks_of(path)):
+            values = f"{task.get('text', '')} {task.get('stored', '')}"
+            for what, pattern in _LOOKS_PERSONAL:
+                if pattern.search(values):
+                    offenders.append(f"{path.name}[{index}] -- {what}")
+
+    assert offenders == [], f"tasks that look like real personal data: {offenders}"
 
 
 def test_the_detector_would_see_a_plausible_value() -> None:
