@@ -1,0 +1,52 @@
+# HTTP contract for the health probe. WRITTEN BY HAND.
+#
+# A separate file rather than a row in the guestbook contract, because it is a
+# different area: the probe belongs to the deployment, not to the domain. The
+# "one file per area" convention has its smallest case here, and that is why it
+# is worth seeing.
+#
+# Compatibility mode: BACKWARD. The body was deliberately not frozen while it
+# carried `status` alone -- what a liveness probe puts inside is a deployment
+# detail, and the 200 was the whole promise.
+#
+# Three fields are frozen now, and the reason is that the body stopped being a
+# detail. `environment` and `version` are how a deployment is identified after
+# the fact: a 200 says something is alive and nothing about what, and "which
+# release is on prod right now" is the question actually asked. A caller that
+# reads them needs them to keep arriving. Additive under BACKWARD, so
+# `info.version` moves with it.
+openapi: 3.0.3
+info:
+  title: Health probe
+  version: 1.1.0
+paths:
+  /api/health:
+    get:
+      summary: Whether the application answers, and which copy answered
+      responses:
+        "200":
+          description: >-
+            The application answers. `status` is always `ok` -- answering at all is
+            the signal, so there is no second value. `environment` and `version`
+            name the copy that answered: whatever Terraform put in `APP_ENV` and
+            `APP_VERSION`, or `local` and the repository's own version outside a
+            deployment.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthRead"
+components:
+  schemas:
+    HealthRead:
+      type: object
+      required:
+        - status
+        - environment
+        - version
+      properties:
+        status:
+          type: string
+        environment:
+          type: string
+        version:
+          type: string

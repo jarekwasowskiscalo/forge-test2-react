@@ -1,0 +1,26 @@
+{
+  "story": "ordinary",
+  "demonstrates": "Ordinary entries, of the kind a guest leaves. All of them pass BR-01. The order in this file is WRITING order, not display order -- the list shows them reversed (BR-04), and that is a fact this file is the input to rather than a copy of.",
+  "entries": [
+    {
+      "author": "Anna Testing",
+      "message": "Good morning! Leaving the first entry in this guestbook."
+    },
+    {
+      "author": "Brian Example",
+      "message": "A tidy template. Second visit."
+    },
+    {
+      "author": "Zoë Ångström",
+      "message": "café · naïve · Ærø · 日本語 · Ωμέγα — checking that characters outside ASCII survive the whole stack: the database, the contract, the browser."
+    },
+    {
+      "author": "Clara Multiline",
+      "message": "The first line of the entry.\nA second line, after a newline.\n\nA fourth — after a blank one. Whitespace INSIDE the message is left untouched; only the edges are trimmed (BR-01)."
+    },
+    {
+      "author": "D",
+      "message": "x"
+    }
+  ]
+}

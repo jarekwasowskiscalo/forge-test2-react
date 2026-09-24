@@ -1,0 +1,290 @@
+# Deployment. Separate from ci.yml because it is a different question.
+#
+# `ci.yml` asks "is this commit correct" and answers it for anybody, including a
+# fork. This asks "make this commit be what is running", and only this
+# repository may ask it at all -- with a `v*` tag, or by somebody pressing the
+# button. Which branches may press it is the environments' deployment-branch
+# rule, set on GitHub rather than here (`infra/README.md` § The first run).
+#
+# **No long-lived credentials anywhere.** Not in the repository's secrets, not on
+# a laptop, not in a password manager. GitHub presents a short-lived OIDC token
+# describing the workflow, and the role's trust policy
+# (infra/terraform/bootstrap/main.tf) decides whether that description is one the
+# account accepts. There is no access key to leak because there is none.
+#
+# The whole release is `./scripts/deploy.sh`, the same script a person runs by
+# hand -- so a deploy from a workstation and a deploy from here are the same
+# sequence in the same order, not two implementations that can drift.
+name: Deploy
+
+on:
+  # **A merge deploys to stage. Everything else is asked for.**
+  #
+  # The trunk deploying itself to stage is not a convenience: a merge queue whose
+  # merges do not reach an environment produces a pile of "ready to deploy" commits
+  # that eventually ship as one batch, and a batch is the release nobody can bisect.
+  # Stage is the environment that exists to be wrong, so it is the one a merge is
+  # allowed to move on its own.
+  #
+  # **Gated on `AWS_DEPLOY_ROLE_ARN` being set**, and that guard is the difference
+  # between wiring this and breaking the trunk with it. Until `bootstrap/` has been
+  # applied and its role named to GitHub, a deployment cannot succeed -- and a merge
+  # trigger added before then would paint `main` red on every merge, teaching
+  # everybody to ignore a red trunk. With the guard, this switches itself on the day
+  # the prerequisite exists and stays quiet until then. A dispatch and a tag are not
+  # gated: those are asked for, and an ask deserves a loud failure rather than a
+  # silent skip.
+  #
+  # `stage` still goes by hand from the Actions tab too, **from any branch**, which
+  # is what makes acceptance testing possible before a merge rather than after one.
+  # `prod` is reached by a `v*` tag or by `release.yml` calling this workflow, and
+  # by nothing on this dropdown; `prod` is a GitHub Environment, so the required
+  # reviewer configured there is what stands between this and production -- a rule
+  # the workflow cannot bypass, because it is enforced outside it.
+  #
+  # NOT YET CONFIGURED, and the gap is named rather than assumed away: this repository has
+  # zero environments, and environment protection rules on a private repository need a paid
+  # plan (measured 2026-09-09). Until then `prod` names an environment that does not exist
+  # and gates nothing; the sentence above describes the intended state, not this one.
+  # Nothing deploys regardless -- the role ARN is unset and the guard below skips the job --
+  # but the reviewer is the half of the authorisation that has to exist BEFORE it is set.
+  #
+  # None of it works until `infra/terraform/bootstrap/` has been applied and its
+  # role named to GitHub as `AWS_DEPLOY_ROLE_ARN`. `infra/README.md` § The first
+  # run is the list that ends that.
+  #
+  # No `paths-ignore`, and its absence stays a decision. It was removed when the
+  # merge trigger was, and the merge trigger is back -- but the argument against it
+  # is unchanged and now covers both branches of this trigger: against a tag it
+  # could only do harm (a release is deliberate, and a tag pushed on a
+  # documentation-only commit still means "publish this"), and against a merge it
+  # would mean the trunk and stage silently disagree about what is deployed
+  # whenever a documentation commit lands between two code ones.
+  push:
+    tags: ["v*"]
+    branches: [main]
+
+  # stage on demand, from ANY branch. That is what makes acceptance testing
+  # possible before a merge rather than after one, and it is a rule set on the
+  # `stage` GitHub Environment (deployment branches: all) rather than here -- the
+  # OIDC claim a deployment presents is `environment:stage`, which carries no ref.
+  #
+  # **`prod` is deliberately not on this list.** Production is reachable by a `v*`
+  # tag or by `release.yml` calling this workflow, and by nothing a person can
+  # pick from a dropdown. Its Environment carries a tag rule and no branch rule,
+  # so even re-adding it here would not get past GitHub.
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Which environment to deploy
+        type: choice
+        options: [stage]
+        default: stage
+        required: true
+      # The way back, and it is one pointer rather than a redeploy: the alias stops
+      # serving the version it is on and serves the last one that actually served this
+      # environment and passed its smoke, which was never deleted. Seconds, not minutes
+      # -- which is the only reason it is usable during an incident.
+      #
+      # Which version that is comes from the environment's release manifest, written by
+      # each green deploy. `deploy.sh` refuses, and says which case it is in, when the
+      # manifest cannot name one -- it never falls back to picking a version number.
+      #
+      # It does NOT revert the schema, deliberately. This whole workflow rests on
+      # migrating before rolling precisely because old code tolerates a new schema;
+      # that is what makes rolling the code back safe on its own, and a migration
+      # run backwards on a live database is far more dangerous than the one it would
+      # undo. `deploy.sh --help` states the same limit and the SPA one beside it.
+      #
+      # **`prod` is not reachable here, and that is a gap rather than a decision.**
+      # The dropdown above offers `stage` only, and the `prod` Environment carries a
+      # tag rule with no branch rule, so a dispatch from a branch would be refused
+      # by GitHub even if it were listed. Rolling production back therefore still
+      # means the break-glass path in `deploy.sh`. Closing it properly is an
+      # Environment configuration decision, not a workflow one.
+      mode:
+        description: Deploy, or roll the alias back to the last version that served
+        type: choice
+        options: [deploy, rollback]
+        default: deploy
+        required: true
+
+  # Called by `release.yml`, and this is not a convenience.
+  #
+  # **A tag pushed with GITHUB_TOKEN does not trigger `push:` workflows.** So a
+  # release that created its tag and stopped there would never deploy anything,
+  # silently. Being called as a job instead keeps `environment: prod` -- and
+  # therefore the required reviewer -- exactly where it was, with no long-lived
+  # credential anywhere.
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      ref:
+        description: What to deploy. A release deploys ITS commit, not the caller's.
+        type: string
+        required: false
+        default: ""
+      # The release this deployment reports at /api/health, and it exists because
+      # the tag is the only record of a version: `release.sh` writes nothing into
+      # `pyproject.toml`, so `infra.sh`'s fallback there would name the template's
+      # static version rather than the release being deployed.
+      #
+      # Empty for everything that is not a release. `infra.sh` treats an empty
+      # APP_VERSION as unset and reads `pyproject.toml`, which is exactly what
+      # stage and preview did before this input existed.
+      app_version:
+        description: The version the deployment reports. Empty outside a release.
+        type: string
+        required: false
+        default: ""
+
+# Read the repository, and mint an OIDC token. Nothing else -- a deployment
+# workflow has no business writing to the repository.
+permissions:
+  contents: read
+  id-token: write
+
+# One deployment per environment at a time, and **never cancelled**. A cancelled
+# `terraform apply` leaves a lock behind and a state that describes a job half
+# done; the next run then refuses to start for a reason nobody can act on
+# quickly. Queue instead.
+#
+# The trailing `|| 'none'` below has no trigger that reaches it: a dispatch and a
+# call both carry `environment`, and a tag falls to `prod`. It is `none` rather
+# than a real name so that a trigger added later without an input is refused by
+# `deploy.sh` instead of quietly deploying somewhere. The one expression names the
+# job, picks the environment and sets the deploy target, and four copies of a
+# shorter one would be four chances to make them disagree.
+concurrency:
+  group: deploy-${{ inputs.environment || (startsWith(github.ref, 'refs/tags/v') && 'prod') || (github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && 'stage') || 'none' }}
+  cancel-in-progress: false
+
+env:
+  UV_VERSION: "0.12.5"
+  PYTHON_VERSION: "3.14"
+  NODE_VERSION: "26"
+  TERRAFORM_VERSION: "1.13.3"
+  AWS_REGION: "eu-central-1"
+
+jobs:
+  deploy:
+    name: ${{ inputs.environment || (startsWith(github.ref, 'refs/tags/v') && 'prod') || (github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && 'stage') || 'none' }}
+    # A branch push deploys only once the deployment role exists; see the trigger.
+    if: >-
+      github.event_name != 'push'
+      || startsWith(github.ref, 'refs/tags/v')
+      || vars.AWS_DEPLOY_ROLE_ARN != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    # The GitHub Environment of the same name. It is what carries the required
+    # reviewers on prod, and it is also the `sub` claim the AWS role trusts --
+    # so configuring one here is not decoration, it is half the authorisation.
+    environment:
+      name: ${{ inputs.environment || (startsWith(github.ref, 'refs/tags/v') && 'prod') || (github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && 'stage') || 'none' }}
+      url: ${{ steps.deployed.outputs.url }}
+
+    steps:
+      # A release deploys the commit its own tag names. That is the commit the
+      # release was dispatched from -- a release makes no commit of its own, so the
+      # tag is a second name for one that was already reviewed onto the trunk.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          # The wrapper intercepts stdout to expose it as a step output, and
+          # deploy.sh reads `terraform output -json` from stdout. With the
+          # wrapper on, it reads the wrapper's decoration instead and fails on
+          # JSON that is not JSON.
+          terraform_wrapper: false
+
+      - run: uv sync --locked
+
+      # The credentials, minted for this run and expiring with it. The role
+      # comes from a repository VARIABLE rather than a secret on purpose: an ARN
+      # is not a secret, and a variable is visible in the log, which is what you
+      # want when a deployment goes to the wrong account.
+      - name: Assume the deployment role
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: deploy-${{ github.run_id }}
+
+      # One script, the same one a person runs: build, apply, MIGRATE, publish,
+      # invalidate, smoke. The order is the script's and is the only order that
+      # has no window where the code and the schema disagree.
+      - name: Deploy
+        id: deployed
+        env:
+          TARGET: ${{ inputs.environment || (startsWith(github.ref, 'refs/tags/v') && 'prod') || (github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && 'stage') || 'none' }}
+          # Empty unless somebody chose it, so `${ROLLBACK:+--rollback}` adds the
+          # flag or adds nothing. A tag and a merge cannot reach this input at all,
+          # which is the property that matters: a rollback is always something a
+          # person asked for by name.
+          ROLLBACK: ${{ inputs.mode == 'rollback' && '1' || '' }}
+          # Set by `release.yml` and by nothing else. `infra.sh` prefers it over
+          # the version in `pyproject.toml`, and an empty value falls through to
+          # that read -- so stage and preview are untouched by its presence.
+          APP_VERSION: ${{ inputs.app_version || '' }}
+        # `pipefail`, and it is load-bearing. GitHub's default `run:` shell is
+        # `bash -e {0}` -- `-e` WITHOUT `pipefail` -- so the status of
+        # `deploy.sh ... | tee` is `tee`'s, which is always 0. A failed deployment
+        # reported a green step; what usually reddened the job was the next line
+        # failing to find a `url` in output that was never produced, which is luck
+        # rather than a gate, and a `--rollback` run has no such second line at all.
+        # Naming `bash` selects `bash --noprofile --norc -eo pipefail {0}`.
+        shell: bash
+        run: |
+          ./scripts/deploy.sh "$TARGET" --yes ${ROLLBACK:+--rollback} | tee deploy.log
+          url=$(./scripts/infra.sh "$TARGET" output -json |
+                uv run python -c "import json,sys; print(json.load(sys.stdin)['url']['value'])")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "target=$TARGET" >> "$GITHUB_OUTPUT"
+          echo "::notice::$TARGET is at $url"
+
+      # The log, not the state and not the plan. A Terraform state file carries
+      # the database's master password; a plan carries whatever the state does.
+      # Neither belongs in an artefact CI keeps for weeks (constitution, Article
+      # XI), and naming one file rather than a directory is what keeps them out.
+      - name: Keep the deploy log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: deploy-log-${{ github.run_id }}
+          path: deploy.log
+          retention-days: 7
+
+      # The job's ONE writer, last and `if: always()`. This workflow reported
+      # through a `::notice` and the Environments tab alone, so a failed deployment
+      # left nothing on the summary page saying how far it got -- which matters more
+      # here than anywhere: the script migrates before it publishes, so a failure
+      # can leave the schema ahead of the code.
+      - name: Summary
+        if: always()
+        env:
+          TARGET: ${{ steps.deployed.outputs.target }}
+          URL: ${{ steps.deployed.outputs.url }}
+          MODE: ${{ inputs.mode || 'deploy' }}
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py deploy --job "${TARGET:-deploy}" \
+            --environment "${TARGET:-unknown}" --url "$URL" --ref "$GITHUB_SHA" \
+            --mode "$MODE" --result "$RESULT" --markdown "$GITHUB_STEP_SUMMARY"

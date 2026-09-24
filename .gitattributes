@@ -1,0 +1,66 @@
+# Line endings, pinned rather than left to each developer's git config.
+#
+# Git for Windows offers `core.autocrlf=true` as its *default* install option.
+# Without this file every text file in the repository is converted on checkout
+# there, and the shell scripts stop working the moment they are run under Git
+# Bash, WSL or a container: `/usr/bin/env bash^M: bad interpreter`. Since
+# scripts/install.sh invokes its siblings directly, one CRLF checkout breaks the
+# whole documented onboarding path -- and a Windows developer who then edits and
+# commits a script can break it for Linux and macOS colleagues too.
+#
+# The scripts are POSIX (spec/constitution.md, Article XII, and spec/design/conventions.md § Scripts), so a
+# CRLF checkout does not degrade them -- it breaks them. This file is what keeps
+# that from depending on a colleague's git config; CI enforces the rest.
+
+# Normalise everything to LF in the repository, and check out LF everywhere.
+* text=auto eol=lf
+
+# --- Executable text, where the ending is load-bearing ---------------------
+*.sh        text eol=lf
+
+# --- Test data, compared byte for byte -------------------------------------
+# The reference corpus is JSON under golden-set/ and is read by a parser that
+# tolerates either ending; nothing here compares its bytes. The CSV and cp1250
+# fixtures a previous product kept are gone, and so are their rules -- a rule
+# for a file that does not exist reads as a promise nobody can check.
+
+# --- Archived session transcripts, compared by hash ------------------------
+# `-text` is the load-bearing half: `* text=auto eol=lf` would normalise CR
+# bytes on commit, so the sha256
+# that `retro_capture.py` records for the working-tree file would not match the
+# bytes a fresh clone gets, and `verify` would fail on every machine except the
+# one that captured. `-diff` because these are multi-megabyte JSONL blobs whose
+# textual diff is noise nobody reads.
+spec/changes/*/sessions/**   -text -diff linguist-generated
+
+# The session corpus: every session that is NOT a change's own. Same rule, same
+# reason -- `corpus.py verify` compares sha256 against the working-tree bytes, so a
+# normalising checkout would make every archive report damage on every machine
+# except the one that captured it. `INDEX.md` is excluded below because it is
+# generated prose a reviewer reads, not bytes compared by hash.
+retro/corpus/**              -text -diff linguist-generated
+retro/corpus/INDEX.md        text eol=lf linguist-generated
+
+# --- Binary ----------------------------------------------------------------
+# No binary file is tracked today, so no rule stands here: the rules this section
+# used to carry (`*.xlsx`, `*.pdf`, `*.png`, `*.woff2`, ...) matched nothing, and
+# the standard three sections above give is that a rule for a file that does not
+# exist reads as a promise nobody can check. When a binary fixture arrives, name
+# its extension here as `binary` in the same commit, so `text=auto` never guesses.
+
+# --- Generated, so diffs are noise -----------------------------------------
+uv.lock                        -diff linguist-generated
+frontend/package-lock.json     -diff linguist-generated
+frontend/src/api/schema.d.ts   linguist-generated
+
+# The change registry: one entry per change, projected from that change's own
+# `change.json`. Marked generated so a reviewer reads the record rather than the
+# view of it.
+#
+# Deliberately NOT `merge=ours`. Git ships no built-in `ours` driver: the
+# attribute only works where somebody has run `git config merge.ours.driver true`,
+# so it would silently fall back to a text merge on a colleague's clone -- the
+# failure arriving through a config step instead of a file format. Conflicts here
+# are resolved by regenerating, which is one command and needs no git verbs:
+#     sdd-engine gen_indexes
+spec/changes/status.json       -diff linguist-generated

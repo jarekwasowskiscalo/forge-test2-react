@@ -1,0 +1,26 @@
+{
+  "story": "welcome",
+  "demonstrates": "What a freshly created environment opens with -- a preview, a fresh clone, a stage nobody has written in yet. Entries chosen to be LOOKED AT rather than asserted about: they carry the round-trip properties that make a screen worth judging (characters outside ASCII, a message with line breaks, a short one beside a long one) and no value anywhere near a published limit, because a signature padded to eighty characters is a screen nobody can read.",
+  "entries": [
+    {
+      "author": "The template",
+      "message": "Welcome. This guest book was filled when the environment was created, so there is something on the screen to judge. Every entry here arrived the way a guest's entry arrives -- posted through the API, and subject to the same rules."
+    },
+    {
+      "author": "Zoë Ångström",
+      "message": "café · naïve · Ærø · 日本語 · Ωμέγα — the characters above ASCII are here on purpose: if they survive as far as your eyes, they survived the database, the contract and the browser."
+    },
+    {
+      "author": "Clara Multiline",
+      "message": "The first line of an entry.\nA second line, after a newline.\n\nA fourth, after a blank one — whitespace INSIDE a message is left alone; only the edges are trimmed."
+    },
+    {
+      "author": "Brian Example",
+      "message": "A short one, to show what the list looks like when the entries are not all the same length."
+    },
+    {
+      "author": "Ada Placeholder",
+      "message": "Newest first, so this one is at the top until somebody writes the next. Delete the guest book and this file goes with it -- the example is an example."
+    }
+  ]
+}

@@ -1,0 +1,1417 @@
+# Everything that must hold, on every pull request and on every push to the trunk --
+# with two jobs that are routed rather than unconditional, named where they are
+# defined. One run per change: a branch is covered by its pull request, not twice.
+#
+# One workflow, not several, so "did CI pass?" has one answer. The jobs run in
+# parallel and each one exists because the thing it catches actually happened in
+# this repository:
+#
+#   changes        what this diff can possibly affect; reports today, routes later
+#   quality        a stale generated contract; an 86 KB .coverage committed
+#   scripts        a script that lost a flag, or that nobody could ask what it does
+#   backend        the regressions the suite pins, on a real Postgres
+#   frontend       API types drifting from the Pydantic schemas
+#   audit          an advisory published against a dependency nobody here touched --
+#                  blocking when this change owns the manifests, reported when it does not
+#   cross-platform a bash-3.2 expansion that only fails on macOS
+#   infra          Terraform that stopped parsing, without an AWS account to ask
+#   image          a Dockerfile that could not build for five days
+#   e2e            an `/api` prefix that silently broke every scenario, unnoticed
+#                  for five days because nothing ran them
+#   ci-advisory    the signals that report and never block -- a red check no branch
+#                  rule requires, so that "correctness" and "taste" are two colours
+#                  in the checks list rather than one line in a log
+#   specs          the specification gates, run by the process that owns them -- a
+#                  composite action from the forge plugin's repository, called with
+#                  this repository's diff and its `spec-exempt` label
+#   changelog      a change made outside the process that leaves no record of itself:
+#                  one entry under changelog/, unless the diff carries a change directory
+#   ci             the aggregate: runs no gate, reads every other job's verdict
+#
+# `specs` is the one job here that is not this application's. It is a call, not a
+# copy: the gates, the register and the summary page are the process's single
+# implementation, and this workflow supplies the only thing they cannot have -- a
+# pull request in THIS repository. `check.sh` still runs nothing of the process, so
+# the local answer and the CI answer stay two different questions with two names.
+#
+# This list is checked against the file by `test_sdd_ci_parity.py`, because it was
+# three jobs out of date -- it named seven while ten existed, and the three it
+# omitted were `infra`, `specs` and `ci`.
+#
+# `./scripts/check.sh` runs the same gates locally. Adding one here means adding
+# it there; the only thing check.sh cannot reproduce is the cross-platform leg,
+# because proving the suite runs on macOS as well as Linux needs a macOS machine.
+
+name: CI
+
+on:
+  # **The trunk only.** A branch is covered by its pull request, and this is what
+  # stops it being covered twice.
+  #
+  # Without the filter, a branch with an open pull request fires BOTH events, so the
+  # workflow ran end to end twice for one change. `concurrency` cancelled the loser,
+  # which fixed the runner spend and left the real problem standing: a cancelled run
+  # still reports, so a pull request carried a red `CI passed` from the cancelled
+  # push run beside the green one from its own. That is survivable while nothing
+  # requires the check and disqualifying the moment something does -- and a required
+  # `CI passed` is the whole point of the branch ruleset.
+  #
+  # WHICH NOW EXISTS, and the date is the load-bearing half. Ruleset `main`, id 22747644,
+  # has been active since 2026-09-10: it requires `CI passed`, and its `bypass_actors` is
+  # empty, so not for an admin either.
+  #
+  # This paragraph used to say the opposite -- that the organisation's billing tier made a
+  # ruleset on a private repository impossible -- and cited the marketplace repository as
+  # agreeing with it. It never did. `claude-marketplace/CLAUDE.md` records
+  # that the obstacle was never the plan, the organisation being on Team: it was that this
+  # repository and that one were FORKS of private repositories in another organisation,
+  # and GitHub gates the feature on the root of the fork network rather than on the owner.
+  # So the API answered `Upgrade to GitHub Pro` while the organisation answered `team`,
+  # which reads like a billing fault and is a fork. Detaching it was the whole fix.
+  #
+  # A fact about an external service is a reading with a date and a source. It is never a
+  # sentence about permanent impossibility, because that is the shape that stops being
+  # re-measured.
+  #
+  # The cost, stated: a branch with no pull request open gets no run at all. Local
+  # `check.sh` and the pre-commit hook cover the loop before that point, and opening
+  # the pull request as a draft is what buys CI -- which is the moment it starts
+  # being worth paying for.
+  push:
+    branches: [main]
+  # `labeled` is NOT in the default set (`opened`, `synchronize`, `reopened`), and naming
+  # `types:` REPLACES that set rather than extending it -- so every type that matters is
+  # written out. Without `labeled` a label produces no event at all, which is a latent
+  # defect that predates the `cross-platform` label below: the specification gates read
+  # `spec-exempt` off the event payload -- the `specs` job, through the composite action
+  # `sdd-specs@main` -- so applying that label did nothing until somebody pushed again.
+  #
+  # `unlabeled` is here for the SAME reason. The sentence that used to stand in its place
+  # -- that taking a label away could not invalidate a green run -- was false about both
+  # labels this workflow reads, because both are PERMISSIVE rather than restrictive. `spec-exempt` is
+  # the only road from `check_change.py` exit 1 to exit 0, and `no-changelog` is a path to
+  # `ok` in `changelog.sh`. Applying one turns red into green, and removing one turns green
+  # into red. Only `cross-platform` below has the opposite sign, and it merely ADDS a job.
+  #
+  # `ready_for_review` is the same shape a third time. `check_change.py` skips its `stage`
+  # and `status` asserts while a pull request is a draft, and says of them that they start
+  # deciding the moment you take it out of draft. That sentence is true only if leaving the
+  # draft is an event of this workflow.
+  #
+  # `converted_to_draft` travels WITH `ready_for_review` and must never be added alone.
+  # Alone it is a laundering path, because the direction of its risk is the opposite one: a
+  # red `specs` recomputes to green on conversion, the two asserts now being skipped. Paired
+  # it is closed -- GitHub refuses to merge a draft at all, and leaving the draft recomputes
+  # strictly.
+  #
+  # The rule under all four: the required status is a function of (SHA, pull-request
+  # metadata). A run that cannot see half the metadata move is a green somebody merges on.
+  #
+  # NO JOB CARRIES AN `if:` ON THE EVENT ACTION, and that is a decision rather than an
+  # omission. Routing the heavy jobs off a metadata run is cheap to write and wrong here:
+  # the aggregate a metadata run publishes REPLACES the previous one for this SHA, so a
+  # pull request whose `backend` is red would need only a label added or removed to publish
+  # a green `CI passed` assembled from `specs` and `changelog` alone -- a larger hole than
+  # the one this list closes. The whole workflow runs in two to three minutes, and
+  # `labeled` has been paying that since the day it was added.
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled, ready_for_review, converted_to_draft]
+  # Weekly, to catch drift no commit of ours causes: a moved base image, a
+  # yanked wheel, a runner image change.
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+# Read-only. Nothing here publishes, comments or pushes.
+permissions:
+  contents: read
+
+# Keyed on the branch NAME, not on `github.ref`. A pull request's ref is
+# `refs/pull/N/merge` rather than `refs/heads/x`, and the name is what stays stable
+# across the two while successive pushes to the same branch supersede each other.
+#
+# This used to be the fix for a branch running the whole workflow twice, once per
+# event. That is now settled at the trigger above -- `push` is the trunk only -- and
+# what remains here is the ordinary job: a second push to a branch supersedes the
+# first rather than queueing behind it.
+# Cancel superseded runs on pull requests only. On the trunk every push keeps
+# its run: cancelling there means a merge can land and its build be cancelled
+# by the next merge, leaving a commit on the trunk that no green run ever
+# vouched for.
+concurrency:
+  group: ci-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  UV_VERSION: "0.12.5"
+  PYTHON_VERSION: "3.14"
+  NODE_VERSION: "26"
+  # A literal copy of TERRAFORM_VERSION in scripts/_lib.sh -- an Actions step
+  # cannot source a shell file. `tests/fitness/test_infra_layout.py` compares every
+  # workflow's copy against that one, so they cannot drift apart silently, exactly as
+  # the actionlint pin above already does.
+  #
+  # That sentence was false for as long as it stood here: the named test read
+  # `_lib.sh` and the Terraform roots and never opened a workflow. A comment
+  # promising a check that does not exist is worse than no comment, because the next
+  # person to change one copy reads it and stops looking. The test exists now.
+  TERRAFORM_VERSION: "1.13.3"
+
+jobs:
+  # Which heavy jobs this diff can possibly affect.
+  #
+  # **It routes nothing yet, and that is the plan rather than an unfinished edit.**
+  # This file already records the precedent: `specs` ran advisory for its first week,
+  # deliberately, to measure false alarms before anyone could be trained to reach for
+  # the exemption. The same applies here, and more sharply -- once an `if:` consumes
+  # these outputs, a skipped job reports `skipped` and the required check goes GREEN.
+  # A wrong filter is then a gate that stopped without saying so. So: publish the
+  # verdict for a week, read the summaries against what actually changed, and only
+  # then wire the four `if:`s onto `frontend`, `infra`, `image` and `e2e`. The routing
+  # data is free; the skip is not.
+  #
+  # Plain `git diff`, not `dorny/paths-filter@<sha>`. The action resolves a base over
+  # the API and needs no full clone -- worth nothing here, where `.git` is small -- and
+  # against it stands the one fact that decides: this output will choose WHICH GATES
+  # RUN. That is a strictly higher-trust position than the linters in `scripts`, where
+  # this file already refuses a marketplace action for a seven-line retry loop.
+  #
+  # Fails SAFE. Any diff it cannot resolve -- a new branch, a force push, a shallow
+  # clone, an event with no base -- sets every output to `true`, and the workflow
+  # behaves exactly as it did before this job existed.
+  #
+  # Output names are JOB names on purpose (`image`, not `docker`): the aggregate below
+  # compares `may_skip` against `needs` keys, and a translation table between the two
+  # would be a third place to keep in step.
+  changes:
+    name: What changed
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      infra: ${{ steps.filter.outputs.infra }}
+      image: ${{ steps.filter.outputs.image }}
+      e2e: ${{ steps.filter.outputs.e2e }}
+      deps: ${{ steps.filter.outputs.deps }}
+      ci_self: ${{ steps.filter.outputs.ci_self }}
+      may_skip: ${{ steps.filter.outputs.may_skip }}
+    steps:
+      # Full history, no blobs. `git diff --name-only` reads trees and never file
+      # contents, so `blob:none` fetches the whole commit graph for a fraction of the
+      # bytes; a shallow clone has no base and would send every run down the fail-safe
+      # path -- safe, and useless.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          filter: blob:none
+
+      - id: filter
+        # Through `env:`, never interpolated into the script. A `${{ }}` inside `run:`
+        # is textual substitution, and a base sha is event-controlled input.
+        env:
+          BASE_PR: ${{ github.event.pull_request.base.sha }}
+          BASE_PUSH: ${{ github.event.before }}
+        run: |
+          everything() {
+            {
+              echo "backend=true"
+              echo "frontend=true"
+              echo "infra=true"
+              echo "image=true"
+              echo "e2e=true"
+              echo "deps=true"
+              echo "ci_self=true"
+              echo "may_skip="
+            } >> "$GITHUB_OUTPUT"
+            # Outputs first, THEN the page. If the report could run first and
+            # abort, the outputs would be unset and every routed job would read an
+            # empty string -- a fail-safe path that fails unsafely.
+            python3 scripts/ci_summary.py route --job "What changed" \
+              --reason "$1" --markdown "$GITHUB_STEP_SUMMARY"
+            echo "::notice::routing: $1 -- every job runs"
+            exit 0
+          }
+
+          case "$GITHUB_EVENT_NAME" in
+            pull_request) base="$BASE_PR" ;;
+            push)         base="$BASE_PUSH" ;;
+            *)            everything "$GITHUB_EVENT_NAME carries no diff" ;;
+          esac
+
+          [ -n "$base" ] || everything "the event carries no base commit"
+          # The all-zero sha is what a push to a NEW branch reports.
+          case "$base" in
+            *[!0]*) ;;
+            *) everything "the base is the null sha (a new branch)" ;;
+          esac
+          git cat-file -e "${base}^{commit}" 2>/dev/null \
+            || everything "the base $base is not in this clone (a force push, or a rewritten history)"
+
+          # Two dots, not three. On a pull request HEAD is the merge ref, so
+          # `base..HEAD` is this change plus whatever the base gained since the event
+          # was cut -- a superset, and a superset errs toward RUNNING a job.
+          # `--no-renames` for the same reason: a file moved out of `app/` is then
+          # reported at both paths instead of only the new one.
+          files="$(git diff --name-only --no-renames "$base" HEAD)" \
+            || everything "git diff against $base failed"
+          [ -n "$files" ] || everything "the diff is empty"
+
+          may_skip=""
+          matches() { printf '%s\n' "$files" | grep -Eq "$1"; }
+          verdict() {
+            if matches "$2"; then
+              echo "$1=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "$1=false" >> "$GITHUB_OUTPUT"
+              may_skip="$may_skip $1"
+            fi
+          }
+
+          # The image's input set is a DERIVATION, not a guess: `.dockerignore` plus
+          # the Dockerfile's own COPY lines are exactly what reaches the build context.
+          verdict image    '^(Dockerfile|\.dockerignore|pyproject\.toml|uv\.lock|alembic\.ini|alembic/|app/|frontend/)'
+          # `app/` is in the frontend set because `dump_openapi.py` generates the
+          # contract from the Pydantic models -- a backend-only change is exactly how
+          # the committed TypeScript goes stale. `golden-set/` is in it because the
+          # vitest suite reads `text-measurement.json`: one corpus proves both sides
+          # measure text alike, so a corpus-only edit that the frontend job skipped
+          # would leave the browser's half of that claim unrechecked -- the silent
+          # green this filter set exists to prevent.
+          verdict frontend '^(frontend/|app/|contracts/|golden-set/|scripts/|pyproject\.toml|uv\.lock)'
+          verdict infra    '^(infra/|scripts/)'
+          verdict e2e      '^(app/|frontend/|e2e/|alembic/|alembic\.ini|scripts/|contracts/|golden-set/|conftest\.py|docker-compose\.yml|Dockerfile|pyproject\.toml|uv\.lock)'
+
+          # Reported, never routed on. Held in a variable because the summary states
+          # it too: computing the same predicate twice is how a page and the output it
+          # describes drift apart while both look right.
+          if matches '^(frontend/package(-lock)?\.json|pyproject\.toml|uv\.lock)$'; then
+            deps=true
+          else
+            deps=false
+          fi
+          # A change to this file may break any job's STEPS, and the filters above
+          # cannot see that: a diff touching only `.github/workflows/` matches none
+          # of them, so every routed job would be cleared to skip -- including the
+          # one the edit breaks. So `ci_self` does not merely gate `image`: it
+          # empties `may_skip` outright. Nothing is skippable on a run whose own
+          # instructions are what changed.
+          #
+          # Found by running this script against a real range rather than by
+          # reading it: `b025cc5..8d2d59f` touches `.github/` and `infra/` and came
+          # back offering to skip `image`, `frontend` and `e2e`.
+          if matches '^\.github/workflows/'; then
+            ci_self=true
+            may_skip=""
+          else
+            ci_self=false
+          fi
+
+          # `backend` has NO filter and is never cleared, and that is a finding rather
+          # than an omission: the test files under `tests/` read `spec/`,
+          # `docs/`, `retro/`, `golden-set/` and this workflow file -- one of them
+          # asserts that the word "macOS" appears in `spec/design/testing.md`. Treat
+          # `spec/**` as inert and a pull request deleting that sentence merges green,
+          # because the test policing it was skipped by the routing.
+          # One redirect for the four verdicts decided above. The routed jobs were
+          # written by `verdict` as they were judged; these are the ones this script
+          # decides for itself, and grouping them is what SC2129 asks for.
+          {
+            echo "backend=true"
+            echo "deps=$deps"
+            echo "ci_self=$ci_self"
+            echo "may_skip=${may_skip# }"
+          } >> "$GITHUB_OUTPUT"
+
+          # The file list goes through a file rather than an argument: a diff can
+          # carry hundreds of paths, and the page caps what it shows at fifty --
+          # the previous version printed every one of them, uncapped, onto a page
+          # that truncates at 1 MiB.
+          printf '%s\n' "$files" > "$RUNNER_TEMP/changed.txt"
+          python3 scripts/ci_summary.py route --job "What changed" \
+            --files-from "$RUNNER_TEMP/changed.txt" \
+            --may-skip "${may_skip# }" \
+            --base "$base" \
+            --deps "$deps" \
+            --ci-self "$ci_self" \
+            --markdown "$GITHUB_STEP_SUMMARY"
+
+  # ~1 min. No Node, no Docker, no database -- so it is the first thing to go
+  # red and the cheapest to re-run.
+  quality:
+    name: Lint, types, hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - run: uv sync --locked
+
+      - name: Lint (ruff)
+        id: ruff
+        run: uv run ruff check .
+
+      - name: Format (ruff)
+        id: format
+        run: uv run ruff format --check .
+
+      - name: Types (mypy, strict)
+        id: types
+        run: uv run mypy
+
+      # `.coverage` was committed once already, and it regenerates on every
+      # coverage run and carries absolute host paths. This is the general form
+      # of that mistake rather than a check for that one file.
+      - name: No generated artifact is tracked in git
+        id: tracked
+        run: |
+          tracked_ignored="$(git ls-files --cached --ignored --exclude-standard)"
+          if [ -n "$tracked_ignored" ]; then
+            echo "::error::these files are tracked but match .gitignore:"
+            echo "$tracked_ignored"
+            exit 1
+          fi
+          for path in .coverage openapi.json app/static frontend/dist; do
+            if git ls-files --error-unmatch "$path" >/dev/null 2>&1; then
+              echo "::error::$path is generated and must not be committed"
+              exit 1
+            fi
+          done
+
+      # Committed LF is what keeps the shell scripts runnable after a Windows
+      # checkout with core.autocrlf=true. .gitattributes states it; this proves
+      # the working tree agrees with the attributes.
+      - name: Line endings match .gitattributes
+        id: eol
+        run: |
+          git add --renormalize .
+          if ! git diff --cached --quiet; then
+            echo "::error::these files are stored with the wrong line endings:"
+            git diff --cached --name-only
+            exit 1
+          fi
+
+      # The job's ONE writer, last and `if: always()`. It reads each check's outcome
+      # from GitHub's own `steps` context, so the page cannot disagree with the tick
+      # beside the step; what each check was FOR is prose in `ci_summary.py`, which is
+      # a reviewed table rather than a `name:` scraped at runtime.
+      - name: Summary
+        if: always()
+        # Every value through `env:`, none interpolated into the script -- the rule
+        # this file states at the top of `changes`. `job.status` and `matrix.os` are
+        # not event-controlled and could safely be inlined; they go through `env:`
+        # anyway, because the next expression added here will be copied from this one.
+        env:
+          STEPS: ${{ toJSON(steps) }}
+          JOB: Lint, types, hygiene
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py checks --job "$JOB" --job-id "quality" \
+            --steps "$STEPS" --result "$RESULT" \
+            --markdown "$GITHUB_STEP_SUMMARY"
+
+  # ~2 min. The scripts are the interface to this project, for people and for
+  # agents. A script that is missing, undocumented or broken on one OS is the
+  # same class of defect as a broken endpoint.
+  scripts:
+    name: Scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # scripts/hygiene.sh is the local equivalent of this job, and the steps
+    # below are a second implementation of its checks -- DELIBERATELY, not by
+    # neglect. The `--help` step further down must run on a bare runner with no
+    # toolchain at all, because answering --help before any prerequisite check
+    # is the very property it proves; wiring hygiene.sh in would put a script
+    # between the runner and that proof. The two copies can drift (they have),
+    # so folding them into one implementation is on the backlog -- until then,
+    # a check added here belongs in hygiene.sh and vice versa.
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      # `start.sh` grew --development and lost it again once, and `--dev` then
+      # reached run.py's argparse and died with "unrecognized arguments". Every
+      # mode this script advertises has to stay reachable.
+      #
+      # `grep -q -- "--dev"` is a substring match that `--development` already
+      # satisfies, so a script that dropped the short alias entirely still passed.
+      # `-w` makes each flag match as a whole word, which is what was meant.
+      - name: start.sh still accepts every mode flag
+        id: flags
+        run: |
+          missing=0
+          for flag in --development --dev --container --port --no-seed; do
+            grep -qw -- "$flag" scripts/start.sh || { echo "::error::start.sh lost $flag"; missing=1; }
+          done
+          exit $missing
+
+      - name: Shell scripts are executable
+        id: execbit
+        run: |
+          missing=0
+          for sh in scripts/*.sh; do
+            mode="$(git ls-files -s "$sh" | cut -d' ' -f1)"
+            [ "$mode" = "100755" ] || { echo "::error::$sh is committed as $mode, not 100755"; missing=1; }
+          done
+          exit $missing
+
+      # A script nobody can find is a script nobody uses, and the next person
+      # goes back to copying commands out of the README -- which is the failure
+      # this whole directory exists to prevent. `_`-prefixed names are internal
+      # (_lib, _install-docker) and deliberately not listed.
+      - name: Every script is listed in help
+        id: listed
+        run: |
+          missing=0
+          for sh in scripts/*.sh; do
+            name="${sh##*/}"
+            case "$name" in _*) continue ;; esac
+            grep -q -- "$name" scripts/help.sh || { echo "::error::$name is missing from help.sh"; missing=1; }
+          done
+          exit $missing
+
+      # Every task script takes --help, so a person or an agent can ask what it
+      # does without reading it. Running them all also proves the shared library
+      # loads and that none fails before parsing its arguments.
+      # This job installs no uv, no Node and no Docker, deliberately: `--help`
+      # has to be answered BEFORE any prerequisite check or side effect. It was
+      # not -- `start.sh --help` ran `uv sync` first and died with "uv: command
+      # not found", on exactly the machine most likely to be asking what the
+      # script does. Running them here on a bare runner is what proves it.
+      - name: Every script answers --help without any toolchain
+        id: help
+        run: |
+          failed=0
+          for sh in scripts/*.sh; do
+            name="${sh##*/}"
+            case "$name" in _*) continue ;; esac
+            "$sh" --help >/dev/null || { echo "::error::$name --help failed"; failed=1; }
+          done
+          exit $failed
+
+      # The pull is its own step, retried, because it is the only network fetch
+      # in either linter run: a Docker Hub hiccup used to fail the *lint* step,
+      # which reads as a lint problem and sends the reader into the scripts.
+      # Plain bash rather than a marketplace retry action -- the loop is seven
+      # lines, and a third-party action is a supply-chain dependency with more
+      # surface than the problem it solves. Version literals stay in step with
+      # _lib.sh (hygiene.sh greps the actionlint one against it).
+      - name: Pull the pinned linter images
+        id: images
+        run: |
+          for image in koalaman/shellcheck:v0.9.0 rhysd/actionlint:1.7.7; do
+            for attempt in 1 2 3; do
+              if docker pull "$image"; then break; fi
+              if [ "$attempt" = 3 ]; then echo "::error::could not pull $image"; exit 1; fi
+              sleep $((attempt * 15))
+            done
+          done
+
+      # Pinned, through the same image `check.sh` uses. The runner's
+      # preinstalled shellcheck is 0.9 and a developer's is whatever their
+      # package manager last shipped; 0.9 reports 56 findings 0.11 does not,
+      # under a code 0.11 no longer defines. An unpinned linter is not one gate,
+      # it is one gate per machine -- and this one went red on a file that was
+      # clean locally.
+      #
+      # -x so it follows `source _lib.sh` and checks each caller against what
+      # the library actually defines.
+      - name: shellcheck
+        id: shellcheck
+        run: |
+          docker run --rm -v "$PWD:/mnt" -w /mnt \
+            koalaman/shellcheck:v0.9.0 -x scripts/*.sh
+
+      # This file is code too, and YAML being well-formed says nothing about
+      # whether GitHub will accept it. `join(needs.*.result, " ")` is valid
+      # YAML and is rejected at load time -- an Actions expression takes only
+      # single-quoted strings. That shipped once and killed every gate in this
+      # workflow until a human opened the Actions tab, because a workflow that
+      # will not load cannot report that it did not load.
+      #
+      # The version literal is kept in step with ACTIONLINT_VERSION in
+      # scripts/_lib.sh, the same way the shellcheck pin above mirrors
+      # SHELLCHECK_VERSION -- and hygiene.sh greps this literal against the
+      # variable, so the two copies cannot drift apart silently.
+      - name: actionlint
+        id: actionlint
+        run: |
+          docker run --rm -v "$PWD:/repo" --workdir /repo rhysd/actionlint:1.7.7 -color
+
+      # The job's ONE writer, last and `if: always()`. It reads each check's outcome
+      # from GitHub's own `steps` context, so the page cannot disagree with the tick
+      # beside the step; what each check was FOR is prose in `ci_summary.py`, which is
+      # a reviewed table rather than a `name:` scraped at runtime.
+      - name: Summary
+        if: always()
+        # Every value through `env:`, none interpolated into the script -- the rule
+        # this file states at the top of `changes`. `job.status` and `matrix.os` are
+        # not event-controlled and could safely be inlined; they go through `env:`
+        # anyway, because the next expression added here will be copied from this one.
+        env:
+          STEPS: ${{ toJSON(steps) }}
+          JOB: Scripts
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py checks --job "$JOB" --job-id "scripts" \
+            --steps "$STEPS" --result "$RESULT" \
+            --markdown "$GITHUB_STEP_SUMMARY"
+
+  # ~4 min. The only leg with a Linux-container Docker daemon, so the only one
+  # that can run the full suite (see tests/conftest.py).
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - run: uv sync --locked
+      # Through the script, exactly as Article XII asks -- this line was a bare
+      # `uv run pytest` for as long as the job existed, the one place CI ran the
+      # suite by a different door than a developer does.
+      #
+      # The junit here is written to be counted by the "Suite scale" step below, and
+      # it is NOT uploaded -- unlike the frontend and e2e reports, which are. The
+      # rule for all three is one sentence in spec/design/testing.md: a junit may
+      # leave the runner as a CI artefact with retention <= 7 days, never as a commit
+      # and never printed into a job summary.
+      #
+      # This comment used to say the report must NEVER become an artefact, while the
+      # same workflow uploaded two others. An absolute nobody keeps teaches that gate
+      # comments are aspirations, so the promise now matches the practice: with
+      # `junit_logging = "no"` there is no captured body, but a failure's *assertion
+      # message* still lands in the file and can name a real record's field value
+      # (Article XI). Counting reads attributes; uploading keeps sentences -- for a
+      # bounded time, behind a login, which is the trade the rule makes.
+      - run: ./scripts/test.sh backend --coverage -q --junitxml=.sdd/reports/backend.junit.xml
+
+      # The fitness suite, which `backend` no longer collects: tests/fitness is a suite
+      # of its own in .specconf/stack.json, with its own junit, so a red detector and a
+      # red service test are two verdicts rather than one. It needs no database, and it
+      # runs whatever the backend step said -- `!cancelled()`, not the default
+      # `success()` -- because hiding one verdict behind the other is what the split
+      # was for. Counted by the Summary below; not uploaded, the same rule as above.
+      - name: Fitness tests
+        if: ${{ !cancelled() }}
+        run: ./scripts/test.sh fitness -q --junitxml=.sdd/reports/fitness.junit.xml
+
+      # The half of tests/tooling/test_lambda_package.py that a unit test cannot
+      # prove: resolving the dependency set for the Lambda's platform needs the
+      # network and the real resolver. Its docstring says CI proves it by running
+      # the script -- and until this step, nothing in CI ran the script.
+      - name: The Lambda package resolves for its platform
+        run: ./scripts/package.sh --lambda
+
+      # The coverage XML is machine-shaped (paths and hit counts, no assertion
+      # text), so unlike the junit it may leave the runner.
+      - name: Upload the coverage report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: backend-coverage
+          path: .sdd/reports/coverage.xml
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # The job's ONE writer, last and `if: always()`. Scale and coverage used to be
+      # two blocks from two heredocs, met in whichever order the steps finished in
+      # and under two different heading levels.
+      #
+      # It reports and never decides: no threshold anywhere, for the reason
+      # pyproject.toml gives -- a line covered to satisfy a number proves what a
+      # marker written to satisfy a counter proves. What the figures are for is that
+      # a check states the scale it reached and not only its verdict, because a scale
+      # that falls is a suite that stopped reaching somewhere. Attributes only; no
+      # text ever leaves the report (Article XI), and the `unclassified` bucket is
+      # the safety net for a layout that moved.
+      - name: Summary
+        if: always()
+        env:
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py suite --shape pytest --job "Backend tests" \
+            --junit .sdd/reports/backend.junit.xml \
+            --cobertura .sdd/reports/coverage.xml --subject "app/" \
+            --result "$RESULT" --markdown "$GITHUB_STEP_SUMMARY"
+          python3 scripts/ci_summary.py suite --shape pytest --job "Fitness tests" \
+            --junit .sdd/reports/fitness.junit.xml \
+            --result "$RESULT" --markdown "$GITHUB_STEP_SUMMARY"
+
+  # The one class of drift the weekly schedule was added for: an advisory published
+  # against a dependency nobody here touched. Runs from the lockfile, so it needs no
+  # install of its own and cannot be answered differently by two machines. Through the
+  # script, per Article XII, so that "will CI pass" keeps having one answer.
+  #
+  # It was a step inside `frontend`, where it turned every unrelated pull request red
+  # -- which is how a gate earns a `--no-verify`. The severity now follows the DIFF
+  # rather than the calendar: a change that touches the dependency manifests owns the
+  # tree it resolved and the gate BLOCKS; a change that does not gets a red
+  # `CI advisory`, which no branch rule requires.
+  #
+  # "Blocking on a pull request, advisory on the schedule" was the other candidate and
+  # it is not an answer: the unrelated pull request IS a pull request, so it stays red.
+  #
+  # No `continue-on-error`. `audit.sh` has a three-valued exit (0, 1, and 4 for "an
+  # ecosystem's tool is not here, so that ecosystem was not audited") and
+  # continue-on-error flattens it to two -- turning a named gap into a pass, which is
+  # the one thing every script here refuses to do.
+  #
+  # It reads BOTH lockfiles. It used to read only the frontend's while reporting under
+  # this unqualified name, which is how a repository whose `uv.lock` had never been
+  # queried published a green "Dependency audit" -- and the `deps` filter above already
+  # counted `uv.lock` as a manifest, so the gate BLOCKED over a tree it did not read.
+  audit:
+    name: Dependency audit
+    needs: [changes]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      advisory: ${{ steps.verdict.outputs.advisory }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      # npm and uv, and no install of either tree: `npm audit` resolves from
+      # package-lock.json alone and `uv audit --frozen` from uv.lock alone. Both
+      # tools have to be here or the script reports the ecosystem as a NAMED GAP --
+      # which is the honest answer, and not the one this job is for.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+      - id: verdict
+        env:
+          DEPS: ${{ needs.changes.outputs.deps }}
+        run: |
+          rc=0
+          ./scripts/audit.sh || rc=$?
+          # Published, because the page needs the THREE-valued answer: exit 4 is
+          # "nothing was audited", which is a named gap and not a pass, and the
+          # `advisory` flag below cannot tell it from a real advisory.
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          case "$rc" in
+            0)
+              echo "advisory=false" >> "$GITHUB_OUTPUT"
+              ;;
+            4)
+              echo "advisory=true" >> "$GITHUB_OUTPUT"
+              echo "::warning::the dependencies were not audited -- a named gap, not a pass"
+              ;;
+            *)
+              if [ "$DEPS" = "true" ]; then
+                echo "advisory=false" >> "$GITHUB_OUTPUT"
+                echo "::error::this change touches the dependency manifests and the audit refuses them"
+                exit "$rc"
+              fi
+              echo "advisory=true" >> "$GITHUB_OUTPUT"
+              echo "::warning::an advisory against a dependency this change did not touch -- reported, not blocking"
+              ;;
+          esac
+
+      - name: Summary
+        if: always()
+        env:
+          RC: ${{ steps.verdict.outputs.rc }}
+          DEPS: ${{ needs.changes.outputs.deps }}
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py audit --job "Dependency audit" \
+            --rc "${RC:-1}" --deps "$DEPS" --result "$RESULT" \
+            --markdown "$GITHUB_STEP_SUMMARY"
+
+  # ~2 min. The API contract, the unit tests and the type check.
+  frontend:
+    name: Frontend and API contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: uv sync --locked
+      - run: npm ci
+        working-directory: frontend
+
+      # The OpenAPI document is generated, not committed: regenerating it here
+      # from the Pydantic schemas is what makes the diff below meaningful.
+      - name: Generate the OpenAPI document from the Pydantic models
+        run: uv run scripts/dump_openapi.py
+
+      # Contract drift becomes a build error instead of a runtime bug.
+      - name: The committed API types are current
+        id: types
+        run: npm run gen:api:check
+        working-directory: frontend
+
+      # The other direction, and the one that matters more. The step above asks
+      # whether the committed TypeScript matches the dump; this asks whether the
+      # application honours the contract somebody WROTE -- `contracts/openapi/`,
+      # authored and versioned. Both of the generated halves can agree with each
+      # other while both disagree with the contract, which is the state the
+      # constitution's Article VI exists to forbid. Exit 4 means there is no
+      # contract to compare, and `contracts.sh` says so rather than passing.
+      - name: The application honours the hand-written API contract
+        id: contract
+        run: ./scripts/contracts.sh
+
+      # `--max-warnings 0`: a warning nobody has to fix is a warning everybody
+      # learns to scroll past, and this repository is copied as a starting point.
+      - name: Lint (eslint)
+        id: eslint
+        run: npm run lint -- --max-warnings 0
+        working-directory: frontend
+
+      # No reporter flags here either: `vitest.config.ts` names the reporters and the
+      # output path, so CI, `check.sh` and `gate.py` read one report shape without any
+      # of them repeating a flag. That is not cosmetic -- `--reporter=junit` on the
+      # command line replaces the config array and drops the reporter's options with
+      # it, which is how `includeConsoleOutput: false` would have been silently
+      # ignored. This comment used to claim vitest captures no console output; it
+      # does, and the fix is the config, not the sentence.
+      - name: Unit tests (vitest)
+        id: vitest
+        run: |
+          mkdir -p ../.sdd/reports
+          npm run test -- --coverage
+        working-directory: frontend
+
+      - name: Upload the frontend junit
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: frontend-junit
+          path: .sdd/reports/frontend.junit.xml
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # `build` runs `tsc --noEmit` first, so a type error fails here too.
+      - name: Type-check and build
+        id: build
+        run: npm run build
+        working-directory: frontend
+
+      # The job's ONE writer, last so the block covers the build as well.
+      - name: Summary
+        if: always()
+        env:
+          STEPS: ${{ toJSON(steps) }}
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py suite --shape vitest \
+            --job "Frontend and API contract" --job-id frontend --steps "$STEPS" \
+            --junit .sdd/reports/frontend.junit.xml \
+            --vitest-json .sdd/reports/frontend-coverage/coverage-summary.json \
+            --subject "frontend/src/" \
+            --result "$RESULT" --markdown "$GITHUB_STEP_SUMMARY"
+
+      # The gate that used to hide inside the reporter, as its own named step -- so
+      # the red X in the step list says what failed instead of saying "summarise".
+      # A suite that ran and found nothing reads on a dashboard exactly like one
+      # that passed, and `--require-report` says a missing report is that too: unlike
+      # `e2e`, nothing else here refuses an uncollected frontend suite.
+      - name: The frontend suite collected tests
+        if: always()
+        run: |
+          python3 scripts/ci_summary.py census --junit .sdd/reports/frontend.junit.xml \
+            --require-report --expect-nonempty --what tests
+
+  # ~2 min. The ~40% of the suite that needs no database is exactly where a
+  # platform regression shows: text decoding, path handling, line endings.
+  # Without this leg the repository is Linux-only in practice.
+  #
+  # A one-entry matrix, deliberately: the job's shape survives adding a second
+  # runner, and `name:` stays the runner rather than a label that would then lie.
+  #
+  # **Off the pull-request path, and the reason is arithmetic.** A macOS runner bills
+  # at 10x on a private plan, so 85-125 seconds of wall clock is 15-21 billed minutes
+  # -- on every run, against an allowance of 2000 a month. The
+  # question this leg answers (does bash 3.2 still parse these scripts, does the suite
+  # still run off a Homebrew Postgres) is not one an ordinary pull request raises.
+  #
+  # So it is answered on the trunk, weekly, on request, and on any pull request that
+  # asks for it by carrying the `cross-platform` label -- which works only because
+  # `labeled` is in the event types above.
+  #
+  # The cost, stated rather than discovered: a bash-3.2 regression now surfaces AFTER
+  # the merge, on the push to the trunk, where `cancel-in-progress` is deliberately
+  # off. Somebody has to watch trunk runs. `ci_self` covers the one case that would
+  # otherwise be circular -- a change to this file breaking this leg.
+  #
+  # `github.ref_name` on a pull_request event is `<n>/merge`, so the push clause cannot
+  # fire there by accident.
+  cross-platform:
+    name: ${{ matrix.os }}
+    needs: [changes]
+    if: >-
+      github.event_name == 'schedule'
+      || github.event_name == 'workflow_dispatch'
+      || (github.event_name == 'push'
+          && github.ref_name == github.event.repository.default_branch)
+      || (github.event_name == 'pull_request'
+          && contains(github.event.pull_request.labels.*.name, 'cross-platform'))
+      || needs.changes.outputs.ci_self == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run scripts/preflight.py
+
+      # Through the SCRIPT, not through pytest directly, and that is the point of
+      # this step rather than a detail of it.
+      #
+      # It used to call `uv run pytest` and bypass `scripts/test.sh` entirely, so
+      # the escape hatch's own interface had never been EXECUTED here at all -- and
+      # a dispatch that misses its own `--sqlite` branch demands Docker: the escape
+      # hatch refusing on the one machine it exists for. Only running a script
+      # proves the dispatch reaches the branch it names.
+      - name: The no-database subset, through the script
+        id: nodb
+        run: ./scripts/test.sh --no-db -q
+
+      # The fitness suite, which `--no-db` no longer collects (it is a suite of its
+      # own). Kept on this leg exactly as it ran here before the split: the detectors
+      # that call `git` or a script do it under this runner's BSD userland too.
+      - name: The fitness suite, through the script
+        id: fitness
+        run: ./scripts/test.sh fitness -q
+
+      # A REAL Postgres on macOS, from Homebrew. These runners cannot start a
+      # Linux container, which is why this leg used to run the integration suite
+      # on SQLite -- a second engine, kept alive so that one CI job could have a
+      # database.
+      #
+      # spec/design/architecture.md § One engine removed that engine, and this is what replaced it. The coverage
+      # went UP: the same tests, on the engine production runs, instead of on a
+      # stand-in whose disagreements had to be marked test by test.
+      - name: A Postgres this runner can actually run
+        id: postgres
+        run: |
+          brew install postgresql@16
+          brew services start postgresql@16
+          # `pg_isready` rather than a sleep: Homebrew's service returns before
+          # the server accepts connections, and a fixed sleep is either too short
+          # on a loaded runner or wasted on a fast one.
+          for _ in $(seq 1 30); do
+            "$(brew --prefix postgresql@16)/bin/pg_isready" -q && break
+            sleep 1
+          done
+          "$(brew --prefix postgresql@16)/bin/createuser" -s app || true
+          "$(brew --prefix postgresql@16)/bin/psql" postgres \
+            -c "ALTER USER app WITH PASSWORD 'app'" -c "CREATE DATABASE app OWNER app"
+
+      # The integration suite, on that Postgres. APP_TEST_DATABASE_URL names a
+      # SERVER: the suite creates its own uniquely named, migrated database inside
+      # it per test and drops them when the run ends.
+      - name: Integration tests on a real Postgres
+        id: integration
+        env:
+          APP_TEST_DATABASE_URL: postgresql+psycopg://app:app@localhost:5432/postgres
+        run: ./scripts/test.sh integration -q
+
+      # macOS ships bash 3.2, where `set -u` plus an empty-array expansion
+      # aborts the script. That shipped once and a human found it.
+      - name: Shell scripts parse under the system bash
+        id: bash
+        run: |
+          bash --version | head -1
+          for sh in scripts/*.sh; do bash -n "$sh"; done
+
+      # This runner has no Linux-container Docker, so it is the only place the
+      # "bring your own Postgres" path gets exercised as a developer actually
+      # types it -- which since spec/design/architecture.md § One engine is the ONLY way to work here without a
+      # daemon. A path with no suite behind it is a path that breaks quietly.
+      - name: The database scripts work against a supplied Postgres
+        id: migrate
+        env:
+          DATABASE_URL: postgresql+psycopg://app:app@localhost:5432/app
+        run: ./scripts/db.sh migrate
+
+      # The job's ONE writer, last and `if: always()`. It reads each check's outcome
+      # from GitHub's own `steps` context, so the page cannot disagree with the tick
+      # beside the step; what each check was FOR is prose in `ci_summary.py`, which is
+      # a reviewed table rather than a `name:` scraped at runtime.
+      - name: Summary
+        if: always()
+        # Every value through `env:`, none interpolated into the script -- the rule
+        # this file states at the top of `changes`. `job.status` and `matrix.os` are
+        # not event-controlled and could safely be inlined; they go through `env:`
+        # anyway, because the next expression added here will be copied from this one.
+        env:
+          STEPS: ${{ toJSON(steps) }}
+          JOB: ${{ matrix.os }}
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py checks --job "$JOB" --job-id "cross-platform" \
+            --steps "$STEPS" --result "$RESULT" \
+            --markdown "$GITHUB_STEP_SUMMARY"
+
+  # ~2 min. The infrastructure, checked the way the application is: canonical
+  # form and a type check. No credentials and no state, so this runs on a pull
+  # request from a fork exactly as it runs on the trunk.
+  #
+  # Deliberately NOT `terraform plan`. A plan reads live state and answers a
+  # question about an ACCOUNT rather than about a commit -- and answering it here
+  # would need deploy credentials on every pull request.
+  infra:
+    name: Infrastructure
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          # The wrapper intercepts stdout to expose it as a step output, which
+          # breaks any script that reads terraform's own output. This job runs a
+          # script.
+          terraform_wrapper: false
+
+      # Through the SCRIPT, and that is the point of this step rather than a
+      # detail of it: `check.sh` runs the same file, so a green pull request and
+      # a green `./scripts/check.sh` are the same claim.
+      - name: Format and validate every root
+        id: check
+        run: ./scripts/infra-check.sh
+
+      # The job's ONE writer, last and `if: always()`. It reads each check's outcome
+      # from GitHub's own `steps` context, so the page cannot disagree with the tick
+      # beside the step; what each check was FOR is prose in `ci_summary.py`, which is
+      # a reviewed table rather than a `name:` scraped at runtime.
+      - name: Summary
+        if: always()
+        # Every value through `env:`, none interpolated into the script -- the rule
+        # this file states at the top of `changes`. `job.status` and `matrix.os` are
+        # not event-controlled and could safely be inlined; they go through `env:`
+        # anyway, because the next expression added here will be copied from this one.
+        env:
+          STEPS: ${{ toJSON(steps) }}
+          JOB: Infrastructure
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py checks --job "$JOB" --job-id "infra" \
+            --steps "$STEPS" --result "$RESULT" \
+            --markdown "$GITHUB_STEP_SUMMARY"
+
+  # ~5 min. The single deployable artifact. It could not build for five days and
+  # nothing noticed, because nothing built it.
+  image:
+    name: Production image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+
+      - name: Build
+        id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        with:
+          context: .
+          push: false
+          load: true
+          tags: sdd-app-template:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Building is not proof it runs. The SPA must actually be inside, and the
+      # image must not run as root.
+      - name: The image contains the SPA and runs unprivileged
+        id: contents
+        run: |
+          test "$(docker run --rm --entrypoint id sdd-app-template:ci -un)" != "root"
+          docker run --rm --entrypoint ls sdd-app-template:ci /app/app/static/index.html
+
+      # And it must actually serve -- with no database at all. `/api/health`
+      # deliberately touches no service or persistence layer, so "the process
+      # answers" and "the database is reachable" stay separate questions. If
+      # this step ever needs a database to pass, that property has been lost.
+      - name: The image serves /api/health with no database
+        id: health
+        run: |
+          docker run -d --name smoke -p 8000:8000 sdd-app-template:ci
+          for _ in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8000/api/health | grep -q '"ok"'; then
+              echo "the image serves /api/health"
+              docker rm -f smoke >/dev/null
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::the image did not answer /api/health within 30s"
+          docker logs smoke
+          docker rm -f smoke >/dev/null
+          exit 1
+
+      # The job's ONE writer, last and `if: always()`. It reads each check's outcome
+      # from GitHub's own `steps` context, so the page cannot disagree with the tick
+      # beside the step; what each check was FOR is prose in `ci_summary.py`, which is
+      # a reviewed table rather than a `name:` scraped at runtime.
+      - name: Summary
+        if: always()
+        # Every value through `env:`, none interpolated into the script -- the rule
+        # this file states at the top of `changes`. `job.status` and `matrix.os` are
+        # not event-controlled and could safely be inlined; they go through `env:`
+        # anyway, because the next expression added here will be copied from this one.
+        env:
+          STEPS: ${{ toJSON(steps) }}
+          JOB: Production image
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py checks --job "$JOB" --job-id "image" \
+            --steps "$STEPS" --result "$RESULT" \
+            --markdown "$GITHUB_STEP_SUMMARY"
+
+  # ~3 min. The BDD suite against a real application on a real Postgres.
+  #
+  # This job used to record a decision AGAINST path filters -- "a path filter is a
+  # guess about where 'somewhere else' is" -- and the `changes` job above now
+  # computes one for it. That reversal owes an argument rather than a deletion, so:
+  #
+  # The old sentence is right about a filter that guesses which changes MATTER.
+  # This one makes a narrower claim, and a checkable one: outside the paths it
+  # lists, nothing this suite exercises was touched at all. It names the
+  # application, the browser tree, the migrations, the scripts that start them, the
+  # contracts they honour and the corpus they read -- and `test_sdd_ci_parity.py`
+  # takes a census of the repository's top level against those lists, so a
+  # directory nobody classified fails the build instead of quietly skipping this.
+  #
+  # The claim is still weaker than "everything runs", which is why the filter is
+  # published for a week before anything consumes it.
+  e2e:
+    name: End-to-end (scenarios + UI smoke)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      # Node, because the UI smoke drives the BUILT SPA. This job used to run
+      # against whatever app/static/ happened to hold -- nothing, on a fresh
+      # checkout -- so the screen under test was a 404 and stayed green because
+      # no scenario ever looked (the audit's "green over a 404"). Building the
+      # bundle here is what makes the smoke's subject exist.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # One environment, locked. This job used to build a pip virtualenv of its
+      # own so the suite could not import `app/`; that isolation is asserted now
+      # by tests/fitness/test_e2e_isolation.py, in the `backend` job's fitness
+      # step. It also used to have no `uv sync` at all -- its environment materialised as a
+      # side effect of start.sh's unlocked one, so this was the one leg not held
+      # to the lock file.
+      - run: uv sync --locked
+      - run: npm ci
+        working-directory: frontend
+      - name: Build the SPA the smoke will enter
+        run: ./scripts/build.sh
+
+      # The browser binary, cached by the lock hash: a new Playwright version
+      # pins a new Chromium build, so the lock file is exactly the cache's
+      # freshness signal. `--with-deps` adds the system libraries a headless
+      # Chromium needs on a bare runner; test.sh's own `playwright install`
+      # then finds the browser present and is a no-op.
+      - name: Cache the Playwright browser
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+      - run: uv run playwright install --with-deps chromium
+
+      # One script -- the same one a developer runs. It resolves the step
+      # bindings, starts Postgres, migrates, starts the application, waits for
+      # /api/health, runs both black-box trees (e2e/suite and e2e/ui) into one
+      # junit and stops the application again. Reimplementing that here is how
+      # CI and the local command drift apart, which is what this repository is
+      # trying to stop doing. No flags: the report path lives in the script, so
+      # the two cannot disagree about it.
+      #
+      # Failure screenshots land in .sdd/ui-artifacts/ and are DELIBERATELY not
+      # uploaded: a pixel-perfect picture of a populated screen is real personal
+      # data (Article XI), and an artefact outlives the runner. A person
+      # debugging reproduces locally with `./scripts/test.sh ui` and reads the
+      # screenshot on their own machine.
+      - name: Scenarios
+        run: ./scripts/test.sh e2e
+
+      # The application's own log, but only when something failed -- on a green
+      # run it is noise.
+      - name: Application log
+        if: failure()
+        run: |
+          cat .sdd/logs/e2e-app.log || true
+          cat .sdd/logs/app.log || true
+
+      # The job's ONE writer. Attributes and outcome elements only, never text: an
+      # assertion message can name somebody's field value, and with
+      # `junit_logging = "no"` in pyproject.toml there is no captured body anyway.
+      - name: Summary
+        if: always()
+        env:
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py suite --shape bdd \
+            --job "End-to-end (scenarios + UI smoke)" --junit e2e/reports/junit.xml \
+            --result "$RESULT" --markdown "$GITHUB_STEP_SUMMARY"
+
+      # A report that exists and holds nothing means the suite ran and proved
+      # nothing, which reads on the dashboard exactly like a suite that passed.
+      #
+      # No `--require-report`, deliberately, and the asymmetry is the point: on an
+      # early failure this job is red already and a second error is noise. Reaching
+      # the empty-report case at all takes a later regression, because
+      # `scripts/test.sh e2e` already refuses to run when the scenarios do not
+      # collect -- which is why it is worth stating in two places.
+      - name: The scenarios collected
+        if: always()
+        run: |
+          python3 scripts/ci_summary.py census --junit e2e/reports/junit.xml \
+            --expect-nonempty --what scenarios
+
+      # Kept as an artifact rather than printed: a <failure> element carries the
+      # assertion message, which can name somebody's field value.
+      - name: Upload the JUnit report
+        if: always()
+        # v7, like the other three uploads in this repository. Four uploads on two
+        # majors was drift nobody was watching; now that dependabot tracks
+        # `github-actions` they move together or not at all -- and they did, which
+        # is why this comment no longer says v4.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: e2e-junit
+          path: e2e/reports/
+          retention-days: 7
+
+  # The second verdict, and the one no branch rule requires.
+  #
+  # It exists so that "correctness" and "taste" are two colours in the checks list
+  # rather than one line in a log: a red `CI advisory` beside a green `CI passed` is
+  # legible from the pull request page without opening anything. Only deterministic,
+  # low-false-positive gates belong on the required side; a signal that can go red for
+  # a reason this change did not cause belongs here.
+  #
+  # A job that GENUINELY FAILS, rather than `continue-on-error: true`. At step level
+  # that hides the signal inside a green job and leaves only an annotation in the log;
+  # at JOB level it reports the job as `success`, so the signal vanishes from
+  # `needs.*.result` as well. The only mechanism visible in the UI is a check run that
+  # is actually red and is simply not required.
+  ci-advisory:
+    name: CI advisory
+    if: always()
+    needs: [changes, audit]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # This job had no checkout at all, because its whole body was an inline
+      # heredoc. It needs one now, and a sparse one is enough: the reporter is the
+      # only file it reads.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: scripts/ci_summary.py
+          sparse-checkout-cone-mode: false
+
+      - name: Signals that report and do not block
+        id: advisory
+        if: always()
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          python3 scripts/ci_summary.py advisory --job "CI advisory" --needs "$NEEDS" \
+            --github-output "$GITHUB_OUTPUT" --markdown "$GITHUB_STEP_SUMMARY"
+
+      # The reporter cannot fail a build, so the refusal is its own three lines. A
+      # job that GENUINELY FAILS, rather than `continue-on-error: true`: at step
+      # level that hides the signal inside a green job, and at job level it reports
+      # `success`, so the signal vanishes from `needs.*.result` as well. The only
+      # mechanism visible in the UI is a check run that is actually red and is
+      # simply not required.
+      - name: A raised signal reddens this check
+        if: always() && steps.advisory.outputs.raised == 'true'
+        run: |
+          echo "::error::an advisory signal was raised -- this check blocks nothing"
+          exit 1
+
+  # Content gates run always; diff-scoped gates only on a pull request, because
+  # on a push to the trunk there is no meaningful base to diff against and the
+  # answer would be either everything or nothing.
+  #
+  # Blocking since the framework rework (it ran advisory for its first week,
+  # deliberately, to measure false alarms before anyone could be trained to
+  # reach for the exemption). The `spec-exempt` label remains the escape hatch,
+  # and it prints itself to the job summary rather than going quiet.
+  specs:
+    name: Specification gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # The diff-scoped gates need the merge base, and a shallow clone has none.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      # The process arrives WITH the action: GitHub fetches its repository to resolve
+      # `uses:`, which is why this needs no checkout of it and no token to read it --
+      # both repositories are private, a GITHUB_TOKEN reaches one, and deploy keys are
+      # disabled for this organisation. `@main` rather than a tag while the process is
+      # at 0.x; pin it the day its version starts meaning something.
+      - name: Specification gates
+        uses: Scalo-Sales-Engineering-Consulting/claude-marketplace/.github/actions/sdd-specs@main
+        with:
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
+          exempt: ${{ contains(github.event.pull_request.labels.*.name, 'spec-exempt') && '1' || '' }}
+          draft: ${{ github.event.pull_request.draft && '1' || '' }}
+
+      # The process's own suite, against this stack. It is 2300-odd assertions about
+      # stages, gates, dispatch and the change record, and every one of them resolves
+      # against THIS repository's stack profile and specification tree -- so a green
+      # here is the statement "the process works on this project", which no run in the
+      # process's own repository can make.
+      - name: The process's own suite, against this project
+        uses: Scalo-Sales-Engineering-Consulting/claude-marketplace/.github/actions/sdd-tests@main
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: always()
+        with:
+          name: forge-junit
+          path: .sdd/reports/flow.junit.xml
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # A change that did not go through the process still says what it did and why.
+  # `spec/constitution.md` makes framework changes on the trunk with no `delta.md`, so
+  # before this job the reasoning behind a scripts, CI or tooling change lived in a
+  # squash-commit body and nowhere a reader of the tree would look.
+  #
+  # It runs the script a developer runs, and it no-ops with a printed reason rather than
+  # an `if:` on the job: a skipped job reports `skipped`, and the aggregate is red on
+  # anything that is not `success` -- which is what stops a mis-written condition from
+  # turning a gate off in silence. Never routed: an entry is owed for every diff.
+  changelog:
+    name: A change outside the process leaves a record
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # The gate reads a diff, and a shallow clone has none.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: An entry under changelog/, or a named exemption
+        id: entry
+        env:
+          CHANGELOG_BASE: ${{ github.event.pull_request.base.sha }}
+          CHANGELOG_AUTHOR: ${{ github.event.pull_request.user.login }}
+          CHANGELOG_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: ./scripts/changelog.sh check
+
+      - name: Summary
+        if: always()
+        # The outcome comes from the `steps` context; what the check was FOR is prose in
+        # the reporter's own table, reviewed, rather than a `name:` scraped at runtime.
+        env:
+          STEPS: ${{ toJSON(steps) }}
+          JOB: A change outside the process leaves a record
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py checks --job "$JOB" --job-id "changelog" \
+            --steps "$STEPS" --result "$RESULT" \
+            --markdown "$GITHUB_STEP_SUMMARY"
+
+  # The single job the branch ruleset requires -- and it does require it. Ruleset `main`,
+  # id 22747644, has demanded `CI passed` since 2026-09-10, with no bypass actor, so a red
+  # `ci` is refused by the merge button rather than by whoever is reading the checks list.
+  #
+  # `needs` names EVERY other job, the advisory one included, and that is what keeps
+  # the census honest: `test_sdd_ci_parity.py` asserts this list equals the set of jobs
+  # in the file, so a job added above and forgotten here fails the build instead of
+  # passing silently. Waiting on `ci-advisory` costs a few seconds; not being able to
+  # prove the list is complete costs a gate.
+  #
+  # Three verdicts now, not one:
+  #
+  #   changes    must SUCCEED, not merely "not fail". It gates the rest, so if it dies
+  #              they all report `skipped` -- and a bare "skipped is fine" would read
+  #              that as green.
+  #   advisory   may fail. One reviewed list, in this file, right below.
+  #   the rest   success, or `skipped` for a reason published IN ADVANCE by `changes`.
+  #              Never failure, never cancelled.
+  #
+  # That last rule is the whole point. Once a job can be skipped, a skip is a green
+  # required check -- so a skip has to be a DECISION somebody can read, and a job that
+  # skipped without appearing on `may_skip` has a wrong `if:`. A wrong `if:` is a gate
+  # that quietly stopped, which is the failure this design has to be able to see.
+  ci:
+    name: CI passed
+    if: always()
+    needs: [changes, quality, scripts, infra, backend, audit, frontend, cross-platform, image, e2e, ci-advisory, specs, changelog]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Sparse, and this job had no checkout at all before: its verdict was an
+      # inline heredoc. The reporter is the only file it reads.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: scripts/ci_summary.py
+          sparse-checkout-cone-mode: false
+
+      # The page, and the one block that is complete wherever it lands: it names
+      # every job, its verdict and what it answers. Block order on the summary page
+      # is job-completion order and GitHub exposes no way to influence it, so the
+      # aggregate has to work read first, last or in the middle.
+      - name: Summary
+        id: verdict
+        if: always()
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          MAY_SKIP: ${{ needs.changes.outputs.may_skip }}
+        run: |
+          python3 scripts/ci_summary.py verdict --job "CI passed" --needs "$NEEDS" \
+            --may-skip "$MAY_SKIP" --github-output "$GITHUB_OUTPUT" \
+            --markdown "$GITHUB_STEP_SUMMARY"
+
+      # The gate, separate from the reporter, and **red on anything but an explicit
+      # `true`**. That default is what makes the split safe: a reporter that crashed
+      # writes no `ok`, and an unset `ok` fails this check rather than passing it.
+      # The previous version decided and reported in one heredoc, so a bug in its
+      # JSON printing could kill the gate silently.
+      - name: The verdict
+        if: always()
+        env:
+          OK: ${{ steps.verdict.outputs.ok }}
+        run: |
+          [ "$OK" = "true" ] || {
+            echo "::error::the aggregate verdict is not green; the CI passed block on the summary page says which jobs refuse this run"
+            exit 1
+          }

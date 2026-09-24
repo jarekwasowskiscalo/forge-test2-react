@@ -1,0 +1,135 @@
+/* ============================================================
+   The application's theme — the only place colour lives.
+
+   The values come from the mock-up this screen was built from and are
+   quoted as hex, because the mock-up is their source: a cream
+   background, a white card, a dark green accent. A component NEVER
+   writes a hex of its own — a raw colour in a component is a token
+   nobody has named, and it is invisible to every later change of the
+   palette.
+
+   THE DARK THEME WAS WITHDRAWN, and that is a decision rather than an
+   oversight: the switch lived in a top bar that no longer exists, and
+   the mock-up has a single palette. The reason and the consequences:
+   `spec/design/ui/system-states.md` § One palette. It comes back
+   together with a mock-up that describes it — and then this file gets
+   a second block while the components get not one branch.
+
+   NOTE: `@theme`, not `@theme inline`. `inline` puts the DECLARED
+   VALUE straight into the class, so `.text-ink` would set as a
+   particular colour and redefining the variable below would stop doing
+   anything — silently.
+   ============================================================ */
+
+@theme {
+  /* ---- Typeface -----------------------------------------------
+     Two families and their fallback stacks. The stack is part of the
+     token rather than an ornament: a font from the network can fail to
+     arrive, and the screen should then look plainer, not disappear. */
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+
+  /* ---- Text ---------------------------------------------------- */
+  --color-ink: #1b1a17;
+  --color-muted: #5c584f;
+  /* Darkened from `#9b978c` on 2026-09-16. The old value measured 2.92:1 on a
+     white card and 2.54:1 on `--color-surface-medium` -- below AA's 4.5:1 and
+     below even the 3:1 large-text floor, so the problem did not go away by
+     making the text bigger. It painted the card's own Edit and Delete actions,
+     every timestamp, the character counter, the footer, and -- through
+     `::placeholder` -- the ONLY label the composer's fields have.
+     `--color-muted` measured 7.09:1 throughout, which is what says one token
+     was wrong rather than the palette.
+     This value is the lightest member of the token's own hue family
+     (R = B+15, G = B+11, the relationship `#9b978c` already had) that clears
+     4.5:1 against the DARKEST surface this palette paints, `#f1efe8`: 4.69:1
+     there, 4.95:1 on the page, 5.40:1 on a card. Lightest on purpose -- the
+     token exists to be quieter than `--color-muted`, and every step darker
+     spends that distinction. Held by `tests/fitness/test_design_tokens.py` and,
+     where it lands on screen, by `e2e/ui/test_smoke.py`. */
+  --color-faint: #6e6a5f;
+  /* Text of an inactive control, and nothing else. It measures 1.82:1 and stays
+     there: WCAG 1.4.3 exempts a disabled control outright. The decision is
+     written down in `spec/design/ui/system-states.md` § Tokens and carried as
+     the single entry of `PERMITTED_BELOW_FLOOR`, because an exemption nobody
+     recorded cannot be told from an oversight. */
+  --color-disabled: #c4c0b5;
+  --color-inverse: #f6f5f1;
+  --color-danger: #a3382c;
+
+  /* ---- Accent. One colour for one decision on a surface. -------
+     The primary button, an active link, the focus ring. Nothing else —
+     green used as decoration stops meaning "this is the thing to do". */
+  --color-accent: #14503a;
+  --color-accent-strong: #0c3325;
+
+  /* ---- Surfaces ------------------------------------------------
+     THE NAME IS `card`, NOT `base`, and this is a trap worth recording:
+     Tailwind generates a `text-X` class from every `--color-X`, so
+     `--color-base` produced `.text-base { color: … }` BESIDE the
+     built-in `.text-base { font-size: 1rem }`. The colour won, so every
+     `text-base` on a white card painted white text on a white
+     background — the body of an entry and the title of `ErrorState`
+     were INVISIBLE and nothing shouted. A token's name
+     may not collide with a class name from the Tailwind scale. */
+  --color-card: #ffffff;
+  --color-surface: #f6f5f1;
+  --color-surface-medium: #f1efe8;
+
+  /* ---- Lines. This system's primary separator, not a shadow. ---- */
+  --color-hairline: #e2dfd6;
+  --color-line: #dbd7cc;
+
+  /* ---- Radii --------------------------------------------------
+     Four, because the mock-up has four, and not because they sound
+     nice. The name says WHAT is rounded rather than by how many pixels
+     — a component that asks for "the card radius" survives a change of
+     value; one that writes `rounded-[14px]` is one of six places to
+     find and one to forget. Article XIII forbids the second, and for a
+     while this repository broke that ban 33 times, because there was
+     neither a token nor a detector.
+
+     `card` and `control` differ by four pixels and that is the whole
+     hierarchy: a surface something rests on is gentler than a thing you
+     click. `control-tight` is a control INSIDE a card (the entry's edit
+     fields), where the same radius as the outside would read as a
+     second card. */
+  --radius-modal: 18px;
+  --radius-card: 14px;
+  --radius-control: 10px;
+  --radius-control-tight: 9px;
+  --radius-chip: 7px;
+
+  /* ---- Type sizes outside the Tailwind scale -------------------
+     Two, both from the mock-up, both between `text-sm` (14px) and
+     `text-base` (16px) — that is, exactly where the scale has no name,
+     which is why they previously stood in components as `text-[13px]`
+     (7 times) and `text-[15px]` (4 times).
+
+     THE NAMES ARE DELIBERATELY NOT NUMBERS AND DO NOT COLLIDE WITH THE
+     SCALE. This file records above the failure in which `--color-base`
+     produced a `.text-base` beside the built-in one and painted white
+     text on a white background. `--text-meta` and `--text-body` have no
+     built-in counterpart, so that trap does not recur here. */
+  --text-meta: 13px;
+  --text-body: 15px;
+
+  /* ---- The width of the content column -------------------------
+     One column up to 860 px — this is not a "mobile version", which
+     remains a named non-goal (`spec/invariants.md`). */
+  --container-reading: 860px;
+
+  /* ---- The only entry animation. No bounce, no scaling. --------- */
+  --animate-rise: rise 0.28s ease both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

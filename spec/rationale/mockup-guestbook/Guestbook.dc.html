@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#F6F5F1; -webkit-font-smoothing:antialiased; }
+  * { box-sizing:border-box; }
+  a { color:#14503A; text-decoration:underline; text-underline-offset:2px; }
+  a:hover { color:#0C3325; }
+  input, textarea, button { font:inherit; }
+  ::placeholder { color:#9B978C; }
+  @keyframes riseIn { from { opacity:0; transform:translateY(6px);} to { opacity:1; transform:none;} }
+</style>
+</helmet>
+<div style="min-height:100vh;background:#F6F5F1;color:#1B1A17;font-family:'Instrument Sans',system-ui,sans-serif;padding:0 24px 96px">
+  <div style="max-width:860px;margin:0 auto">
+
+    <header style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:28px 0 0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:26px;height:26px;border-radius:7px;background:#14503A;display:flex;align-items:center;justify-content:center;color:#F6F5F1;font-size:13px;font-weight:600">G</div>
+        <span style="font-size:14px;font-weight:500;letter-spacing:-0.01em">Guestbook</span>
+      </div>
+      <span style="font-size:13px;color:#78746A">{{ countLabel }}</span>
+    </header>
+
+    <div style="display:flex;flex-direction:column;gap:10px;padding:56px 0 40px;border-bottom:1px solid #E2DFD6">
+      <h1 style="margin:0;font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(40px,7vw,68px);line-height:1.02;letter-spacing:-0.02em">Leave a note</h1>
+      <p style="margin:0;max-width:44ch;font-size:16px;line-height:1.55;color:#5C584F;text-wrap:pretty">No account, no sign-in. Write something, and it appears below straight away. Anyone can edit or remove an entry.</p>
+    </div>
+
+    <section style="padding:28px 0 32px;border-bottom:1px solid #E2DFD6">
+      <div style="background:#FFFFFF;border:1px solid #E2DFD6;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:14px">
+        <input value="{{ draftName }}" onChange="{{ onDraftName }}" placeholder="Your name" maxlength="40" style="border:0;outline:0;background:transparent;font-size:15px;font-weight:500;color:#1B1A17;padding:0;letter-spacing:-0.01em" />
+        <div style="height:1px;background:#EDEAE2"></div>
+        <textarea value="{{ draftBody }}" onChange="{{ onDraftBody }}" placeholder="Write your message…" rows="3" maxlength="600" style="border:0;outline:0;background:transparent;font-size:16px;line-height:1.55;color:#33302A;resize:vertical;padding:0;font-family:inherit"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <span style="font-size:12px;color:#9B978C;font-variant-numeric:tabular-nums">{{ draftCount }}</span>
+          <button onClick="{{ onSubmit }}" disabled="{{ submitDisabled }}" style="{{ submitStyle }}" style-hover="filter:brightness(1.12)">{{ submitLabel }}</button>
+        </div>
+      </div>
+    </section>
+
+    <section style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:22px 0 8px">
+      <div style="flex:1 1 240px;display:flex;align-items:center;gap:9px;background:#FFFFFF;border:1px solid #E2DFD6;border-radius:10px;padding:9px 12px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9B978C" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+        <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Search entries" style="border:0;outline:0;background:transparent;font-size:14px;width:100%;color:#1B1A17" />
+      </div>
+      <div style="display:flex;gap:4px;background:#FFFFFF;border:1px solid #E2DFD6;border-radius:10px;padding:3px">
+        <button onClick="{{ onSortNewest }}" style="{{ sortNewestStyle }}">Newest</button>
+        <button onClick="{{ onSortOldest }}" style="{{ sortOldestStyle }}">Oldest</button>
+      </div>
+    </section>
+
+    <div style="font-size:13px;color:#78746A;padding:10px 0 18px">{{ resultLabel }}</div>
+
+    <section style="display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ visible }}" as="e" hint-placeholder-count="3">
+        <article style="background:#FFFFFF;border:1px solid #E2DFD6;border-radius:14px;padding:20px 20px 18px;animation:riseIn .28s ease both">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div style="display:flex;align-items:baseline;gap:10px">
+              <span style="font-size:15px;font-weight:600;letter-spacing:-0.01em">{{ e.name }}</span>
+              <span style="font-size:12px;color:#9B978C">{{ e.when }}</span>
+            </div>
+            <div style="display:flex;gap:14px">
+              <button onClick="{{ e.onEdit }}" style="{{ e.linkStyle }}" style-hover="color:#14503A">{{ e.editLabel }}</button>
+              <button onClick="{{ e.onDelete }}" style="{{ e.linkStyle }}" style-hover="color:#A3382C">Delete</button>
+            </div>
+          </div>
+          <sc-if value="{{ e.editing }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:12px">
+              <input value="{{ e.editName }}" onChange="{{ e.onEditName }}" maxlength="40" style="border:1px solid #E2DFD6;border-radius:9px;padding:9px 11px;outline:0;font-size:14px;font-weight:500;color:#1B1A17" />
+              <textarea value="{{ e.editBody }}" onChange="{{ e.onEditBody }}" rows="3" maxlength="600" style="border:1px solid #E2DFD6;border-radius:9px;padding:10px 11px;outline:0;font-size:15px;line-height:1.55;color:#33302A;resize:vertical;font-family:inherit"></textarea>
+              <div style="display:flex;gap:8px">
+                <button onClick="{{ e.onSave }}" style="background:#14503A;color:#F6F5F1;border:0;border-radius:9px;padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer" style-hover="filter:brightness(1.15)">Save</button>
+                <button onClick="{{ e.onCancel }}" style="background:transparent;color:#5C584F;border:1px solid #E2DFD6;border-radius:9px;padding:8px 16px;font-size:13px;cursor:pointer" style-hover="background:#F1EFE8">Cancel</button>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ e.reading }}" hint-placeholder-val="{{ true }}">
+            <p style="margin:10px 0 0;font-size:16px;line-height:1.6;color:#33302A;white-space:pre-wrap;text-wrap:pretty">{{ e.body }}</p>
+          </sc-if>
+        </article>
+      </sc-for>
+    </section>
+
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="text-align:center;padding:56px 20px;border:1px dashed #DBD7CC;border-radius:14px;color:#78746A;font-size:15px">{{ emptyLabel }}</div>
+    </sc-if>
+
+    <sc-if value="{{ hasMore }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;justify-content:center;padding:28px 0 0">
+        <button onClick="{{ onLoadMore }}" style="background:#FFFFFF;border:1px solid #E2DFD6;border-radius:10px;padding:11px 22px;font-size:14px;color:#1B1A17;cursor:pointer" style-hover="background:#FFFFFF;border-color:#14503A;color:#14503A">{{ moreLabel }}</button>
+      </div>
+    </sc-if>
+
+    <footer style="padding:64px 0 0;font-size:12px;color:#9B978C">Entries are public and editable by anyone with this link.</footer>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1000,&quot;height&quot;:1200}}">
+const SEED = [
+  { name: "Maria Lindqvist", body: "Stopped by after the workshop in Lisbon. The room setup was excellent and the coffee genuinely good. Thanks for hosting us.", ago: 2 },
+  { name: "Daniel Okonkwo", body: "Second visit this year. Booking took under a minute and everything was where the confirmation said it would be.", ago: 26 },
+  { name: "Yuki Tanabe", body: "Quiet, well-lit, fast wifi. I got more done in one afternoon here than in a week at the office.", ago: 51 },
+  { name: "Alessandra Ricci", body: "Left a scarf behind and it was posted back to me the next day. Small thing, but it stuck with me.", ago: 78 },
+  { name: "Peter Váradi", body: "Good acoustics for a space this size. Would recommend for small talks and team offsites.", ago: 120 },
+  { name: "Nour El-Amin", body: "Straightforward from start to finish. No account, no friction — exactly how this should work.", ago: 170 },
+  { name: "Greta Halvorsen", body: "Came for a two-hour session and stayed until close. The staff never once made me feel rushed.", ago: 210 }
+];
+
+function fmt(ts) {
+  const mins = Math.round((Date.now() - ts) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return mins + (mins === 1 ? " minute ago" : " minutes ago");
+  const h = Math.round(mins / 60);
+  if (h < 24) return h + (h === 1 ? " hour ago" : " hours ago");
+  const d = Math.round(h / 24);
+  if (d < 30) return d + (d === 1 ? " day ago" : " days ago");
+  return new Date(ts).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+class Component extends DCLogic {
+  state = {
+    entries: SEED.map((s, i) => ({ id: "s" + i, name: s.name, body: s.body, ts: Date.now() - s.ago * 3600000 })),
+    draftName: "", draftBody: "", query: "", sort: "newest",
+    limit: 4, editingId: null, editName: "", editBody: ""
+  };
+
+  set = (k) => (ev) => this.setState({ [k]: ev.target.value });
+
+  submit = () => {
+    const name = this.state.draftName.trim() || "Anonymous";
+    const body = this.state.draftBody.trim();
+    if (!body) return;
+    this.setState(s => ({
+      entries: [{ id: "n" + Date.now(), name, body, ts: Date.now() }, ...s.entries],
+      draftName: "", draftBody: "", query: "", sort: "newest"
+    }));
+  };
+
+  renderVals() {
+    const s = this.state;
+    const q = s.query.trim().toLowerCase();
+    const filtered = s.entries
+      .filter(e => !q || e.name.toLowerCase().includes(q) || e.body.toLowerCase().includes(q))
+      .sort((a, b) => s.sort === "newest" ? b.ts - a.ts : a.ts - b.ts);
+    const visible = filtered.slice(0, s.limit);
+    const remaining = filtered.length - visible.length;
+
+    const linkStyle = "background:transparent;border:0;padding:0;font-size:13px;color:#9B978C;cursor:pointer";
+    const pill = (on) => "border:0;border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;" +
+      (on ? "background:#1B1A17;color:#F6F5F1;font-weight:500" : "background:transparent;color:#78746A");
+    const canSubmit = s.draftBody.trim().length > 0;
+
+    return {
+      countLabel: s.entries.length + (s.entries.length === 1 ? " entry" : " entries"),
+      draftName: s.draftName, draftBody: s.draftBody,
+      onDraftName: this.set("draftName"), onDraftBody: this.set("draftBody"),
+      draftCount: s.draftBody.length + " / 600",
+      submitLabel: "Post entry",
+      submitDisabled: !canSubmit,
+      submitStyle: "border:0;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:500;background:#14503A;color:#F6F5F1;" +
+        (canSubmit ? "cursor:pointer;opacity:1" : "cursor:not-allowed;opacity:.35"),
+      query: s.query,
+      onQuery: (ev) => this.setState({ query: ev.target.value, limit: 4 }),
+      onSortNewest: () => this.setState({ sort: "newest" }),
+      onSortOldest: () => this.setState({ sort: "oldest" }),
+      sortNewestStyle: pill(s.sort === "newest"),
+      sortOldestStyle: pill(s.sort === "oldest"),
+      resultLabel: q
+        ? filtered.length + (filtered.length === 1 ? " match for “" : " matches for “") + s.query.trim() + "”"
+        : "Showing " + visible.length + " of " + filtered.length,
+      isEmpty: filtered.length === 0,
+      emptyLabel: q ? "Nothing matches that search." : "No entries yet. Be the first.",
+      hasMore: remaining > 0,
+      moreLabel: "Load " + Math.min(remaining, 4) + " more",
+      onLoadMore: () => this.setState(st => ({ limit: st.limit + 4 })),
+      visible: visible.map(e => ({
+        name: e.name, body: e.body, when: fmt(e.ts), linkStyle,
+        editing: s.editingId === e.id, reading: s.editingId !== e.id,
+        editLabel: s.editingId === e.id ? "Editing" : "Edit",
+        editName: s.editName, editBody: s.editBody,
+        onEditName: this.set("editName"), onEditBody: this.set("editBody"),
+        onEdit: () => this.setState({ editingId: e.id, editName: e.name, editBody: e.body }),
+        onCancel: () => this.setState({ editingId: null }),
+        onSave: () => this.setState(st => ({
+          editingId: null,
+          entries: st.entries.map(x => x.id === e.id
+            ? { ...x, name: st.editName.trim() || "Anonymous", body: st.editBody.trim() || x.body }
+            : x)
+        })),
+        onDelete: () => this.setState(st => ({
+          entries: st.entries.filter(x => x.id !== e.id),
+          editingId: st.editingId === e.id ? null : st.editingId
+        }))
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# Copy to terraform.tfvars and fill in. Applied once per AWS account.
+#
+# `terraform.tfvars` itself is NOT gitignored here on purpose: neither value is
+# a secret, and an account that has one written down is an account whose next
+# operator does not have to guess. What IS gitignored is the state this
+# directory writes locally.
+
+# Globally unique across all of S3, so put something nobody else has in it --
+# the account id, the company name. This exact string goes into the `bucket`
+# line of all FOUR backend blocks afterwards: envs/stage, envs/prod,
+# preview/shared and preview/branch. `envs/*` alone is two of the four.
+state_bucket_name = "REPLACE-ME-terraform-state"
+
+# owner/name. Decides which workflows may assume the deploy role, and it is the
+# ONLY thing standing between that role and any workflow on GitHub.
+github_repository = "REPLACE-ME/sdd-test-app"
+
+# Set to false if this account already has GitHub's OIDC provider. There can be
+# only one per account, and a second apply that tries to create it fails with
+# EntityAlreadyExists.
+# create_oidc_provider = true
+
+# Who may assume the READ-ONLY role and run `infra.sh <env> plan`: SSO
+# permission-set role ARNs, IAM user ARNs, or an account root ARN. Left empty --
+# which is the default -- NO plan role is created at all. That is deliberate: a
+# role trusting nobody is a resource that only looks like a control.
+#
+# Nothing listed here can be given write access, and that is what makes "only
+# GitHub deploys" true rather than merely stated.
+# plan_role_principals = ["arn:aws:iam::123456789012:role/AWSReservedSSO_Developer_abc123"]

@@ -1,0 +1,116 @@
+# Who is asked, before anything is automated.
+#
+# The order here is not an accident of taste. sdd107 puts ownership FIRST -- before
+# hierarchy, before any drift detector -- because a detector that fires with nobody
+# to answer it produces alerts with no addressee, and a team learns to scroll past
+# those within a week. This file is the addressee.
+#
+# GitHub applies the LAST matching rule, so the specific paths below deliberately
+# carry no catch-all above them: a change to `app/` needs no owner's attention,
+# a change to what `app/` is judged AGAINST does.
+#
+# Two properties worth knowing before relying on it:
+#   - A CODEOWNERS file above 3 MB stops working SILENTLY -- no owner is summoned
+#     and nobody gets an error. This one is a few hundred bytes.
+#   - Owners are auto-requested on every pull request regardless of branch rules.
+#     Only "Require review from Code Owners" in the ruleset turns the request into
+#     a condition. Until a second reviewer exists, that rule would lock the sole
+#     author out of their own pull request -- see the plan's Phase 0 note. The file
+#     is useful either way; the ruleset decides whether it BLOCKS or merely ASKS.
+#
+# The organisation has no teams yet. A team is the better owner than a person --
+# a person leaves and the rule silently points at nobody -- so replace @jarekwas
+# with @Scalo-Sales-Engineering-Consulting/<team> once one exists.
+#
+# ---------------------------------------------------------------------------
+# THE THREE QUESTIONS, ANSWERED
+# ---------------------------------------------------------------------------
+# sdd107 asks three things of every layer that has an owner, and a blank answer
+# to any of them marks the layer ORPHANED. Two of them GitHub answers by itself;
+# the third it cannot, so it is answered here or nowhere.
+#
+#   1. Who may change it?      Anyone. This is not a permission system, and
+#                              nothing below narrows write access.
+#   2. Who must approve it?    The owner on the matching line, IF AND ONLY IF
+#                              the branch ruleset turns on "Require review from
+#                              Code Owners". Without that setting these lines
+#                              request a review and do not require one.
+#   3. Who gets the drift      The same owner. There is no separate alert
+#      alert?                  routing and deliberately so: sdd107's own advice
+#                              is ownership first, automation second, and a
+#                              drift router built before a second owner exists
+#                              would deliver every alert to the person who
+#                              wrote the rule that fired it.
+#
+# ---------------------------------------------------------------------------
+# SUCCESSION -- what happens when an owner goes
+# ---------------------------------------------------------------------------
+# Succession is part of the topology, not an afterthought to it: an owner who
+# leaves without one turns every line pointing at them into a rule with no
+# addressee, and nothing in GitHub reports that. The rule here has to work while
+# the answer is one person, so it is a rule about the FILE rather than about a
+# roster:
+#
+#   * An owner leaving names their successor IN THIS FILE, in the same pull
+#     request that removes their access. Not afterwards: afterwards is the
+#     window in which the lines point at nobody.
+#   * Where no successor is named, the successor is the repository
+#     administrator, by default and by omission -- so a line never resolves to
+#     nobody, it resolves to the person who has to notice.
+#   * A line whose owner no longer has access is a DEFECT and is fixed by
+#     editing this file, never by deleting the line. Deleting it removes the
+#     rule together with the gap, and the gap is the information.
+#
+# ---------------------------------------------------------------------------
+# PER-CONTEXT OWNERSHIP -- the pattern the second context uses
+# ---------------------------------------------------------------------------
+# A bounded context is the natural unit of ownership: it has its own language,
+# its own rules and its own screens, so it maps onto a person or a team without
+# cutting anything in half. What makes that expressible is a PATH that holds one
+# context and nothing else, and as of 2026-09-07 every tree has one. The same
+# word names the context in all five, which is why there is no mapping file to
+# keep current:
+#
+#   /spec/contexts/<name>.md              the rules
+#   /contracts/openapi/<name>.yaml        the frozen boundary
+#   /app/contexts/<name>/                 the backend, whole
+#   /frontend/src/contexts/<name>/        the screen, whole
+#   /e2e/suite/features/<name>.feature    what proves it
+#
+# With one context, per-context rows would be noise: each would name the same
+# person the catch-all rules above already name, and a file of rows that all say
+# the same thing is a file people stop reading. The pattern, for the second:
+#
+#   /spec/contexts/billing.md            @Scalo-Sales-Engineering-Consulting/billing
+#   /contracts/openapi/billing.yaml      @Scalo-Sales-Engineering-Consulting/billing
+#   /app/contexts/billing/               @Scalo-Sales-Engineering-Consulting/billing
+#   /frontend/src/contexts/billing/      @Scalo-Sales-Engineering-Consulting/billing
+#   /e2e/suite/features/billing.feature  @Scalo-Sales-Engineering-Consulting/billing
+#
+# Five lines, no overlap with any other context, and nothing above them to
+# override -- which is the whole reason the trees were cut this way.
+
+# The specification: what the system is supposed to do. Every change is judged
+# against these documents, so a change TO them is a change to the yardstick.
+/spec/                          @jarekwas
+
+# The boundary contracts. Hand-written and versioned by decision (constitution,
+# art. VI): the contract is the authority and the code is validated against it.
+/contracts/                     @jarekwas
+
+# The schema's only owner. `alembic/versions/` IS the database contract -- there is
+# no contracts/ directory for it, and that is recorded as a decision rather than a
+# gap in contracts/README.md. A revision is as irreversible as this repo gets.
+/alembic/versions/              @jarekwas
+
+# The change process itself -- the code that decides whether a change may merge --
+# whole: the skills, the engine, its commands under bin/, the hooks and the MCP servers.
+/.claude/                       @jarekwas
+/.specconf/                     @jarekwas
+
+# What may deploy, and what decides whether a merge is allowed. A pull request
+# that edits the gates is a pull request that edits its own judge.
+/.github/                       @jarekwas
+/infra/                         @jarekwas
+/scripts/deploy.sh              @jarekwas
+/scripts/release.sh             @jarekwas

@@ -1,0 +1,3 @@
+### Health check
+GET {{host}}/api/health
+

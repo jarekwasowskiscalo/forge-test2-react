@@ -1,0 +1,92 @@
+# What never enters the repository.
+#
+# There is one rule: only what the machine produces from things that are already
+# versioned goes here. An intermediate artefact freezes the moment it is committed --
+# `openapi.json` is the sharpest case, because it looks like a contract and is a dump
+# taken before the last edit of the schemas. Contracts that ARE to be committed
+# (`frontend/src/api/schema.d.ts`) are deliberately not listed here: CI regenerates
+# and compares them, so a divergence is detected rather than hidden.
+#
+# The real HTTP contract lives in `contracts/openapi/` and is WRITTEN BY HAND.
+# That settles an ambiguity the paragraph above carried from the start: "looks like a
+# contract" meant there was no contract at all. `openapi.json` stays on this side of
+# the line -- it is the dump `./scripts/contracts.sh` compares the authored contract
+# against -- and a file under `contracts/` on the other, and the `contracts` gate refuses one that
+# carries a generator's banner.
+#
+# This file's twin for the image is `.dockerignore`, and it is NOT a copy of it --
+# that one also excludes the documentation and the tests a runtime image does not need.
+
+# The Python environment and the traces of a run
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+
+# Local databases. `--sqlite` starts an empty one in the repository root, and the
+# OpenAPI dump makes its own so as not to touch that one.
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+openapi-dump.db
+
+# Build artefacts
+frontend/node_modules/
+frontend/dist/
+app/static/
+openapi.json
+
+# JUnit reports from e2e. They can carry the content of requests and responses, so they
+# are not merely an artefact -- they are an artefact that must not be committed (the
+# constitution, art. XI).
+e2e/reports/
+
+# Working artefacts of the SDD process and of runs: application logs, coverage,
+# screenshots from failed smokes, locks. Per machine, not per repository -- and a
+# screenshot of a full data view is exactly the same art. XI.
+.sdd/
+
+# Locks on the process's state files. They exist for the length of one write and are
+# gone; a committed lock looks to the next session like a change record somebody is
+# holding and nobody is. `uv.lock` and `package-lock.json` are NOT this -- those are
+# dependency lockfiles and belong in the repository.
+*.lock
+!uv.lock
+!package-lock.json
+
+# The operating system and editors
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Terraform -- local artefacts, never in the repository.
+#
+# `.terraform/` is downloaded providers (hundreds of megabytes) and the module cache.
+# The state files are not here because they are large but because they **carry
+# secrets**: the database master's password, ARNs, the whole configuration. The
+# environments' state lives in S3 (`envs/*/backend.tf`); the only local state is the
+# bootstrap, which creates that bucket and by definition cannot use it.
+#
+# `.terraform.lock.hcl` is an EXCEPTION and is to be committed: it is a dependency
+# lockfile, just like `uv.lock` -- it pins provider versions so that two machines plan
+# the same thing.
+infra/**/.terraform/
+infra/**/*.tfstate
+infra/**/*.tfstate.*
+infra/**/*.tfplan
+infra/**/*.tfvars.local
+!infra/**/.terraform.lock.hcl
+
+# The mock-up export from Claude Design, as the browser hands it over. The content
+# `spec/design/conventions.md` § Language stands on is unpacked and TRACKED in
+# `spec/rationale/mockup-guestbook/` -- the archive is only a wrapper, and two copies of
+# the same material drift exactly the way any other two copies do.
+*.zip
+

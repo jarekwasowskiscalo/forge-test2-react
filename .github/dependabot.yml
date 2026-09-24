@@ -1,0 +1,114 @@
+# Who proposes the bump that `scripts/audit.sh` refuses to pass.
+#
+# The gate and this file are two halves of one answer and neither works alone: a gate
+# with no proposer turns every advisory into somebody's manual afternoon, and a
+# proposer with no gate opens pull requests nobody has to merge. Added together, after
+# an audit found five advisories in a repository with seventeen gates, a tested parity
+# between CI and check.sh, and a weekly run whose stated purpose is drift "no commit of
+# ours causes" -- of which a security advisory is the clearest case and the only one
+# nothing asked about.
+#
+# Five ecosystems, and none of the last three is an afterthought.
+# `github-actions` is what catches four `upload-artifact` steps drifting onto two
+# different majors, which is exactly what had happened. `docker` is the other half
+# of pinning the base images by digest: a digest is reproducible and silent, so
+# without a proposer it becomes a base nobody has updated in a year. `terraform` is
+# the same argument a third time, and it arrived last: every root commits a
+# `.terraform.lock.hcl`, so the providers were frozen with nothing proposing a thaw.
+#
+# The last three are also the three `audit.sh` reports as COVERED BY ANOTHER
+# MECHANISM rather than advisory-scanned -- this file is that mechanism's other half,
+# and the gate checks it is still declared here before it prints the claim.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+    # Monday, like the weekly CI schedule: one morning to read drift, not five.
+    open-pull-requests-limit: 5
+    groups:
+      # One pull request for the whole dev toolchain. Ungrouped, a weekly run of a
+      # tree this size opens a dozen single-line pull requests, and a reviewer who
+      # stops reading them is worse off than one who never had them.
+      #
+      # Minors and patches only. A major rides alone: #21 grouped `typescript@7`
+      # with five patch bumps, `openapi-typescript` peers `typescript@^5`, and the
+      # whole group was unmergeable for a week -- five safe bumps held hostage by
+      # the one that needed a decision (2026-09-08 audit).
+      dev-dependencies:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+    # **No `spec-exempt` label, and its absence is measured rather than assumed.**
+    #
+    # It used to be here, on all four ecosystems, with a comment claiming that
+    # without it "every bot pull request is red on a gate it has no way to satisfy".
+    # That was not true. The diff-scoped gates fire on `_BEHAVIOUR`, which is
+    # `app/`, `frontend/src/` and `alembic/versions/`; four consecutive Dependabot
+    # pull requests in this repository touched `frontend/package.json` and
+    # `frontend/package-lock.json` and nothing else. No gate had anything to say
+    # about them.
+    #
+    # The label was therefore not a waiver of a real failure, it was a standing,
+    # never-expiring exemption from ALL SEVEN diff-scoped gates, applied
+    # automatically to every bot pull request -- the widest hatch in the system,
+    # opened by default, for a gate that was never going to fire. The narrow hatch
+    # is `spec/changes/EXEMPTIONS.md`, which carries a reason and an expiry date;
+    # this one carried neither, and nothing renewed it because nothing had to.
+    #
+    # If a bot pull request ever does go red on a diff-scoped gate, that is the gate
+    # telling the truth about the diff, and it is worth reading before it is waived.
+
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+
+  # Every Terraform root commits a `.terraform.lock.hcl`, which pins each provider to
+  # a version AND to the hashes of the packages for it. That is the same shape as the
+  # base-image digest and it has the same failure: frozen and silent. `directories`
+  # rather than five blocks -- the root list has one home in `scripts/infra-check.sh`,
+  # and a second copy here would be a list to keep in sync by hand.
+  - package-ecosystem: terraform
+    directories:
+      - /infra/terraform/bootstrap
+      - /infra/terraform/preview/shared
+      - /infra/terraform/preview/branch
+      - /infra/terraform/envs/stage
+      - /infra/terraform/envs/prod
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+
+  # The Dockerfile's two base images, pinned by digest. Without this the pin is a
+  # decision to stop taking security fixes, which is not the decision that was made.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    # Digest and patch-level updates only. The two base images name the Python and
+    # Node the whole project runs on, and those majors have five other homes (the
+    # CI env blocks, .python-version, pyproject.toml, the Lambda runtime, the
+    # preflight) -- `tests/tooling/test_toolchain_versions.py` holds them to one
+    # value. A bot bumping one home alone is a red build by construction; a human
+    # moves all six together (that is how 3.12 → 3.14 happened on 2026-09-08).
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor

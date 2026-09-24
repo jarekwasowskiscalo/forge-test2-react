@@ -1,0 +1,76 @@
+{
+  "$comment": [
+    "This deployment's taskboard. DATA, not code -- and that is this file's whole argument.",
+    "The repository is a template, so the board's address is THIS deployment's value rather",
+    "than a property of the framework. A new deployment edits this file and does not touch",
+    "the skills.",
+    "",
+    "UNSET SINCE 2026-09-10, AND THAT IS A STATE RATHER THAN AN OVERSIGHT. The board this",
+    "file used to address belonged to the organisation this repository was forked out of.",
+    "It was emptied rather than renamed: the owner alone is not the address -- project_id",
+    "and every field and option id below belong to one specific board, and a renamed owner",
+    "over inherited ids points at a root where, as the paragraph below says, a null reads",
+    "exactly like an empty board. task-add and task-show refuse while `project_id` is empty,",
+    "which is the failure a person can act on. Fill this in from a board in this",
+    "organisation: `gh project list --owner <owner>` gives the number, and the REPAIR PATH",
+    "in .claude/skills/task-add/SKILL.md recovers the ids.",
+    "",
+    "THE IDENTIFIERS ARE WRITTEN DOWN RATHER THAN DISCOVERED ON EVERY TASK. gh forces",
+    "that, not convenience: for a WORK ITEM (a draft item) there is no road by name. `gh",
+    "item-edit --field Status --value Backlog` refuses to work with `--id`, saying",
+    "'--field cannot be used with --id; use --url to address the item when editing by",
+    "name', and a draft has no URL, because it is not an issue. Only the form by id is",
+    "left: --project-id + --field-id + --single-select-option-id. Those ids do not appear",
+    "in the output of `gh project field-list` -- a single-select's option ids are in GraphQL",
+    "alone. That is why they stand here, and the query that recovers them is the REPAIR PATH",
+    "described in .claude/skills/task-add/SKILL.md. A discovery that was not written down is",
+    "a discovery the next session pays for a second time.",
+    "",
+    "AN EMPTY 'options' IS INFORMATION, NOT AN OVERSIGHT. Priority IS a single-select on",
+    "this board and has not one option defined. An empty map says so outright; a missing",
+    "entry would say only that somebody did not check.",
+    "",
+    "owner_type picks the GraphQL query's ROOT: organization(login:) or user(login:).",
+    "gh project does not need it, GraphQL does -- and a null from the wrong root reads",
+    "exactly like an empty board.",
+    "",
+    "Measured 2026-09-02 on gh 2.98.0."
+  ],
+  "schema_version": 1,
+
+  "owner": "",
+  "owner_type": "organization",
+  "number": 0,
+  "project_id": "",
+
+  "defaults": {
+    "Status": "Backlog"
+  },
+
+  "fields": {
+    "Status": {
+      "id": "",
+      "options": {
+        "Backlog": "",
+        "Ready": "",
+        "In progress": "",
+        "In review": "",
+        "Done": ""
+      }
+    },
+    "Size": {
+      "id": "",
+      "options": {
+        "XS": "",
+        "S": "",
+        "M": "",
+        "L": "",
+        "XL": ""
+      }
+    },
+    "Priority": {
+      "id": "",
+      "options": {}
+    }
+  }
+}

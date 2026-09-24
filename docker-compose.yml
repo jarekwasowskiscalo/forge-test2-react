@@ -1,0 +1,144 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    ports:
+      # TWO variables, because they are two decisions. WHICH port (the number)
+      # and WHO MAY REACH IT (the address) drift apart the moment one knob spells
+      # both: somebody who needs a second Postgres moves the number, and silently
+      # re-publishes the first one to the network as well.
+      #
+      # The host side is a variable so a second Postgres on this machine is a
+      # configuration, not a collision. It defaults to 5432, so nothing changes
+      # for a person running `./scripts/start.sh`.
+      #
+      # The clean room is why: it clones the repo and starts its own `db`, and
+      # with a hard-coded host port that clone fought the developer's own
+      # database for :5432 -- and lost, four dispatches in a row (CR-2608-9373).
+      # `cleanroom.py` now picks a free port and exports it here together with a
+      # matching DATABASE_URL, which `scripts/_lib.sh` honours rather than
+      # overrides.
+      #
+      # The ADDRESS is 127.0.0.1 and was absent. A short mapping with no host
+      # address publishes on every interface -- Docker's own words are that the
+      # daemon publishes "to all host addresses (0.0.0.0 and [::])" -- so this
+      # service, the only one carrying credentials (`app`/`app` above) and the
+      # developer's data, was the one component on the LAN. `scripts/run.py:31`
+      # binds 127.0.0.1 and `scripts/start.sh` says why in as many words: on this
+      # machine 0.0.0.0 "would just put the dev server on the LAN". The database
+      # was the exception to a rule this repository already applies.
+      #
+      # Widening it is therefore an act, not an oversight: POSTGRES_HOST_BIND=0.0.0.0
+      # for a colleague on the same network, and you have said so out loud.
+      # Container mode needs none of this -- `app` and `migrate` reach the
+      # database as `db:5432` inside the compose network (see below), so the
+      # published port is not involved there at all.
+      - "${POSTGRES_HOST_BIND:-127.0.0.1}:${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  # The whole application in a container, for a machine that has Docker and
+  # nothing else -- and for anybody who wants to run this in-house rather than on
+  # AWS. `./scripts/start.sh --container` is the entire instruction.
+  #
+  # This is the OTHER artefact (spec/design/architecture.md § Deployment): the image holds the backend and the
+  # built SPA and serves both from one process, where the AWS deployment splits
+  # them across Lambda and S3. Same source, same commit, different contents --
+  # and `app/main.py` needs no branch to tell them apart, because it mounts
+  # static files only when the directory is there.
+  app:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      # 8080 outside to match `start.sh` without the flag, 8000 inside to match
+      # the image's own CMD. Somebody who used one and then the other should find
+      # the application at the same address.
+      - "${APP_PORT:-8080}:8000"
+    environment:
+      # `db` and 5432, not localhost and POSTGRES_HOST_PORT: inside the compose
+      # network the service name is the host and the published port is not
+      # involved at all.
+      DATABASE_URL: postgresql+psycopg://app:app@db:5432/app
+    depends_on:
+      # BOTH conditions, and the second one is the interesting one. The image
+      # deliberately does not migrate on start-up (a container that migrates as
+      # it boots races every other replica), so something else has to -- and the
+      # application must not start before it finishes, or the first request asks
+      # for a table that is not there yet.
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  # The migration step, as its own one-shot container. The same image, a
+  # different command, and it exits -- which is what lets `app` above wait for it
+  # by completion rather than by a sleep.
+  migrate:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["alembic", "upgrade", "head"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://app:app@db:5432/app
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  # Dev-only: the Vite dev server, so the host never needs a matching Node
+  # version installed. Reuses the `frontend` build stage from the production
+  # Dockerfile (same npm ci) instead of a second Dockerfile -- `command:`
+  # below just runs `vite` instead of `vite build` on top of it. Only starts
+  # with `--profile dev` (that's what scripts/start.sh --development passes).
+  frontend:
+    profiles: ["dev"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    # A published port on the default bridge network, not `network_mode: host`.
+    #
+    # Host networking worked on Linux and silently did not on Docker Desktop
+    # (macOS), where "host" is the Linux VM rather than the developer's
+    # machine: Vite started, reported itself ready, and :5173 was unreachable --
+    # so `start.sh --development` was broken on two of the three platforms this
+    # project promises to support, and the file said so in a comment and shipped
+    # anyway.
+    ports:
+      - "5173:5173"
+    working_dir: /fe
+    environment:
+      # Where vite.config.ts's dev proxy sends /api. From inside a container the
+      # backend is not on localhost, so the host has to be named explicitly.
+      # `host.docker.internal` resolves on Docker Desktop and, thanks to the
+      # extra_hosts entry below, on Linux too.
+      VITE_API_PROXY_TARGET: http://host.docker.internal:8000
+    extra_hosts:
+      # Docker Desktop provides this name already; Linux does not, and this is
+      # the documented way to add it. Harmless where it is already resolvable.
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./frontend:/fe
+      # Named volume over the image's npm-ci'd node_modules, so the bind mount
+      # above doesn't shadow it with the host's (nonexistent/mismatched) copy.
+      - frontend_node_modules:/fe/node_modules
+    # `--host` binds 0.0.0.0 inside the container, which is what makes the
+    # published port above reachable from the developer's browser.
+    command: ["npm", "run", "dev", "--", "--host"]
+
+volumes:
+  postgres_data:
+  frontend_node_modules:

@@ -1,0 +1,78 @@
+import { Link } from 'react-router-dom'
+import type { ReactNode } from 'react'
+import { GUESTBOOK_ROUTE } from '@/routes'
+
+/**
+ * The whole frame this application has: one centred column on a cream page.
+ *
+ * **There is no top bar and no side panel.** The application is one screen, and
+ * a module switcher with one module in it was furniture for a second module
+ * that never came -- see `spec/design/ui/system-states.md` § One column
+ * for the decision and what it costs. A product that grows a second screen adds
+ * navigation here, and this is the only file that has to learn about it.
+ *
+ * The lockup is a **placeholder and is meant to look like one** -- an accent
+ * square with an initial beside the name. A template that shipped a plausible
+ * mark would get shipped as somebody's product under a brand nobody chose.
+ * `PRODUCT_NAME` and `PRODUCT_INITIAL` are the only two strings to replace.
+ *
+ * The lockup is a link rather than a heading, and it is a link on every screen
+ * including the one it points at: it is the way back from the 404, and a way
+ * back that only exists on the page you are lost on is a way back nobody finds.
+ */
+
+const PRODUCT_NAME = 'Guestbook'
+const PRODUCT_INITIAL = 'G'
+
+/** The one route this frame knows. */
+
+export interface PageFrameProps {
+  /** The big serif line. The screen's whole title, in the product's voice. */
+  title: ReactNode
+  /** One sentence under it: what this screen is for, and what it costs to use. */
+  lede?: ReactNode
+  /** Right of the lockup: a count, a state, a fact about the whole page. */
+  meta?: ReactNode
+  children: ReactNode
+}
+
+export function PageFrame({ title, lede, meta, children }: PageFrameProps) {
+  return (
+    <div className="min-h-screen bg-surface px-6 pb-24 text-ink">
+      <div className="mx-auto max-w-reading">
+        <header className="flex items-center justify-between gap-4 pt-7">
+          <Link
+            to={GUESTBOOK_ROUTE}
+            className="flex items-center gap-2.5 text-ink no-underline hover:text-ink"
+          >
+            <span
+              className="flex size-6.5 items-center justify-center rounded-chip bg-accent text-meta font-semibold text-inverse"
+              aria-hidden="true"
+            >
+              {PRODUCT_INITIAL}
+            </span>
+            <span className="text-sm font-medium tracking-[-0.01em]">{PRODUCT_NAME}</span>
+          </Link>
+          {meta !== undefined && <span className="text-meta text-muted nums">{meta}</span>}
+        </header>
+
+        <div className="flex flex-col gap-2.5 border-b border-hairline pt-14 pb-10">
+          <h1 className="m-0 font-serif text-[clamp(2.5rem,7vw,4.25rem)] leading-[1.02] font-normal tracking-[-0.02em]">
+            {title}
+          </h1>
+          {lede !== undefined && (
+            <p className="m-0 max-w-[44ch] text-base leading-[1.55] text-muted text-pretty">
+              {lede}
+            </p>
+          )}
+        </div>
+
+        {children}
+
+        <footer className="pt-16 text-xs text-faint">
+          Entries are public and editable by anyone with this link.
+        </footer>
+      </div>
+    </div>
+  )
+}

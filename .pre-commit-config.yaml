@@ -1,0 +1,43 @@
+# The first line of defence, and deliberately not the last one.
+#
+# sdd118 is blunt about what this file is worth: every local hook is bypassable
+# with one flag (`git commit --no-verify`), and raw hooks in `.git/hooks` are not
+# versioned at all, so they cannot even be shared. That makes this an ACCELERATOR,
+# not a gate -- it moves a failure from four minutes of CI to four seconds of
+# commit. The gate is the required `CI passed` check on the server, and every
+# validator invoked here is duplicated there on purpose.
+#
+# Article XII decides the shape of every entry below: a hook runs a SCRIPT, never
+# a tool. `ruff`, `mypy`, `eslint` and `tsc` are not named here -- `scripts/lint.sh`
+# names them, CI runs the same script, and there is one answer to "will CI pass"
+# rather than two that drift. The `PreToolUse` hook in `.claude/settings.json`
+# refuses the other shape anyway.
+#
+# Install it once per clone -- the file alone does nothing:
+#
+#     uv tool install pre-commit && pre-commit install
+#
+# Measured on this repository, so the placement is evidence rather than taste
+# (sdd118 decides hook-versus-CI by runtime cost): lint.sh 3.1 s. Re-measure before
+# adding a second hook; a commit hook that costs more than about five seconds is one
+# people learn to skip, and a skipped hook protects nothing.
+#
+# The specification gates are not hooked here, and that is a decision: they are the
+# change process's own (`sdd-specs`, run by CI of its own), and this file is the
+# application's -- it calls nothing of the process and names none of its files. The process
+# enforces them itself: the PreToolUse hook, `sdd-verify` at every stage boundary,
+# and a delivery that opens no pull request before the full profile is green.
+repos:
+  - repo: local
+    hooks:
+      # ruff, ruff format --check, mypy, eslint --max-warnings 0, tsc --noEmit.
+      # `always_run` with no filenames because the script decides its own file set
+      # from `pyproject.toml` and the eslint config; passing it a staged subset
+      # would ask a different question than CI asks.
+      - id: lint
+        name: static checks (scripts/lint.sh)
+        entry: ./scripts/lint.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+

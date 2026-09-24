@@ -1,0 +1,126 @@
+# Take a branch's preview down when the branch is done with.
+#
+# **This runs without the branch.** The chain is: branch NAME -> deterministic
+# slug -> Terraform state key -> destroy from state. Both payloads still carry the
+# name after the branch itself is gone, and the Terraform code comes from the
+# default branch, so the branch's tree is never needed. That is the whole reason
+# the slug is derived rather than stored.
+#
+# Two triggers, because a branch can end two ways and often ends both at once: a
+# merge with auto-delete fires `pull_request: closed` and then `delete`. Both runs
+# are correct -- the second destroys an already-empty state and drops a database
+# that is already gone, and says so quietly. They serialise on the concurrency
+# group rather than racing, because `preview.yml` uses the same key.
+#
+# Separate from `preview.yml` rather than a second job in it, for a reason that is
+# not tidiness: this installs **no uv and no Node**. A teardown that could not run
+# while the toolchain was broken would leave stacks up for exactly as long as that
+# took to fix. `tests/tooling/test_preview_slug.py` holds `preview.sh slug` to
+# working on a bare interpreter for the same reason.
+name: Preview teardown
+
+on:
+  pull_request:
+    types: [closed]
+  delete:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: preview-${{ github.event.pull_request.head.ref || github.event.ref }}
+  cancel-in-progress: false
+
+env:
+  TERRAFORM_VERSION: "1.13.3"
+  AWS_REGION: "eu-central-1"
+
+jobs:
+  teardown:
+    name: teardown
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Four guards, and the first two are the load-bearing ones.
+    #
+    # - **No role, no run.** Both of this workflow's triggers are automatic, so until
+    #   `infra/terraform/bootstrap/` has been applied and its output named to GitHub,
+    #   every merged pull request and every deleted branch left a red "Preview
+    #   teardown" behind it -- a failing check nobody asked for, attached to work that
+    #   had nothing to do with deployment. `deploy.yml` carries this guard already and
+    #   makes the argument in full: a trigger wired before the role exists "would paint
+    #   `main` red on every merge, teaching everybody to ignore a red trunk". With no
+    #   role there is also no stack, so the run is skipping nothing.
+    #
+    #   It reads the REPOSITORY-level variable, and that is not a detail: a job's `if:`
+    #   is evaluated before the environment is resolved, so the `preview` environment's
+    #   override of the same name (`infra/README.md` § The first run) cannot be seen
+    #   from here. `deploy.yml` gates on the same repository-level one.
+    # - `delete` fires for tags as well as branches, and for the default branch.
+    # - **`pull_request: closed` fires for FORK pull requests too**, and without the
+    #   repository check, closing one would assume the deployment role in order to
+    #   destroy a stack that never existed. (GitHub withholds `id-token` from a fork
+    #   PR, so it would fail rather than do harm -- but a job that must fail to be
+    #   safe is not a guard.)
+    if: >-
+      vars.AWS_DEPLOY_ROLE_ARN != ''
+      && ((github.event_name == 'delete'
+        && github.event.ref_type == 'branch'
+        && github.event.ref != github.event.repository.default_branch)
+      || (github.event_name == 'pull_request'
+        && github.event.pull_request.head.repo.full_name == github.repository))
+
+    environment:
+      name: preview
+
+    steps:
+      # The default branch's copy, explicitly. The branch this is about may not
+      # exist any more, and for a closed pull request the merge ref may not either.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      # Through `env:`, never interpolated into the shell. A branch may be named
+      # anything a git ref allows, `$(...)` included, and a name pasted into a
+      # command is a name that can run one.
+      - name: Identify the preview to remove
+        id: slug
+        env:
+          BRANCH: ${{ github.event.pull_request.head.ref || github.event.ref }}
+        run: |
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "slug=$(./scripts/preview.sh slug "$BRANCH")" >> "$GITHUB_OUTPUT"
+
+      - name: Assume the deployment role
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: preview-down-${{ github.run_id }}
+
+      - name: Take it down
+        env:
+          BRANCH: ${{ steps.slug.outputs.branch }}
+          PREVIEW_SLUG: ${{ steps.slug.outputs.slug }}
+        run: ./scripts/preview.sh down "$BRANCH"
+
+      # The job's ONE writer. This job emitted nothing at all -- no annotation, no
+      # summary, no artefact -- which is the worst place in the repository for
+      # silence: if it is red, a preview stack is still up and still costing money,
+      # and nothing said so anywhere a person looks.
+      - name: Summary
+        if: always()
+        env:
+          BRANCH: ${{ steps.slug.outputs.branch }}
+          SLUG: ${{ steps.slug.outputs.slug }}
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py teardown --job "teardown" \
+            --branch "$BRANCH" --slug "$SLUG" --trigger "$GITHUB_EVENT_NAME" \
+            --result "$RESULT" --markdown "$GITHUB_STEP_SUMMARY"

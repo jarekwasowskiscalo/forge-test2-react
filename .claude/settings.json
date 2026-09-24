@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "scalo": {
+      "source": {
+        "source": "git",
+        "url": "git@github.com:Scalo-Sales-Engineering-Consulting/claude-marketplace.git"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "forge@scalo": true
+  }
+}

@@ -1,0 +1,54 @@
+/* The stylesheet's entry point. Two imports and a handful of base rules — all the
+   rest of the appearance is ordinary Tailwind classes in the components.
+
+   Colour and typeface live in `./styles/theme.css` and only there; this file knows
+   not one colour value. */
+@import 'tailwindcss';
+@import './styles/theme.css';
+
+@layer base {
+  body {
+    margin: 0;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    /* 16px is this screen's DEFAULT size, because the screen is text to be read
+       rather than a dense table: a guest's entry reads like a paragraph. The chrome
+       (header, footer, the actions in a card) goes smaller on its own. */
+    font-size: var(--text-base);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* The focus ring stays native and deliberately visible: this screen is walked
+     with a keyboard. Drawn in the accent colour so that it shows equally on the
+     cream background and on a white card. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::placeholder {
+    color: var(--color-faint);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    /* The same token as a control inside a card. It was `8px` — the one raw radius
+       outside the components, and therefore invisible to every grep over Tailwind
+       syntax. */
+    border-radius: var(--radius-control-tight);
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+}
+
+@layer utilities {
+  /* Numbers, dates and identifiers — aligned in a column. */
+  .nums {
+    font-variant-numeric: tabular-nums;
+  }
+}

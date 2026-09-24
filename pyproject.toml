@@ -1,0 +1,337 @@
+[project]
+name = "sdd-app-template"
+version = "0.1.0"
+description = "SDD app template — FastAPI backend serving a React SPA from one process"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.141",
+    "uvicorn[standard]",
+    "pydantic>=2.7",
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "psycopg[binary]>=3.1",
+    # The ASGI-to-Lambda adapter. A runtime dependency rather than an extra,
+    # because the deployment package is built from this same lockfile and an
+    # optional group would be one more thing that can be forgotten at build
+    # time -- where the symptom is a function that cannot import its handler.
+    "mangum>=0.19",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "httpx",
+    "testcontainers[postgres]>=4.15.0",
+    "pytest-cov>=6",
+    "pytest-timeout>=2.4",
+    "ruff>=0.14",
+    "mypy>=1.18",
+    # Property-based tests, for the invariants that are statements about a VALUE.
+    # A rule about the SHAPE of the schema gets a sweep over `Base.metadata` instead
+    # -- a generator has nothing to draw from there, so it passes vacuously while
+    # looking like the strongest test in the suite. `spec/design/testing.md` carries
+    # the distinction; this line only makes it runnable.
+    #
+    # Two things this repository's pytest configuration forces on any property test:
+    # `filterwarnings = ["error"]` means `.example()` may never be called and a
+    # function-scoped fixture needs `suppress_health_check` stated rather than
+    # ignored, and `timeout = 120` means `max_examples` stays low with
+    # `deadline=None` -- the first example of a database property pays for the
+    # connection, not for the logic.
+    "hypothesis>=6",
+    # `scripts/openapi_contract.py` parses the hand-written contracts. PyYAML is
+    # already installed here as a transitive dependency of `uvicorn[standard]`, and
+    # naming it anyway is the same rule the `e2e` group below states about itself:
+    # a group says what it needs, never what it happens to inherit. `uv.lock` does
+    # not move -- it already pins this version.
+    "pyyaml>=6",
+    # PyYAML ships no type information and `mypy` runs `strict` over `scripts/`.
+    # The alternative -- an `ignore_missing_imports` override -- would put `Any` in
+    # the one place where every line of the comparison reads out of that document.
+    "types-PyYAML>=6",
+    # `tests/integration/test_guestbook_entries_contract.py` validates the body the
+    # application actually returned against the schema `app.openapi()` declares for
+    # the status code it actually returned. That is JSON Schema 2020-12 with `$ref`
+    # and `anyOf` in it, and a hand-rolled validator is the wrong thing to hand-roll:
+    # the gate would then be only as good as the subset somebody remembered. Test-only
+    # -- no module under `app/` imports it.
+    "jsonschema>=4",
+]
+# The end-to-end suite. A dependency group rather than the second virtualenv it
+# used to have: one lock and one interpreter, so ruff, mypy and pytest all reach
+# the suite that drives the application -- none of them did before. What the
+# separate venv guaranteed physically, that `e2e/` cannot import `app`, is
+# asserted now in tests/fitness/test_e2e_isolation.py.
+#
+# `pytest` and `httpx` are already in `dev`; naming them here says what this
+# group needs rather than what it happens to inherit. `psycopg` likewise: the
+# harness resets the target database itself, and inheriting the application's
+# own driver would hide that dependency rather than state it.
+e2e = [
+    "pytest",
+    "pytest-bdd>=8.1,<9",
+    "pytest-timeout>=2.4",
+    "httpx",
+    "psycopg[binary]>=3.1",
+    # The bare package, not pytest-playwright, and Chromium only -- spec/design/testing.md § The UI smoke in a browser.
+    # The plugin's own CLI (--screenshot, --video, --tracing) is exactly the
+    # Article XI risk surface this suite must not have; the artefact policy is
+    # our code in e2e/ui/conftest.py instead, with a test.
+    "playwright>=1.55,<2",
+]
+
+[tool.uv]
+# A range, not a pinned patch. An exact `==0.12.0` here refuses to run on a
+# machine whose uv is one patch newer, which for a template is the first thing
+# a person hits after cloning and the last thing they expect. Reproducibility
+# is `uv.lock`'s job and CI's pinned `UV_VERSION`, not this line.
+required-version = ">=0.12,<0.13"
+# Both groups on a plain `uv sync`, because `scripts/test.sh e2e` runs
+# `uv run pytest e2e/suite` out of the same environment as everything else.
+# Note for the Dockerfile: `--no-dev` is an alias of `--no-group dev` and would
+# leave this group installed, which is why the image build says
+# `--no-default-groups` instead.
+default-groups = ["dev", "e2e"]
+
+[tool.pytest.ini_options]
+# The application's tests and only them. The change process under `.claude/` has a
+# suite of its own, run by its own command from its own root (the process's `pyproject.toml`
+# and `sdd-tests`, and CI of its own): the two trees are independent by decision
+# (spec/design/testing.md § Where the change process lives), and nothing here
+# collects, imports or lints the other.
+testpaths = ["tests"]
+# `scripts/`, so that `tests/tooling/` imports the helpers beside the scripts.
+pythonpath = ["scripts"]
+# The one flag that is not the caller's to choose. Every other pytest option in
+# this repository comes from whoever runs it -- CI passes `-q`, `test.sh e2e`
+# passes `--junitxml` -- because those are decisions about a run. This is not: an
+# unregistered marker is a typo, and without `--strict-markers` pytest accepts it
+# in silence. A marker that silently does nothing is the `no_db` failure mode
+# exactly: the test is simply not run on the legs that needed it, and nothing says so.
+addopts = "--strict-markers"
+markers = [
+    "no_db: runs without a database, so it can be collected on a host with no Linux-container Docker (see tests/conftest.py)",
+    # Traceability, at requirement level rather than per acceptance criterion.
+    # Demanding a marker per criterion produces markers written to satisfy a
+    # counter, and a marker written to satisfy a counter traces nothing. The
+    # argument is fully qualified -- `CR-2608-a7f3/R-3`, never bare `R-3` --
+    # because two changes in flight both numbering from one collide the moment a
+    # gate reads them. See spec/design/testing.md.
+    "req(id): the requirement this test proves, as CR-YYMM-xxxx/R-n",
+]
+# Pinned rather than left to the default, because the default is what keeps
+# personal data out of the report: pytest writes no <system-out> at all unless
+# `junit_logging` says otherwise, and every request and response body the e2e
+# harness logs would land there -- real names, e-mail addresses and phone
+# numbers, in an artifact CI keeps for seven days. A future "let us capture the
+# logs for debugging" has to argue with this comment first.
+junit_logging = "no"
+junit_family = "xunit2"
+
+# No single test may hang a leg. 120s is far above anything real -- the whole
+# backend suite runs in ~40s and the slowest single test budgets 10s -- so
+# this never fires on honest work; what it
+# catches is a test waiting forever on a socket or a container, which used to
+# hold a CI job until the job-level timeout killed it with no test named.
+# An ini key, not addopts: addopts is argv, and a caller's own flags must not
+# have to merge with ours. pytest-timeout provides it; the e2e line in test.sh
+# adds a session-level ceiling on top, because that suite also waits on an
+# application it started.
+timeout = 120
+
+# Warnings are errors, with every exception named and reasoned. The suite ran
+# for an unknown stretch with a live StarletteDeprecationWarning on every
+# single invocation, read by nobody -- a warning nobody reads is a deprecation
+# that lands as a break. `--strict-markers` already makes this argument for
+# markers; this is the same argument for warnings. A new warning either gets
+# fixed or gets a named row here with the reason it may stay.
+filterwarnings = [
+    "error",
+    # httpx -> httpx2 is a dependency migration touching e2e/harness as well
+    # as the test client, so it is its own change, not a side effect of this
+    # rule. Until it lands, the deprecation is known, named and counted here.
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated:starlette.exceptions.StarletteDeprecationWarning",
+    # Mangum's constructor calls `asyncio.get_event_loop()`, which since Python
+    # 3.12 warns when no loop is running. It is the library's deprecation, not
+    # ours, and it is unreachable from the application: `app/lambda_handler.py`
+    # builds the adapter lazily, so nothing but a test that asks for the handler
+    # -- or Lambda itself -- ever constructs one.
+    #
+    # Scoped to the module, not to the message alone: an `asyncio` deprecation
+    # from anywhere else in this codebase is ours and stays an error.
+    "ignore:There is no current event loop:DeprecationWarning:mangum.adapter",
+    # pytest-bdd's parser calls `re.split(pattern, line, 2)` with the count
+    # positional, which Python 3.13 deprecated and 3.14 still only warns about. It
+    # is the library's call, reached from every scenario tag; nothing in this
+    # repository passes `maxsplit` positionally (a grep is the check). Message-scoped
+    # rather than module-scoped, because the warning is attributed to `re` itself.
+    "ignore:'maxsplit' is passed as positional argument:DeprecationWarning",
+]
+
+# --- Lint and format -------------------------------------------------------
+# One tool for both, so there is no formatter-vs-linter disagreement to
+# arbitrate and one command in CI. The line length matches what the codebase
+# already writes: module docstrings here carry reasoning rather than one-liners,
+# and reflowing them to 88 would rewrite most of the repository for no gain.
+[tool.ruff]
+line-length = 100
+# The SYNTAX floor, and deliberately older than the runtime floor (`requires-python`,
+# 3.14). `scripts/preflight.py`, `scripts/ci_summary.py` and `scripts/app_status.py`
+# execute on whatever `python3` a machine has on PATH, not on the project's
+# `uv`-managed interpreter: a bare-machine preflight cannot ask for a version before
+# it parses, and CI's aggregate job runs the reporter with no toolchain installed.
+# Under `py314` the formatter writes PEP 758 (`except A, B:`), which every older
+# interpreter rejects with a SyntaxError; `tests/fitness/test_scripts_syntax_floor.py`
+# holds this value to the oldest interpreter such a script may meet.
+target-version = "py312"
+# `alembic/versions` is generated by Alembic and its templates are not ours to
+# restyle. `app/static` is Vite's build output. Markdown is excluded because
+# ruff reformats Python code blocks inside it, and `.kiro/specs/**` are the
+# historical record of what was specified -- rewriting a code sample there
+# changes the document rather than the code it documents.
+#
+# `.claude` is the change process, independent of this application by decision
+# (spec/design/testing.md § Where the change process lives): it has tools of its own
+# (the process's `pyproject.toml`, `sdd-lint`) and CI of its own, and they hold it to the
+# same `ruff` and `mypy --strict`. Nothing here
+# reads it, and this file lints nothing in it -- a directory is still never a way to
+# lower a standard (the constitution, Article XII); it is a way to say whose code it is.
+extend-exclude = [
+    "alembic/versions",
+    "app/static",
+    "*.md",
+]
+
+[tool.ruff.lint]
+select = [
+    "F",      # pyflakes: real errors -- undefined names, unused imports
+    "E", "W", # pycodestyle
+    "I",      # import sorting, which spec/design/conventions.md § Imports specifies by hand
+    "UP",     # pyupgrade: keep the 3.14 idioms the codebase already uses
+    "B",      # bugbear: mutable defaults, loop-variable capture, ...
+    "SIM",    # simplifications
+    "C4",     # comprehensions
+    "RUF",
+]
+ignore = [
+    # The codebase deliberately writes long prose in comments and docstrings;
+    # `line-length` above governs code, and reflowing text adds diff noise.
+    "E501",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+# `File(...)`, `Form(...)` and `Query(...)` in a default argument is FastAPI's
+# declaration syntax, not the mutable-default bug B008 exists to catch: they are
+# marker objects the framework reads off the signature. Scoped to routers so the
+# rule keeps working everywhere it means what it says. Two globs, because the tree is
+# cut by bounded context and the platform slice has routers of its own; the single
+# `app/routers/*` this used to name matched nothing after the recut (2026-09-08 audit).
+"app/contexts/*/routers/*" = ["B008"]
+"app/platform/routers/*" = ["B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "tests", "scripts", "e2e", "sdd"]
+
+# --- Types -----------------------------------------------------------------
+# The boundary runs between two different reasons, and only one of them is
+# principled. `tests/conftest.py` stays outside because its fixture engine
+# monkeypatches module globals (see `session_local_holders`), which is
+# untypeable without contorting the thing that makes isolation work.
+# `tests/integration/` stays outside on cost alone: measured 2026-08-25 at 133
+# strict errors across 18 files, almost all missing annotations on test
+# functions -- worth doing, not worth doing as a side effect of another change.
+# Pulling it in is a matter of annotating and adding the path to `files`;
+# nothing structural blocks it.
+#
+# The old cost reason never applied to the rest. It covered all of `tests/`
+# only because `tests/` was one flat directory and the exclusion had to be
+# drawn around the whole of it. Splitting the suite by what it needs made the
+# boundary physical, so `unit/` and `fitness/` -- which open nothing and
+# monkeypatch nothing -- are checked like the code they test. That is 2,000
+# lines of assertions that nothing was reading types on.
+#
+# `e2e` is in. Nothing type-checked it while it lived in a virtualenv of its own,
+# and it showed: 461 lines of step definitions with no annotation on any of them.
+# `tests/_golden_set.py` is the one named exception to the `tests/` exclusion --
+# it is fully annotated, imports only `pathlib` and `typing`, and is now read by
+# `e2e/suite/golden_set.py`, so leaving it unchecked would put an unchecked
+# module underneath a checked one.
+[tool.mypy]
+python_version = "3.14"
+# The change process under `.claude/` is checked by its own `mypy --strict`
+# (the process's `pyproject.toml`, `sdd-lint`), not here: two trees, two
+# toolchains, by decision.
+files = [
+    "app",
+    "scripts",
+    "e2e",
+    "tests/_repo.py",
+    "tests/_golden_set.py",
+    "tests/unit",
+    "tests/fitness",
+]
+# `tests/unit` and `tests/fitness` are in, and turning the switch on found 23
+# things -- none of them formatting. A test built a read schema without its
+# required fields (so it type-checked as valid while asserting it was not),
+# another asserted `is None` on a function that has no other return, and three
+# imported names their module re-exports rather than declares, which a later
+# `__all__` would have broken silently. Fixed one at a time; the switch is the
+# reason they were found at all.
+strict = true
+warn_unused_ignores = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["testcontainers.*"]
+ignore_missing_imports = true
+
+# `boto3` is provided by the Lambda runtime and is deliberately NOT a dependency
+# of this project: nothing outside `app/db/iam_auth.py` calls it, that module
+# imports it inside the one function that needs it, and adding it here would put
+# fifty megabytes into every developer's virtualenv to type-check nine lines.
+# `tests/unit/test_iam_auth.py` injects a fake in its place, which is also the
+# only way to exercise the token path without an AWS account.
+[[tool.mypy.overrides]]
+module = ["boto3.*"]
+ignore_missing_imports = true
+
+# --- Coverage ---------------------------------------------------------------
+# Measured, reported, and never a gate. This repository argues elsewhere that a
+# marker written to satisfy a counter traces nothing, and a line covered to
+# satisfy `fail_under` proves nothing by exactly the same reasoning -- so there
+# is no threshold here and adding one needs an ADR that answers that argument.
+#
+# What the number is for: a check reports the scale it reached, not only its
+# verdict -- `All clear.` over 391 paths and `All clear.` over zero are the same
+# four words. A coverage figure that falls is a suite that stopped reaching
+# somewhere, and until now nothing in this repository could say so at all.
+#
+# The data file lives under `.sdd/` because it carries absolute host paths and
+# was committed once already; `scripts/hygiene.sh` still refuses a tracked one.
+[tool.coverage.run]
+branch = true
+source = ["app"]
+data_file = ".sdd/reports/.coverage"
+# The suite provisions databases and reads files; measuring the test code itself
+# would report on the measurer.
+omit = ["app/static/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = [
+    # A line that exists to explain a type to mypy is not behaviour.
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@overload",
+]
+
+# `tests/conftest.py` is pulled in by following `tests/fitness/test_test_layout.py`'s
+# reference to `session_local_holders`. The fixture engine it holds monkeypatches module
+# globals and is untypeable without contorting the thing that makes isolation
+# work -- the same reason the file itself stays outside `files` above. Follow
+# mode would re-litigate that decision on every run, so it is stated once here.
+[[tool.mypy.overrides]]
+module = "tests.conftest"
+ignore_errors = true

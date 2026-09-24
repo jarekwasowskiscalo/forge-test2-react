@@ -1,0 +1,44 @@
+### List the entries — newest first (BR-04)
+GET {{host}}/api/guestbook-entries
+
+### Add an entry
+# @name add
+POST {{host}}/api/guestbook-entries
+Content-Type: application/json
+
+{
+  "author": "Anna",
+  "message": "Good morning!"
+}
+
+### One entry — the identifier from the response above
+GET {{host}}/api/guestbook-entries/{{add.response.body.id}}
+
+### Amend the message — created_at does not move (BR-02)
+PATCH {{host}}/api/guestbook-entries/{{add.response.body.id}}
+Content-Type: application/json
+
+{
+  "message": "An amended message"
+}
+
+### Delete — permanent (BR-03), answers 204 with no body
+DELETE {{host}}/api/guestbook-entries/{{add.response.body.id}}
+
+### Refusal: an empty signature after trimming — 422 (BR-01)
+POST {{host}}/api/guestbook-entries
+Content-Type: application/json
+
+{
+  "author": "   ",
+  "message": "anything"
+}
+
+### Refusal: a PATCH with no field at all — 422, code guestbook_entry_empty_patch
+PATCH {{host}}/api/guestbook-entries/00000000-0000-4000-8000-000000000000
+Content-Type: application/json
+
+{}
+
+### Refusal: an unknown entry — 404, code guestbook_entry_not_found
+GET {{host}}/api/guestbook-entries/00000000-0000-4000-8000-000000000000

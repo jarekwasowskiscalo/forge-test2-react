@@ -1,0 +1,170 @@
+# Cut a release, then deploy it.
+#
+# The bump is chosen rather than inferred. This repository's rule is that every
+# deployment is asked for (`.github/workflows/deploy.yml`), and a workflow that
+# read the significance of a change out of the word at the front of a commit
+# message would be deciding rather than being asked.
+#
+# **Production is deployed by CALLING deploy.yml, not by the tag this pushes**, and
+# that is the single most important line in this file. A tag pushed with
+# `GITHUB_TOKEN` does not trigger `push:` workflows -- so a release that created a
+# tag and stopped would leave production on the previous version, with every step
+# green. Calling the workflow keeps `environment: prod`, and with it the required
+# reviewer, exactly where it was. The tag still exists and still works for anybody
+# pushing one by hand.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: How much of a change this is
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+        required: true
+      dry_run:
+        description: Work out the version and change nothing
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  id-token: write
+  # `release.sh` asks whether `CI passed` is green on the commit it is about to
+  # tag, and the check-runs API needs this to answer. Without it the read fails
+  # and the release refuses -- which is the right direction to fail in, and still
+  # a refusal nobody could act on.
+  checks: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  UV_VERSION: "0.12.5"
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  tag:
+    name: tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      version: ${{ steps.cut.outputs.version }}
+
+    steps:
+      # Full history and every tag. `release.sh` finds the last release by walking
+      # the tags reachable from HEAD, and the tag message is the commits since it --
+      # neither is answerable from a shallow clone with no tags in it.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+
+      # Not a setup step: this is the first assertion that the commit about to be
+      # tagged is reproducible from its own lockfile. It used to run before the
+      # version bump, so it validated a state no release ever shipped; there is no
+      # bump any more, so the commit it checks is exactly the one the tag names.
+      - run: uv sync --locked
+
+      # `release.sh` refuses this too. Asserted here as well because the message
+      # is better and the refusal is instant: a dispatch from the wrong branch is
+      # the likeliest way to try to release something unreviewed.
+      - name: A release is cut from the trunk
+        run: |
+          if [ "$GITHUB_REF" != "refs/heads/${{ github.event.repository.default_branch }}" ]; then
+            echo "::error::a release is cut from the default branch, and this is $GITHUB_REF"
+            exit 1
+          fi
+
+      - name: Cut it
+        id: cut
+        env:
+          BUMP: ${{ inputs.bump }}
+          DRY: ${{ inputs.dry_run }}
+          # `release.sh` reads the `CI passed` check run on the commit it is about
+          # to tag. Only the release-notes step used to need a token; this one does
+          # now, and without it the release refuses rather than tagging blind.
+          GH_TOKEN: ${{ github.token }}
+        # `pipefail`. GitHub's default `run:` shell is `bash -e {0}`, without it, so
+        # `$(./scripts/release.sh ... | tail -1)` takes `tail`'s status: a failing
+        # release yielded an empty `version` and a green step, and the dry-run path
+        # has nothing downstream to catch it. `release.sh` goes to real trouble to
+        # keep stdout clean so this read works; that is worth nothing if the exit
+        # code is discarded. Naming `bash` selects `--noprofile --norc -eo pipefail`.
+        shell: bash
+        run: |
+          # Two spellings rather than an unquoted flag variable: a variable that
+          # expands to nothing has to be unquoted to disappear, and an unquoted
+          # variable is a word-splitting bug waiting for a value with a space.
+          # BEFORE the release, and that ordering is the whole of it: on the real
+          # path `release.sh` creates the tag, so asking afterwards answers with the
+          # version this run just cut rather than the one it bumped from.
+          # Read the way `release.sh` reads it, and for its reason: with no release
+          # commit, consecutive releases tag the same commit, and `git describe` has
+          # no defined tie-break between two tags on one.
+          previous=$(git for-each-ref --count=1 --sort=-v:refname \
+            --format='%(refname:short)' --merged HEAD 'refs/tags/v[0-9]*')
+          echo "previous=${previous:-none}" >> "$GITHUB_OUTPUT"
+          if [ "$DRY" = "true" ]; then
+            version=$(./scripts/release.sh "$BUMP" --dry-run | tail -1)
+          else
+            version=$(./scripts/release.sh "$BUMP" | tail -1)
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "::notice::release $version"
+
+      # The page people link to. `--generate-notes` gives it the pull requests and
+      # the contributors, which the annotated tag's own message cannot; the tag
+      # carries the commit list, which `git show` can read with no network.
+      # Two audiences, two sources, nothing duplicated.
+      - name: Publish the release notes
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.cut.outputs.version }}
+        run: gh release create "$VERSION" --title "$VERSION" --generate-notes
+
+      # The job's ONE writer, last and `if: always()`. A refusal from the branch
+      # check above used to leave only an annotation, so the summary page said
+      # nothing at all about a release that did not happen.
+      - name: Summary
+        if: always()
+        env:
+          VERSION: ${{ steps.cut.outputs.version }}
+          PREVIOUS: ${{ steps.cut.outputs.previous }}
+          BUMP: ${{ inputs.bump }}
+          DRY: ${{ inputs.dry_run }}
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py release --job "tag" --version "$VERSION" \
+            --previous "$PREVIOUS" --bump "$BUMP" --dry-run "$DRY" \
+            --result "$RESULT" --markdown "$GITHUB_STEP_SUMMARY"
+
+  prod:
+    name: deploy
+    needs: tag
+    if: ${{ !inputs.dry_run }}
+    # `ref` is the release's own tag, which names the commit this workflow was
+    # dispatched from: there is no release commit any more, so the two are the same
+    # object and the tag is the name production is deployed by.
+    #
+    # `app_version` travels beside it because the tag is now the ONLY record of the
+    # version. Nothing writes it into `pyproject.toml`, so `infra.sh` would fall
+    # back to the static value there and `/api/health` would name a release that
+    # never happened.
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: prod
+      ref: ${{ needs.tag.outputs.version }}
+      app_version: ${{ needs.tag.outputs.version }}
+    permissions:
+      contents: read
+      id-token: write

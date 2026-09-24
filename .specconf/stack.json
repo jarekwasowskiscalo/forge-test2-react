@@ -1,0 +1,1068 @@
+{
+  "$comment": [
+    "The stack profile: everything the change process has to know about THIS template that",
+    "is not a script. The process (the engine, which arrives with the forge plugin) knows no",
+    "directory name, no tool name, no port and no test runner of its own -- it reads them",
+    "from here, and a template for another stack ships a different file with the same shape.",
+    "JSON configures, Python validates: sdd/stack.py is the schema and refuses a bad file",
+    "before anything reads it (`sdd-engine stack --check`).",
+    "",
+    "Two things are easy to underestimate when porting, and both live in this file. The",
+    "signals are specific to a specification layout: `contract_touched` means the name occurs",
+    "in spec/design/api.md or contracts/openapi/, and those six are the engine's own. The",
+    "path signals below are this stack's: a Flutter template has no backend/frontend split",
+    "and does have lib/ and android/. And the diff gates encode directory names: which paths",
+    "are behaviour, which are a screen, which are observable from outside -- those are the",
+    "right answers for this stack and nobody else's, which is why they stand here as data.",
+    "",
+    "An empty list is a statement, not an omission: `trees.screens: []` says this stack has",
+    "no screens, and the gate that watches screens then stays silent by construction.",
+    "A missing key is refused -- the absence has to be written down.",
+    "",
+    "WHAT `schema_version: 1` PROMISES, AND WHAT THIS FILE DECLARES BEYOND IT. The number",
+    "names the engine's MANDATORY key set (stack.py, `_TOP_LEVEL` less `_OPTIONAL_TOP_LEVEL`)",
+    "and moves only when that set moves, inside a window the engine opens by widening",
+    "SUPPORTED_SCHEMA_VERSIONS. The optional keys are the stack's to use or leave, so two",
+    "profiles at the same number may differ -- and every difference from the Flutter",
+    "template's profile is stated here rather than left for a reader to find by diffing:",
+    "",
+    "  * storage_contract, migration_mechanism, readiness, binding_target -- the four",
+    "    mechanism sentences at the foot of this file. Declared on BOTH templates: the",
+    "    engine keeps them optional for a rollout reason only, until every template names",
+    "    them, and this stack has a real answer to each. tests/fitness/",
+    "    test_profile_mechanisms.py holds each to the files it names. They need forge >=",
+    "    0.1.55 (claude-marketplace#115); an older engine refuses the whole profile with",
+    "    `unknown key`, and the PreToolUse hook reads this file, so every Bash call dies.",
+    "  * suites.<name>.no_db_args and suites.<name>.junit_flag -- THIS STACK'S. The backend",
+    "    suite needs a Postgres and answers without one as a named gap, and two runners",
+    "    fix their own junit path (the suites comment below says why). Flutter's suites",
+    "    need no database and all take --junitxml, so the engine defaults are its answer.",
+    "  * ui -- ABSENT ON PURPOSE on both templates. It is a switch, not a section: without",
+    "    it the design stage asks a person for the mock-up instead of drafting one.",
+    "",
+    "Measured 2026-09-23 on forge 0.1.117: `sdd-contract --against-pins` in the",
+    "marketplace, with this profile and Flutter's as the pins, reports 0 findings and 0",
+    "drift -- the contract fixture carries every key this file uses."
+  ],
+  "schema_version": 1,
+  "name": "fastapi-react-postgres",
+  "scripts": {
+    "$comment": [
+      "The script contract: the entries the engine may call, by fixed name, with fixed",
+      "semantics (the plugin's docs/script-contract.md). The engine does not know what technology",
+      "stands behind a script -- it knows that `check` answers 'will this template's CI pass'",
+      "with exit 0/1/4, that `test <suite> --junitxml=PATH` writes a junit, that `setup`",
+      "provisions a fresh clone. `check`, `test` and `setup` are required; `start`/`stop`/",
+      "`status` when `runtime.app_port` is set; `db` when `trees.schema` is non-empty;",
+      "`generate` is optional. Everything else in scripts/ -- lint, build, contracts, infra,",
+      "audit, hygiene -- is a component of `check` and is called by the template's own skills."
+    ],
+    "check": "scripts/check.sh",
+    "test": "scripts/test.sh",
+    "setup": "scripts/setup.sh",
+    "start": "scripts/start.sh",
+    "stop": "scripts/stop.sh",
+    "status": "scripts/status.sh",
+    "db": "scripts/db.sh",
+    "generate": "scripts/generate.sh"
+  },
+  "suites": {
+    "$comment": [
+      "One entry per test suite `scripts/test.sh` runs, and the engine's evidence at the",
+      "level of a single test: the RED proof, the flaky re-run and the baseline all read the",
+      "junit the suite writes to `junit`. `args` are the arguments after `test.sh`;",
+      "`no_db_args` is the form that answers on a machine with no database (a named gap, not",
+      "a pass); `needs` is what the suite wants of the machine -- `database` rather than",
+      "`docker` for the backend, because Docker is only one way to have a Postgres",
+      "(APP_TEST_DATABASE_URL naming one the machine already has is another).",
+      "",
+      "`e2e`'s junit path is fixed inside scripts/test.sh deliberately: the report path lives",
+      "in the script, so the two cannot disagree about it. Read it; never override it --",
+      "`junit_flag: false` says the suite is not handed `--junitxml`. `frontend` likewise:",
+      "vitest.config.ts names the reporter and the path, and a flag on the command line",
+      "would replace the reporter array and drop its options.",
+      "`check` runs every suite on the way and leaves these junits behind; the boundary",
+      "and delivery profiles read them instead of running the suites a second time.",
+      "`isolate` is how the engine re-runs one failing case alone (pytest node ids); a suite",
+      "without it cannot be re-run in isolation and the gate says so instead of guessing.",
+      "",
+      "FOUR SUITES, AND THE TWO PYTEST ONES ARE DISJOINT. `fitness` is tests/fitness/ -- the",
+      "detectors that read this repository's own source -- and `backend` is everything else",
+      "under tests/ (unit, integration, tooling). They used to be one: the fitness modules",
+      "ran inside `backend` with no junit of their own, so a red detector and a red",
+      "service test were one red suite, and a RED declaration naming a fitness case could",
+      "only be attributed to `backend` (#62). They are apart in BOTH directions, because",
+      "the engine reads a case id (`classname::name`) as belonging to ONE suite: a fitness",
+      "case in two junits is attributed to whichever report was read last. So test.sh",
+      "`backend` and `--no-db` pass `--ignore=tests/fitness`, the backend's `isolate`",
+      "targets name the three trees it keeps, and tests/fitness/test_gate_parity.py holds",
+      "the targets disjoint and covering every tests/<group>/. `fitness` needs nothing of",
+      "the machine -- no database, no Docker -- so it belongs to every profile, `unit-no-db`",
+      "included, and check.sh runs it as a gate of its own before the backend.",
+      "",
+      "NO SUITE DECLARES `allowed_skips`, AND THAT IS AN ANSWER RATHER THAN AN OMISSION.",
+      "The key names which of a suite's cases legitimately do not run, and it buys one thing",
+      "while costing another: a suite that collected cases and executed none stops being a",
+      "wrong record, and in exchange ANY run in which that suite skipped anything is filed as",
+      "incomplete. Measured 2026-09-17 against forge 0.1.62 -- no suite here can spend it.",
+      "",
+      "  * `frontend` and `e2e` skip nothing. There is no `.skip` or `.todo` under",
+      "    frontend/src and no `pytest.skip`, `mark.skip` or `skipif` under e2e/, so there",
+      "    is nothing to declare and a declaration would only change how a blackout reads.",
+      "  * `backend` skips on every run, and that is precisely why it must NOT declare. The",
+      "    engine charges a declaring suite for the junit's `skipped` TOTAL rather than for",
+      "    the kind of skip the declaration names, and a full run on a machine with Docker",
+      "    and a database already skips 24 cases that have nothing to do with a missing",
+      "    database: 23 in tests/unit/test_entry_text_rules.py, where only an `accepted`",
+      "    case carries a length, and one in tests/unit/test_log_content_policy.py, where",
+      "    alembic's fileConfig has replaced the root handlers by the time it runs.",
+      "    Declaring would file every green run incomplete (exit 4) under a sentence that",
+      "    is false about all 24 -- and close_stage refuses a delivery boundary on exactly",
+      "    that list when the run carries no classified gaps, which a clean full run never",
+      "    does. No delivery would close again, on any host, under any flag.",
+      "  * `fitness` skips nothing on a run from a checkout (316 of 316 executed, measured",
+      "    2026-09-23), and it must not declare either. Its sources DO carry skips, each for",
+      "    a tree that is not a git checkout (no index to read modes or a census from) or",
+      "    a migration with no upgrade() -- conditions a declaration would not name, so the",
+      "    first run from a tarball would be filed incomplete for a reason it never said.",
+      "  * The blackout the key exists to excuse cannot happen here. tests/unit/ and",
+      "    tests/tooling/ mark everything below them `no_db`, so the backend's `--no-db`",
+      "    always leaves the greater part of it executing, and `fitness` never needs a",
+      "    database in the first place; and the profile",
+      "    that runs without a database, `unit-no-db`, is DEGRADED, where the engine already",
+      "    excuses every suite with no declaration at all.",
+      "",
+      "What must change before this answer does: the engine has to tell a declared skip",
+      "from an unrelated one. Filed as claude-marketplace#140. Re-measure before declaring",
+      "-- tests/fitness/test_gate_parity.py holds the assertions that keep this answer true."
+    ],
+    "backend": {
+      "args": [
+        "backend"
+      ],
+      "no_db_args": [
+        "--no-db"
+      ],
+      "junit": ".sdd/reports/backend.junit.xml",
+      "needs": [
+        "database"
+      ],
+      "isolate": {
+        "collect": [
+          "uv",
+          "run",
+          "pytest",
+          "{target}",
+          "--collect-only",
+          "-q"
+        ],
+        "targets": [
+          "tests/unit",
+          "tests/integration",
+          "tests/tooling"
+        ],
+        "run_one": [
+          "uv",
+          "run",
+          "pytest",
+          "{node}",
+          "-x",
+          "-q"
+        ]
+      }
+    },
+    "fitness": {
+      "args": [
+        "fitness"
+      ],
+      "junit": ".sdd/reports/fitness.junit.xml",
+      "needs": [],
+      "isolate": {
+        "collect": [
+          "uv",
+          "run",
+          "pytest",
+          "{target}",
+          "--collect-only",
+          "-q"
+        ],
+        "targets": [
+          "tests/fitness"
+        ],
+        "run_one": [
+          "uv",
+          "run",
+          "pytest",
+          "{node}",
+          "-x",
+          "-q"
+        ]
+      }
+    },
+    "frontend": {
+      "args": [
+        "frontend"
+      ],
+      "junit": ".sdd/reports/frontend.junit.xml",
+      "junit_flag": false,
+      "needs": []
+    },
+    "e2e": {
+      "args": [
+        "e2e"
+      ],
+      "junit": "e2e/reports/junit.xml",
+      "junit_flag": false,
+      "needs": [
+        "docker",
+        "database"
+      ],
+      "isolate": {
+        "collect": [
+          "uv",
+          "run",
+          "pytest",
+          "{target}",
+          "--collect-only",
+          "-q"
+        ],
+        "targets": [
+          "e2e/suite"
+        ],
+        "run_one": [
+          "uv",
+          "run",
+          "pytest",
+          "{node}",
+          "-x",
+          "-q"
+        ]
+      }
+    }
+  },
+  "traceability": {
+    "$comment": [
+      "Where a requirement citation may live, and the form it must take there -- one form",
+      "per runner, because vitest has no markers and Gherkin has no decorators:",
+      "  pytest_marker   @pytest.mark.req(\"CR-2608-a7f3/R-3\")",
+      "  tag             the Gherkin tag @req:CR-2608-a7f3/R-3",
+      "  in_name         the id inside the test name -- [req:CR-2608-a7f3/R-6]",
+      "tests/unit/ and tests/integration/ rather than tests/**: spec/design/testing.md",
+      "\u00a7 The UI smoke is not a traceability surface says tests/fitness/ and tests/tooling/",
+      "prove tools and structure rather than product requirements, so they do not own",
+      "citations. The old glob permitted precisely what that sentence forbids."
+    ],
+    "surfaces": [
+      {
+        "suite": "backend",
+        "glob": "tests/unit/**/*.py",
+        "citation": "pytest_marker"
+      },
+      {
+        "suite": "backend",
+        "glob": "tests/integration/**/*.py",
+        "citation": "pytest_marker"
+      },
+      {
+        "suite": "e2e",
+        "glob": "e2e/suite/features/*.feature",
+        "citation": "tag"
+      },
+      {
+        "suite": "e2e",
+        "glob": "e2e/suite/steps/*.py",
+        "citation": "tag"
+      },
+      {
+        "suite": "frontend",
+        "glob": "frontend/src/**/*.test.ts",
+        "citation": "in_name"
+      },
+      {
+        "suite": "frontend",
+        "glob": "frontend/src/**/*.test.tsx",
+        "citation": "in_name"
+      }
+    ]
+  },
+  "runtime": {
+    "$comment": [
+      "What a running copy of this template occupies on the machine. `app_port` is the one",
+      "port the application and the e2e suite contend for; the e2e suite additionally",
+      "TRUNCATEs the target database between scenarios, so two runs do not merely queue --",
+      "they corrupt each other, and the corruption reads as an application defect.",
+      "`container_runtime: docker` says the clean room may reap its own compose litter and",
+      "ask `docker ps` who holds a port; `port_variable` is the variable docker-compose.yml",
+      "publishes the database on, which the clean room sets to a port this run owns.",
+      "`cold_timeouts_min`: Docker pulls and an npm install from an empty cache are slow, and",
+      "a timeout tuned to a warm machine turns a slow clean room into a red one."
+    ],
+    "app_port": 8080,
+    "container_runtime": "docker",
+    "port_variable": "POSTGRES_HOST_PORT",
+    "cold_timeouts_min": {
+      "setup": 20,
+      "db": 10,
+      "generate": 10,
+      "check": 45
+    }
+  },
+  "trees": {
+    "$comment": [
+      "Path patterns, one rule for the whole file: a pattern ending in `/` is a directory",
+      "prefix; a pattern with a glob character is fnmatch; anything else is a plain prefix,",
+      "so `docker-compose` covers every docker-compose*.yml exactly as the old startswith",
+      "tuples did. `product` and `tests` are git pathspecs (no trailing slash).",
+      "",
+      "behaviour: a path whose change means behaviour changed. Deliberately not tests/: a",
+      "test added on its own is a fitness function or a repair, and demanding a change",
+      "directory for one would train everybody to reach for the exemption.",
+      "screens: fnmatch patterns rather than prefixes because the frontend is cut by bounded",
+      "context (spec/design/conventions.md \u00a7 Frontend -- where a file goes), so a screen sits",
+      "at frontend/src/contexts/<name>/pages/ and no prefix names every context. A prefix",
+      "tuple kept working after that recut and matched NOTHING, which is the quietest way a",
+      "gate can be deleted: it goes on running and stops firing.",
+      "observable: the surfaces whose change is visible from outside the application -- a",
+      "screen, an HTTP route, a migration. A context's services/ and models/ are deliberately",
+      "not listed: a rule with no route and no screen has no black-box surface, and a gate",
+      "demanding e2e from a change e2e cannot see is a gate people route around with a label.",
+      "operational: what somebody has to be told about to keep a deployed copy running.",
+      "app/ is not here even though backend_touched is on the other side: most backend",
+      "changes change nothing about operating the system, and the variable a backend change",
+      "adds is caught from the other direction by tests/fitness/test_documentation_is_current.py.",
+      "`scripts/*.sh` and not `scripts/`, for that same reason one directory over. The glob is",
+      "the boundary this repository already draws: hygiene.sh checks scripts/*.sh, help.sh lists",
+      "scripts/*.sh, and hygiene.sh says what the line turns on -- whether a file is a task with",
+      "a --help a person asks for. The .py files beside them are the internals of those tasks,",
+      "and ci_summary.py is not even that: it is called by a WORKFLOW rather than by a script,",
+      "runs on no deployed copy, and is described by no page under docs/. Under the old prefix",
+      "every repair to it demanded a docs edit that had nothing to write, which is a gate firing",
+      "where its own sentence does not reach; 2026-09-16 spent an EXEMPTIONS.md row on exactly",
+      "that. What the diff gate gives up is the demand that a .py-only change be accompanied by",
+      "a docs edit; what those files expose to an operator -- a flag, a variable, a --help -- is",
+      "held from the tree side by test_documentation_is_current.py on every run, diff or no.",
+      "cold_required: surfaces only a fresh clone can judge. A repair whose diff touches none",
+      "of these is fully judged by the boundary gate at stage close; the six defect classes",
+      "a cold run proves all live in dependency manifests, migrations, build configuration",
+      "or the scripts the cold run itself executes (the user's decision, 2026-08-25).",
+      "product/tests: the ratio of one to the other is the sharpest number the cost ledger",
+      "produces. golden-set/ is counted by half: the seed half is what a new environment",
+      "opens with -- a product decision -- while the fixture half is what the suites assert",
+      "about. Counting both as test churn made the ratio flatter than the truth.",
+      "archives: which of THIS stack's documents are dated records -- written once, never",
+      "edited after the fact, naming paths that were right on the day. `backtick-paths` reads",
+      "this and stays out; the engine exempts only the archives it writes itself, and",
+      "changelog/ was never one of them (no constant in paths.py, nothing written, nothing",
+      "read). Until 0.1.45 the engine carried `/changelog/20` as a hardcoded literal; the",
+      "declaration is this stack's now. `changelog/20` names the record and not the directory",
+      "holding it, so README.md and TEMPLATE.md beside the entries stay linted -- they",
+      "describe today and are edited when today changes. No entry here has a stale path yet;",
+      "the first directory move changes that, and the answer then is not an edit to a record."
+    ],
+    "product": [
+      "app",
+      "frontend/src",
+      "alembic/versions",
+      "golden-set/seed"
+    ],
+    "tests": [
+      "tests",
+      "e2e",
+      "golden-set/fixtures"
+    ],
+    "behaviour": [
+      "app/",
+      "frontend/src/",
+      "alembic/versions/"
+    ],
+    "screens": [
+      "frontend/src/pages/*",
+      "frontend/src/components/*",
+      "frontend/src/contexts/*/pages/*",
+      "frontend/src/contexts/*/components/*"
+    ],
+    "observable": [
+      "frontend/src/pages/*",
+      "frontend/src/components/*",
+      "frontend/src/contexts/*/pages/*",
+      "frontend/src/contexts/*/components/*",
+      "app/contexts/*/routers/*",
+      "app/platform/routers/*",
+      "alembic/versions/*"
+    ],
+    "operational": [
+      "infra/",
+      ".github/workflows/",
+      "scripts/*.sh",
+      "alembic/versions/",
+      "Dockerfile",
+      "docker-compose.yml"
+    ],
+    "schema": [
+      "alembic/versions/"
+    ],
+    "e2e_evidence": [
+      "e2e/suite/",
+      "e2e/ui/"
+    ],
+    "cold_required": [
+      "alembic/",
+      "pyproject.toml",
+      "uv.lock",
+      "frontend/package.json",
+      "frontend/package-lock.json",
+      "package.json",
+      "package-lock.json",
+      "Dockerfile",
+      "docker-compose",
+      ".github/workflows/",
+      "scripts/"
+    ],
+    "generated": [
+      "openapi.json",
+      "frontend/src/api/schema.d.ts"
+    ],
+    "lint_skip": [
+      "app/static/",
+      "uv.lock",
+      "spec/rationale/mockup-guestbook/support.js"
+    ],
+    "archives": [
+      "changelog/20"
+    ],
+    "test_files": {
+      "prefixes": [
+        "tests/",
+        "e2e/"
+      ],
+      "name_prefixes": [
+        "test_"
+      ],
+      "name_contains": [
+        ".test.",
+        ".spec."
+      ]
+    },
+    "fixtures": [
+      "golden-set/fixtures/"
+    ],
+    "seed": [
+      "golden-set/seed/"
+    ]
+  },
+  "source_suffixes": {
+    "$comment": [
+      "Extensions whose contents a person reads as sentences, and whose backticked paths the",
+      "content gates resolve. The engine carries the stack-neutral ones (.md .json .yaml .yml",
+      ".toml .feature .html .xml .sql); these are this stack's."
+    ],
+    "list": [
+      ".py",
+      ".ts",
+      ".tsx",
+      ".css",
+      ".sh",
+      ".tf"
+    ]
+  },
+  "signals": {
+    "$comment": [
+      "The path signals: measured from the paths a change reaches, not from the words a",
+      "specification uses -- there is no normative document for a Terraform module to drift",
+      "against. The six specification signals (contract_touched, schema_touched,",
+      "screen_touched, rule_touched, contexts_touched_gt_1, new_context) are the engine's and",
+      "are described in .specconf/process.json; these five are this stack's, and",
+      ".specconf/process.json may condition steps on them.",
+      "",
+      "`infra_touched`, `tooling_touched` and `ci_touched` exist for the same reason",
+      "`rule_touched` does, one floor up. Measured by the 2026-09-01 audit: infra/ is 2 135",
+      "lines, scripts/ 4 158, the workflows 968 -- together more than the backend and the",
+      "frontend combined -- and not one of them was named by any signal. A network-rule change",
+      "in modules/network does not occur in api.md, data-model.md or ui/, so it fell through",
+      "all three rules and landed on `default: p0`: the same tier as fixing a typo.",
+      "Why p1 and not higher: those trees have no normative document that could diverge from",
+      "them, so p2 would buy convergence rounds with no second author to reconcile with. p1",
+      "buys what was really missing -- the requirements and the design step at which somebody",
+      "asks \"where is this to live\".",
+      "",
+      "`Dockerfile` and `docker-compose.yml` joined two signals that already existed rather",
+      "than buying a sixth (#30). Until 2026-09-17 they lit NOTHING: a change to the image",
+      "the application ships as scored the same as a typo, and no worker could write either",
+      "file. They are not one class and are not filed as one. The Dockerfile is the",
+      "deployable artifact -- the `image` job gates it and `deploy` ships it -- so it reads",
+      "as infrastructure; docker-compose.yml is the Postgres a developer's `start.sh` brings",
+      "up, which is tooling. A sixth signal would have needed its own row in `detection.rules`",
+      "and its own entry in three `conditional` lists to say what these two already say."
+    ],
+    "backend_touched": {
+      "description": "the change touches app/ or alembic/",
+      "paths": [
+        "app/",
+        "alembic/"
+      ]
+    },
+    "frontend_touched": {
+      "description": "the change touches frontend/src/",
+      "paths": [
+        "frontend/src/"
+      ]
+    },
+    "infra_touched": {
+      "description": "the change touches infra/ or the deployable image",
+      "paths": [
+        "infra/",
+        "Dockerfile"
+      ]
+    },
+    "tooling_touched": {
+      "description": "the change touches scripts/, .claude/skills/ or the local compose file",
+      "paths": [
+        "scripts/",
+        ".claude/skills/",
+        "docker-compose.yml"
+      ]
+    },
+    "ci_touched": {
+      "description": "the change touches .github/",
+      "paths": [
+        ".github/"
+      ]
+    }
+  },
+  "core_signal_paths": {
+    "$comment": [
+      "The one place a path of this stack lights an ENGINE signal: a migration file is the",
+      "schema moving, even when spec/design/data-model.md did not. The repair tail's safety",
+      "net reads this -- triage's forecast can be too narrow, the paths do not lie."
+    ],
+    "schema_touched": [
+      "alembic/"
+    ]
+  },
+  "runners": {
+    "$comment": [
+      "Article XII for this stack: the tools that have a script of their own, and the script",
+      "that replaces them. The PreToolUse hook refuses a runner at a segment's command",
+      "position (so `grep pytest notes.md` is not a run of pytest), and the session audit",
+      "counts the same table after the fact. `match` is a regex fragment on the lowered",
+      "command; `remedy` is the sentence somebody sees at the moment they have already been",
+      "blocked, so it names the script to run instead."
+    ],
+    "pytest": {
+      "match": "pytest",
+      "remedy": "./scripts/test.sh backend  (or unit / fitness / tooling / --no-db)"
+    },
+    "ruff": {
+      "match": "ruff",
+      "remedy": "./scripts/lint.sh  (or --fix)"
+    },
+    "mypy": {
+      "match": "mypy",
+      "remedy": "./scripts/lint.sh"
+    },
+    "eslint": {
+      "match": "eslint",
+      "remedy": "./scripts/lint.sh"
+    },
+    "tsc": {
+      "match": "tsc",
+      "remedy": "./scripts/lint.sh"
+    },
+    "vitest": {
+      "match": "vitest",
+      "remedy": "./scripts/test.sh frontend"
+    },
+    "uvicorn": {
+      "match": "uvicorn",
+      "remedy": "./scripts/start.sh  (or --development / --container)"
+    },
+    "alembic": {
+      "match": "alembic",
+      "remedy": "./scripts/db.sh migrate  (or status / revision / reset)"
+    },
+    "docker compose": {
+      "match": "docker\\s+compose",
+      "remedy": "./scripts/start.sh, ./scripts/stop.sh"
+    },
+    "docker-compose": {
+      "match": "docker-compose",
+      "remedy": "./scripts/start.sh, ./scripts/stop.sh"
+    }
+  },
+  "skills": {
+    "$comment": [
+      "This template's own skills: the members of the implement fan-out that know the",
+      "technology, and the operational wrappers over scripts/. The engine's catalogue merges",
+      "them with its own skills; a name declared in both places is refused -- a skill has one",
+      "owner. `writes` is enforced after every dispatch by comparing `git status --porcelain`",
+      "against it: a member that wrote outside its list aborts the wave rather than being",
+      "reviewed for it later. The write sets are disjoint -- a gift from the layout in",
+      "spec/design/architecture.md, not an accident -- and that is what lets the members of one",
+      "wave run in parallel without colliding on a file.",
+      "",
+      "DISJOINT IS NOT THE SAME AS INDEPENDENT, and until 2026-09-23 this file said it was.",
+      "Disjoint lists prove two members will not collide on a file; they say nothing about one",
+      "member's output being another's input. Every Python and TypeScript import in the",
+      "repository was resolved against the `writes` below, following a module nobody owns to",
+      "what it imports in turn: eight (importer, owner) pairs cross an author boundary. Five",
+      "are the RED direction -- a test author importing the app/ or frontend/src/ its",
+      "implementer has not written yet, which is the failing test, or build-backend's scripts/",
+      "importing a locator or a harness a test author owns -- and were already ordered. The",
+      "other three sat INSIDE what used to be called the first wave, unordered.",
+      "",
+      "Two of them hang on one file: tests/_golden_set.py, the corpus locator",
+      "build-tests-integration writes. tests/fitness/test_golden_set.py and",
+      "tests/unit/test_entry_text_rules.py import it, and so does",
+      "e2e/suite/steps/guestbook_steps.py, through e2e/suite/golden_set.py, which no member",
+      "writes. Dispatched beside its producer, a reader imports a module that may be",
+      "half-written and its suite fails to COLLECT: a red for the wrong reason,",
+      "indistinguishable in the junit from the red it was sent to produce. So build-tests-unit",
+      "and build-tests-e2e now run `after` build-tests-integration.",
+      "",
+      "The third is the same pair the other way round, and the direction chosen is the one the",
+      "files decide. tests/tooling/test_e2e_harness.py and tests/integration/test_e2e_reset.py",
+      "import e2e/harness/ -- but they are tests OF the harness, the RED shape between two",
+      "authors: importing what the e2e author may be about to change is the point, exactly as",
+      "a unit test imports app/. The steps' import of the locator is the opposite, a reader of",
+      "finished infrastructure, and that one cannot run beside its writer.",
+      "tests/fitness/test_wave_dependencies.py recomputes every edge from the sources and",
+      "refuses this file when a crossing import is unordered or the locator's readers run",
+      "beside it -- and refuses an `after` that no import and no RED rule justifies, so nothing",
+      "is serialized for comfort.",
+      "",
+      "THE RED RULE IS DECLARED RATHER THAN INFERRED FROM THE WAVE COUNT. Every implementer",
+      "waits for every test author -- all four builders name all four. That was true by",
+      "accident while the fan-out was two waves, because the wave boundary and the role",
+      "boundary were the same line; with two test authors in the second wave they come apart,",
+      "and a builder naming only some authors would share a wave with the rest. The engine",
+      "enforces the rule over every subset of the signals a repair round can narrow to",
+      "(test_sdd_process_config.py), so the profile says it rather than hoping for it.",
+      "",
+      "No `consumed`/`produced` keys, though audit ticket E4-05 asked for those names: the",
+      "engine answered it with the keys it already reads -- `requires` against another member's",
+      "`produces` for a change-record artefact, `after` for everything else -- and declined a",
+      "second spelling for one fact (compositions.py `ordering`). `produces` stays empty here,",
+      "because the engine joins it to the change directory and a source tree is not in one.",
+      "",
+      "`tests: never` -- an implementer may not write a test, because an agent that edits the",
+      "assertion that caught it is the commonest failure mode of an autonomous implementer,",
+      "and the cheapest one to make mechanically impossible. `tests: only` is the mirror image",
+      "and exists for one skill: build-tests-frontend shares the prefix frontend/src/ with",
+      "build-frontend, because a vitest file lives beside the component it tests; a prefix",
+      "cannot separate them, so the rule is a file-shape test instead of a directory.",
+      "`model: opus` for every dispatched skill: a failed cheap attempt plus its error context",
+      "bought a second full dispatch (30 to 100 turns) against a rate difference of 2.5x;",
+      "the user read that number and chose to pay it (2026-08-22). `fable` is never a default",
+      "here -- the only path to it is a recorded question with the cost in its text.",
+      "",
+      "EVERY SKILL NAMED HERE IS INSIDE THE DISCIPLINE MEASUREMENT, AND THE DECLARATION IS THE",
+      "TREE rather than a key in this file. The engine counts improvisation, the escape hatches",
+      "and a runner `runners` refuses, out of a transcript; until claude-marketplace#211 it read",
+      "the parent conversation's calls alone -- 30 of 286 in one measured session, with 3 622 of",
+      "5 201 requests executing inside dispatched subagents, which is to say inside skills like",
+      "the ones listed below. The number it reported was a lower bound. The engine half widened",
+      "the scope, and the half that is this repository's is the statement that these eleven are",
+      "in it.",
+      "",
+      "It is not a key here because the engine cannot be given one: `stack.py` validates every",
+      "skill body against a closed list, and an `operational` skill may carry `kind` and nothing",
+      "else, so a `measured` key would refuse this profile at import. It belongs in the document",
+      "the model actually reads instead: each SKILL.md carries a `**Measured.**` paragraph naming",
+      "the window its calls are counted in and citing `process-failure.md`, the rule it is",
+      "charged against -- because whoever is charged has to have had somewhere to read it (66 of",
+      "69 charges in one audited session fell on a reader nothing had pointed at the rule). The",
+      "eight builders reach it through the worker contract every dispatch hands them; the three",
+      "`run-*` skills are loaded in the main conversation, get nothing from a dispatch, and so",
+      "cite it themselves. tests/fitness/test_skill_measurement.py refuses a skill that carries",
+      "neither."
+    ],
+    "build-tests-unit": {
+      "kind": "worker",
+      "stage": "implement",
+      "model": "opus",
+      "writes": [
+        "tests/unit/",
+        "tests/fitness/"
+      ],
+      "tests": "free",
+      "task": "Write the failing pytest tests for the pure rules -- tests/unit/ and tests/fitness/, no database -- each citing its requirement fully qualified. Run them and see them fail.",
+      "requires": [
+        "tasks.md",
+        "requirements.md"
+      ],
+      "produces": [],
+      "reads": [
+        "spec/design/testing.md"
+      ],
+      "after": [
+        "build-tests-integration"
+      ],
+      "verifies_worktree": true,
+      "turn_budget": 20
+    },
+    "build-tests-integration": {
+      "$comment": [
+        "`golden-set/fixtures/` is the FIXTURE half only. The halves have different owners",
+        "for the same reason they have different directories: the fixture half is sized by",
+        "what a test must prove, the seed half by what a person must see. One author holding",
+        "both is what produced the conflation -- an entry added to make a preview look richer",
+        "weakened a paging test that counted them.",
+        "`tests/conftest.py` is a file shared by the whole backend suite and therefore",
+        "nobody's; it stopped a whole change once (a TestClient base_url that changed which",
+        "cookies come back). `tests/_golden_set.py` is the locator, and it has to be here or",
+        "the fixture half cannot be added to: tests/fitness/test_golden_set.py makes",
+        "registering a new corpus file mandatory."
+      ],
+      "kind": "worker",
+      "stage": "implement",
+      "model": "opus",
+      "writes": [
+        "tests/integration/",
+        "tests/tooling/",
+        "golden-set/fixtures/",
+        "tests/conftest.py",
+        "tests/_golden_set.py"
+      ],
+      "tests": "free",
+      "task": "Write the failing pytest tests that need a database, plus any fixture they need under golden-set/fixtures/ -- never golden-set/seed/, which is the backend author's. Each cites its requirement fully qualified. A rule held by an index is proved by a concurrent insert.",
+      "requires": [
+        "tasks.md",
+        "scenarios.md"
+      ],
+      "produces": [],
+      "reads": [
+        "spec/design/testing.md",
+        "spec/design/data-model.md",
+        "spec/design/api.md"
+      ],
+      "verifies_worktree": true,
+      "turn_budget": 35
+    },
+    "build-tests-frontend": {
+      "kind": "worker",
+      "stage": "implement",
+      "model": "opus",
+      "writes": [
+        "frontend/src/"
+      ],
+      "tests": "only",
+      "task": "Write the failing vitest tests -- the pure rules in lib/, the generated-contract adapters, the screen states worth asserting -- each carrying its requirement id in the test name.",
+      "requires": [
+        "tasks.md"
+      ],
+      "produces": [],
+      "reads": [
+        "spec/design/conventions.md"
+      ],
+      "verifies_worktree": true,
+      "turn_budget": 15
+    },
+    "build-tests-e2e": {
+      "$comment": [
+        "`test_scenarios.py` is here because a step module with no import line in it DOES",
+        "NOT EXIST for the runner: pytest-bdd registers steps through imports, and",
+        "tests/fitness/test_e2e_scenarios.py checks that. It happened in CR-2608-8e96",
+        "(Q-ALLOWLIST). `e2e/ui/` is the black box's second room, the same author because",
+        "the e2e-scenario gate accepts evidence from either room. `e2e/suite/conftest.py`",
+        "is this suite's infrastructure rather than its content: measured on CR-2608-6fb2,",
+        "35 of 51 scenarios failed on a fixture the e2e author could not touch."
+      ],
+      "kind": "worker",
+      "stage": "implement",
+      "model": "opus",
+      "writes": [
+        "e2e/suite/features/",
+        "e2e/suite/steps/",
+        "e2e/suite/test_scenarios.py",
+        "e2e/harness/",
+        "e2e/ui/",
+        "e2e/suite/conftest.py"
+      ],
+      "tests": "free",
+      "task": "Turn the scenario seeds into Gherkin feature files and bind their steps, in business language, each tagged with the requirement it proves. No application code exists yet and the tests must fail.",
+      "requires": [
+        "tasks.md",
+        "scenarios.md"
+      ],
+      "produces": [],
+      "reads": [
+        "spec/design/testing.md"
+      ],
+      "after": [
+        "build-tests-integration"
+      ],
+      "verifies_worktree": true,
+      "turn_budget": 12
+    },
+    "build-backend": {
+      "$comment": [
+        "`scripts/` is here because the human interface to a backend feature is part of that",
+        "feature rather than a separate product (CR-2608-6fb2, Q-31: a script that creates",
+        "the first administrator account had no member who could write it). `golden-set/",
+        "seed/` for the same reason: what a new environment opens with is part of the",
+        "feature, and it travels with the seeder that posts it. The engine holds the first of",
+        "those by name -- test_sdd_skill_gate.py `_SHARED_PLUMBING` asserts `scripts/` is in",
+        "THIS member's allowlist -- so the path stays here and the gap it left was closed on",
+        "the condition instead: see `conditional` in .specconf/process.json, where this member",
+        "now answers `tooling_touched` as well.",
+        "",
+        "`uv.lock` joined `pyproject.toml` on 2026-09-17 (#30). The lockfile is in",
+        "`trees.cold_required` and ci.yml runs `uv sync --locked`, so it is tracked and its",
+        "drift breaks CI -- and until this entry no member of any composition could write it,",
+        "which made \"add a backend dependency\" a change with one author missing. The manifest",
+        "and its lockfile are one edit; `build-frontend` already had the pattern right with",
+        "package.json and package-lock.json."
+      ],
+      "kind": "worker",
+      "stage": "implement",
+      "model": "opus",
+      "writes": [
+        "app/",
+        "pyproject.toml",
+        "uv.lock",
+        "scripts/",
+        "golden-set/seed/"
+      ],
+      "tests": "never",
+      "task": "Implement the backend -- models, services, schemas, routers -- until the failing tests pass, plus any seed data scenarios.md asked for under golden-set/seed/. The migration is build-migration's; never edit a test.",
+      "requires": [
+        "tasks.md"
+      ],
+      "produces": [],
+      "reads": [
+        "spec/design/conventions.md",
+        "spec/design/api.md"
+      ],
+      "after": [
+        "build-tests-unit",
+        "build-tests-integration",
+        "build-tests-frontend",
+        "build-tests-e2e"
+      ],
+      "verifies_worktree": true,
+      "turn_budget": 25
+    },
+    "build-frontend": {
+      "kind": "worker",
+      "stage": "implement",
+      "model": "opus",
+      "writes": [
+        "frontend/src/",
+        "frontend/package.json",
+        "frontend/package-lock.json"
+      ],
+      "tests": "never",
+      "task": "Implement the frontend -- pages, components, hooks, lib rules -- from the screen specification and the frozen contract, until the failing tests pass. Never edit a test.",
+      "requires": [
+        "tasks.md"
+      ],
+      "produces": [],
+      "reads": [
+        "spec/design/conventions.md"
+      ],
+      "after": [
+        "build-tests-unit",
+        "build-tests-integration",
+        "build-tests-frontend",
+        "build-tests-e2e"
+      ],
+      "verifies_worktree": true,
+      "turn_budget": 15
+    },
+    "build-migration": {
+      "kind": "worker",
+      "stage": "implement",
+      "model": "opus",
+      "writes": [
+        "alembic/versions/"
+      ],
+      "tests": "never",
+      "task": "Write the Alembic revision from the ordered operations in spec/design/data-model.md, parented on the head you read with ./scripts/db.sh status, with the backfill before any constraint that would reject existing rows. Prove it runs from empty.",
+      "requires": [
+        "tasks.md"
+      ],
+      "produces": [],
+      "reads": [
+        "spec/design/data-model.md"
+      ],
+      "after": [
+        "build-tests-unit",
+        "build-tests-integration",
+        "build-tests-frontend",
+        "build-tests-e2e"
+      ],
+      "verifies_worktree": true,
+      "turn_budget": 15
+    },
+    "build-platform": {
+      "$comment": [
+        "The author of everything that RUNS the application without being the application.",
+        "Added 2026-09-17 (#30, #35). Before it, `infra_touched` and `ci_touched` lit a",
+        "composition with nobody who could write their paths at all, and `tooling_touched`",
+        "one whose only author -- `build-backend` -- it never dispatched. Three signals that",
+        "change the tier and summon two design steps, ending in a refusal after the work was",
+        "done. The engine's test_sdd_process_config.py recorded all three by name against this",
+        "stack; closing them is what deletes the entries.",
+        "",
+        "The write set is `trees.operational` minus `alembic/versions/` (build-migration's)",
+        "and minus `scripts/`, plus `.claude/skills/`. That tree already grouped these files:",
+        "the class existed and only its author was missing.",
+        "",
+        "`scripts/` is deliberately NOT here, and that is the one place this entry bends to",
+        "something older than it. It is the other half of `tooling_touched` and it would sit",
+        "here naturally -- but the engine asserts by name that `scripts/` belongs to",
+        "`build-backend` (test_sdd_skill_gate.py `_SHARED_PLUMBING`, bought by CR-2608-6fb2),",
+        "and a write set held by two members would break the disjointness that makes the",
+        "builders' wave safe to run in parallel. So the `tooling_touched` gap was closed on the",
+        "CONDITION rather than the allowlist: `build-backend` now answers that signal too.",
+        "Two members therefore serve one signal, each owning a disjoint half of its paths.",
+        "",
+        "`.github/` in a write set is a real power and it is deliberate: CI is the gate this",
+        "repository is mostly made of, and a change to it that no member may write is a change",
+        "made outside the process with the process watching. `tests: never` still holds, so",
+        "the member that may edit the workflow may not edit what the workflow proves."
+      ],
+      "kind": "worker",
+      "stage": "implement",
+      "model": "opus",
+      "writes": [
+        "infra/",
+        ".github/",
+        ".claude/skills/",
+        "Dockerfile",
+        "docker-compose.yml"
+      ],
+      "tests": "never",
+      "task": "Implement the machinery around the application -- the Terraform under infra/, the CI workflows, the image, the compose file and this template's own skills -- in the shape spec/design/architecture.md chose, until the failing tests pass. scripts/ is build-backend's, not yours. Pin every action to a SHA and every image base to a digest; plan Terraform, never apply it; never edit a test.",
+      "requires": [
+        "tasks.md"
+      ],
+      "produces": [],
+      "reads": [
+        "spec/design/architecture.md",
+        "infra/README.md"
+      ],
+      "after": [
+        "build-tests-unit",
+        "build-tests-integration",
+        "build-tests-frontend",
+        "build-tests-e2e"
+      ],
+      "verifies_worktree": true,
+      "turn_budget": 25
+    },
+    "run-app": {
+      "kind": "operational"
+    },
+    "run-checks": {
+      "kind": "operational"
+    },
+    "run-e2e-tests": {
+      "kind": "operational"
+    }
+  },
+  "plugins": {
+    "$comment": [
+      "Vendor plugins this template assumes -- the ones a Flutter template would name here",
+      "(dart-flutter from flutter/agent-plugins, with its skills and its Dart MCP server).",
+      "The engine checks each `install` against enabledPlugins in .claude/settings.json at",
+      "session start and says when one is missing; it installs nothing. This template",
+      "assumes none, and that is a stated absence.",
+      "",
+      "The rule for the first one, written before it arrives: an entry pins a `version` -- one",
+      "concrete number, never a range, a branch or the name alone -- and lists beside it the",
+      "`skills` and the `mcp` servers THAT version ships. A name resolves to whichever tree the",
+      "client's cache holds, and the other template found two versions of one plugin side by",
+      "side, the older declaring no MCP server at all. The engine installs and refuses nothing",
+      "on the strength of the number; it banks what each dispatch was handed and reports a",
+      "divergence from the pin (claude-marketplace#209). tests/fitness/test_process_pin.py",
+      "holds the rule, vacuously until an entry exists."
+    ]
+  },
+  "mcp": {
+    "$comment": [
+      "MCP servers the workers may use, keyed by the name Claude Code shows in a tool name",
+      "(`mcp__<server>__<tool>`, or `mcp__plugin_<plugin>_<server>__<tool>` when a plugin",
+      "bundles it -- `match` is the prefix regex either way). `refused` is Article XII for",
+      "MCP tools: a tool that duplicates the evidence role of a contract script (running the",
+      "tests outside the junit the gate reads) names the script instead. Nothing is refused",
+      "by default; the template decides. The two servers below are the process's own, and",
+      "they arrive with the forge plugin rather than from this repository."
+    ],
+    "sdd-history": {
+      "source": "plugin:forge",
+      "match": "^mcp__plugin_forge_sdd-history__",
+      "refused": {},
+      "notes": "the session-history corpus of this repository; read-only"
+    },
+    "claude-history": {
+      "source": "plugin:forge",
+      "match": "^mcp__plugin_forge_claude-history__",
+      "refused": {},
+      "notes": "this machine's Claude Code session history; read-only"
+    }
+  },
+  "hand_off": {
+    "$comment": [
+      "What this template hands each step of the process: the files that are this stack's",
+      "to know about and the tool-specific rules the process's own prose must not carry.",
+      "The process renders these into the worker's preflight brief and understands none",
+      "of it; `skills` and `mcp` are empty here because this template brings no vendor",
+      "plugin -- a Flutter template names the dart-flutter skills and the Dart MCP server."
+    ],
+    "cr-impact": {
+      "notes": "The code: app/ (the backend, cut by bounded context: contexts/<name>/{routers,services,models,schemas}) and frontend/src/ (the SPA, cut the same way). What is guaranteed: tests/ (unit, integration, fitness, tooling) and e2e/suite/features/ (Gherkin). Cite as `app/contexts/<context>/services/<resource>.py:214`, `frontend/src/contexts/<context>/pages/<Screen>.tsx:41`, `tests/integration/test_<resource>_service.py::test_...`, `e2e/suite/features/<feature>.feature`."
+    },
+    "cr-scenarios": {
+      "notes": "The house style: every .feature under e2e/suite/features/ -- match their register and their vocabulary. The corpus and its rules: golden-set/README.md. The wire-detail ban (no URL, no JSON field, no HTTP verb, no status code) is enforced by tests/fitness/test_e2e_scenarios.py."
+    },
+    "design-api": {
+      "notes": "Shapes in force: app/contexts/*/schemas/ (the naming and the read/write split). The worked refusal contract: app/contexts/guestbook/routers/guestbook_entries.py section _not_found; the framework error handlers: app/core/errors.py. The hand-written contract is held against the application by ./scripts/contracts.sh (a gate of `check`); ./scripts/generate.sh regenerates the frontend's types at convergence."
+    },
+    "design-data": {
+      "notes": "Today's entities: app/contexts/*/models/ -- the truth about the schema is in the code, not reconstructed from prose. The revisions in force: alembic/versions/. The migration tool is Alembic: never name its parent revision (two changes in flight both name today's head and the history forks); write 'head at implementation time'. Migration commands: ./scripts/db.sh migrate, ./scripts/db.sh revision (a first draft, never an answer)."
+    },
+    "design-ui": {
+      "notes": "Colour tokens: frontend/src/styles/theme.css -- every colour you name comes from there; a raw hex is a token nobody has named yet. Sizes, spacing and radii: Tailwind's own scale, not a token of ours. The screens are React components under frontend/src/contexts/*/pages and components; name none of them."
+    },
+    "design-architecture": {
+      "notes": "Decide placement against what is there: app/contexts/, app/platform/, frontend/src/contexts/, frontend/src/lib/. The conventions are settled in spec/design/conventions.md sections Backend and Frontend; apply them, do not re-derive them. The layering tests: tests/fitness/ -- test_context_boundaries.py refuses reaching past a context's __init__.py, test_context_declarations.py holds the declarations."
+    },
+    "design-testing": {
+      "notes": "The suites: backend (pytest -- tests/unit without a database, tests/integration with one, tests/tooling over scripts/), fitness (pytest -- tests/fitness, reading source, its own junit), frontend (vitest), e2e (pytest-bdd Gherkin under e2e/suite plus a Playwright smoke under e2e/ui). Citation forms: @pytest.mark.req(\"CR-.../R-n\") in the backend, @req:CR-.../R-n on a Gherkin scenario, [req:CR-.../R-n] in a vitest test name. A pure calculation goes to tests/unit or vitest, never e2e; a rule held by an index gets a concurrent insert in tests/integration. Run a suite: ./scripts/test.sh unit | integration | fitness | frontend | e2e."
+    },
+    "design-plan": {
+      "notes": "The implement members this template brings: build-tests-unit (pytest: tests/unit and tests/fitness), build-tests-integration (pytest with a database: tests/integration, fixtures under golden-set/fixtures/), build-tests-frontend (vitest), build-tests-e2e (feature files and step definitions), build-backend (models, services, routers, schemas, scripts/, pyproject.toml with uv.lock -- never alembic/), build-migration (the Alembic revision), build-frontend (pages, components, hooks, lib), build-platform (infra/, .github/, .claude/skills/, Dockerfile, docker-compose.yml). Verification commands: ./scripts/test.sh --no-db, ./scripts/test.sh backend, ./scripts/db.sh migrate."
+    },
+    "build-platform": {
+      "notes": "The trees: infra/ (Terraform -- stage/ and prod/ as directories, plus preview/), .github/workflows/ci.yml (the jobs and the aggregate `CI passed` they all report to), Dockerfile, docker-compose.yml and .claude/skills/ (this template's own workers). scripts/ is NOT yours -- it is build-backend's, by an engine assertion older than this member. What reads them as text, because this tree has no normative document: tests/fitness/test_infra_layout.py, test_ci_parity.py, test_action_pins.py, test_deploy_surface.py, test_scripts_discipline.py, test_scripts_syntax_floor.py, plus tests/tooling/ over the scripts themselves. The script contract's exit codes: 0 did it, 1 did not, 4 did what it could and named a gap, 2 the machine was busy. Commands: ./scripts/test.sh fitness | tooling, ./scripts/infra.sh <env> plan (it changes nothing), ./scripts/check.sh."
+    },
+    "build-debug": {
+      "notes": "You write under app/, alembic/versions/ and frontend/src/ (never a *.test.ts(x)) -- NOT infra/, .github/ or the image, which are build-platform's and outside trees.behaviour. The machine, checked: ./scripts/preflight.sh. Suites: ./scripts/test.sh backend | frontend | e2e; everything CI runs: ./scripts/check.sh --fast."
+    },
+    "reconcile-ops": {
+      "notes": "The operational surface here: infra/ (Terraform), .github/workflows/, scripts/, alembic/versions/, Dockerfile, docker-compose.yml, and any os.environ read added or removed. A step telling somebody to type `terraform apply` or `alembic upgrade` has taught them to walk past the guard: every instruction invokes a script; the named exception is the AWS CLI where no script wraps it. What holds the operator's pages true: tests/fitness/test_documentation_is_current.py -- it also refuses a credential, an account identifier or an ARN pasted as an example."
+    },
+    "review-code": {
+      "notes": "Dependency advisories are ./scripts/audit.sh's job (a gate of `check`), not a hunk's -- it reads frontend/package-lock.json and uv.lock, and reports the base images, the Terraform providers and the actions as pinned but not advisory-scanned, so a review need not re-derive that reach. A type widened by hand in frontend/src/api/schema.d.ts rather than regenerated is structural decay at the contract."
+    },
+    "design-domain": {
+      "notes": "The legal neighbour pairings are in .specconf/templates/system/context.md section Neighbours; tests/fitness/test_context_declarations.py refuses the rest."
+    }
+  },
+  "window_classes": {
+    "$comment": [
+      "The shapes of window this application lays a screen out for. None: the back-office",
+      "screens ship one layout, and a screen document here describes it once. This is the",
+      "written-down absence, not an omission -- the process asks a screen document for a",
+      "'Layout by window class' section only for the classes declared here, so with none",
+      "declared it asks for nothing and the section is omitted.",
+      "A fork that grows a second layout names both classes here, with the change that",
+      "needs them."
+    ]
+  },
+  "storage_contract": "A constraint the store enforces, declared in the Alembic revision and in the model beside it: a unique constraint, or a partial unique index over the live rows when the rule holds only for some of them. Postgres is the one arbiter between two writers; a lookup in the service before the insert is a race, because two requests both read 'not there yet' and both write. The guestbook has no such rule today -- spec/design/data-model.md, section Indexes and uniqueness, says so and why -- and a natural key, where a feature grows one, is a separate column with its own constraint and never the primary key (D-03 in contracts/invariants/guestbook.md).",
+  "migration_mechanism": "An ordered Alembic revision under alembic/versions/, with an upgrade and a downgrade that both work, written through ./scripts/db.sh revision and read before it is committed -- autogeneration is a first draft. Never create_all(). Every schema change declares one of three modes in spec/design/data-model.md, section Migrations, Compatibility mode: backward compatible (deploy in any order), expand-contract (two revisions with the code between them, the only safe route for a rename or a narrowed type) or breaking (a window and an order written down). A released revision is never edited; tests/fitness/test_migration_safety.py holds the rules a diff can see.",
+  "readiness": "GET /api/health answering 200 -- with the /api prefix, never plain /health, which the SPA catch-all answers 200 from the HTML shell whether or not the API works. It is the one probe: APP_HEALTH_URL in scripts/_lib.sh, which ./scripts/start.sh polls before it calls the application up and ./scripts/status.sh --json reads back later. The route is app/platform/routers/health.py and its promise is contracts/openapi/health.yaml. It answers for the process, not for the database behind it.",
+  "binding_target": "The endpoint and the field it returns in the HTTP contract, reached through one hook per resource over the generated frontend/src/api/schema.d.ts -- a component never calls client.GET itself. The From where column of a screen document's Data section names the pair, the method and path and the hook, and stops there; spec/design/ui/guestbook.md is the worked example. A field the contract does not carry is a change to contracts/openapi/ and spec/design/api.md first, then ./scripts/generate.sh."
+}

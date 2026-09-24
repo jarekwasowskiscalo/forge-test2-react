@@ -1,0 +1,114 @@
+{
+  "$comment": [
+    "Model rates in USD per million tokens. DATA, not code -- and that is this file's",
+    "whole argument. One price table in this repository lived with the vendor",
+    "(the vendored claude-history server, _PRICING) and went stale on April",
+    "2026: every new model fell through to Sonnet's default rate, so an Opus 5 session",
+    "read three times cheaper than it was. A price table goes stale -- so let it go stale",
+    "in a data file that has a date rather than in code that does not.",
+    "",
+    "THE KEY IS MODEL x SPEED. `message.usage.speed` really does stand in a session's",
+    "record (measured on CR-2608-f9b6: `standard` on 5 367 turns, `fast` on 0, the field",
+    "absent on 2 996 -- sessions from Claude Code 2.1.234). Fast mode is therefore a",
+    "measurable item rather than a hypothesis, and gets its own `<model>:fast` entry.",
+    "",
+    "THE FAST RATES ARE WRITTEN DOWN, NOT COMPUTED. Fast mode is $10 input and $50",
+    "output per MTok, available for Opus 5 and Opus 4.8 alone. The cache multipliers stack",
+    "ON THE FAST PRICE, so a 5 min write = 1.25 x 10 = 12.50, an hourly write = 2 x 10 =",
+    "20, and a hit = 0.1 x 10 = 1.00. Those three numbers stand here as numbers: this file",
+    "is a price list rather than a calculator, and a reader is not to recreate the",
+    "multipliers from memory.",
+    "",
+    "FABLE 5.1 READS ITS CACHE AT 0.025 x, NOT 0.1 x. $0.25 per MTok against a $10 input",
+    "is a quarter of Fable 5's $1.00 and looks like a misplaced decimal; it is the rate.",
+    "Claude Fable 5.1 and Claude Mythos 5.1 are the only models with that multiplier -- every",
+    "other entry here is the standard 0.1 x -- so the two lines below are the reason a reader",
+    "must not derive a cache rate from the input rate, on this table or any other.",
+    "",
+    "A MISSING `:fast` ENTRY IS INFORMATION, NOT AN OVERSIGHT. Opus 4.7 errors on",
+    "`speed: \"fast\"`, and Opus 4.6 runs standard and is priced that way. That is why",
+    "`pricing.rate()` must not fall through to the standard rate when somebody asks about",
+    "`claude-opus-4-7:fast` -- a missing rate is an answer.",
+    "",
+    "What is NOT here and why: the 1.1 x multiplier for `inference_geo: \"us\"`, because a",
+    "session's record carries no geography at all, and a rate applied on a guess lies",
+    "exactly as much as a stale one. `batch_discount` is here, but it applies only where",
+    "`service_tier` in the record says `batch`.",
+    "",
+    "Updating: raise `as_of`, correct the numbers, leave the entries of retired models --",
+    "the session corpus is older than the current line-up and has a right to be priced."
+  ],
+  "schema_version": 1,
+  "as_of": "2026-09-10",
+  "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+  "stale_after_days": 90,
+
+  "usd_per_mtok": {
+    "claude-fable-5-1":      {"input": 10,   "cache_write_5m": 12.50, "cache_write_1h": 20,   "cache_read": 0.25, "output": 50},
+    "claude-mythos-5-1":     {"input": 10,   "cache_write_5m": 12.50, "cache_write_1h": 20,   "cache_read": 0.25, "output": 50},
+
+    "claude-fable-5":        {"input": 10,   "cache_write_5m": 12.50, "cache_write_1h": 20,   "cache_read": 1.00, "output": 50},
+    "claude-mythos-5":       {"input": 10,   "cache_write_5m": 12.50, "cache_write_1h": 20,   "cache_read": 1.00, "output": 50},
+
+    "claude-opus-5":         {"input": 5,    "cache_write_5m": 6.25,  "cache_write_1h": 10,   "cache_read": 0.50, "output": 25},
+    "claude-opus-5:fast":    {"input": 10,   "cache_write_5m": 12.50, "cache_write_1h": 20,   "cache_read": 1.00, "output": 50},
+    "claude-opus-4-8":       {"input": 5,    "cache_write_5m": 6.25,  "cache_write_1h": 10,   "cache_read": 0.50, "output": 25},
+    "claude-opus-4-8:fast":  {"input": 10,   "cache_write_5m": 12.50, "cache_write_1h": 20,   "cache_read": 1.00, "output": 50},
+    "claude-opus-4-7":       {"input": 5,    "cache_write_5m": 6.25,  "cache_write_1h": 10,   "cache_read": 0.50, "output": 25},
+    "claude-opus-4-6":       {"input": 5,    "cache_write_5m": 6.25,  "cache_write_1h": 10,   "cache_read": 0.50, "output": 25},
+    "claude-opus-4-5":       {"input": 5,    "cache_write_5m": 6.25,  "cache_write_1h": 10,   "cache_read": 0.50, "output": 25},
+    "claude-opus-4-1":       {"input": 15,   "cache_write_5m": 18.75, "cache_write_1h": 30,   "cache_read": 1.50, "output": 75},
+    "claude-opus-4":         {"input": 15,   "cache_write_5m": 18.75, "cache_write_1h": 30,   "cache_read": 1.50, "output": 75},
+    "claude-3-opus":         {"input": 15,   "cache_write_5m": 18.75, "cache_write_1h": 30,   "cache_read": 1.50, "output": 75},
+
+    "claude-sonnet-5":       {"input": 2,    "cache_write_5m": 2.50,  "cache_write_1h": 4,    "cache_read": 0.20, "output": 10},
+    "claude-sonnet-4-6":     {"input": 3,    "cache_write_5m": 3.75,  "cache_write_1h": 6,    "cache_read": 0.30, "output": 15},
+    "claude-sonnet-4-5":     {"input": 3,    "cache_write_5m": 3.75,  "cache_write_1h": 6,    "cache_read": 0.30, "output": 15},
+    "claude-sonnet-4":       {"input": 3,    "cache_write_5m": 3.75,  "cache_write_1h": 6,    "cache_read": 0.30, "output": 15},
+    "claude-3-5-sonnet":     {"input": 3,    "cache_write_5m": 3.75,  "cache_write_1h": 6,    "cache_read": 0.30, "output": 15},
+
+    "claude-haiku-4-5":      {"input": 1,    "cache_write_5m": 1.25,  "cache_write_1h": 2,    "cache_read": 0.10, "output": 5},
+    "claude-3-5-haiku":      {"input": 0.80, "cache_write_5m": 1.00,  "cache_write_1h": 1.60, "cache_read": 0.08, "output": 4}
+  },
+
+  "batch_discount": 0.5,
+
+  "aliases": {
+    "$comment": [
+      "The aliases a dispatch is sometimes named with instead of a resolved identifier.",
+      "Measured: one of CR-2608-f9b6's 82 dispatches has `model: \"sonnet\"`, because the",
+      "parent did not record a `resolvedModel`. The subagent's file knows the truth and the",
+      "parser takes it from there, but an alias has to resolve when that file is absent too.",
+      "",
+      "AN ALIAS NAMES THE RELEASE A BARE TIER NAME MEANS NOW, not the one it meant when the",
+      "entry was written. A record reaches this map only because the client did not resolve",
+      "the id, so the alias is a statement about what is being dispatched today -- and today",
+      "a bare `fable` is Fable 5.1. Repointing it re-prices nothing that exists: measured",
+      "over `retro/` and `spec/changes/`, no archived record carries a bare `fable`, `opus`,",
+      "`sonnet` or `haiku` at all, and every resolved fable id in the local session corpus",
+      "is `claude-fable-5-1`. The retired entries stay in the table above for the records",
+      "that DO name a release; that is what they are for."
+    ],
+    "opus": "claude-opus-5",
+    "sonnet": "claude-sonnet-5",
+    "haiku": "claude-haiku-4-5",
+    "fable": "claude-fable-5-1"
+  },
+
+  "scenarios": [
+    {
+      "$comment": [
+        "A fixed set of scenarios: the same tokens, one rate. `model: null` means",
+        "\"price each model at its own rate\", that is the actual state. The rest move EVERY",
+        "bucket -- the parent's and the subagents' -- onto one rate, in order to answer the",
+        "question \"and what if all of this ran on one model\"."
+      ],
+      "label": "actual",
+      "model": null
+    },
+    {"label": "everything on Opus 5", "model": "claude-opus-5"},
+    {"label": "everything on Opus 5 fast", "model": "claude-opus-5:fast"},
+    {"label": "everything on Sonnet 5", "model": "claude-sonnet-5"},
+    {"label": "everything on Fable 5.1", "model": "claude-fable-5-1"}
+  ]
+}

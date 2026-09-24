@@ -1,0 +1,171 @@
+# A branch's own copy of the application, raised on request.
+#
+# `workflow_dispatch` and nothing else. A preview costs a little money and a
+# public URL, so it exists because somebody asked for it -- the same rule
+# `deploy.yml` follows, for the same reason. Dispatching requires write access, so
+# a fork cannot reach this at all.
+#
+# **One GitHub Environment, named `preview`, for every branch.** The per-branch
+# identity lives in the slug -- a state key and a resource-name prefix -- not in an
+# Environment. Per-branch Environments would need a long-lived token to create
+# (the workflow token cannot), would start with no protection rules, would have to
+# be deleted on teardown, and would force the AWS trust policy from an exact match
+# to a wildcard. The URL problem they would solve is solved by a comment on the
+# pull request, which is where people look anyway.
+#
+# The whole sequence is `./scripts/preview.sh up`, the same script a person runs.
+name: Preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+# One preview per branch at a time, and never cancelled: a cancelled apply leaves
+# a lock and a state describing a job half done. The key is the raw branch name
+# and `preview-teardown.yml` uses the same one, so a teardown queues behind an
+# in-flight deploy of its own branch instead of racing it.
+concurrency:
+  group: preview-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  UV_VERSION: "0.12.5"
+  PYTHON_VERSION: "3.14"
+  NODE_VERSION: "26"
+  TERRAFORM_VERSION: "1.13.3"
+  AWS_REGION: "eu-central-1"
+
+jobs:
+  preview:
+    name: preview (${{ github.ref_name }})
+    # The same guard `deploy.yml` and `preview-teardown.yml` carry, and this workflow was
+    # the one without it. Nothing here works before `infra/terraform/bootstrap/` has been
+    # applied and its role ARN written to the repository variable; without the guard a
+    # dispatch got as far as `configure-aws-credentials` with an empty `role-to-assume` and
+    # failed there, naming a credentials problem rather than the missing bootstrap.
+    if: vars.AWS_DEPLOY_ROLE_ARN != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    environment:
+      name: preview
+      url: ${{ steps.up.outputs.url }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          # The wrapper intercepts stdout to expose it as a step output, and this
+          # job reads `terraform output -json` from stdout. With the wrapper on, it
+          # reads the wrapper's decoration and fails on JSON that is not JSON.
+          terraform_wrapper: false
+
+      - run: uv sync --locked
+
+      # Computed once and passed on, so the apply, the output read and the log
+      # message cannot disagree about which preview this is.
+      - name: Identify this branch's preview
+        id: slug
+        run: echo "slug=$(./scripts/preview.sh slug)" >> "$GITHUB_OUTPUT"
+
+      # Minted for this run and expiring with it. The role comes from a repository
+      # VARIABLE, overridden on the `preview` environment: an ARN is not a secret,
+      # and a variable is visible in the log, which is what you want when a
+      # deployment goes to the wrong account.
+      - name: Assume the deployment role
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: preview-${{ github.run_id }}
+
+      - name: Raise it
+        id: up
+        env:
+          PREVIEW_SLUG: ${{ steps.slug.outputs.slug }}
+        # `pipefail`. GitHub's default `run:` shell is `bash -e {0}`, without it, so
+        # the status of `preview.sh up | tee` would be `tee`'s -- a failed apply
+        # reported green. Naming `bash` selects `--noprofile --norc -eo pipefail`.
+        shell: bash
+        run: |
+          ./scripts/preview.sh up | tee preview.log
+          url=$(./scripts/infra.sh preview-branch output -json |
+                uv run python -c "import json,sys; print(json.load(sys.stdin)['url']['value'])")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "::notice::preview ${PREVIEW_SLUG} is at $url"
+
+      # Where a reviewer will actually look. Edited rather than appended, so a
+      # branch pushed ten times leaves one comment rather than ten -- and a failure
+      # here is a warning rather than a failed deployment, because the preview is
+      # already up either way.
+      - name: Point the pull request at it
+        id: comment
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          URL: ${{ steps.up.outputs.url }}
+          SLUG: ${{ steps.slug.outputs.slug }}
+        run: |
+          number=$(gh pr list --head "$GITHUB_REF_NAME" --json number --jq '.[0].number // empty')
+          if [ -z "$number" ]; then
+            echo "commented=none" >> "$GITHUB_OUTPUT"
+            echo "::notice::no open pull request for this branch; the URL is $URL"
+            exit 0
+          fi
+          echo "commented=$number" >> "$GITHUB_OUTPUT"
+          # Built with printf rather than written inline. A YAML block scalar keeps
+          # the indentation of its continuation lines, and four leading spaces in a
+          # comment body is a Markdown code block -- so the explanation would have
+          # rendered as code.
+          #
+          # The backticks in the format are Markdown, not command substitution, and
+          # single quotes are what keeps them that way.
+          # shellcheck disable=SC2016
+          body=$(printf '**Preview `%s`** is at %s\n\nRaised from `%s`. It has its own database on the shared preview cluster, and goes away when this pull request closes or the branch is deleted. The URL is public and unauthenticated.\n' \
+            "$SLUG" "$URL" "$GITHUB_SHA")
+          gh pr comment "$number" --edit-last --create-if-none --body "$body" ||
+            echo "::warning::could not comment on pull request #$number; the URL is $URL"
+
+      # The job's ONE writer, last and `if: always()`. This workflow spoke only
+      # through a `::notice` and the pull-request comment, so a branch with no open
+      # pull request left the URL in a log line and nowhere else.
+      - name: Summary
+        if: always()
+        env:
+          SLUG: ${{ steps.slug.outputs.slug }}
+          URL: ${{ steps.up.outputs.url }}
+          COMMENTED: ${{ steps.comment.outputs.commented }}
+          RESULT: ${{ job.status }}
+        run: |
+          python3 scripts/ci_summary.py preview --job "preview ($GITHUB_REF_NAME)" \
+            --branch "$GITHUB_REF_NAME" --slug "$SLUG" --url "$URL" --ref "$GITHUB_SHA" \
+            --commented "${COMMENTED:-none}" --result "$RESULT" \
+            --markdown "$GITHUB_STEP_SUMMARY"
+
+      # The log, not the state and not the plan: a Terraform state file carries the
+      # cluster's master password (constitution, Article XI).
+      - name: Keep the log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: preview-log-${{ github.run_id }}
+          path: preview.log
+          retention-days: 7
