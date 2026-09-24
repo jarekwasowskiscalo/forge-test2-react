@@ -875,8 +875,8 @@
       "state": "returned"
     },
     "build-tests-unit": {
-      "assumptions": "TD-5 only: the nine sentences of the COH-implement-4 ready patch applied word for word in tests/fitness/test_context_declarations.py, test_context_boundaries.py, test_data_invariants.py and test_migration_safety.py, reflowed to paragraph width; an AST diff against HEAD with docstrings stripped showed the code identical. Three sentences the patch does not name are still stale in test_context_declarations.py: :303-304 \"carries the weight until a second context exists\"; :334-336 \"`neighbours: []` everywhere means the sweep above proves nothing\" (both context docs now declare peer:shared-kernel); :35 \"over a single table\". test_data_invariants.py:113 and test_migration_safety.py:94 are still true or dated history.",
-      "at": "2026-09-24T19:53:09Z",
+      "assumptions": "TD-8 only: three docstring passages of tests/fitness/test_context_declarations.py (:33-37, :304-307, :337-342) now say what is true since CR-2609-823a, past tense for what held with one context; the COH-implement-4 ready patch was already in place in the other three fitness files; no assertion, case name, import or code line changed; both context headers declare peer:shared-kernel on disk.",
+      "at": "2026-09-24T19:55:26Z",
       "state": "returned"
     },
     "review-coherence": {
@@ -2544,6 +2544,11 @@
           "at": "2026-09-24T19:53:09Z",
           "note": "No skill verb or script-contract name proves that an edit is docstring-only, so I improvised a scratchpad python3 AST-diff script to show no code changed.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T19:53:33Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5821177089",
+          "state": "filed"
         }
       ],
       "id": "PROC-54",
@@ -2554,8 +2559,8 @@
       "signal": "No skill verb or script-contract name proves that an edit is docstring-only, so I improvised a scratchpad python3 AST-diff script to show no code changed.",
       "signature": "No skill verb or script-contract name proves that an edit is docstring-only, so I improvised a scratchpad python3 AST-di",
       "stage": "implement",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5821177089"
     }
   ],
   "files_changed": [],
@@ -4245,7 +4250,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 805,
+  "revision": 810,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4318,6 +4323,7 @@
       "id": "TD-5",
       "kind": "agent",
       "raised_at": "2026-09-24T19:49:18Z",
+      "resolved_at": "2026-09-24T19:53:09Z",
       "skill": "build-tests-unit",
       "what": "COH-implement-4 (resolved by constitution Art. I): apply the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-4 to the docstrings of tests/fitness/test_context_declarations.py (:31-32, :299), tests/fitness/test_context_boundaries.py (:28-29, :145, :213-214), tests/fitness/test_data_invariants.py (:16-18, :92) and tests/fitness/test_migration_safety.py (:27), which still say the sweeps are vacuously true over one context, one table or one revision while spec/design/testing.md § Fitness functions says they judge two. Prose only: no assertion, case name, import or behaviour changes, nothing else in any file; prove ./scripts/test.sh fitness and ./scripts/lint.sh green."
     },
@@ -4335,6 +4341,13 @@
       "raised_at": "2026-09-24T19:51:38Z",
       "skill": "build-frontend",
       "what": "Two resolved coherence findings, prose-exact edits in two files: (1) COH-implement-1 = Q-25 A: in frontend/src/contexts/todo_list/hooks/useTodoTasks.ts add `staleTime: 0` to the useTodoTasks useQuery options, with a comment citing CR-2609-823a/R-3 clause 5 (the list is shown exactly as stored whenever it is opened, the header link included, as spec/design/ui/system-states.md § Interactions now says); the guestbook's hook stays untouched. (2) COH-implement-5 (constitution Art. I): in frontend/src/contexts/guestbook/pages/GuestbookPage.tsx:30 replace \"`S-01` -- the only screen in this application.\" with \"`S-01` -- the guestbook's screen, one of this application's two (`spec/design/ui/system-states.md` § One column).\" -- that one line only (the boundary now lists the file for exactly this); nothing the screen does moves, and the footer stays where it is. Change nothing else; prove ./scripts/test.sh frontend and ./scripts/lint.sh green."
+    },
+    {
+      "id": "TD-8",
+      "kind": "agent",
+      "raised_at": "2026-09-24T19:53:09Z",
+      "skill": "build-tests-unit",
+      "what": "COH-implement-4 (resolved by constitution Art. I: the structural tests stop saying one context, one table or one revision), the three sentences its ready patch did not name, all in tests/fitness/test_context_declarations.py: :35 \"over a single table\", :303-304 \"carries the weight until a second context exists\", and :334-336 \"`neighbours: []` everywhere means the sweep above proves nothing\" (both context documents now declare peer:shared-kernel). Rewrite each so it states what is true since CR-2609-823a, in the past tense for what used to hold, as the ready patch did for its nine. Prose only: no assertion, case name, import or behaviour changes, nothing else in the file; prove ./scripts/test.sh fitness and ./scripts/lint.sh green."
     }
   ],
   "toolchain": [
@@ -4352,7 +4365,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T19:53:09Z",
+  "updated_at": "2026-09-24T19:55:26Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

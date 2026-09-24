@@ -577,3 +577,8 @@
 - [21:51] fanout_recorded: dispatched: build-frontend
 - [21:52] process_fault_resolved: PROC-53 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/377
 - [21:53] fanout_recorded: returned: build-tests-unit; 1 process fault(s): PROC-54
+- [21:53] todo_resolved: TD-5
+- [21:53] todo_raised: TD-8 (agent): COH-implement-4 (resolved by constitution Art. I: the structural tests stop saying one context, one table or one revisio
+- [21:53] fanout_recorded: dispatched: build-tests-unit
+- [21:53] process_fault_resolved: PROC-54 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5821177089
+- [21:55] fanout_recorded: returned: build-tests-unit

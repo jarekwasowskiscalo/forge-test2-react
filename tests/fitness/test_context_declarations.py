@@ -30,10 +30,11 @@ Four rules, each of which exists because the alternative is silent:
 
 Most of these were **vacuously true** while there was one context bordering on
 nothing; since `CR-2609-823a` two contexts declare each other, and the sweeps read
-real headers. Each therefore carries a known positive over synthetic input, exactly
-as `tests/fitness/test_data_invariants.py` does for the data invariants it sweeps
-over a single table: a check that has never seen a violation is a check nobody has
-reason to believe.
+real headers. Each still carries a known positive over synthetic input, exactly as
+`tests/fitness/test_data_invariants.py` does for the data invariants it sweeps over
+the schema, which was a single table until `todo_tasks` joined it: real headers that
+are all legal show a sweep no violation either, and a check that has never seen a
+violation is a check nobody has reason to believe.
 
 Reads text. No database, no application import.
 """
@@ -300,8 +301,10 @@ def test_every_neighbour_names_a_context_and_a_pairing_the_rules_allow() -> None
     """Vacuously true while there was one context; since `CR-2609-823a` it reads
     two real neighbours.
 
-    `test_the_neighbour_reader_refuses_every_illegal_pairing` is the half that
-    carries the weight until a second context exists.
+    `test_the_neighbour_reader_refuses_every_illegal_pairing` carried the weight
+    alone until a second context existed. It is still the half that proves the
+    reader can refuse: both real declarations are legal, so this sweep has never
+    seen a fault.
     """
     contexts = frozenset(_declared())
     for path in _context_documents():
@@ -331,9 +334,12 @@ def test_every_neighbour_names_a_context_and_a_pairing_the_rules_allow() -> None
 def test_the_neighbour_reader_refuses_every_illegal_pairing(entry: str) -> None:
     """The known positives, one per way the declaration can be wrong.
 
-    This is where the rule actually lives today. `neighbours: []` everywhere
-    means the sweep above proves nothing on its own, and a rule proved by nothing
-    is a rule that will be discovered broken by the change that first needed it.
+    This is where the rule lived while `neighbours: []` stood everywhere: the
+    sweep above proved nothing on its own then, and a rule proved by nothing is a
+    rule that will be discovered broken by the change that first needed it. Since
+    `CR-2609-823a` both context documents declare `peer:shared-kernel` and the
+    sweep reads them; both are legal, so these cases are still what proves the
+    reader refuses.
     """
     assert _neighbour_fault(entry, frozenset({"guestbook", "billing"}), "guestbook") is not None
 

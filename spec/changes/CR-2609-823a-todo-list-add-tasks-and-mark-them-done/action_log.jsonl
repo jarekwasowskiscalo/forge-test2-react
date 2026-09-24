@@ -812,3 +812,8 @@
 {"timestamp": "2026-09-24T19:51:39Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: build-frontend", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T19:52:20Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-53 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/377", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T19:53:09Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: build-tests-unit; 1 process fault(s): PROC-54", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T19:53:09Z", "agent": "sdd", "action": "todo_resolved", "details": "TD-5", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T19:53:09Z", "agent": "sdd", "action": "todo_raised", "details": "TD-8 (agent): COH-implement-4 (resolved by constitution Art. I: the structural tests stop saying one context, one table or one revisio", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T19:53:10Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: build-tests-unit", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T19:53:33Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-54 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5821177089", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T19:55:26Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: build-tests-unit", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
