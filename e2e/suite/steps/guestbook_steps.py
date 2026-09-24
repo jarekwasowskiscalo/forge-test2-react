@@ -22,7 +22,7 @@ from e2e.harness.list_response import row_where, rows, total_of
 from e2e.suite.golden_set import BOUNDARY, ORDINARY, REFUSED, bodies_of, body_of, described
 from e2e.suite.target import Target
 
-#: The one resource this suite drives. Named once: a path spelled a second time
+#: The one resource this module drives. Named once: a path spelled a second time
 #: is a path that can be spelled differently.
 ENTRIES = "/guestbook-entries"
 

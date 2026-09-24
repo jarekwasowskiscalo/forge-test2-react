@@ -51,6 +51,7 @@
     "app/contexts/todo_list/",
     "docs/",
     "e2e/suite/features/todo_list.feature",
+    "e2e/suite/steps/guestbook_steps.py",
     "e2e/suite/steps/todo_list_steps.py",
     "e2e/suite/test_scenarios.py",
     "e2e/ui/",
@@ -952,19 +953,17 @@
       "state": "returned"
     },
     "build-tests-e2e": {
-      "assumptions": "- No fixture read (per T-11). Values are inline, plus the \"Task 001…Task 101\" counting rule.\n- Contract bound: api.md § Endpoints / § The to-do list's refusals -- /todo-tasks GET 200 {items,total}, POST 201 (ignores `done`), PATCH /{id} 200 with `done` or `text` alone, DELETE 204, and 404 with detail.code `todo_task_not_found`.\n- Smoke locators: todo-list.md § Copy and § Accessibility labels (\"Things to do\", \"New task\", \"Add task\", the empty sentence, the too-long sentence, a checkbox named by the task's text), and system-states.md links \"Guestbook\" and \"To-do list\" with aria-current.\n- Parallel author: build-tests-unit is writing tests/unit and tests/fitness in parallel. I did not touch them.\n- Seed deviation: \"Then the task should be saved\" added to S-23 and S-24 (a step where \"this person\" acts leaves the answer to the Then). Titles are verbatim.\n- The done-task contrast check (opacity-aware) lives in e2e/ui/test_smoke.py, because T-12's Files list leaves styles.py out.\nStatus returned: CONTENTION -- ./scripts/test.sh e2e refused before anything started (the SPA was not built from these sources: build.sh --if-stale runs tsc --noEmit over all of frontend/src, and wave 1a's vitest files import modules wave 2 writes). The 22 scenarios' collection is proven (ids equal T-11's list); no e2e or smoke case has been observed failing.",
-      "at": "2026-09-24T18:44:38Z",
+      "assumptions": "TD-12 only: e2e/suite/steps/guestbook_steps.py:25 now reads \"The one resource this module drives.\" (the COH-implement-9 ready patch); the file is in the boundary via design/delta/converge.md's row limited to that one comment; no step text, decorator, binding or ENTRIES value moved; 78 tests collect.",
+      "at": "2026-09-24T20:27:38Z",
       "state": "returned"
     },
     "build-tests-frontend": {
-      "assumptions": "TD-3 only: build-frontend's hooks module ./useTodoTasks (useTodoTasks, useAddTodoTask, useMarkTodoTask, useCorrectTodoTask, useDeleteTodoTask) is unchanged and stays what these cases run against. Each of the five calls is now `await act(() => { <same call>; return Promise.resolve() })` -- the brief's `await act(async () => { ... })` trips @typescript-eslint/require-await (recommendedTypeChecked in frontend/eslint.config.js); returning Promise.resolve() picks act's promise-returning overload so the awaited flush is kept. No title, assertion, stub or other line changed.",
-      "at": "2026-09-24T19:20:40Z",
-      "state": "returned"
+      "at": "2026-09-24T20:25:14Z",
+      "state": "dispatched"
     },
     "build-tests-integration": {
-      "assumptions": "TD-6 only: tests/integration/test_migrations.py:128 now reads \"read on every load of the guestbook's screen\", the COH-implement-4 ready patch word for word; no assertion, test name or marker changed; the other modified files (tests/fitness/*, design/delta/converge.md, bookkeeping) are not this member's.",
-      "at": "2026-09-24T19:51:38Z",
-      "state": "returned"
+      "at": "2026-09-24T20:25:14Z",
+      "state": "dispatched"
     },
     "build-tests-uat": {
       "assumptions": "Convergence round 1: uat.md step 14 now reads \"When the prompt returns, reload window A, then open the guestbook with the header link \"Guestbook\".\" (the COH-implement-1 ready patch, word for word; 1 insertion, 1 deletion). build-frontend's staleTime: 0 in useTodoTasks.ts is the delivered behaviour; the guestbook's hook and main.tsx stay frozen (staleTime 30_000), so step 14 still needs the reload; step 15 now reads the to-do list fresh by header link; steps 16, 17, 19, 20 already reload or enter the address. R-11 is still the only manual requirement, covered by steps 3 and 14-20.",
@@ -972,9 +971,8 @@
       "state": "returned"
     },
     "build-tests-unit": {
-      "assumptions": "TD-8 only: three docstring passages of tests/fitness/test_context_declarations.py (:33-37, :304-307, :337-342) now say what is true since CR-2609-823a, past tense for what held with one context; the COH-implement-4 ready patch was already in place in the other three fitness files; no assertion, case name, import or code line changed; both context headers declare peer:shared-kernel on disk.",
-      "at": "2026-09-24T19:55:26Z",
-      "state": "returned"
+      "at": "2026-09-24T20:25:14Z",
+      "state": "dispatched"
     },
     "review-coherence": {
       "assumptions": "none -- this skill reads. Pass 8: Phase 1b found all 6 recorded resolutions landed (file:line cited, no verification finding); a hunt over git diff d5d5832..643976a compared 12 pairs and found 3 contradictions and 1 gap, all minor, 2 resolvable by citation. A released Alembic revision's docstring left unraised (revisions are never edited); the plan-close acceptance and the text-measurement.json deletion item are incomplete rather than false.",
@@ -2703,6 +2701,11 @@
           "at": "2026-09-24T20:25:01Z",
           "note": "COH-implement-7 names requirements.md § R-3 as its ambiguity_source, but its ready patch and the dispatch target spec/design/ui/system-states.md. review-converge iron rule 1 and constraint 1 say to edit the ambiguity_source, so I had to argue that rule away in order to follow the dispatch.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T20:25:36Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/352#issuecomment-5821684086",
+          "state": "filed"
         }
       ],
       "id": "PROC-56",
@@ -2712,6 +2715,32 @@
       "seen": 1,
       "signal": "COH-implement-7 names requirements.md § R-3 as its ambiguity_source, but its ready patch and the dispatch target spec/design/ui/system-states.md. review-converge iron rule 1 and constraint 1 say to edit the ambiguity_source, so I had to argue that rule away in order to follow the dispatch.",
       "signature": "COH-implement-· names requirements.md § R-· as its ambiguity_source, but its ready patch and the dispatch target spec· r",
+      "stage": "implement",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/352#issuecomment-5821684086"
+    },
+    {
+      "at": "2026-09-24T20:27:38Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T20:27:38Z",
+          "note": "The dispatch names the blocker \"TD-12 in the change record (row 10)\". Grep of spec/changes/CR-2609-823a-*/ (change.json, action_log.jsonl and sessions/ excluded) found no \"TD-12\", and `sdd-engine change_state show --keys` has no path that carries such an id. So a worker cannot resolve the dispatch's own task handle from anything it may read, and I found the task through the COH-implement-9 citation instead.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-57",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "build-tests-e2e",
+      "seen": 1,
+      "signal": "The dispatch names the blocker \"TD-12 in the change record (row 10)\". Grep of spec/changes/CR-2609-823a-*/ (change.json, action_log.jsonl and sessions/ excluded) found no \"TD-12\", and `sdd-engine change_state show --keys` has no path that carries such an id. So a worker cannot resolve the dispatch's own task handle from anything it may read, and I found the task through the COH-implement-9 citation instead.",
+      "signature": "The dispatch names the blocker ·. Grep of spec· (change.json, action_log.jsonl and sessions/ excluded) found no ·, and `",
       "stage": "implement",
       "state": "reported",
       "url": null
@@ -4533,7 +4562,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 833,
+  "revision": 841,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4633,6 +4662,34 @@
       "resolved_at": "2026-09-24T19:55:27Z",
       "skill": "build-tests-unit",
       "what": "COH-implement-4 (resolved by constitution Art. I: the structural tests stop saying one context, one table or one revision), the three sentences its ready patch did not name, all in tests/fitness/test_context_declarations.py: :35 \"over a single table\", :303-304 \"carries the weight until a second context exists\", and :334-336 \"`neighbours: []` everywhere means the sweep above proves nothing\" (both context documents now declare peer:shared-kernel). Rewrite each so it states what is true since CR-2609-823a, in the past tense for what used to hold, as the ready patch did for its nine. Prose only: no assertion, case name, import or behaviour changes, nothing else in the file; prove ./scripts/test.sh fitness and ./scripts/lint.sh green."
+    },
+    {
+      "id": "TD-9",
+      "kind": "agent",
+      "raised_at": "2026-09-24T20:25:13Z",
+      "skill": "build-tests-frontend",
+      "what": "COH-implement-8 = Q-29 A: write the one new vitest case spec/design/testing.md's R-3 row now names in frontend/src/router.test.tsx -- the to-do list opened a second time by its header link is read again and shows what is stored then, under a query client with frontend/src/main.tsx's defaults (staleTime 30 s), so the case fails if the list inherits those 30 seconds (Q-25, spec/design/ui/system-states.md § Interactions). Its title carries [req:CR-2609-823a/R-3], at the top level of the file. It will be green on arrival because the hook already sets staleTime: 0 (TD-7): say so, and give the exact case id for green-by-design. Change nothing else; prove ./scripts/test.sh frontend and ./scripts/lint.sh green."
+    },
+    {
+      "id": "TD-10",
+      "kind": "agent",
+      "raised_at": "2026-09-24T20:25:13Z",
+      "skill": "build-tests-unit",
+      "what": "COH-implement-9 (constitution Art. I): apply the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-9 to tests/unit/test_guestbook_entry_model.py:163-164 (the docstring of test_the_entity_carries_no_relationship that says the schema is one table). Prose only: no assertion, case name or behaviour changes, nothing else in the file; prove ./scripts/test.sh unit and ./scripts/lint.sh green."
+    },
+    {
+      "id": "TD-11",
+      "kind": "agent",
+      "raised_at": "2026-09-24T20:25:13Z",
+      "skill": "build-tests-integration",
+      "what": "COH-implement-9 (constitution Art. I): apply the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-9 to tests/integration/test_e2e_reset.py:43 (the comment on REQUIRED that says it is the one table holding a scenario's state). Prose only: no assertion, case name or behaviour changes, nothing else in the file; prove ./scripts/test.sh integration -k test_e2e_reset and ./scripts/lint.sh green."
+    },
+    {
+      "id": "TD-12",
+      "kind": "agent",
+      "raised_at": "2026-09-24T20:25:13Z",
+      "skill": "build-tests-e2e",
+      "what": "COH-implement-9 (constitution Art. I): in e2e/suite/steps/guestbook_steps.py:25 replace \"The one resource this suite drives.\" with \"The one resource this module drives.\", as the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-9 gives it (the change boundary now lists the file for exactly this one comment). Prose only: no step text, binding or behaviour changes, nothing else in the file; prove ./scripts/test.sh e2e --collect-only and ./scripts/lint.sh green."
     }
   ],
   "toolchain": [
@@ -4650,7 +4707,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T20:25:01Z",
+  "updated_at": "2026-09-24T20:27:38Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

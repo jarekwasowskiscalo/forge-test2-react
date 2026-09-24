@@ -605,3 +605,11 @@
 - [22:25] coherence_resolved: 1 finding(s): COH-implement-8
 - [22:25] coherence_resolved: 1 finding(s): COH-implement-9
 - [22:25] coherence_resolved: 1 finding(s): COH-implement-10
+- [22:25] boundary_recorded: 36 paths from design/delta/ + 8 the reconciliation will write
+- [22:25] todo_raised: TD-9 (agent): COH-implement-8 = Q-29 A: write the one new vitest case spec/design/testing.md's R-3 row now names in frontend/src/route
+- [22:25] todo_raised: TD-10 (agent): COH-implement-9 (constitution Art. I): apply the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-t
+- [22:25] todo_raised: TD-11 (agent): COH-implement-9 (constitution Art. I): apply the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-t
+- [22:25] todo_raised: TD-12 (agent): COH-implement-9 (constitution Art. I): in e2e/suite/steps/guestbook_steps.py:25 replace "The one resource this suite dri
+- [22:25] fanout_recorded: dispatched: build-tests-frontend, build-tests-unit, build-tests-integration, build-tests-e2e
+- [22:25] process_fault_resolved: PROC-56 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/352#issuecomment-5821684086
+- [22:27] fanout_recorded: returned: build-tests-e2e; 1 process fault(s): PROC-57
