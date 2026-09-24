@@ -369,3 +369,11 @@
 - [21:01] green_by_design_recorded: tests.fitness.test_length_constants::test_the_line_break_reader_would_see_a_drift: T-10: a known-positive check of the line-break reader over synthetic sources; it reads no p
 - [21:01] fanout_recorded: dispatched: build-backend, build-frontend, build-migration, build-platform
 - [21:16] fanout_recorded: returned: build-backend, build-frontend, build-migration, build-platform; 3 process fault(s): PROC-44, PROC-45, PROC-46
+- [21:18] process_fault_resolved: PROC-46 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/97
+- [21:18] process_fault_resolved: PROC-44 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/98
+- [21:18] process_fault_resolved: PROC-45 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/96#issuecomment-5820622007
+- [21:18] todo_raised: TD-3 (agent): TEST_DISPUTED by build-frontend: frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx lines 185, 252, 259, 272 an
+- [21:18] fanout_recorded: dispatched: build-tests-frontend
+- [21:19] process_fault_reported: PROC-47 (engine): loop next row 10 ("an agent blocker names the skill that clears it") rendered the build-tests-fronte
+- [21:19] process_fault_resolved: PROC-47 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/369
+- [21:20] fanout_recorded: returned: build-tests-frontend

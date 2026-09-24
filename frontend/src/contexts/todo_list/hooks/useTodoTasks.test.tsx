@@ -182,7 +182,10 @@ it('writes nothing into the list before the application answers [req:CR-2609-823
 
   for (const [index, change] of changes.entries()) {
     answer = held()
-    await act(() => change.start())
+    await act(() => {
+      change.start()
+      return Promise.resolve()
+    })
     await waitFor(() => expect(change.state().isPending, change.name).toBe(true))
     // On the wire, so the answer is failed while somebody is waiting for it.
     await waitFor(() => expect(writesSent, change.name).toBe(index + 1))
@@ -249,14 +252,20 @@ it('refetches the list after a change that went through [req:CR-2609-823a/R-1]',
 
   // Adding.
   let before = reads
-  await act(() => result.current.add.mutate({ text: 'Water the plants' }))
+  await act(() => {
+    result.current.add.mutate({ text: 'Water the plants' })
+    return Promise.resolve()
+  })
   await waitFor(() => expect(result.current.add.isSuccess).toBe(true))
   await waitFor(() => expect(texts()).toEqual(['Water the plants', 'Added by somebody else', 'Buy bread']))
   expect(reads).toBeGreaterThan(before)
 
   // Ticking.
   before = reads
-  await act(() => result.current.mark.mutate({ id: BREAD.id, done: true }))
+  await act(() => {
+    result.current.mark.mutate({ id: BREAD.id, done: true })
+    return Promise.resolve()
+  })
   await waitFor(() => expect(result.current.mark.isSuccess).toBe(true))
   await waitFor(() =>
     expect(result.current.list.data?.items.map((each) => [each.text, each.done])).toEqual([
@@ -269,7 +278,10 @@ it('refetches the list after a change that went through [req:CR-2609-823a/R-1]',
 
   // Correcting.
   before = reads
-  await act(() => result.current.correct.mutate({ id: BREAD.id, text: 'Buy rye bread' }))
+  await act(() => {
+    result.current.correct.mutate({ id: BREAD.id, text: 'Buy rye bread' })
+    return Promise.resolve()
+  })
   await waitFor(() => expect(result.current.correct.isSuccess).toBe(true))
   await waitFor(() => expect(texts()).toEqual(['Water the plants', 'Added by somebody else', 'Buy rye bread']))
   expect(result.current.list.data?.items.find((each) => each.id === elsewhere.id)?.done).toBe(false)
@@ -277,7 +289,10 @@ it('refetches the list after a change that went through [req:CR-2609-823a/R-1]',
 
   // Deleting, which answers 204 with no body -- and still goes through.
   before = reads
-  await act(() => result.current.remove.mutate(BREAD.id))
+  await act(() => {
+    result.current.remove.mutate(BREAD.id)
+    return Promise.resolve()
+  })
   await waitFor(() => expect(result.current.remove.isSuccess).toBe(true))
   await waitFor(() => expect(texts()).toEqual(['Water the plants', 'Added by somebody else']))
   expect(reads).toBeGreaterThan(before)

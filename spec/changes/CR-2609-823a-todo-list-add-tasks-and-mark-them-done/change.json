@@ -2306,8 +2306,8 @@
       "state": "returned"
     },
     "build-tests-frontend": {
-      "assumptions": "Wave 2 creates these modules, at these paths and with these APIs:\n- lib/todoTask.ts: `TodoTask` (= TodoTaskRead), `TODO_TASK_TEXT_MAX_LENGTH`, `todoTaskTextVerdict(text) -> 'accepted'|'empty'|'multiline'|'too_long'`.\n- frontend/src/lib/text.ts: `normalizeText`, `textLength`, `TRIMMED`.\n- components/TodoTaskComposer.tsx: `TodoTaskComposer({onSubmit, isPending?})`, where onSubmit gets `{text}` normalized. Textbox \"New task\" with no maxlength, button \"Add task\". The sentence shows on Enter or blur as role=alert with aria-invalid. The button must be closed, so Enter has to be handled on keydown.\n- components/TodoTaskRow.tsx: `TodoTaskRow({task, isEditing, onEditStart, onEditCancel, onSave({text}), onMark({done}), onDelete(), isMarking?})`. The checkbox is named by the text. Done text carries `line-through`, its nearest palette class is `text-muted`, and it has no unconditional `opacity-*` or `text-disabled`. Buttons are labelled `Edit “t”`/`Delete “t”`, the edit field is \"Edit task\", and \"Saving…\" shows while marking. The row owns the delete question: Cancel has focus, \"Delete task\" confirms, Escape closes.\n- hooks/useTodoTasks.ts: `useTodoTasks()` returns data `{items,total}`. `useAddTodoTask` takes `{text}`, `useMarkTodoTask` `{id,done}`, `useCorrectTodoTask` `{id,text}`, `useDeleteTodoTask` an id. It refetches after a success and writes nothing before or after a failure.\n- pages/TodoListPage.tsx: `TodoListPage`.\n- Frame: nav/group \"Screens\" built with NavLink (aria-current), lockup \"Product name\".\n- router.tsx keeps exporting `router`.\nContract: TodoTaskRead, TodoTaskCreate, TodoTaskUpdate, and the 500 body `{detail:'internal server error'}`. `tests/fitness/test_golden_set.py::test_the_frontend_reads_no_corpus_file` stays red on todoTask.test.ts until T-10 names it as the second reader.",
-      "at": "2026-09-24T18:22:36Z",
+      "assumptions": "TD-3 only: build-frontend's hooks module ./useTodoTasks (useTodoTasks, useAddTodoTask, useMarkTodoTask, useCorrectTodoTask, useDeleteTodoTask) is unchanged and stays what these cases run against. Each of the five calls is now `await act(() => { <same call>; return Promise.resolve() })` -- the brief's `await act(async () => { ... })` trips @typescript-eslint/require-await (recommendedTypeChecked in frontend/eslint.config.js); returning Promise.resolve() picks act's promise-returning overload so the awaited flush is kept. No title, assertion, stub or other line changed.",
+      "at": "2026-09-24T19:20:40Z",
       "state": "returned"
     },
     "build-tests-integration": {
@@ -3670,6 +3670,11 @@
           "at": "2026-09-24T19:16:56Z",
           "note": "The four wave-2 builders share one worktree, and test.sh's leftover-untracked-files check counts another builder's new files as the suite's own, so `./scripts/test.sh integration` and `tooling` exit 1 with every test passing, for any builder that runs them mid-wave; the check cannot tell the two apart.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T19:18:01Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/98",
+          "state": "filed"
         }
       ],
       "id": "PROC-44",
@@ -3680,8 +3685,8 @@
       "signal": "The four wave-2 builders share one worktree, and test.sh's leftover-untracked-files check counts another builder's new files as the suite's own, so `./scripts/test.sh integration` and `tooling` exit 1 with every test passing, for any builder that runs them mid-wave; the check cannot tell the two apart.",
       "signature": "The four wave-· builders share one worktree, and test.sh·s new files as the suite's own, so `.· integration` and `toolin",
       "stage": "implement",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/98"
     },
     {
       "at": "2026-09-24T19:16:56Z",
@@ -3696,6 +3701,11 @@
           "at": "2026-09-24T19:16:56Z",
           "note": "The typed lint of the wave-1 vitest files cannot see their real types until wave 2 creates the modules they import (the unresolved types are `any`). So a test-file lint error (await-thenable) passes the RED proof and first surfaces in wave 2, where no member may edit tests.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T19:18:01Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/96#issuecomment-5820622007",
+          "state": "filed"
         }
       ],
       "id": "PROC-45",
@@ -3706,8 +3716,8 @@
       "signal": "The typed lint of the wave-1 vitest files cannot see their real types until wave 2 creates the modules they import (the unresolved types are `any`). So a test-file lint error (await-thenable) passes the RED proof and first surfaces in wave 2, where no member may edit tests.",
       "signature": "The typed lint of the wave-· vitest files cannot see their real types until wave · creates the modules they import (the ",
       "stage": "implement",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/96#issuecomment-5820622007"
     },
     {
       "at": "2026-09-24T19:16:56Z",
@@ -3722,6 +3732,11 @@
           "at": "2026-09-24T19:16:56Z",
           "note": "scripts/_lib.sh ensure_db_running only checks that the compose db service is running. forge-test2-react-db-1 was running with bindings 127.0.0.1:5432 but Ports {\"5432/tcp\":[]}, because another project's container, forge-test1-pythin-react-db-1, holds 0.0.0.0:5432 with the same app/app credentials. So every default db.sh or start.sh call here reaches that project's database. My plain `./scripts/db.sh migrate` applied 5c58af1f8e8a to it and created an empty todo_tasks table there.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T19:18:01Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/97",
+          "state": "filed"
         }
       ],
       "id": "PROC-46",
@@ -3732,8 +3747,39 @@
       "signal": "scripts/_lib.sh ensure_db_running only checks that the compose db service is running. forge-test2-react-db-1 was running with bindings 127.0.0.1:5432 but Ports {\"5432/tcp\":[]}, because another project's container, forge-test1-pythin-react-db-1, holds 0.0.0.0:5432 with the same app/app credentials. So every default db.sh or start.sh call here reaches that project's database. My plain `./scripts/db.sh migrate` applied 5c58af1f8e8a to it and created an empty todo_tasks table there.",
       "signature": "scripts· ensure_db_running only checks that the compose db service is running. forge-test2-react-db-· was running with b",
       "stage": "implement",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/97"
+    },
+    {
+      "at": "2026-09-24T19:19:10Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T19:19:10Z",
+          "note": "loop next row 10 (\"an agent blocker names the skill that clears it\") rendered the build-tests-frontend dispatch for todo TD-3 (a five-line lint fix a TEST_DISPUTED return asked of the test author) with YOUR TASK = the member's generic stage task \"Write the failing vitest tests -- the pure rules in lib/, ...\" and nowhere the todo's text; the worker's own preflight does not show the todo either. Copied verbatim, the block sends a test author to write new failing tests instead of the one scoped fix. next_action.py:891-904 attaches action[\"todo\"] but loop.py:174 renders member.get(\"task\") or require_member_task(skill). This session replaced the YOUR TASK line by hand with TD-3's text.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T19:19:25Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/369",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-47",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "loop next row 10 (\"an agent blocker names the skill that clears it\") rendered the build-tests-frontend dispatch for todo TD-3 (a five-line lint fix a TEST_DISPUTED return asked of the test author) with YOUR TASK = the member's generic stage task \"Write the failing vitest tests -- the pure rules in lib/, ...\" and nowhere the todo's text; the worker's own preflight does not show the todo either. Copied verbatim, the block sends a test author to write new failing tests instead of the one scoped fix. next_action.py:891-904 attaches action[\"todo\"] but loop.py:174 renders member.get(\"task\") or require_member_task(skill). This session replaced the YOUR TASK line by hand with TD-3's text.",
+      "signature": "loop next row · (·) rendered the build-tests-frontend dispatch for todo TD-· (a five-line lint fix a TEST_DISPUTED retur",
+      "stage": "implement",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/369"
     }
   ],
   "files_changed": [],
@@ -5244,7 +5290,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 597,
+  "revision": 605,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -5296,6 +5342,13 @@
       "resolved_at": "2026-09-24T16:14:58Z",
       "skill": "design-testing",
       "what": "Apply the recorded resolution of COH-design-2 (Q-17 = A), which the convergence brief left out: spec/design/testing.md :759 and :859-860 still test that the create and update shapes refuse a text with its code. Apply the ready patch written under COH-design-2 in review/coherence.md § Pass 4 -- :759 \"through the rule, while every case builds a valid create and update shape, so only the rule can refuse a text\" and :859-860 test_the_create_and_update_shapes_carry_no_bound -- with the smallest edit, and change nothing else."
+    },
+    {
+      "id": "TD-3",
+      "kind": "agent",
+      "raised_at": "2026-09-24T19:18:10Z",
+      "skill": "build-tests-frontend",
+      "what": "TEST_DISPUTED by build-frontend: frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx lines 185, 252, 259, 272 and 280 use `await act(() => result.current.<mutation>.mutate(...))`, which awaits the void TanStack's mutate returns, so @typescript-eslint/await-thenable fails ./scripts/lint.sh (--max-warnings 0) and so check.sh. The cases pass and their behaviour is right. Rewrite only those five calls so nothing awaits a non-thenable (e.g. `await act(async () => { ... })`), keep every case's title, assertions and behaviour exactly as they are, change nothing else in the file or elsewhere, and prove ./scripts/lint.sh and ./scripts/test.sh frontend green."
     }
   ],
   "toolchain": [
@@ -5313,7 +5366,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T19:16:56Z",
+  "updated_at": "2026-09-24T19:20:40Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {
