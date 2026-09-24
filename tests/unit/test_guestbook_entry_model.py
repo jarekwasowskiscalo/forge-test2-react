@@ -160,8 +160,9 @@ def test_no_other_temporal_column_slipped_in() -> None:
 
 
 def test_the_entity_carries_no_relationship() -> None:
-    """The template's schema is one table and no edges. A relationship appearing
-    here means a second context arrived, and `spec/contexts/` has to say so."""
+    """The guestbook's table has no edges. Since `CR-2609-823a` the schema holds
+    two tables, and no foreign key joins them. A relationship appearing here means
+    one context reached into another's data, and `spec/contexts/` has to say so."""
     assert list(sa.inspect(GuestbookEntry).relationships) == []
 
 

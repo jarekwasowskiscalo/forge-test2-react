@@ -971,8 +971,9 @@
       "state": "returned"
     },
     "build-tests-unit": {
-      "at": "2026-09-24T20:25:14Z",
-      "state": "dispatched"
+      "assumptions": "TD-10 only: the COH-implement-9 ready patch pasted word for word into the docstring of test_the_entity_carries_no_relationship (tests/unit/test_guestbook_entry_model.py, now :163-165, reflowed under 100 characters); no assertion, case name or marker changed; unit 269 passed, fitness 364 passed.",
+      "at": "2026-09-24T20:27:48Z",
+      "state": "returned"
     },
     "review-coherence": {
       "assumptions": "none -- this skill reads. Pass 8: Phase 1b found all 6 recorded resolutions landed (file:line cited, no verification finding); a hunt over git diff d5d5832..643976a compared 12 pairs and found 3 contradictions and 1 gap, all minor, 2 resolvable by citation. A released Alembic revision's docstring left unraised (revisions are never edited); the plan-close acceptance and the text-measurement.json deletion item are incomplete rather than false.",
@@ -2732,6 +2733,11 @@
           "at": "2026-09-24T20:27:38Z",
           "note": "The dispatch names the blocker \"TD-12 in the change record (row 10)\". Grep of spec/changes/CR-2609-823a-*/ (change.json, action_log.jsonl and sessions/ excluded) found no \"TD-12\", and `sdd-engine change_state show --keys` has no path that carries such an id. So a worker cannot resolve the dispatch's own task handle from anything it may read, and I found the task through the COH-implement-9 citation instead.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T20:27:40Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/369#issuecomment-5821713050",
+          "state": "filed"
         }
       ],
       "id": "PROC-57",
@@ -2742,8 +2748,8 @@
       "signal": "The dispatch names the blocker \"TD-12 in the change record (row 10)\". Grep of spec/changes/CR-2609-823a-*/ (change.json, action_log.jsonl and sessions/ excluded) found no \"TD-12\", and `sdd-engine change_state show --keys` has no path that carries such an id. So a worker cannot resolve the dispatch's own task handle from anything it may read, and I found the task through the COH-implement-9 citation instead.",
       "signature": "The dispatch names the blocker ·. Grep of spec· (change.json, action_log.jsonl and sessions/ excluded) found no ·, and `",
       "stage": "implement",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/369#issuecomment-5821713050"
     }
   ],
   "files_changed": [],
@@ -4562,7 +4568,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 841,
+  "revision": 844,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4688,6 +4694,7 @@
       "id": "TD-12",
       "kind": "agent",
       "raised_at": "2026-09-24T20:25:13Z",
+      "resolved_at": "2026-09-24T20:27:39Z",
       "skill": "build-tests-e2e",
       "what": "COH-implement-9 (constitution Art. I): in e2e/suite/steps/guestbook_steps.py:25 replace \"The one resource this suite drives.\" with \"The one resource this module drives.\", as the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-9 gives it (the change boundary now lists the file for exactly this one comment). Prose only: no step text, binding or behaviour changes, nothing else in the file; prove ./scripts/test.sh e2e --collect-only and ./scripts/lint.sh green."
     }
@@ -4707,7 +4714,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T20:27:38Z",
+  "updated_at": "2026-09-24T20:27:48Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {
