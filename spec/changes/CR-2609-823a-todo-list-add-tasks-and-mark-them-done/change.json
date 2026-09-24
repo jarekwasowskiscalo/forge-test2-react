@@ -824,6 +824,11 @@
       "findings_at_round": 18,
       "rounds": 2
     },
+    "implement_critique": {
+      "at": "2026-09-24T19:56:57Z",
+      "findings_at_round": 6,
+      "rounds": 1
+    },
     "requirements_critique": {
       "at": "2026-09-24T12:46:20Z",
       "findings_at_round": 9,
@@ -871,18 +876,13 @@
       "state": "returned"
     },
     "build-tests-uat": {
-      "assumptions": "build-backend writes golden-set/seed/todo-tasks-example.json with the five examples from scenarios.md § Seed data, one done (the name is confirmed in tests/_golden_set.py:129). Steps 3 and 17 expect `5 tasks`. seed.sh and `start.sh --no-seed` extend to the to-do list as architecture.md § What a new environment starts with says (each list filled on its own, prod refused through /api/health). `APP_ENV=prod` makes a local copy answer as production (docs/configuration.md). build-frontend uses the screen copy from spec/design/ui/todo-list.md and system-states.md word for word (\"Things to do\", `N tasks`, \"No tasks yet. Add the first one above.\", \"Task updated.\", \"Delete task\", the nav links \"Guestbook\"/\"To-do list\"). The list is read again after a change that went through (todo-list.md § Data), which step 12 relies on.",
-      "at": "2026-09-24T18:22:36Z",
+      "assumptions": "Convergence round 1: uat.md step 14 now reads \"When the prompt returns, reload window A, then open the guestbook with the header link \"Guestbook\".\" (the COH-implement-1 ready patch, word for word; 1 insertion, 1 deletion). build-frontend's staleTime: 0 in useTodoTasks.ts is the delivered behaviour; the guestbook's hook and main.tsx stay frozen (staleTime 30_000), so step 14 still needs the reload; step 15 now reads the to-do list fresh by header link; steps 16, 17, 19, 20 already reload or enter the address. R-11 is still the only manual requirement, covered by steps 3 and 14-20.",
+      "at": "2026-09-24T19:58:16Z",
       "state": "returned"
     },
     "build-tests-unit": {
       "assumptions": "TD-8 only: three docstring passages of tests/fitness/test_context_declarations.py (:33-37, :304-307, :337-342) now say what is true since CR-2609-823a, past tense for what held with one context; the COH-implement-4 ready patch was already in place in the other three fitness files; no assertion, case name, import or code line changed; both context headers declare peer:shared-kernel on disk.",
       "at": "2026-09-24T19:55:26Z",
-      "state": "returned"
-    },
-    "review-coherence": {
-      "assumptions": "none -- this skill reads, it does not produce an artefact others depend on. Compared the whole implement diff (3c74dfd..72ff77e) against the live design and the requirements: 13 pairs, 6 contradictions (3 resolvable by citation), 0 gaps; items already routed in tasks.md (the 19/20 case count, conventions.md § Frontend, the task-text invariant) not raised again.",
-      "at": "2026-09-24T19:38:11Z",
       "state": "returned"
     },
     "review-converge": {
@@ -2576,6 +2576,11 @@
           "at": "2026-09-24T19:56:08Z",
           "note": "The skill's iron rules cite `${CLAUDE_PLUGIN_ROOT}/skills/_shared/worker-contract.md`, but the preflight brief prints no expanded local path for it, so the worker has to search the plugin cache (`~/.claude/plugins/cache/scalo/forge/0.1.76/...`) to read the contract it is bound by. Cost: one discovery call.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T19:56:44Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/378",
+          "state": "filed"
         }
       ],
       "id": "PROC-55",
@@ -2586,8 +2591,8 @@
       "signal": "The skill's iron rules cite `${CLAUDE_PLUGIN_ROOT}/skills/_shared/worker-contract.md`, but the preflight brief prints no expanded local path for it, so the worker has to search the plugin cache (`~/.claude/plugins/cache/scalo/forge/0.1.76/...`) to read the contract it is bound by. Cost: one discovery call.",
       "signature": "The skill's iron rules cite `${CLAUDE_PLUGIN_ROOT}· but the preflight brief prints no expanded local path for it, so the",
       "stage": "implement",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/378"
     }
   ],
   "files_changed": [],
@@ -2694,6 +2699,13 @@
   "ladders": {
     "design_critique": {
       "last_error": "convergence round: 8 findings, all resolved",
+      "max_attempts": 3,
+      "repeats": 1,
+      "rung": "attempt_1_failed",
+      "signature": "convergence round: · findings, all resolved"
+    },
+    "implement_critique": {
+      "last_error": "convergence round: 6 findings, all resolved",
       "max_attempts": 3,
       "repeats": 1,
       "rung": "attempt_1_failed",
@@ -4277,7 +4289,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 812,
+  "revision": 818,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4366,6 +4378,7 @@
       "id": "TD-7",
       "kind": "agent",
       "raised_at": "2026-09-24T19:51:38Z",
+      "resolved_at": "2026-09-24T19:56:08Z",
       "skill": "build-frontend",
       "what": "Two resolved coherence findings, prose-exact edits in two files: (1) COH-implement-1 = Q-25 A: in frontend/src/contexts/todo_list/hooks/useTodoTasks.ts add `staleTime: 0` to the useTodoTasks useQuery options, with a comment citing CR-2609-823a/R-3 clause 5 (the list is shown exactly as stored whenever it is opened, the header link included, as spec/design/ui/system-states.md § Interactions now says); the guestbook's hook stays untouched. (2) COH-implement-5 (constitution Art. I): in frontend/src/contexts/guestbook/pages/GuestbookPage.tsx:30 replace \"`S-01` -- the only screen in this application.\" with \"`S-01` -- the guestbook's screen, one of this application's two (`spec/design/ui/system-states.md` § One column).\" -- that one line only (the boundary now lists the file for exactly this); nothing the screen does moves, and the footer stays where it is. Change nothing else; prove ./scripts/test.sh frontend and ./scripts/lint.sh green."
     },
@@ -4393,7 +4406,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T19:56:08Z",
+  "updated_at": "2026-09-24T19:58:16Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

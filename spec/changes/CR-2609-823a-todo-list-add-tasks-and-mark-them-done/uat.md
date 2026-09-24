@@ -77,7 +77,7 @@ is then its only task.
 
 | # | Screen | What to do | What is to happen (exactly) | Requirement | Result |
 |---|---|---|---|---|---|
-| 14 | Guestbook, window A | In terminal B run `./scripts/seed.sh`. When the prompt returns, open the guestbook with the header link "Guestbook". | The guestbook lists its welcome entries and the header reads `5 entries`. The guestbook was filled although the to-do list holds a task (scenario S-53). | `CR-2609-823a/R-11` | yes / no |
+| 14 | Guestbook, window A | In terminal B run `./scripts/seed.sh`. When the prompt returns, reload window A, then open the guestbook with the header link "Guestbook". | The guestbook lists its welcome entries and the header reads `5 entries`. The guestbook was filled although the to-do list holds a task (scenario S-53). | `CR-2609-823a/R-11` | yes / no |
 | 15 | To-do list, window A | Open the to-do list with the header link "To-do list". | Exactly one task, "Water the plants", and the header reads `1 task`. No example task was added beside a task somebody wrote (scenario S-53). | `CR-2609-823a/R-11` | yes / no |
 | 16 | To-do list, window A | In terminal B run `./scripts/seed.sh` again. When the prompt returns, reload the to-do list. | Still exactly one task, "Water the plants", and the header reads `1 task`. Filling again added nothing (scenario S-50). | `CR-2609-823a/R-11` | yes / no |
 
