@@ -1,6 +1,7 @@
 {
   "adrs": [],
   "artifacts": {
+    "session-092a5770": "sessions/092a5770-6598-4789-b97c-7cdd1c63afe8/summary.md",
     "session-7ec2cbab": "sessions/7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6/summary.md",
     "session-870fece5": "sessions/870fece5-b8f9-4a47-84da-b3456aa1de97/summary.md",
     "session-fb772134": "sessions/fb772134-4626-4cf4-a734-3930e8cb1dbd/summary.md"
@@ -1788,6 +1789,37 @@
       "stage": "plan",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/359"
+    },
+    {
+      "at": "2026-09-24T17:43:30Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T17:43:30Z",
+          "note": "When `loop close` stops on a RED gate it leaves its report at .sdd/reports/last-gate-pending.json while last-gate.json stays the previous stage's run; SKILL.md tells the orchestrator to pass `--verification .sdd/reports/last-gate.json` to close_stage (and loop close has no --accept-red, PROC-33), so the documented path is refused as stale content and the red close needs the undocumented pending file -- one refused close, and the accept-red then refused again for not naming the fitness cases individually although \"Suite fitness\" was named.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T17:43:44Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/360",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-36",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "When `loop close` stops on a RED gate it leaves its report at .sdd/reports/last-gate-pending.json while last-gate.json stays the previous stage's run; SKILL.md tells the orchestrator to pass `--verification .sdd/reports/last-gate.json` to close_stage (and loop close has no --accept-red, PROC-33), so the documented path is refused as stale content and the red close needs the undocumented pending file -- one refused close, and the accept-red then refused again for not naming the fitness cases individually although \"Suite fitness\" was named.",
+      "signature": "When `loop close` stops on a RED gate it leaves its report at .sdd· while last-gate.json stays the previous stage's run;",
+      "stage": "implement",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/360"
     }
   ],
   "files_changed": [],
@@ -3227,7 +3259,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 228,
+  "revision": 231,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -3296,7 +3328,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T17:43:25Z",
+  "updated_at": "2026-09-24T17:44:13Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

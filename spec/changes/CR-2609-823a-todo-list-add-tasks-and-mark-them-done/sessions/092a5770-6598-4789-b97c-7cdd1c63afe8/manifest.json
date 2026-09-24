@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "session_id": "092a5770-6598-4789-b97c-7cdd1c63afe8",
+  "captured_at": "2026-09-24T17:44:13Z",
+  "total_bytes": 4492223,
+  "source_bytes": 4492223,
+  "file_count": 4,
+  "personal_data_shapes": {
+    "email": 18,
+    "iban": 0,
+    "phone": 0,
+    "pesel": 0
+  },
+  "snapshots": [
+    {
+      "seq": 1,
+      "captured_at": "2026-09-24T17:43:52Z",
+      "total_bytes": 4349271
+    },
+    {
+      "seq": 2,
+      "captured_at": "2026-09-24T17:44:13Z",
+      "total_bytes": 4492223
+    }
+  ],
+  "files": [
+    {
+      "path": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/sessions/092a5770-6598-4789-b97c-7cdd1c63afe8/transcript.jsonl",
+      "source": "/Users/jaroslawwasowski/.claude/projects/-Users-jaroslawwasowski-Projects-Forge-forge-test2-react/092a5770-6598-4789-b97c-7cdd1c63afe8.jsonl",
+      "bytes": 1082074,
+      "sha256": "7dfd548df515b581dbe021f03e51055972c6be1b322eb1560408528d0d23fa39"
+    },
+    {
+      "path": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/sessions/092a5770-6598-4789-b97c-7cdd1c63afe8/sidecar/subagents/agent-ab2cd49b68b3fbac5.jsonl",
+      "source": "/Users/jaroslawwasowski/.claude/projects/-Users-jaroslawwasowski-Projects-Forge-forge-test2-react/092a5770-6598-4789-b97c-7cdd1c63afe8/subagents/agent-ab2cd49b68b3fbac5.jsonl",
+      "bytes": 3385439,
+      "sha256": "4440b4c9a9aee00661be0e8b568f243c90ae3faa68c9f7d0420299f6afb0c2c0"
+    },
+    {
+      "path": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/sessions/092a5770-6598-4789-b97c-7cdd1c63afe8/sidecar/subagents/agent-ab2cd49b68b3fbac5.meta.json",
+      "source": "/Users/jaroslawwasowski/.claude/projects/-Users-jaroslawwasowski-Projects-Forge-forge-test2-react/092a5770-6598-4789-b97c-7cdd1c63afe8/subagents/agent-ab2cd49b68b3fbac5.meta.json",
+      "bytes": 209,
+      "sha256": "24ba9a81a2a1335af7c2b7700095d6de03c8e91909880aa524915218ee5cf704"
+    },
+    {
+      "path": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/sessions/092a5770-6598-4789-b97c-7cdd1c63afe8/sidecar/tool-results/hook-0d8b433a-789e-4ad4-a026-5b5d91886156-stdout.txt",
+      "source": "/Users/jaroslawwasowski/.claude/projects/-Users-jaroslawwasowski-Projects-Forge-forge-test2-react/092a5770-6598-4789-b97c-7cdd1c63afe8/tool-results/hook-0d8b433a-789e-4ad4-a026-5b5d91886156-stdout.txt",
+      "bytes": 24501,
+      "sha256": "58a6242ca4428bbf9d2596e2af5a9bdf85c5af29c53dc3e189885fa74b5d0646"
+    }
+  ],
+  "capture": {
+    "mode": "retro",
+    "trigger": "sdd-retro",
+    "partial": false
+  },
+  "cr_dir": "CR-2609-823a-todo-list-add-tasks-and-mark-them-done",
+  "branch": "sdd/CR-2609-823a-todo-list-add-tasks-and-mark-them-done"
+}
