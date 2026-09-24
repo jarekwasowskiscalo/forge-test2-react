@@ -377,3 +377,168 @@
 - [21:19] process_fault_reported: PROC-47 (engine): loop next row 10 ("an agent blocker names the skill that clears it") rendered the build-tests-fronte
 - [21:19] process_fault_resolved: PROC-47 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/369
 - [21:20] fanout_recorded: returned: build-tests-frontend
+- [21:20] todo_resolved: TD-3
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_maximum]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_maximum_in_emoji]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_maximum_decomposed]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_padded_to_maximum]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_boundary_task_is_accepted_and_stored_as_the_file_states[text_at_minimum]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_absent]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_three_spaces]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_all_whitespace]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_spaces_past_maximum]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_one_past_maximum]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_one_past_maximum_in_emoji]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_one_past_maximum_decomposed]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_padded_one_past_maximum]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_task_is_refused_with_its_code_and_stores_nothing[text_line_break_inside]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_absent]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_three_spaces]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_all_whitespace]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_spaces_past_maximum]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_one_past_maximum]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_one_past_maximum_in_emoji]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_one_past_maximum_decomposed]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_padded_one_past_maximum]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_every_refused_text_is_refused_as_a_correction_and_the_task_keeps_its_text[text_line_break_inside]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_corpus::test_the_ordinary_tasks_read_back_as_the_reversal_of_the_file_with_their_marks
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_an_added_task_is_stored_not_done_with_its_moment_of_adding
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_the_same_text_added_twice_is_two_tasks_marked_apart
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_a_stored_text_is_normalized_one_line_and_within_the_bound_in_code_points
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_inner_whitespace_is_stored_as_typed
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_the_list_comes_back_newest_first
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_tasks_sharing_a_moment_of_adding_still_have_a_total_order
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_every_task_is_read_at_once_done_and_not_done
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_marking_and_correcting_leave_a_task_in_its_place
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_marking_records_the_state_chosen_whatever_is_stored
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_marking_leaves_the_text_and_the_moment_of_adding_alone
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_a_correction_changes_the_text_and_nothing_else
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_a_done_task_is_corrected_as_a_not_done_one_is
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_a_refused_correction_keeps_the_text_it_had
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_deleting_removes_the_row_and_leaves_every_other_task
+- [21:26] red_resolved: tests.integration.test_todo_tasks_service::test_a_change_to_a_deleted_task_changes_nothing_and_creates_nothing
+- [21:26] red_resolved: tests.integration.test_todo_tasks_concurrency::test_a_correction_and_a_marking_queued_on_one_task_are_both_kept
+- [21:26] red_resolved: tests.integration.test_todo_tasks_concurrency::test_of_two_queued_corrections_the_one_applied_later_wins
+- [21:26] red_resolved: tests.integration.test_todo_tasks_concurrency::test_of_two_queued_markings_the_one_applied_later_wins
+- [21:26] red_resolved: tests.integration.test_todo_tasks_concurrency::test_a_change_queued_behind_a_deletion_creates_nothing
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_adding_answers_201_with_the_task_as_stored
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_a_done_sent_with_a_new_task_is_ignored
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_the_list_is_one_envelope_with_every_task_and_its_count
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_a_patch_carrying_done_alone_writes_done_alone
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_a_patch_carrying_text_alone_writes_text_alone
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_a_refused_text_in_a_patch_that_also_carries_done_writes_neither
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_deleting_answers_204_with_no_body
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_a_change_to_a_missing_task_answers_404_with_its_code
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_a_patch_setting_neither_field_is_refused
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_each_text_refusal_answers_with_its_own_code
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_a_text_too_long_and_on_two_lines_is_refused_as_multiline
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_a_body_of_the_wrong_shape_gets_the_standard_validation_refusal
+- [21:26] red_resolved: tests.integration.test_todo_tasks_router::test_a_request_is_refused_for_what_it_is_whatever_its_identifier_names
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[list_answers]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[create_succeeds]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[create_refuses_an_empty_text]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[create_refuses_a_text_that_is_not_a_string]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_marks]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_corrects]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_refuses_an_empty_patch]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_refuses_a_text_on_two_lines]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_refuses_a_done_that_is_not_a_boolean]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_task_is_absent]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[patch_id_is_not_a_uuid]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[delete_succeeds]
+- [21:26] red_resolved: tests.integration.test_todo_tasks_contract::test_the_body_matches_the_schema_published_for_the_status_it_returned[delete_is_absent]
+- [21:26] red_resolved: tests.integration.test_migrations::test_upgrade_head_creates_the_todo_tasks_table_with_exactly_these_columns
+- [21:26] red_resolved: tests.integration.test_migrations::test_the_todo_list_order_has_an_index_behind_it
+- [21:26] red_resolved: tests.tooling.test_seed_golden_set::test_a_guest_book_with_entries_is_left_alone
+- [21:26] red_resolved: tests.tooling.test_seed_golden_set::test_an_empty_environment_gets_the_whole_seed_corpus
+- [21:26] red_resolved: tests.tooling.test_seed_golden_set::test_a_to_do_list_holding_a_task_is_left_alone
+- [21:26] red_resolved: tests.tooling.test_seed_golden_set::test_the_done_example_is_added_then_marked
+- [21:26] red_resolved: tests.tooling.test_seed_golden_set::test_the_boundary_corpus_is_opt_in
+- [21:26] red_resolved: tests.tooling.test_seed_golden_set::test_a_trailing_slash_on_the_base_url_is_tolerated
+- [21:26] red_resolved: src/contexts/todo_list/lib/todoTask.test.ts::gives each case of the task's corpus the verdict it states [req:CR-2609-823a/R-2]
+- [21:26] red_resolved: src/contexts/todo_list/lib/todoTask.test.ts::measures each accepted case in code points, as the server does [req:CR-2609-823a/R-2]
+- [21:26] red_resolved: src/contexts/todo_list/lib/todoTask.test.ts::refuses a text both too long and on two lines as one line [req:CR-2609-823a/R-2]
+- [21:26] red_resolved: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::takes 200 pasted emoji whole and lets the task be added [req:CR-2609-823a/R-2]
+- [21:26] red_resolved: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::holds 201 emoji, says the text is too long and sends nothing [req:CR-2609-823a/R-2]
+- [21:26] red_resolved: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::says a text with a line break inside is one line and sends nothing [req:CR-2609-823a/R-2]
+- [21:26] red_resolved: src/contexts/todo_list/components/TodoTaskComposer.test.tsx::sends the text as the shared rule leaves it [req:CR-2609-823a/R-1]
+- [21:26] red_resolved: src/contexts/todo_list/components/TodoTaskRow.test.tsx::shows a done task differently from a not-done one [req:CR-2609-823a/R-4]
+- [21:26] red_resolved: src/contexts/todo_list/components/TodoTaskRow.test.tsx::sends the state the person chose [req:CR-2609-823a/R-4]
+- [21:26] red_resolved: src/contexts/todo_list/components/TodoTaskRow.test.tsx::shows a corrected text in the task's place [req:CR-2609-823a/R-6]
+- [21:26] red_resolved: src/contexts/todo_list/components/TodoTaskRow.test.tsx::keeps the old text and says why when a correction is refused [req:CR-2609-823a/R-6]
+- [21:26] red_resolved: src/contexts/todo_list/components/TodoTaskRow.test.tsx::asks before deleting and sends nothing until confirmed [req:CR-2609-823a/R-7]
+- [21:26] red_resolved: src/contexts/todo_list/components/TodoTaskRow.test.tsx::leaves the task as it was when the deletion is cancelled [req:CR-2609-823a/R-7]
+- [21:26] red_resolved: src/contexts/todo_list/hooks/useTodoTasks.test.tsx::writes nothing into the list before the application answers [req:CR-2609-823a/R-10]
+- [21:26] red_resolved: src/contexts/todo_list/hooks/useTodoTasks.test.tsx::refetches the list after a change that went through [req:CR-2609-823a/R-1]
+- [21:26] red_resolved: src/contexts/todo_list/pages/TodoListPage.test.tsx::shows an added task first without a reload [req:CR-2609-823a/R-1]
+- [21:26] red_resolved: src/contexts/todo_list/pages/TodoListPage.test.tsx::shows the tasks in the order they arrive [req:CR-2609-823a/R-3]
+- [21:26] red_resolved: src/contexts/todo_list/pages/TodoListPage.test.tsx::says the list is empty and how to begin, with no error [req:CR-2609-823a/R-3]
+- [21:26] red_resolved: src/contexts/todo_list/pages/TodoListPage.test.tsx::shows a list whose tasks are all done and does not call it empty [req:CR-2609-823a/R-3]
+- [21:26] red_resolved: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a marking that did not go through was not made [req:CR-2609-823a/R-10]
+- [21:26] red_resolved: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a task that did not go through was not added [req:CR-2609-823a/R-10]
+- [21:26] red_resolved: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a correction or a deletion that did not go through was not made [req:CR-2609-823a/R-10]
+- [21:26] red_resolved: src/contexts/todo_list/pages/TodoListPage.test.tsx::says the list failed to load, not that it is empty [req:CR-2609-823a/R-10]
+- [21:26] red_resolved: src/contexts/todo_list/pages/TodoListPage.test.tsx::says a task refused as gone no longer exists and does not show it done [req:CR-2609-823a/R-10]
+- [21:26] red_resolved: src/router.test.tsx::opens the to-do list at its own address [req:CR-2609-823a/R-5]
+- [21:26] red_resolved: src/router.test.tsx::answers an unknown address with the page that says nothing is there [req:CR-2609-823a/R-5]
+- [21:26] red_resolved: src/components/shell/PageFrame.test.tsx::offers the way to the other screen on each screen [req:CR-2609-823a/R-5]
+- [21:26] red_resolved: src/pages/StatusPages.test.tsx::does not say the application has one screen [req:CR-2609-823a/R-5]
+- [21:26] red_resolved: tests.fitness.test_golden_set::test_every_corpus_file_is_named_by_the_locator
+- [21:26] red_resolved: tests.fitness.test_golden_set::test_each_half_agrees_with_the_locator_about_what_is_in_it
+- [21:26] red_resolved: tests.fitness.test_golden_set::test_every_file_says_which_story_it_is_and_what_it_demonstrates
+- [21:26] red_resolved: tests.fitness.test_golden_set::test_every_file_is_utf8_json_and_ends_with_a_newline
+- [21:26] red_resolved: tests.fitness.test_golden_set::test_the_seed_half_shows_a_list_rather_than_an_entry
+- [21:26] red_resolved: tests.fitness.test_golden_set::test_no_seed_entry_stands_near_a_published_limit
+- [21:26] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_at_maximum]
+- [21:26] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_one_past_maximum]
+- [21:26] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_at_maximum]
+- [21:26] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_one_past_maximum]
+- [21:26] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_under_the_bound_but_over_it_in_utf16]
+- [21:26] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[decomposed_at_maximum]
+- [21:26] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[decomposed_one_past_maximum]
+- [21:26] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_padded_to_maximum]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[spaces_past_the_maximum]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_feed_inside]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[carriage_return_inside]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_tabulation_inside]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[form_feed_inside]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[next_line_inside]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_separator_inside]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[paragraph_separator_inside]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[tab_inside_is_kept]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_feed_at_the_end_is_trimmed]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[too_long_and_on_two_lines_is_multiline]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[ascii_at_maximum]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[emoji_at_maximum]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[emoji_under_the_bound_but_over_it_in_utf16]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[decomposed_at_maximum]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[ascii_padded_to_maximum]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[tab_inside_is_kept]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[line_feed_at_the_end_is_trimmed]
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_the_create_and_update_shapes_carry_no_bound
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_a_text_too_long_and_on_two_lines_is_refused_as_multiline
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_the_bound_stands_where_the_constant_says
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_the_line_breaks_are_the_seven_written_code_points_and_all_are_trimmed
+- [21:27] red_resolved: tests.unit.test_todo_task_text_rules::test_any_text_is_either_refused_or_kept_normalized_one_line_and_within_the_bound
+- [21:27] red_resolved: tests.unit.test_todo_task_model::test_the_text_column_is_as_long_as_the_bound
+- [21:27] red_resolved: tests.unit.test_todo_task_model::test_a_new_task_is_not_done_by_the_models_default
+- [21:27] red_resolved: tests.unit.test_todo_task_model::test_the_moment_of_adding_is_stored_with_its_zone
+- [21:27] red_resolved: tests.unit.test_todo_task_model::test_the_order_has_an_index_the_model_declares
+- [21:27] red_resolved: tests.unit.test_guestbook_entry_model::test_this_schema_holds_exactly_two_tables
+- [21:27] red_resolved: tests.fitness.test_golden_set::test_every_boundary_task_sits_exactly_on_the_task_bound
+- [21:27] red_resolved: tests.fitness.test_golden_set::test_every_task_refused_as_too_long_is_over_the_bound_by_exactly_one
+- [21:27] red_resolved: tests.fitness.test_golden_set::test_the_example_tasks_show_one_done_and_every_one_is_accepted
+- [21:27] red_resolved: tests.fitness.test_length_constants::test_the_task_bound_equals_its_browser_copy
+- [21:27] red_resolved: tests.fitness.test_length_constants::test_the_line_breaks_equal_their_browser_copy
+- [21:27] red_resolved: tests.fitness.test_golden_set::test_every_task_in_a_sequence_is_a_text_and_a_done_mark_on_one_line
+- [21:27] red_resolved: tests.fitness.test_golden_set::test_the_task_sequences_exercise_characters_outside_ascii
+- [21:27] red_resolved: tests.fitness.test_golden_set::test_no_task_looks_like_a_real_person
+- [21:27] red_resolved: tests.fitness.test_golden_set::test_every_ordinary_task_is_one_the_rules_accept
+- [21:27] red_resolved: tests.fitness.test_golden_set::test_every_refused_task_really_breaks_the_rule_its_code_names
+- [21:27] red_resolved: src/contexts/guestbook/lib/entryText.test.ts::src/contexts/guestbook/lib/entryText.test.ts
+- [21:27] process_fault_reported: PROC-48 (engine): The row-33 fast gate (19:21:08) reported traceability "CR-2609-823a: 11 declared, 0 referenced" with
+- [21:27] process_fault_reported: PROC-49 (engine): implement row 33 prescribes `sdd-engine gate run --profile fast` after the implementation wave, but 
+- [21:27] process_fault_resolved: PROC-48 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/370
+- [21:27] process_fault_resolved: PROC-49 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/371
+- [21:27] fanout_recorded: dispatched: review-coherence
+- [21:38] fanout_recorded: returned: review-coherence; coherence pass 7 GO_WITH_QUESTIONS, 6 new finding(s); 1 process fault(s): PROC-50

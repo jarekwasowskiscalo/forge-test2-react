@@ -1795,3 +1795,509 @@ record, not a resolution's target. design-architecture's list of applied patches
 and 4) is the set of fragment lines cited above.
 
 No `verification` finding. All eighteen resolutions landed.
+
+## Pass 7 — the `implement` stage
+
+The preflight printed `COHERENCE PASS: the first one (before any round) -- a full hunt`. It listed
+no recorded finding of this stage, so Phase 1b had nothing to verify. The preflight named `uat.md`
+as the stage's only artefact and gave no diff base. The skill names the wave's diff, so the diff
+was read as `git diff 3c74dfd 72ff77e`: 69 files, from the commit before the first test wave to
+the TD-3 re-dispatch.
+
+Read whole: every source, test and fixture file in that diff, plus `requirements.md`, `uat.md` and
+`tasks.md`. Read in the parts the diff answers to:
+- `spec/design/api.md`, the to-do parts of § Shapes, § Endpoints and § Refusals;
+- `spec/design/ui/todo-list.md`, `spec/design/ui/system-states.md` and `spec/contexts/todo_list.md`;
+- `spec/design/architecture.md`, from § What a new environment starts with to § What holds the
+  boundaries;
+- `spec/design/data-model.md` § `todo_tasks` and § Migrations;
+- `spec/design/testing.md` § Fitness functions and § CR-2609-823a through § Four file sets;
+- `scenarios.md`: the titles, S-49…S-53 and § Seed data;
+- `golden-set/README.md`, and the nine `ASSUMPTIONS` blocks from the preflight.
+
+The ranked documents read above them: `spec/constitution.md` (Article VIII in full),
+`spec/invariants.md`, `spec/glossary.md` and `contracts/README.md`.
+
+Two gates were run for evidence rather than trusted. `./scripts/contracts.sh` printed `0
+problem(s) against 3 contracts, 5 paths, 10 operations, 18 responses, 9 parameters, 40 fields,
+7 refusals` and `API contract is frozen: OK`. `./scripts/generate.sh --check` printed `Generate
+--check: OK`.
+
+Pairs compared:
+- `api.md` ↔ the router, the schemas and the service: the routes, the five codes and their
+  sentences word for word, the refusal order, `id` on `todo_task_not_found` alone, the strict
+  types, and `total ≥ 0`;
+- `data-model.md` ↔ the model and the revision;
+- `architecture.md` § The layer per rule and § The files ↔ where each rule landed;
+- `ui/todo-list.md` ↔ the page, the composer, the row, the dialog and the hook: every state, every
+  string of § Copy and § Accessibility labels, the focus rules and the tokens;
+- `ui/system-states.md` ↔ the frame, the not-found page and the router;
+- `contexts/todo_list.md` `BR-06`…`BR-13` ↔ the service and the browser rule;
+- `requirements.md` `R-1`…`R-11` ↔ the code and the tests;
+- `testing.md` § CR-2609-823a ↔ the test files and their case names;
+- `tasks.md` ↔ each task's product;
+- `scenarios.md` ↔ the feature file (22 titles) and the seed file (five texts);
+- `uat.md` ↔ the requirements, the screen documents, the scripts it tells a person to run, and
+  the frontend's cache policy;
+- the live documents that describe the corpus, the example context and the structural tests ↔
+  what this stage wrote;
+- each author's assumptions ↔ what its neighbour wrote.
+
+### COH-implement-1 — Does opening a screen by its header link read its list again?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/design/ui/system-states.md § Interactions
+- **artifacts:** requirements.md, uat.md, frontend/src/contexts/todo_list/hooks/useTodoTasks.ts
+
+**What each says.** Three documents promise that opening a screen reads it:
+- `requirements.md` § R-3 clause 5: "WHEN the list is opened or reloaded, the system SHALL show
+  the tasks exactly as they are stored at that moment, including tasks other people have added,
+  marked, edited or deleted."
+- `spec/design/ui/todo-list.md` § Interactions: "Opening the to-do list's own address, or
+  reloading it → the list is read".
+- `uat.md` step 14 runs `./scripts/seed.sh`, then opens the guestbook "with the header link
+  "Guestbook"" and expects `5 entries`.
+
+The code does not always read:
+- The to-do query sets no freshness of its own. `grep -c "staleTime\|refetchOnMount"
+  frontend/src/contexts/todo_list/hooks/useTodoTasks.ts` printed `0`.
+- So it inherits `frontend/src/main.tsx`:35, `staleTime: 30_000`, as the guestbook's query does.
+- TanStack Query 5.102.8 refetches cached data on mount only when that data is stale. Line 326
+  of `frontend/node_modules/@tanstack/query-core/build/modern/queryObserver.js` is `return value
+  === "always" || value !== false && isStale(query, options);`.
+
+**Why they cannot both be true.** Open a screen by its header link within 30 seconds of its last
+read, and it shows that read without asking the service. R-3 clause 5 and the screen document
+promise what is stored at that moment. On the to-do list, the gap is other people's changes from
+the last 30 seconds. A person's own changes always refetch (`useTodoTasks.ts`).
+
+In the UAT, the gap can produce a false "no":
+1. The Part D set-up reads the guestbook while it is empty after the reset.
+2. Step 14 comes after one added task and one `seed.sh` run.
+3. If that takes under 30 seconds, the header link shows the cached "No entries yet. Be the
+   first.", and the tester fails a working system.
+
+Graded minor: nothing is stored wrong, and the cost is a UAT re-run or one line of code. This
+was traced through the code, not observed in a browser.
+
+**What settles it.** Nothing ranked above both. `main.tsx` predates this change, and no
+specification document states its 30 seconds.
+
+**Resolution.** Two options, and under both, step 14 of the UAT changes:
+- (A), recommended: the to-do list reads its list every time it opens, and the UAT reloads before
+  step 14. The guestbook's hook stays untouched, as `SC-5` and the architecture's freeze require.
+- (B): R-3 clause 5 means an address entered or reloaded, the screen documents say so, and the
+  UAT reloads before step 14.
+
+Ready patch:
+- `uat.md` step 14, "What to do". Replace "In terminal B run `./scripts/seed.sh`. When the prompt
+  returns, open the guestbook with the header link "Guestbook"." with "In terminal B run
+  `./scripts/seed.sh`. When the prompt returns, reload window A, then open the guestbook with the
+  header link "Guestbook"."
+- For (A): `frontend/src/contexts/todo_list/hooks/useTodoTasks.ts`, `useTodoTasks`. Add
+  `staleTime: 0,` to the `useQuery` options, with a comment that cites R-3 clause 5.
+- For (B): `spec/design/ui/todo-list.md` § Interactions. After "Nothing pushes their changes to an
+  open screen." add "A header link that opens the list shows it as last read while that read is
+  under 30 seconds old (`frontend/src/main.tsx`)."
+
+**What was ambiguous.** `system-states.md` § Interactions calls the header link "React Router
+navigation … without a reload". It does not say whether the screen reads its list again. The link
+opens the list's own address, and `todo-list.md` § Interactions says that opening the address
+reads the list. The 30-second rule lives only in a comment in `main.tsx`. So the requirement and
+the UAT author both read "opening" as "reading".
+
+**What was not found.** No other UAT step depends on it:
+- Steps 16, 17, 19 and 20 reload or enter the address.
+- Steps 15 and 18 expect what the cached read already holds.
+- `refetchOnWindowFocus: false` agrees with steps 9 and 11: "nothing is pushed to a screen that is
+  already open".
+
+### COH-implement-2 — Which document describes the corpus now that the to-do list's files are in it?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/design/architecture.md § Who writes what, and where the sets meet
+- **artifacts:** golden-set/README.md, golden-set/seed/todo-tasks-example.json
+
+**What each says.** `golden-set/README.md` makes five claims about the corpus:
+- :23, of `fixtures/`: "Four files, each with one story".
+- :30, of `text-measurement.json`: "the one file both languages read".
+- :32: "Three hold entries; the fourth holds cases."
+- :48, § `seed/`: "One file: `entries-welcome.json`".
+- :98: "The frontend reads neither half, with one named exception."
+
+This stage wrote the to-do half of the corpus:
+- `ls golden-set/fixtures | wc -l` printed `8`, and `ls golden-set/seed` printed
+  `entries-welcome.json todo-tasks-example.json`.
+- `frontend/src/contexts/todo_list/lib/todoTask.test.ts` is a second browser reader, of
+  `todo-task-text.json`. `tests/fitness/test_golden_set.py` now allows it, and
+  `spec/design/testing.md` § The fixture half says so.
+
+**Why they cannot both be true.** All five claims are now false, and they sit in the corpus's own
+rules document, which `testing.md` cites as what every corpus file owes. No member of this change
+may write it:
+- `architecture.md` § Who writes what gives build-backend `golden-set/seed/` and the integration
+  author `golden-set/fixtures/`. Nobody gets the README.
+- `design/delta/architecture.md` § Found outside every write set, item 1, found it ownerless.
+- `tasks.md` § Outside every task, item 3, left it "still open".
+- The `spec_sync` boundary does not name it (`tasks.md` § Scope against the design).
+
+So it merges false unless somebody routes it. The process half is banked as `PROC-18` and filed as
+`https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/92`.
+Graded minor: no behaviour differs.
+
+**What settles it.** Nothing on the ladder. The file is outside `spec/`, and which member writes it
+is a composition question.
+
+**Resolution.** Recommended: one member edits `golden-set/README.md` in this change with the patch
+below. build-tests-integration fits, because it owns the locator and the fixture half, and the
+fragment proposed it. The alternative is to name the false sentences in the pull request body and
+leave them to issue 92.
+
+Ready patch, `golden-set/README.md`. The table rows reuse `spec/design/testing.md` § The fixture
+half's own stories.
+- :23. Replace "Four files, each with one story" with "Eight files, four for the guest book and
+  four for the to-do list, each with one story". Then add four rows to the table under it:
+  - "| `todo-tasks-ordinary.json` | ordinary tasks in **adding** order, each with its done mark |"
+  - "| `todo-tasks-boundary.json` | task texts **exactly** on the bound; every one must be
+    accepted |"
+  - "| `todo-tasks-refused.json` | task texts the rules refuse, each naming the refusal code the
+    contract gives |"
+  - "| `todo-task-text.json` | how a task's text is judged — **cases, not tasks** — read by both
+    languages |"
+- :30. Replace "and the one file both languages read" with "and the guest book's file both
+  languages read".
+- :32. Replace "Three hold entries; the fourth holds cases." with "Three hold entries, three hold
+  tasks, and two hold cases."
+- :48. Replace "One file: `entries-welcome.json`. A preview with an empty guest book" with "Two
+  files: `entries-welcome.json` and `todo-tasks-example.json`, one per list. A preview with an
+  empty list".
+- :98. Replace "with one named exception" with "with two named exceptions, one per context". After
+  the paragraph on `text-measurement.json`, add: "The to-do list's `todo-task-text.json` is the
+  second, read by `frontend/src/contexts/todo_list/lib/todoTask.test.ts` alone, for the same
+  reason."
+
+**What was ambiguous.** `architecture.md` § Who writes what hands out the corpus by directory, so
+the README beside those directories went to nobody. The design saw the gap and proposed an owner,
+but the proposal needs a stack-profile change that this change cannot make.
+
+**What was not found.** `spec/design/testing.md` § The fixture half, which was updated at design,
+agrees with the files row by row.
+
+### COH-implement-3 — Does deleting the guestbook delete the to-do list's corpus?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** AUTO
+- **auto_basis:** spec/constitution.md § Article IV — The specification changes on the same branch as the code
+- **ambiguity_source:** spec/README.md § This directory describes a template
+- **artifacts:** spec/README.md, CLAUDE.md, scripts/seed_golden_set.py
+
+**What each says.** The two deletion lists say the corpus goes with the example:
+- `spec/README.md`:59-60: "The to-do list beside it is not an example and stays when the
+  guestbook is deleted."
+- The same section, :63-66, then says: "Deleting the example deletes with it: … both halves of
+  the corpus `golden-set/`".
+- `CLAUDE.md`:127-130, § What is an example, and what is the template, carries the same list.
+
+The work of this stage says otherwise:
+- It put five of the to-do list's files in `golden-set/`: the four fixtures and
+  `golden-set/seed/todo-tasks-example.json`.
+- `scripts/seed_golden_set.py`:62 says the opposite of the lists: "Deleting the guest book
+  deletes `entries-welcome.json` and the half of this file that posts entries".
+- `./scripts/seed.sh --help` says "the example tasks belong to the to-do list, which stays".
+
+**Why they cannot both be true.** Followed as written, the lists delete the to-do list's four
+fixtures and its example tasks. `tests/unit/test_todo_task_text_rules.py`,
+`tests/integration/test_todo_tasks_corpus.py` and `todoTask.test.ts` then lose the files they read.
+Pass 5 read these lists as incomplete, not false, but that was before the files existed. Graded
+minor: the suites would go red loudly.
+
+**What settles it.** `spec/constitution.md` § Article IV: the specification edit that describes a
+fact this change creates lands in the same pull request. Two sentences already say that the to-do
+list stays: `spec/README.md`:59-60 and `spec/design/conventions.md` § Backend — where a file goes
+("a second domain context and is not an example").
+
+**Resolution.** Both lists name the guestbook's files in the corpus, and say that the to-do list's
+files stay.
+
+Ready patch:
+- `spec/README.md` § This directory describes a template. Replace "both halves of the corpus
+  `golden-set/`" (split across :65-66) with "the guestbook's files in both halves of the corpus
+  `golden-set/` — never the to-do list's `todo-task-text.json` and `todo-tasks-*.json`".
+- `CLAUDE.md`:130. Make the same replacement.
+
+**What was ambiguous.** The lists name a directory rather than the guestbook's files in it. That
+was accurate only while every corpus file belonged to the guestbook.
+
+**What was not found.** Every other item in both lists names a file that is the guestbook's alone.
+
+### COH-implement-4 — Do the structural tests still say there is one context, one table and one revision?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** AUTO
+- **auto_basis:** spec/constitution.md § Article I — The specification is the source of truth
+- **ambiguity_source:** spec/design/testing.md § Four file sets, disjoint
+- **artifacts:** spec/design/testing.md, tests/fitness/test_context_declarations.py, tests/fitness/test_context_boundaries.py, tests/fitness/test_data_invariants.py, tests/fitness/test_migration_safety.py, tests/integration/test_migrations.py
+
+**What each says.** `spec/design/testing.md` § Fitness functions was corrected at design:
+- :200-201: `test_context_boundaries.py` and `test_context_declarations.py` "were vacuously true
+  while there was one context", and the sweeps now read real headers.
+- :217: for `test_data_invariants.py`, "`todo_tasks` made them real".
+- :211: for `test_migration_safety.py`, "each of the two revisions".
+
+The tests' docstrings still state the old facts, in the present tense:
+- `tests/fitness/test_context_declarations.py`:31: "Most of these are **vacuously true today** --
+  there is one context". :299: "Vacuously true while there is one context, and it says so."
+- `tests/fitness/test_context_boundaries.py`:28: "**Every rule here is vacuously true today**:
+  there is one context". :145: "Vacuously true with one context". :213: "With one context
+  nothing can cross".
+- `tests/fitness/test_data_invariants.py`:16-18: "vacuously true today … the guest book is one
+  table". :92: "Vacuously true while the guest book is the only table".
+- `tests/fitness/test_migration_safety.py`:27: "the one revision here creates a table and its
+  index together".
+- `tests/integration/test_migrations.py`:128: "`BR-04` is read on every load of the only screen".
+  This stage edited that file (T-4).
+
+Command: `grep -rn "vacuously true today\|Vacuously true with one context\|Vacuously true while
+there is one context\|With one context nothing\|one revision here\|the only screen\|only table"
+tests/fitness/*.py tests/integration/test_migrations.py
+frontend/src/contexts/guestbook/pages/GuestbookPage.tsx`. It printed every line cited here and in
+COH-implement-5.
+
+**Why they cannot both be true.** The specification says these sweeps now judge real material. The
+tests' own docstrings say they are vacuous. Article IX makes the module docstring the place where a
+check's intent is kept. A reader who trusts it will take a red from these sweeps for a synthetic
+known positive, not a real breach. Graded minor: no assertion is affected.
+
+**What settles it.** `spec/constitution.md` § Article I: "Code contradicting `spec/` is either a
+defect in the code or a change not applied to the specification." The specification changed at
+design, so the code's text is the defect.
+
+**Resolution.** The docstrings say what `testing.md` says. Text only: no assertion changes and no
+case is renamed. Each file goes to the author whose tree holds it: build-tests-unit for
+`tests/fitness/`, build-tests-integration for `test_migrations.py`.
+
+Ready patch:
+- `test_context_declarations.py`:31-32. Replace "Most of these are **vacuously true today** --
+  there is one context, and it borders on nothing." with "Most of these were **vacuously true**
+  while there was one context bordering on nothing; since `CR-2609-823a` two contexts declare each
+  other, and the sweeps read real headers."
+- `test_context_declarations.py`:299. Replace "Vacuously true while there is one context, and it
+  says so." with "Vacuously true while there was one context; since `CR-2609-823a` it reads two
+  real neighbours."
+- `test_context_boundaries.py`:28-29. Replace "**Every rule here is vacuously true today**: there
+  is one context, so no import can cross a boundary that does not exist." with "**Every rule here
+  was vacuously true** while there was one context, since no import could cross a boundary that
+  did not exist; since `CR-2609-823a` there are two."
+- `test_context_boundaries.py`:145. Replace "Vacuously true with one context; the detector is
+  proved below." with "Real since `CR-2609-823a` brought a second context; the detector is proved
+  below."
+- `test_context_boundaries.py`:213-214. Replace "This is where the rule lives today. With one
+  context nothing can cross, so the sweeps above would pass over a reader that always answered
+  None." with "This is where the rule lived while there was one context: nothing could cross, so
+  the sweeps above would have passed over a reader that always answered None."
+- `test_data_invariants.py`:16-18. Replace "**Two of these are vacuously true today and that is
+  said out loud**" with "**Two of these were vacuously true while the guest book was the only
+  table, and that was said out loud**". Replace "the guest book is one table, so nothing can
+  mirror it and nothing can copy from it." with "the guest book was one table, so nothing could
+  mirror it and nothing could copy from it; `todo_tasks` made them real."
+- `test_data_invariants.py`:92. Replace "Vacuously true while the guest book is the only table,
+  and that is fine:" with "Vacuously true while the guest book was the only table:".
+- `test_migration_safety.py`:27. Replace "the one revision here creates a table and its index
+  together" with "each of the two revisions here creates its table and its index together".
+- `test_migrations.py`:128. Replace "read on every load of the only screen" with "read on every
+  load of the guestbook's screen".
+
+**What was ambiguous.** `testing.md` § Four file sets lists every edit a test author makes to an
+existing test, and it names none of these five files. Yet § Fitness functions, in the same
+document, was corrected for exactly the facts they state; COH-design-17 corrected the
+migration-safety row. `requirements.md` § Impact analysis even predicted that two of them "stop
+being vacuously true". The specification moved, and no write set carried the move into the
+tests' prose.
+
+**What was not found.** No assertion rests on these sentences, and every known positive still runs.
+Two other passages are dated records of an incident and are true as history:
+`tests/fitness/test_alembic_env_metadata.py`:8 and `tests/fitness/test_migration_safety.py`:94.
+
+### COH-implement-5 — Does the guestbook screen still call itself the only screen?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** AUTO
+- **auto_basis:** spec/constitution.md § Article I — The specification is the source of truth
+- **ambiguity_source:** spec/design/architecture.md § The files
+- **artifacts:** frontend/src/contexts/guestbook/pages/GuestbookPage.tsx, spec/design/ui/system-states.md
+
+**What each says.** `frontend/src/contexts/guestbook/pages/GuestbookPage.tsx`:30: "`S-01` -- the
+only screen in this application." `spec/design/ui/system-states.md` § One column: "The
+application has two screens, the guestbook and the to-do list".
+
+Two documents freeze the guestbook's frontend:
+- `spec/design/architecture.md` § The files, row for the three guestbook modules: "nothing else
+  about the guestbook moves".
+- `design/delta/architecture.md` § What this change does not move: "Its frontend changes by three
+  import paths and nothing else".
+
+`GuestbookPage.tsx` is not one of the three modules. T-22 made the frame's docstrings stop saying
+there is one screen, but it did not reach this one.
+
+**Why they cannot both be true.** A module docstring states a fact that the specification now
+contradicts. It sits in the first file a reader opens for the guestbook's screen, and Article IX
+says module docstrings cite the specification. The claim is not on screen, so `R-5` clause 4 is
+not broken. Graded minor.
+
+**What settles it.** `spec/constitution.md` § Article I, as for COH-implement-4.
+
+**Resolution.** One line in `GuestbookPage.tsx`, taken as a behaviour-neutral exception to the
+freeze.
+
+Ready patch, `GuestbookPage.tsx`:30. Replace "`S-01` -- the only screen in this application." with
+"`S-01` -- the guestbook's screen, one of this application's two
+(`spec/design/ui/system-states.md` § One column)."
+
+**What was ambiguous.** `architecture.md` § The files freezes the guestbook's frontend for its
+behaviour. It makes no exception for the file's prose, which the second screen made false.
+
+**What was not found.** The same freeze is why `PageFrame.tsx` carries the guestbook's footer as
+the default of `footer`, which build-frontend reported. Each screen still shows its own sentence
+and the not-found page shows none, as `system-states.md` § Regions requires. So that is a debt,
+not a contradiction. If the file is opened for this line, the footer can move into it too.
+
+### COH-implement-6 — Were the reds that ran ahead of the code declared on a task, or signed off at the design close?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/design/testing.md § CR-2609-823a, the to-do list
+- **artifacts:** tasks.md, spec/design/testing.md, spec/contexts/todo_list.md
+
+**What each says.** The specification says every red was declared on a task:
+- `spec/design/testing.md` § CR-2609-823a, "Existing detectors that go red on the way" (:958-960):
+  "each is declared on the task whose product closes it".
+- Its third bullet (:979-982) says the on-disk case is "declared on build-tests-e2e's task".
+- `spec/contexts/todo_list.md`:30-32: "the plan declares
+  `test_every_screen_and_feature_a_context_names_is_on_disk` red on the task that writes the file.
+  The declaration expires when that task writes the file".
+
+`tasks.md` did otherwise:
+- T-11 says the on-disk case "has been red since … (`Q-19`, signed off at the design close,
+  `Q-24`), and the implement baseline carries it … It is not declared".
+- T-14 carries the context-boundaries case the same way.
+- § What can go in parallel: "The `Turns green:` cases carried from the design close … are
+  baseline reds, not declarations."
+- The seed-file cases were declared on T-10 and T-4, the tasks that turned them red, and T-17
+  closed them.
+
+The session trace records the sign-off: `[18:49] stage_closed: closed design, opened plan
+(boundary -> RED; accepted RED: Application check, Suite fitness: structural at the design
+boundary`, right after `Q-24 -> A`.
+
+**Why they cannot both be true.** The specification says each red was declared on the task that
+closes it. The plan and the record tell a different story: two reds were accepted by name at the
+design boundary and carried as a baseline, and the rest were declared on the task that turned
+them red. The merged specification can keep only one account.
+
+A red that already stood at the design close could not be declared on a task of a plan not yet
+written, before the run that showed it (constitution Article X). That is why `Q-24` accepted it,
+following the pattern COH-design-10 set for `./scripts/contracts.sh`. Graded minor.
+
+**What settles it.** Nothing on the ladder. `Q-24` is recorded only in the change record, so this
+is HITL by iron rule 2. The human step is to confirm the account; it is not a new question.
+
+**Resolution.** The `spec_sync` stage writes down what happened: reconcile-design in `testing.md`,
+reconcile-spec in `todo_list.md`.
+
+Ready patch:
+- `spec/design/testing.md`:960. Replace "each is declared on the task whose product closes it:"
+  with "each was declared red on the task that turned it red or, when it already stood at the
+  design close, accepted by name at that boundary (`Q-24`) and carried as a baseline red; the
+  task whose product closes it names it under **Turns green:** in the change's `tasks.md`:".
+- `spec/design/testing.md`:981-982. Replace ", and declared on build-tests-e2e's task, whose
+  product is the file, in the first implementation wave." with ", accepted by name at the design
+  close (`Q-24`), and turned green by build-tests-e2e's feature file in the first implementation
+  wave."
+- `spec/contexts/todo_list.md`:30-32. Replace "the plan declares
+  `test_every_screen_and_feature_a_context_names_is_on_disk` red on the task that writes the file.
+  The declaration expires when that task writes the file in the first implementation wave." with
+  "`test_every_screen_and_feature_a_context_names_is_on_disk` was red from the design close,
+  accepted by name at that boundary (`Q-24`), and went green when the first implementation wave
+  wrote the file."
+
+**What was ambiguous.** `testing.md` described the mechanism for a red that starts inside the
+design stage as if the red started inside the implementation stage. The engine carries a red
+across a stage boundary only by acceptance. The document's fourth bullet says so for
+`./scripts/contracts.sh`, but the fitness cases got no such sentence.
+
+**What was not found.** The fourth bullet matches `tasks.md` and the gate run above: accepted by
+name, and turned green by T-16.
+
+### What was checked and agrees
+
+- **The backend against the contract.**
+  - `contracts.sh` and `generate.sh --check` both pass, as above.
+  - The router's five sentences match `api.md` § The to-do list's refusals word for word.
+  - The refusal order comes from where each question is asked: the empty patch in the router, the
+    text in the service before the write, and not-found from the `UPDATE … RETURNING` that finds
+    no row.
+  - `StrictStr` and `StrictBool`, `id` on `todo_task_not_found` alone, and `total` `ge=0` all
+    match.
+  - The combined `PATCH` goes through `change_todo_task`, which build-backend named as its one
+    addition. It is what `api.md` § `TodoTaskUpdate` asks for: "a body carrying both applies both
+    in one write".
+- **The schema.** The model and revision `5c58af1f8e8a` match `data-model.md` § `todo_tasks` and
+  § The revision that creates `todo_tasks`: four `NOT NULL` columns, no server default, the literal
+  200, a plain index build, and the index dropped before the table.
+- **The screen against its documents.**
+  - Every state in `todo-list.md` § Components and their states appears in the page, the composer,
+    the row, the dialog or the checkbox. So does every string of § Copy and § Accessibility
+    labels, and the tests quote the same strings.
+  - A tick sends `done` alone and a correction sends `text` alone. Adding sends the text as the
+    shared rule leaves it. The cache is written only by a refetch after a 2xx.
+  - The frame matches `system-states.md`: the navigation (`Screens`, `aria-current`), the lockup
+    "Product name"/"P", the not-found sentence, no footer on the not-found page, and the redirect
+    from `/`.
+  - Where the mock-up and the Markdown differ (the Save hover; Edit during a tick), the build
+    follows the Markdown, and `todo-list.md` says "this document is the specification".
+- **Requirements against proofs.**
+  - Every `R-1`…`R-10` row in `testing.md` § CR-2609-823a names test files that exist, with the
+    case names it lists.
+  - The 22 scenario titles are `scenarios.md`'s, verbatim.
+  - The seed file holds the five texts of `scenarios.md` § Seed data in adding order, with number 3
+    done.
+  - The seeder fills each list on its own condition, adds the tasks and then marks the done one,
+    and refuses production before it reads either list (`R-11`; `architecture.md` § What a new
+    environment starts with).
+- **`uat.md`.**
+  - Its steps cite S-49…S-53 correctly, and its copy matches the screen documents.
+  - The scripts it names behave as it says: the reset refuses a `DATABASE_URL` it did not create,
+    the seeder prints the prod refusal, and `start.sh` treats a failed seed as a warning.
+  - Steps 9 and 11 hold because `refetchOnWindowFocus` is `false`.
+  - Its one exposure is COH-implement-1.
+- **The authors' assumptions.** Each was checked one by one against the neighbour's file, and all
+  match:
+  - the service's names and exceptions (build-tests-integration, build-tests-unit);
+  - the shape of the constants (build-tests-unit, build-migration);
+  - the contract fields (build-frontend, build-tests-e2e);
+  - the seed file (build-tests-uat, build-tests-unit);
+  - TD-3's `act()` form, at `useTodoTasks.test.tsx`:185, 255, 265, 281 and 292.
+
+  build-backend reported four scripts that still describe the guest book alone: `scripts/help.sh`:89,
+  `start.sh`:106-113, `deploy.sh`:620-621 and `preview.sh`:198-199. They were routed to
+  reconcile-ops, along with `start.sh --help`'s `--no-seed` line. These are incomplete rather than
+  false. No `spec_sync` member's write set holds `scripts/`, so that routing cannot land as
+  addressed. This is noted, not graded.
+- **Known and routed, not raised again.**
+  - `testing.md`'s "nineteen … and one more" against the file's 19 cases: `tasks.md` § Outside
+    every task, item 2, routed to reconcile-design.
+  - `conventions.md` § Frontend's "the browser has exactly one" caller, false since the move:
+    item 4, reconcile-design.
+  - The task-text data invariant: the `spec_sync` convergence round writes it (item 5).
+- **Glossary and invariants.** No identifier uses a bare `task`, and `D-01`…`D-03` hold.
