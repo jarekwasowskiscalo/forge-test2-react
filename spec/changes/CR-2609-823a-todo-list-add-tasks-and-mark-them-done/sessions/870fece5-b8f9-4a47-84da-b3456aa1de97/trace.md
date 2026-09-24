@@ -7,3 +7,25 @@
 - [13:51] signals_set: present: backend_touched, ci_touched, contexts_touched_gt_1, contract_touched, frontend_touched, new_context, rule_touched, schema_touched, screen_touched; absent: infra_touched, tooling_
 - [13:51] tier_set: p3 -> p3: process_config --tier over the measured signals answered p3 (strategic): new_context is lit -- 'task'/'todo' is absent from spec/glossary.md and from spec/contexts/guestbook.md
 - [13:53] fanout_recorded: returned: cr-impact; 1 process fault(s): PROC-3
+- [13:54] process_fault_resolved: PROC-3 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/296
+- [13:55] question_raised: 4 question(s): Q-1, Q-2, Q-3, Q-4
+- [14:00] question_answered: Q-1 -> A
+- [14:00] question_answered: Q-2 -> A
+- [14:00] question_answered: Q-3 -> A
+- [14:00] question_answered: Q-4 -> A
+- [14:01] question_raised: 4 question(s): Q-5, Q-6, Q-7, Q-8
+- [14:01] question_answered: Q-5 -> A
+- [14:01] question_answered: Q-6 -> A
+- [14:01] question_answered: Q-7 -> A
+- [14:01] question_answered: Q-8 -> A
+- [14:02] question_raised: 1 question(s): Q-9
+- [14:04] question_answered: Q-9 -> A
+- [14:05] signals_set: present: backend_touched, ci_touched, contexts_touched_gt_1, contract_touched, frontend_touched, new_context, rule_touched, schema_touched, screen_touched, tooling_touched; absent: infra_
+- [14:05] process_fault_reported: PROC-4 (engine): cr-impact measures the tier signals in wave 1, before the cr-brainstorm pre-step it feeds; the brain
+- [14:05] process_fault_resolved: PROC-4 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/298
+- [14:05] fanout_recorded: dispatched: cr-requirements
+- [14:13] question_raised: 3 question(s): Q-10, Q-11, Q-12
+- [14:14] question_answered: Q-10 -> A
+- [14:14] question_answered: Q-11 -> A
+- [14:14] question_answered: Q-12 -> A
+- [14:14] fanout_recorded: returned: cr-requirements; 1 process fault(s): PROC-5

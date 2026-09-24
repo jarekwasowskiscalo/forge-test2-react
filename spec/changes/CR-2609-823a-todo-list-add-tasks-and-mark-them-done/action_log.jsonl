@@ -14,3 +14,25 @@
 {"timestamp": "2026-09-24T11:51:52Z", "agent": "sdd", "action": "signals_set", "details": "present: backend_touched, ci_touched, contexts_touched_gt_1, contract_touched, frontend_touched, new_context, rule_touched, schema_touched, screen_touched; absent: infra_touched, tooling_touched -> arithmetic proposes p3", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
 {"timestamp": "2026-09-24T11:51:58Z", "agent": "sdd", "action": "tier_set", "details": "p3 -> p3: process_config --tier over the measured signals answered p3 (strategic): new_context is lit -- 'task'/'todo' is absent from spec/glossary.md and from spec/contexts/guestbook.md", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
 {"timestamp": "2026-09-24T11:53:33Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: cr-impact; 1 process fault(s): PROC-3", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T11:54:43Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-3 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/296", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T11:55:45Z", "agent": "sdd", "action": "question_raised", "details": "4 question(s): Q-1, Q-2, Q-3, Q-4", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:00:40Z", "agent": "sdd", "action": "question_answered", "details": "Q-1 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:00:40Z", "agent": "sdd", "action": "question_answered", "details": "Q-2 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:00:40Z", "agent": "sdd", "action": "question_answered", "details": "Q-3 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:00:40Z", "agent": "sdd", "action": "question_answered", "details": "Q-4 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:01:01Z", "agent": "sdd", "action": "question_raised", "details": "4 question(s): Q-5, Q-6, Q-7, Q-8", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:01:38Z", "agent": "sdd", "action": "question_answered", "details": "Q-5 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:01:38Z", "agent": "sdd", "action": "question_answered", "details": "Q-6 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:01:38Z", "agent": "sdd", "action": "question_answered", "details": "Q-7 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:01:38Z", "agent": "sdd", "action": "question_answered", "details": "Q-8 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:02:07Z", "agent": "sdd", "action": "question_raised", "details": "1 question(s): Q-9", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:04:36Z", "agent": "sdd", "action": "question_answered", "details": "Q-9 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:05:15Z", "agent": "sdd", "action": "signals_set", "details": "present: backend_touched, ci_touched, contexts_touched_gt_1, contract_touched, frontend_touched, new_context, rule_touched, schema_touched, screen_touched, tooling_touched; absent: infra_touched -> arithmetic proposes p3", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:05:21Z", "agent": "sdd", "action": "process_fault_reported", "details": "PROC-4 (engine): cr-impact measures the tier signals in wave 1, before the cr-brainstorm pre-step it feeds; the brain", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:05:52Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-4 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/298", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:05:57Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: cr-requirements", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:13:13Z", "agent": "sdd", "action": "question_raised", "details": "3 question(s): Q-10, Q-11, Q-12", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:14:05Z", "agent": "sdd", "action": "question_answered", "details": "Q-10 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:14:05Z", "agent": "sdd", "action": "question_answered", "details": "Q-11 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:14:05Z", "agent": "sdd", "action": "question_answered", "details": "Q-12 -> A", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:14:15Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: cr-requirements; 1 process fault(s): PROC-5", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}

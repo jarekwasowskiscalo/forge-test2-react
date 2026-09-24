@@ -55,6 +55,11 @@
       "assumptions": "The request is a to-do list: anybody adds a task, marks it done, and possibly edits or deletes it. It is persisted on the server, because system-states.md says the browser stores nothing. cr-requirements and cr-scenarios will take impact.md as today's state and will turn its \"could not determine\" list into questions. That list covers: keep or replace the guestbook; whether \"odznaczenie\" means a done task can be unticked; whether \"ew.\" makes edit/delete optional; what fields a task has; seed data; the route and the `/` redirect; and simultaneous toggles.",
       "at": "2026-09-24T11:53:33Z",
       "state": "returned"
+    },
+    "cr-requirements": {
+      "assumptions": "What I assume scenarios.md will do: Every one of R-1 to R-10 gets at least one scenario. Screen-only clauses get their proof from the frontend suite, because the black box speaks HTTP. These are R-1 cl.1, R-3.6, R-4 cl.5-6, R-5, the R-7 confirmation, and R-10. R-9 scenarios send both changes before either one is answered. Values are used as written: 200/201 code points, 200xU+1F600, 200x(U+0065 U+0301), 2+200+2 as typed and 205 spaces, 101 tasks, and at least 3 example tasks each under 150 code points. R-11 is manual, so it needs a numbered step in uat.md. No scenario asserts D1, D2 or D3 behaviour until the user decides them.",
+      "at": "2026-09-24T12:14:15Z",
+      "state": "returned"
     }
   },
   "faults": [
@@ -133,6 +138,11 @@
           "at": "2026-09-24T11:53:33Z",
           "note": "The signal definitions for contract_touched, schema_touched and screen_touched say \"a named surface appears in api.md / data-model.md / ui/\". Applied literally to a brand-new concept they find nothing, and would switch off design-api, design-data, design-ui and build-migration for a new feature. The worker had to read them as \"the spec surfaces the change reaches\" (the route register, \"The only table\", PageFrame navigation) before it could measure.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T11:54:43Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/296",
+          "state": "filed"
         }
       ],
       "id": "PROC-3",
@@ -142,6 +152,63 @@
       "seen": 1,
       "signal": "The signal definitions for contract_touched, schema_touched and screen_touched say \"a named surface appears in api.md / data-model.md / ui/\". Applied literally to a brand-new concept they find nothing, and would switch off design-api, design-data, design-ui and build-migration for a new feature. The worker had to read them as \"the spec surfaces the change reaches\" (the route register, \"The only table\", PageFrame navigation) before it could measure.",
       "signature": "The signal definitions for contract_touched, schema_touched and screen_touched say ·. Applied literally to a brand-new c",
+      "stage": "requirements",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/296"
+    },
+    {
+      "at": "2026-09-24T12:05:21Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T12:05:21Z",
+          "note": "cr-impact measures the tier signals in wave 1, before the cr-brainstorm pre-step it feeds; the brainstorm answer Q-8 (example tasks on a fresh environment) lit tooling_touched, which impact.md recorded absent on exactly that condition, and no step re-measures after the brainstorm -- the orchestrator re-ran set-signals by hand. Cost: an improvised step; on a change where a brainstorm answer lights schema_touched or contract_touched, design-data, build-migration or design-api would be dropped silently.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T12:05:52Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/298",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-4",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "cr-impact measures the tier signals in wave 1, before the cr-brainstorm pre-step it feeds; the brainstorm answer Q-8 (example tasks on a fresh environment) lit tooling_touched, which impact.md recorded absent on exactly that condition, and no step re-measures after the brainstorm -- the orchestrator re-ran set-signals by hand. Cost: an improvised step; on a change where a brainstorm answer lights schema_touched or contract_touched, design-data, build-migration or design-api would be dropped silently.",
+      "signature": "cr-impact measures the tier signals in wave ·, before the cr-brainstorm pre-step it feeds; the brainstorm answer Q-· (ex",
+      "stage": "requirements",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/298"
+    },
+    {
+      "at": "2026-09-24T12:14:15Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T12:14:15Z",
+          "note": "The requirements form (.specconf/templates/change/requirements.md, Impact analysis > Dependencies) cites \"the `§ Unbuilt` sections in `spec/contexts/`\". No context document has that section; the cr-requirements skill names `§ Deliberate non-goals` for the same thing.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-5",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "cr-requirements",
+      "seen": 1,
+      "signal": "The requirements form (.specconf/templates/change/requirements.md, Impact analysis > Dependencies) cites \"the `§ Unbuilt` sections in `spec/contexts/`\". No context document has that section; the cr-requirements skill names `§ Deliberate non-goals` for the same thing.",
+      "signature": "The requirements form (.specconf· Impact analysis > Dependencies) cites ·. No context document has that section; the cr-",
       "stage": "requirements",
       "state": "reported",
       "url": null
@@ -176,21 +243,459 @@
     "review_rounds": 0,
     "review_state": "none"
   },
-  "open_questions": [],
+  "open_questions": [
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:00:40Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T11:55:45Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "Both screens stay, with a way to switch between them.",
+          "key": "A",
+          "label": "Beside it, keep the guestbook",
+          "recommended": true
+        },
+        {
+          "consequence": "The guestbook and all its entries go away in this same change, which makes the change much bigger.",
+          "key": "B",
+          "label": "Replace the guestbook",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-1",
+      "question": "The app has one screen today, the guestbook. Should the to-do list come in beside it, or replace it?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:00:40Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T11:55:45Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "A mis-click is fixed with one more click.",
+          "key": "A",
+          "label": "Yes, it can be switched back",
+          "recommended": true
+        },
+        {
+          "consequence": "A task ticked by mistake stays done, or has to be deleted and added again.",
+          "key": "B",
+          "label": "No, done is final",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-2",
+      "question": "Once a task is marked done, can it be switched back to not done?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:00:40Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T11:55:45Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "Any task can be corrected or removed; a little more to build and test.",
+          "key": "A",
+          "label": "Both delete and edit",
+          "recommended": true
+        },
+        {
+          "consequence": "A typo is fixed by deleting the task and adding it again.",
+          "key": "B",
+          "label": "Delete only",
+          "recommended": false
+        },
+        {
+          "consequence": "Only adding and ticking; a wrong task stays in the list for good.",
+          "key": "C",
+          "label": "Neither for now",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-3",
+      "question": "You wrote 'ew usuniecie lub edycja' (possibly delete or edit). Which of these belong in this change?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:00:40Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T11:55:45Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "The list never jumps around; done and open tasks stay mixed.",
+          "key": "A",
+          "label": "Stays in place, shown as done",
+          "recommended": true
+        },
+        {
+          "consequence": "Open tasks are always on top; the list reorders on every tick.",
+          "key": "B",
+          "label": "Moves below the open tasks",
+          "recommended": false
+        },
+        {
+          "consequence": "The list shows only what is left to do; a done task can no longer be seen or switched back.",
+          "key": "C",
+          "label": "Disappears from the list",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-4",
+      "question": "What happens to a task in the list once it is marked done?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:01:38Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T12:01:01Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "Nothing people already use moves; the to-do list is one click away in the navigation.",
+          "key": "A",
+          "label": "The guestbook, as today",
+          "recommended": true
+        },
+        {
+          "consequence": "The new list is the first thing people see; the guestbook moves one click away.",
+          "key": "B",
+          "label": "The to-do list",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-5",
+      "question": "With two screens, which one should open when somebody goes to the app's main address?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:01:38Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T12:01:01Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "A task you just added shows up right under the field; older tasks move down.",
+          "key": "A",
+          "label": "Newest at the top",
+          "recommended": true
+        },
+        {
+          "consequence": "The list reads in the order tasks were written, like a paper list; a new task appears at the bottom.",
+          "key": "B",
+          "label": "Oldest at the top",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-6",
+      "question": "In what order should the tasks be listed?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:01:38Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T12:01:01Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "Consistent with the guestbook; no project rule changes.",
+          "key": "A",
+          "label": "English, like the rest",
+          "recommended": true
+        },
+        {
+          "consequence": "The to-do screen would be the only Polish one, and the all-English rule has to be lifted for it.",
+          "key": "B",
+          "label": "Polish",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-7",
+      "question": "Every screen in this app is in English today, by a project rule. Which language should the to-do screen use?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:01:38Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T12:01:01Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "Whoever opens a fresh copy sees a filled list to judge, the same way the guestbook starts with example entries.",
+          "key": "A",
+          "label": "Yes, a few example tasks",
+          "recommended": true
+        },
+        {
+          "consequence": "A fresh copy shows an empty list until someone types tasks in.",
+          "key": "B",
+          "label": "No, start empty",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-8",
+      "question": "When a fresh copy of the app is set up (for example a preview to look at), should the to-do list start with a few example tasks?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:04:36Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T12:02:07Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "The requirements are written from this summary and these assumptions.",
+          "key": "A",
+          "label": "Looks right, go ahead",
+          "recommended": true
+        },
+        {
+          "consequence": "I ask what, and record it before any requirement is written.",
+          "key": "B",
+          "label": "Something is wrong or missing",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-9",
+      "question": "Read-back: is the summary above right, including the assumptions for the smaller details? Anything wrong or missing?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:14:04Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T12:13:13Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "Existing test environments get example tasks at their next deploy; a to-do list somebody emptied there is filled again at the deploy after, as the guestbook is today.",
+          "key": "A",
+          "label": "Yes, each list is filled on its own",
+          "recommended": true
+        },
+        {
+          "consequence": "Environments that already exist keep an empty to-do list; examples appear only where both lists start empty.",
+          "key": "B",
+          "label": "No, only brand-new environments",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-10",
+      "question": "Example tasks: an environment that already exists (the stage environment, an open preview) has guestbook entries but an empty to-do list. Should it get example tasks too?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:14:05Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T12:13:13Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "One line becomes a rule the app enforces everywhere; one more refusal to build and test.",
+          "key": "A",
+          "label": "Refuse it, with its own message",
+          "recommended": true
+        },
+        {
+          "consequence": "The list could show a multi-line task that nobody could have typed in the field.",
+          "key": "B",
+          "label": "Store it as sent",
+          "recommended": false
+        },
+        {
+          "consequence": "The stored text differs slightly from what was sent.",
+          "key": "C",
+          "label": "Replace each line break with a space",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-11",
+      "question": "A task is one line. Someone going around the screen could still send a line break inside a task's text (the field itself cannot produce one). What should happen?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:14:05Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T12:13:13Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "A fresh environment shows both looks, open and done, right away.",
+          "key": "A",
+          "label": "Yes, at least one is done",
+          "recommended": true
+        },
+        {
+          "consequence": "The done look is visible only after somebody ticks a task.",
+          "key": "B",
+          "label": "No, all start not done",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-12",
+      "question": "Should one of the example tasks already be marked done?",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
+    }
+  ],
   "parent_cr_id": null,
   "parent_merge_commit": null,
   "previous_stage": "intake",
   "reconciliations": [],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
   "requirements": [],
-  "revision": 13,
+  "revision": 35,
   "schema_version": 3,
   "signals": {
     "absent": [
-      "infra_touched",
-      "tooling_touched"
+      "infra_touched"
     ],
-    "measured_at": "2026-09-24T11:51:52Z",
+    "measured_at": "2026-09-24T12:05:15Z",
     "present": [
       "backend_touched",
       "ci_touched",
@@ -200,7 +705,8 @@
       "new_context",
       "rule_touched",
       "schema_touched",
-      "screen_touched"
+      "screen_touched",
+      "tooling_touched"
     ],
     "unmeasured": []
   },
@@ -232,7 +738,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T11:53:33Z",
+  "updated_at": "2026-09-24T12:14:15Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {
