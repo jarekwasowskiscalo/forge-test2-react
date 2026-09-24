@@ -523,8 +523,8 @@ anything to judge (`Q-8`).
     so their wording no longer covers everything the system stores. Only the convergence round
     edits this file (its own § Deliberate non-goals), so this is reported and not fixed.
     Converged by COH-requirements-5: the authentication item now names any to-do task (`Q-9`),
-    and the retention item stays worded for entries while `A-2` (§ Named assumptions) waits for
-    the user.
+    and, since the user approved this document with `A-2` standing, the retention item names
+    tasks too (`design/delta/converge.md`).
   - `contracts/invariants/guestbook.md`. `D-01`: consistent. A done task stays one record in
     its place (`Q-4`, `R-3.4`). A design that moved done tasks into a second store would breach
     it, and `tests/fitness/test_data_invariants.py::test_no_table_is_shaped_like_an_archive`
@@ -671,8 +671,8 @@ anything to judge (`Q-8`).
 - **A mobile design of the new screen.** This is the standing non-goal (`spec/invariants.md`
   § Deliberate non-goals, "A mobile version").
 - **A retention policy for tasks.** A task lives until somebody deletes it, as an entry does
-  under the standing non-goal. For tasks this is assumed, not decided (`A-2`, § Named
-  assumptions).
+  under the standing non-goal. For tasks this was assumption `A-2` (§ Named assumptions),
+  confirmed at this document's approval.
 - **Detecting a duplicate caused by a retried add.** The same text twice is two tasks by
   decision (`Q-9`, `R-1` clause 5), so `E-20` leaves a duplicate for a person to delete.
 
@@ -734,8 +734,8 @@ at the approval of this document, which ends the stage.*
   task except a person deleting it, with no expiry and no retention policy, as for a guestbook
   entry (`spec/invariants.md` § Deliberate non-goals, "A data retention policy"). Say so if not.
   `Q-9` settled that anybody may delete any task and that a deleted task is gone for good. It did
-  not settle whether a task can go without anybody deleting it. Until this is confirmed, that
-  non-goal keeps its wording for entries alone. **Status:** assumed, awaiting the user.
+  not settle whether a task can go without anybody deleting it. **Status:** confirmed at this
+  document's approval; `spec/invariants.md` § Deliberate non-goals names tasks since.
 - **`A-3`: where the inside of a task's text ends (`R-2` clauses 4 and 6, `R-6` clause 4).**
   Assumed: the line-break rule reads the text as `R-2` clause 1 has trimmed it, so a line break
   the trim leaves in the text is refused wherever it sits. A character that shows nothing but is
@@ -834,7 +834,7 @@ at the approval of this document, which ends the stage.*
 23. [Coherence] [Gap] Do the non-goals in `spec/invariants.md`, worded for entries, bind the to-do
     list? By intent yes, by wording no. Only the convergence round edits that file, so the finding
     goes there. It went there as COH-requirements-5: authentication now covers tasks, and
-    retention waits on `A-2`.
+    retention covers them too since the user approved this document with `A-2` standing.
 24. [Compliance] [Gap] Which bounded context owns a task? That is not a requirement: it is
     design-domain's call. If tasks live inside the guestbook context, the closing sentence of
     `P-01` ("An entry either exists or it does not") stops describing that context.

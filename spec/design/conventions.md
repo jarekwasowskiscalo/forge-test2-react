@@ -39,6 +39,18 @@ knows nothing about the domain. The sentence an operator reads belongs beside th
 produced it, not in a shared table one edit away from telling somebody the wrong column to
 correct. The worked example is `_not_found` in `app/contexts/guestbook/routers/guestbook_entries.py`.
 
+**A rule whose refusal carries a code of its own is judged in `services/`, and `schemas/` holds
+no part of it.** A constraint or a validator in a schema answers before the route runs, with
+FastAPI's list of `{loc, msg, type}` and no code. So a schema holds only a bound whose refusal
+needs no code of its own. The guestbook's `BR-01` bounds are that case, and the guestbook is the
+worked example of that case, not of every bound. Where [`api.md`](api.md) gives a refusal a
+code, the request shapes carry the field with no bound, so a shape built from a refused value is
+still a valid shape. The service judges the value before any write and raises one domain
+exception per verdict, and the router translates each one into its coded refusal, as above. A
+to-do task's text is such a rule: normalize, then empty, then one line, then measure. The user
+decided it in `CR-2609-823a` (`Q-17`) in these words: "The service checks it, with a coded
+reason."
+
 ## Backend — where a file goes
 
 **The outermost cut is the bounded context; the layer is a directory inside it.** A new domain
@@ -74,9 +86,9 @@ app/
   with the function that binds it to a URL. One line per context, listed rather than
   discovered — so the registration can be checked in both directions.
 - **`app/contexts/<name>/routers/`** — HTTP binding only, one module per resource, each
-  exposing `router`. `guestbook` is the **only** domain context of this template and at the
-  same time its worked example through every layer: copy it, and when your own context replaces
-  it, delete it.
+  exposing `router`. `guestbook` is this template's worked example through every layer: copy
+  it, and when your own context replaces it, delete it. The to-do list (`todo_list`) is a second
+  domain context and is not an example.
 - **`app/contexts/<name>/services/`** — business rules. Owns the session and the transaction
   boundary.
 - **`app/contexts/<name>/models/` + `alembic/versions/`** — one class per file, `Base` from
@@ -169,6 +181,10 @@ frontend/src/
   (`contexts/guestbook/lib/guestbookEntry.ts`, `contexts/guestbook/lib/entryListCopy.ts`,
   `contexts/guestbook/lib/entryText.ts`), and moves up here the day a second context needs it —
   never before, because a shared module with one caller is a boundary drawn in the wrong place.
+  **Only the rule moves up.** A test that proves it through one context's bounds stays beside
+  that context's modules and changes one import. The corpus reader
+  `frontend/src/contexts/guestbook/lib/entryText.test.ts` is one such test. Moved up here, it
+  would have to import a context's bound, and nothing here imports from `contexts/`.
   `entryText.ts` is the case worth naming: its Python counterpart sits in `app/platform/`
   because the server has more than one caller for it, and this one stays in the context because
   the browser has exactly one. The asymmetry is each tree following its own rule rather than an

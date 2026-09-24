@@ -132,3 +132,30 @@
 {"timestamp": "2026-09-24T14:47:15Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-coherence", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
 {"timestamp": "2026-09-24T14:47:36Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-24 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/338", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
 {"timestamp": "2026-09-24T14:54:34Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-coherence; coherence pass 4 NO_GO, 8 new finding(s); 1 process fault(s): PROC-25", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T14:54:36Z", "agent": "sdd", "action": "process_fault_reported", "details": "PROC-26 (engine): review-coherence: the boundary table's test rows (## This change owns, and the implementers' write s", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T14:55:11Z", "agent": "sdd", "action": "question_raised", "details": "3 question(s): Q-17, Q-18, Q-19", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:55:12Z", "agent": "sdd", "action": "question_answered", "details": "Q-17 -> A", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:55:13Z", "agent": "sdd", "action": "question_answered", "details": "Q-18 -> A", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:55:13Z", "agent": "sdd", "action": "question_answered", "details": "Q-19 -> A", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:56:09Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-converge", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:56:22Z", "agent": "sdd", "action": "process_fault_reported", "details": "PROC-27 (engine): orchestrator: after the HITL questions whose blocks named COH-design-1/2/4/6 were answered (Q-17..Q-", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:56:57Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-25 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/342", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:56:59Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-26 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/343", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:57:01Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-27 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/344", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:59:29Z", "agent": "review-converge", "action": "reconciliation_added", "details": "1 reconciliation(s): REC-12", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:59:29Z", "agent": "review-converge", "action": "reconciliation_added", "details": "1 reconciliation(s): REC-13", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:59:29Z", "agent": "review-converge", "action": "reconciliation_added", "details": "1 reconciliation(s): REC-14", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:59:30Z", "agent": "review-converge", "action": "reconciliation_added", "details": "1 reconciliation(s): REC-15", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:59:30Z", "agent": "review-converge", "action": "reconciliation_added", "details": "1 reconciliation(s): REC-16", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:59:30Z", "agent": "review-converge", "action": "reconciliation_added", "details": "1 reconciliation(s): REC-17", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:59:30Z", "agent": "review-converge", "action": "reconciliation_added", "details": "1 reconciliation(s): REC-18", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T15:59:30Z", "agent": "review-converge", "action": "reconciliation_added", "details": "1 reconciliation(s): REC-19", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:00:31Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-converge; 1 process fault(s): PROC-28", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:00:31Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-1", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:00:31Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-2", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:00:31Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-3", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:00:31Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-4", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:00:31Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-5", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:00:31Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-6", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:00:31Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-7", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:00:31Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-8", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}

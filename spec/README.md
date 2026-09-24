@@ -55,9 +55,10 @@ Document templates live in `.specconf/templates/{change,system}/`, editable per 
 
 ## This directory describes a template
 
-The only domain context is the **guestbook**, and it is deliberately trivial: four operations,
-one table, one screen. It exists so that every document here has content that shows its shape
-— and so that it can be deleted when the first real feature replaces it.
+The example domain context is the **guestbook**, and it is deliberately trivial: four
+operations, one table, one screen. The to-do list beside it is not an example and stays when
+the guestbook is deleted. The guestbook exists so that every document here has content that
+shows its shape — and so that it can be deleted when the first real feature replaces it.
 
 Deleting the example deletes with it: `contexts/guestbook.md`, `design/ui/guestbook.md`, the
 entries in `design/api.md` and `design/data-model.md`, the contracts

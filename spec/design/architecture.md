@@ -661,6 +661,17 @@ another and from every builder's in the same way: `tests/unit/` with `tests/fitn
 `tests/integration/`, `tests/tooling/`, `tests/_golden_set.py` and `golden-set/fixtures/`; the
 vitest files; `e2e/`.
 
+**[`testing.md`](testing.md) decides which files a test author writes, and the change's boundary
+names every one of them.** The trees above say where each test author may write, not which
+files it writes. The testing document decides the files. The change's table of the paths it
+owns (§ This change owns in its architecture fragment, from which the boundary is recorded)
+covers each of those files by path or by a row that holds it, even when both documents are
+written in the same wave. For the to-do list that includes **frontend/src/router.test.tsx**,
+build-tests-frontend's vitest cases for the to-do list's own address, the main address and an
+unknown address (`CR-2609-823a/R-5`). It sits beside the composition root it proves, outside
+every context folder, so no row that names a folder holds it. The user decided it in
+`CR-2609-823a` (`Q-18`) in these words: "Add the file to the change's list."
+
 **Disjoint is not independent.** Three edges cross the sets, and none of them is a shared file:
 
 1. `schema.d.ts` is generated from build-backend's schemas and routers, so build-frontend

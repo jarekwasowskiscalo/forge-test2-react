@@ -4,8 +4,8 @@ classification: supporting
 owns: [todo_tasks]
 neighbours: [guestbook:peer:shared-kernel]
 processes: [P-02]
-screens: []
-features: []
+screens: [spec/design/ui/todo-list.md]
+features: [e2e/suite/features/todo_list.feature]
 ---
 
 # To-do list
@@ -20,9 +20,16 @@ how a new environment is filled, or how a screen shows a failure (§ Neighbours,
 owns). The shapes on the wire are in [`spec/design/api.md`](../design/api.md); what is stored
 is in [`spec/design/data-model.md`](../design/data-model.md). This document is the rules.
 
-**The header claims a screen and a black-box file only once they exist.** `screens` and
-`features` name files, and a file that is not there yet is not claimed by writing its name
-down early — the header is read, not admired.
+**The header claims a screen once its document exists, and the black-box file at the end of
+design, before the file exists.** `screens` and `features` name files. No author who writes
+one of those files writes this document, so the design stage's convergence round writes both
+claims. The screen's document is written in design, so it is claimed in the same stage. The
+black-box file is written only in implementation, where no author writes `spec/contexts/`. So
+it is listed at the end of design, as the user decided in `CR-2609-823a` (`Q-19`): "List it
+now, at the end of design". The header is read, not admired, so that early claim is a declared
+red and not a silent one: the plan declares
+`test_every_screen_and_feature_a_context_names_is_on_disk` red on the task that writes the file.
+The declaration expires when that task writes the file in the first implementation wave.
 
 ## Strategic classification
 
