@@ -60,6 +60,11 @@
       "assumptions": "What I assume scenarios.md will do: Every one of R-1 to R-10 gets at least one scenario. Screen-only clauses get their proof from the frontend suite, because the black box speaks HTTP. These are R-1 cl.1, R-3.6, R-4 cl.5-6, R-5, the R-7 confirmation, and R-10. R-9 scenarios send both changes before either one is answered. Values are used as written: 200/201 code points, 200xU+1F600, 200x(U+0065 U+0301), 2+200+2 as typed and 205 spaces, 101 tasks, and at least 3 example tasks each under 150 code points. R-11 is manual, so it needs a numbered step in uat.md. No scenario asserts D1, D2 or D3 behaviour until the user decides them.",
       "at": "2026-09-24T12:14:15Z",
       "state": "returned"
+    },
+    "cr-scenarios": {
+      "assumptions": "I took requirements.md as the authority. The user answered Q-10, Q-11 and Q-12 after it was written, and it still lists them as the open questions D1, D2 and D3. I wrote seeds for those answers (S-8, S-9, the last row of S-33, S-49, S-52, S-53) under the requirement each one would amend, and flagged each of them (finding 8). The coherence round has to amend R-2 and R-11, or those seeds prove clauses nobody wrote. Every boundary I used is stated in the requirements, apart from S-9 (a line break at the end of a task is trimmed), which I read from Q-11's word \"inside\" together with R-2 clause 1 and flagged.",
+      "at": "2026-09-24T12:19:43Z",
+      "state": "returned"
     }
   },
   "faults": [
@@ -200,6 +205,11 @@
           "at": "2026-09-24T12:14:15Z",
           "note": "The requirements form (.specconf/templates/change/requirements.md, Impact analysis > Dependencies) cites \"the `§ Unbuilt` sections in `spec/contexts/`\". No context document has that section; the cr-requirements skill names `§ Deliberate non-goals` for the same thing.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T12:14:39Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/299",
+          "state": "filed"
         }
       ],
       "id": "PROC-5",
@@ -209,6 +219,32 @@
       "seen": 1,
       "signal": "The requirements form (.specconf/templates/change/requirements.md, Impact analysis > Dependencies) cites \"the `§ Unbuilt` sections in `spec/contexts/`\". No context document has that section; the cr-requirements skill names `§ Deliberate non-goals` for the same thing.",
       "signature": "The requirements form (.specconf· Impact analysis > Dependencies) cites ·. No context document has that section; the cr-",
+      "stage": "requirements",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/299"
+    },
+    {
+      "at": "2026-09-24T12:19:43Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T12:19:43Z",
+          "note": "cr_scenarios_verify.py every_requirement_covered does not exempt a `**Verified-by:** manual` requirement, so R-11 had to get seeds tagged @req R-11 that the black box must not bind (it starts with --no-seed). This invites build-tests-e2e to put a citation beside the manual marker.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-6",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "cr-scenarios",
+      "seen": 1,
+      "signal": "cr_scenarios_verify.py every_requirement_covered does not exempt a `**Verified-by:** manual` requirement, so R-11 had to get seeds tagged @req R-11 that the black box must not bind (it starts with --no-seed). This invites build-tests-e2e to put a citation beside the manual marker.",
+      "signature": "cr_scenarios_verify.py every_requirement_covered does not exempt a `**Verified-by:** manual` requirement, so R-· had to ",
       "stage": "requirements",
       "state": "reported",
       "url": null
@@ -689,7 +725,7 @@
   "reconciliations": [],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
   "requirements": [],
-  "revision": 35,
+  "revision": 38,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -738,7 +774,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T12:14:15Z",
+  "updated_at": "2026-09-24T12:19:43Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {
