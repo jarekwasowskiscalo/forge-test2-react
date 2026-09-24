@@ -8,7 +8,8 @@ mockup: null
 
 # Guestbook
 
-The only screen of this application. A guest opens it, reads what others wrote, and adds an
+One of the application's two screens, and the one its main address opens; the other is the
+to-do list ([`todo-list.md`](todo-list.md)). A guest opens it, reads what others wrote, and adds an
 entry of their own; they can also find an entry, view the guestbook a piece at a time, and amend
 or delete any entry — including somebody else's, because there is no identity here
 ([`../../contexts/guestbook.md`](../../contexts/guestbook.md) § Deliberate non-goals).
@@ -37,8 +38,10 @@ The frame, the palette, the typeface and the primitives: [`system-states.md`](sy
 
 Top to bottom, inside the page frame:
 
-1. **Header and title** — the lockup, the number of entries in the whole guestbook, the title
-   "Leave a note" and a sentence saying there is no sign-in here.
+1. **Header and title** — the frame's lockup and its navigation between the screens, with
+   "Guestbook" marked as the screen on show ([`system-states.md`](system-states.md) § Regions),
+   the number of entries in the whole guestbook, the title "Leave a note" and a sentence saying
+   there is no sign-in here.
 2. **The composer card** (`EntryComposer`) — signature, message, length counter, button.
 3. **The toolbar** (`EntryToolbar`) — a search field, two order pills, and beneath them one
    sentence about the result.
@@ -353,6 +356,7 @@ settled by [`../conventions.md`](../conventions.md) § Language.
 | error — empty message | `Write something — an empty entry is not saved.` |
 | error — signature too long | `A signature can be at most 80 characters.` — the sentence says "characters" because that is the word a guest uses; the rule counts code points (`../../contexts/guestbook.md` § `BR-01`) |
 | error — message too long | `An entry can be at most 1000 characters.` |
+| footer | `Entries are public and editable by anyone with this link.` |
 
 ### Accessibility labels
 

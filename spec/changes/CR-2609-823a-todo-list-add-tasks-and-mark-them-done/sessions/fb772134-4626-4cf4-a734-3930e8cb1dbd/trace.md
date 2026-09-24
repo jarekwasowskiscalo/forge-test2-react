@@ -19,3 +19,21 @@
 - [15:21] process_fault_reported: PROC-18 (template): design-architecture: golden-set/README.md (lines 104 and 156 name frontend/src/contexts/guestbook/li
 - [15:21] process_fault_resolved: PROC-18 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/92
 - [15:24] fanout_recorded: returned: design-architecture, design-api, design-data, design-testing; 1 process fault(s): PROC-19
+- [15:24] process_fault_resolved: PROC-19 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/92#issuecomment-5814987247
+- [15:25] process_fault_reported: PROC-20 (engine): loop next at design wave 3 of 4: with design-ui refused for a missing design/ui/index.html and desig
+- [15:25] question_raised: 1 question(s): Q-13
+- [16:11] question_answered: Q-13 -> B
+- [16:11] process_fault_resolved: PROC-20 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/327
+- [16:24] question_raised: 1 question(s): Q-14
+- [16:27] question_answered: Q-14 -> A
+- [16:28] fanout_recorded: dispatched: design-ui
+- [16:28] process_fault_reported: PROC-21 (template): mock-up drafter (hand-dispatched after Q-13=B): .specconf/stack.json has no ui block (no token file,
+- [16:28] process_fault_resolved: PROC-21 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/95
+- [16:35] question_raised: 2 question(s): Q-15, Q-16
+- [16:41] question_answered: Q-15 -> A
+- [16:41] question_answered: Q-16 -> A
+- [16:41] process_fault_reported: PROC-22 (engine): design-ui: SKILL.md contradicts itself and its template -- line ~297 calls the screen text "a propos
+- [16:41] process_fault_reported: PROC-23 (engine): design-ui: frozen-ids (check_specs.py:908, ("S-*", r"\bS-\d{2}\b", ("spec/design/ui",))) reads any t
+- [16:42] process_fault_resolved: PROC-22 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/332
+- [16:42] process_fault_resolved: PROC-23 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/333
+- [16:43] fanout_recorded: returned: design-ui

@@ -2,7 +2,7 @@
 screen: system-states
 route: "all routes"
 info_ref: null
-requirements: []
+requirements: [CR-2609-823a/R-5, CR-2609-823a/R-10]
 mockup: null
 ---
 
@@ -14,13 +14,15 @@ every list in this application needs — emptiness, error and loading
 
 ## One column
 
-**There is no top bar and no side panel.** The application has one screen, and a module
-switcher with one entry was furniture waiting for a second module that never came. The screen
-is a single centred column up to 860 px wide, with its own header and its own footer; the frame
-is drawn by `frontend/src/components/shell/PageFrame.tsx` and by nothing else.
+**There is no top bar and no side panel.** The application has two screens, the guestbook and
+the to-do list, and the way between them is **two text links in the page header, beside the
+lockup** (§ Components and their states) — not a bar of its own, and not a switcher that looks
+like the guestbook's order pills, which would read as a filter. The screen is a single centred
+column up to 860 px wide, with its own header and its own footer; the frame is drawn by
+`frontend/src/components/shell/PageFrame.tsx` and by nothing else.
 
-What that costs, said outright: a product that adds a second screen **must add navigation
-here**, not merely a route. There is one seam and it is named — `PageFrame` — so adding it is an
+The navigation is here because this is the one seam — `PageFrame` — and the second screen added
+it here rather than as a route alone. A third screen adds one link to the same navigation: an
 edit to one file rather than a hunt through components.
 
 The frame is **part of the page, not a shell the pages live inside**: every screen renders its
@@ -55,28 +57,50 @@ heading anyway.
 
 ## Regions
 
-- **Page header** — the product lockup on the left, one fact about the whole page on the right
-  (today: the number of entries in the guestbook).
+- **Page header** — the product lockup on the left, followed by the navigation between the
+  screens; one fact about the whole page on the right, supplied by the screen (the guestbook: its
+  number of entries; the to-do list: its number of tasks; the not-found page: none).
 - **Title and introductory sentence** — the serif screen title and one sentence about what it is
   for and what using it costs.
-- **Content** — variable; today one built screen.
-- **Footer** — one sentence about who sees this.
-- **Not-found page** (route `*`, **inside** the frame) — every path with no matching route.
+- **Content** — variable; today two built screens.
+- **Footer** — one sentence about who sees this, and it belongs to the screen: each screen's
+  document carries its words ([`guestbook.md`](guestbook.md) § Copy,
+  [`todo-list.md`](todo-list.md) § Copy), and the not-found page has none.
+- **Not-found page** (route `*`, **inside** the frame) — every path with no matching route. The
+  navigation is on it too, with neither screen marked as the one on show.
 
-**The lockup is an explicit placeholder and is meant to look like one.** A square with an
-initial and the name "Guestbook" in `PageFrame.tsx` (`PRODUCT_NAME`, `PRODUCT_INITIAL`) — two
-strings to replace. A template shipping a plausible-looking mark would ship as somebody's
-product under a brand nobody chose.
+**The lockup is an explicit placeholder and is meant to look like one.** A square with the
+initial "P" and the name "Product name" in `PageFrame.tsx` (`PRODUCT_NAME`, `PRODUCT_INITIAL`) —
+two strings to replace. A template shipping a plausible-looking mark would ship as somebody's
+product under a brand nobody chose. With two screens the lockup cannot carry either screen's
+name: "Guestbook" there named the product after one of its screens, and stood beside a
+navigation link of the same name — two identical links side by side.
 
-**The lockup is a link on every screen, including the one it points at.** It is the way back
-from a 404, and a way back that exists only on the page you did not get lost on is a way back
-nobody finds.
+**The lockup is a link on every screen, including the one it points at.** It leads to the
+guestbook's address, as it did. It is the way back from a 404, and a way back that exists only
+on the page you did not get lost on is a way back nobody finds.
 
 **There is no "signed in" section and no login route.** This application authenticates nobody. A
 product that starts to mounts a 401 redirect in `frontend/src/api/client.ts` — that module's
 docstring names the place.
 
 ## Components and their states
+
+### The navigation between the screens
+
+| State | What is visible |
+|---|---|
+| default | after the lockup, two text links, "Guestbook" and "To-do list", in `--color-muted`; the group is named "Screens" for assistive technology |
+| hover | the link's text turns `--color-ink` |
+| focus | the screen's focus ring around the link |
+| current | the link of the screen on show is in `--color-ink`, medium weight and underlined, and says so to assistive technology (`aria-current="page"`); on the not-found page neither link is current |
+
+States omitted: active — no pressed look of its own, since a link simply navigates; disabled —
+both links always lead somewhere, the current one included; loading, error, empty — the
+navigation reads nothing, so it has nothing to wait for, to fail at or to lack.
+
+**The navigation is on every screen, the not-found page included**, and the link of the screen
+on show stays a link, marked rather than removed.
 
 ### `EmptyState`
 
@@ -118,9 +142,13 @@ cards; a table primitive will appear together with the first real table and not 
 | `warning` | it succeeded partly or with a caveat |
 | `error` | the write failed |
 
-A toast is **a confirmation, never the only carrier of information**: it disappears on its own,
-so a fact that must survive belongs to the screen rather than to a toast. There are two
-`aria-live` regions — polite for successes, assertive for errors.
+A toast is **a confirmation, never the only carrier of information**, so a fact that must
+survive belongs to the screen rather than to a toast. **A success or warning toast disappears on
+its own after a few seconds; an error toast stays until it is dismissed** with its "×" — an
+error that vanished while somebody looked elsewhere would be quieter than the success beside
+it. Either way the screen under it is unchanged by a write that failed, and that unchanged
+screen is the lasting fact. There are two `aria-live` regions — polite for successes, assertive
+for errors.
 
 ## Copy
 
@@ -128,10 +156,12 @@ English, like the rest of this repository ([`../conventions.md`](../conventions.
 
 | Key | Text |
 |---|---|
-| product name | `Guestbook` |
-| footer | `Entries are public and editable by anyone with this link.` |
+| product name | `Product name` |
+| product initial | `P` |
+| navigation — name read aloud | `Screens` |
+| navigation — links | `Guestbook` · `To-do list` |
 | 404 — title | `Nothing here` |
-| 404 — sentence | `There is one screen in this application: the guestbook.` |
+| 404 — sentence | `There is nothing at this address.` |
 | 404 — action | `Go to the guestbook` |
 | error — cannot reach | `Could not reach the service` |
 | error — 404 | `That is gone` |
@@ -139,18 +169,26 @@ English, like the rest of this repository ([`../conventions.md`](../conventions.
 | error — no detail | `The service returned no detail. Try again, or check whether the backend answers on /api/health.` |
 | retry action | `Try again` |
 
+**The 404 sentence counts no screens.** "There is one screen in this application: the guestbook."
+stopped being true when the to-do list arrived, and a sentence that counts screens stops being
+true again with the next one. The footer is not here because it is each screen's own
+(§ Regions).
+
 ## Data
 
 The frame reads nothing. There is no session query and no modules query. This is a property
-rather than a saving: a frame that waits for an answer flickers on every entry. The number of
-entries in the header is supplied by the screen, which has it anyway.
+rather than a saving: a frame that waits for an answer flickers on every entry. The fact in the
+header is supplied by the screen, which has it anyway — the guestbook's number of entries, the
+to-do list's number of tasks. The navigation is two fixed addresses and reads nothing either.
 
 ## Interactions
 
 | Event | Effect |
 |---|---|
 | clicking the lockup | React Router navigation to `/guestbook`, without a reload |
+| clicking "Guestbook" or "To-do list" | React Router navigation to `/guestbook` or `/todo-list`, without a reload |
 | entering `/` | a redirect to `/guestbook` |
+| entering `/todo-list` | the to-do list ([`todo-list.md`](todo-list.md)) |
 | entering an unknown route | the 404 page **inside** the frame — the way back stays on screen |
 
 **The browser stores nothing.** There is no `localStorage`, no cookie, no state that survives a
@@ -200,5 +238,5 @@ ADR nor a `delta.md` is available):
 - **Responsiveness.** The column narrows with the window, but a mobile view is not designed —
   that is a separate decision and a separate mock-up.
 - **Dark theme.** Withdrawn, see § One palette.
-- **Navigation.** One screen, so there is nothing to switch between. A second screen adds it to
-  `PageFrame`.
+- **A navigation bar, a module switcher or a side panel.** The way between the screens is the
+  header's two links (§ One column).

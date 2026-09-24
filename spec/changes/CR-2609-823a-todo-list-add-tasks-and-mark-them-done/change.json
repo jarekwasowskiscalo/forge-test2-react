@@ -293,6 +293,11 @@
       "assumptions": "- Used design-api's five codes, design-data's statement-shape writes and TODO_TASK_TEXT_MAX_LENGTH.\n- Used design-architecture's module names: TodoListPage, TodoTaskComposer, TodoTaskRow, useTodoTasks, todoTask.ts, lib/text.ts, and todo-tasks-example.json for the seed file.\n- CONTRADICTS architecture Decision 4: the corpus reader cannot move to frontend/src/lib/text.test.ts; it needs the guestbook's bounds, and test_no_screen_reaches_into_another_contexts_folder refuses that import from lib/. So entryText.test.ts stays where it is and changes one import line. For the coherence gate.\n- For coherence: test_every_feature_file_is_claimed_by_exactly_one_context goes red when todo_list.feature is written in implement wave 1, and no implement author can write spec/contexts/; the screen claim has the same timing in design. Options A/B/C are in the fragment.\n- golden-set/README.md has no author, and this change makes two of its sentences false.\n- The task's text cases get their own file, todo-task-text.json, instead of scenarios.md's additions to text-measurement.json (the additions would turn existing guestbook cases red mid-wave, force an import that does not exist yet, and be deleted with the guestbook).\n- The corpus-reading seeds are not bound in e2e, because they need e2e/suite/golden_set.py, which nobody may write.\n- R-11 stays `Verified-by: manual`, with uat.md steps plus tooling and fitness proof that owns no citation.",
       "at": "2026-09-24T13:24:23Z",
       "state": "returned"
+    },
+    "design-ui": {
+      "assumptions": "- Every binding is to the live spec/design/api.md: GET /api/todo-tasks via useTodoTasks() -> total (header count, not items.length), items[].id/.text/.done (rows, shown in arrival order), items empty (empty state); POST /api/todo-tasks sends text and gets a TodoTaskRead; PATCH /api/todo-tasks/{todo_task_id} sends done alone (the chosen state) for a tick, or text alone for a correction; DELETE -> 204. A refused write has detail.code (decides where it shows) and detail.message (the words). Refusals shown: todo_task_text_empty/multiline/too_long (under the field), todo_task_not_found (notice). created_at is not shown. The mutation names inside useTodoTasks.ts are left to build-frontend.\n- The Q-15 rule (\"...the service answered with an error.\") depends on design-api keeping every coded to-do refusal in {detail:{code,message}}, and on a server error carrying no detail.message; \"no sentence of its own\" is read as an answer with no refusal message, not a 5xx status code.\n- The Q-16 rule (focus back where the person was) applies only when focus was on the control that was locked or closed; a person who tabbed elsewhere keeps focus where they put it. It lives once, in § Keyboard and accessibility.\n- The navigation, the lockup (\"Product name\"/\"P\", mock-up C-1 approved in Q-14) and the 404 page live in system-states.md (the frame), not in the to-do document, because no context owns them; guestbook.md's opening sentence, region 1 and footer copy row changed with them.\n- The screen is in the live tree with info_ref S-02. No scenario ids (S-nn) appear in spec/design/ui/ (frozen-ids would read them as screen ids; PROC-23).\n- A failed correction keeps the editor open with what was typed and the stored text unchanged; build-tests-e2e: after a failed correction, the old text stays as the box's accessible name and comes back on Cancel.\n- Handed to the orchestrator (fragment § Found outside): spec/contexts/todo_list.md `screens: []` must claim spec/design/ui/todo-list.md, or test_every_registered_screen_is_claimed_by_exactly_one_context goes red; and the UI smoke's comment about \"the only navigation\" is now false.",
+      "at": "2026-09-24T14:43:42Z",
+      "state": "returned"
     }
   },
   "faults": [
@@ -872,6 +877,11 @@
           "at": "2026-09-24T13:24:23Z",
           "note": ".specconf/stack.json gives no member e2e/suite/golden_set.py (the black box's only permitted crossing into the corpus) or golden-set/README.md, and the black-box scenarios had to be designed around that gap.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T13:24:29Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/92#issuecomment-5814987247",
+          "state": "filed"
         }
       ],
       "id": "PROC-19",
@@ -882,8 +892,132 @@
       "signal": ".specconf/stack.json gives no member e2e/suite/golden_set.py (the black box's only permitted crossing into the corpus) or golden-set/README.md, and the black-box scenarios had to be designed around that gap.",
       "signature": ".specconf· gives no member e2e· (the black box's only permitted crossing into the corpus) or golden-set· and the black-b",
       "stage": "design",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/92#issuecomment-5814987247"
+    },
+    {
+      "at": "2026-09-24T13:25:14Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T13:25:14Z",
+          "note": "loop next at design wave 3 of 4: with design-ui refused for a missing design/ui/index.html and design-mock not in the fanout (this stack has no ui key, on purpose), next_action printed \"ACTION dispatch (row 19) ... Nothing to dispatch this turn. Fix the above or wait for the wave\" instead of computing row 25 (ask the user for the mock-up); the stage stalls where a question should carry it, and the orchestrator had to walk the table.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T14:11:42Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/327",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-20",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "loop next at design wave 3 of 4: with design-ui refused for a missing design/ui/index.html and design-mock not in the fanout (this stack has no ui key, on purpose), next_action printed \"ACTION dispatch (row 19) ... Nothing to dispatch this turn. Fix the above or wait for the wave\" instead of computing row 25 (ask the user for the mock-up); the stage stalls where a question should carry it, and the orchestrator had to walk the table.",
+      "signature": "loop next at design wave · of ·: with design-ui refused for a missing design· and design-mock not in the fanout (this st",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/327"
+    },
+    {
+      "at": "2026-09-24T14:28:12Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/forge_template_python_react"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T14:28:12Z",
+          "note": "mock-up drafter (hand-dispatched after Q-13=B): .specconf/stack.json has no ui block (no token file, no locales), so forge:design-mock is not in the composition on this stack and the mock-up had to be drafted by a hand-dispatched helper outside any skill; frontend/src/styles/theme.css is the obvious token source for that block.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T14:28:26Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/95",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-21",
+      "owner": "template",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "mock-up drafter (hand-dispatched after Q-13=B): .specconf/stack.json has no ui block (no token file, no locales), so forge:design-mock is not in the composition on this stack and the mock-up had to be drafted by a hand-dispatched helper outside any skill; frontend/src/styles/theme.css is the obvious token source for that block.",
+      "signature": "mock-up drafter (hand-dispatched after Q-·=B): .specconf· has no ui block (no token file, no locales), so forge:design-m",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/95"
+    },
+    {
+      "at": "2026-09-24T14:41:44Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T14:41:44Z",
+          "note": "design-ui: SKILL.md contradicts itself and its template -- line ~297 calls the screen text \"a proposal\" in \"a clearly marked section of your document\" that reconcile-design applies, while line 107 says \"The screen specification lives in the live tree\"; iron rule 3 (line 71-73) says refusals are \"written out verbatim\", while .specconf/templates/system/ui-screen.md:50-51 says \"list here only which of them this screen can show\".",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T14:42:04Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/332",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-22",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "design-ui: SKILL.md contradicts itself and its template -- line ~297 calls the screen text \"a proposal\" in \"a clearly marked section of your document\" that reconcile-design applies, while line 107 says \"The screen specification lives in the live tree\"; iron rule 3 (line 71-73) says refusals are \"written out verbatim\", while .specconf/templates/system/ui-screen.md:50-51 says \"list here only which of them this screen can show\".",
+      "signature": "design-ui: SKILL.md contradicts itself and its template -- line ~· calls the screen text · in · that reconcile-design ap",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/332"
+    },
+    {
+      "at": "2026-09-24T14:41:44Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T14:41:44Z",
+          "note": "design-ui: frozen-ids (check_specs.py:908, (\"S-*\", r\"\\bS-\\d{2}\\b\", (\"spec/design/ui\",))) reads any two-digit S-nn under spec/design/ui as a screen-id declaration, while cr-scenarios numbers its seeds S-1...S-53 (### S-n), so citing a scenario (e.g. S-13) in a screen document silently mints a screen id.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T14:42:06Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/333",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-23",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "design-ui: frozen-ids (check_specs.py:908, (\"S-*\", r\"\\bS-\\d{2}\\b\", (\"spec/design/ui\",))) reads any two-digit S-nn under spec/design/ui as a screen-id declaration, while cr-scenarios numbers its seeds S-1...S-53 (### S-n), so citing a scenario (e.g. S-13) in a screen document silently mints a screen id.",
+      "signature": "design-ui: frozen-ids (check_specs.py:·, (·, r·, (·,))) reads any two-digit S-nn under spec· as a screen-id declaration,",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/333"
     }
   ],
   "files_changed": [],
@@ -1416,6 +1550,168 @@
       "stage": "requirements",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T14:11:06Z",
+        "choice": "B",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T13:25:37Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "You make it (for example in Claude Design, as the guestbook's was) and save it as design/ui/index.html in the change folder; the screen is designed from exactly what you chose, and the design stage waits until the file is there.",
+          "key": "A",
+          "label": "I will supply the mock-up",
+          "recommended": true
+        },
+        {
+          "consequence": "Claude draws one in this conversation from the project's own colours and the guestbook's mock-up and saves it only after you approve it: faster, but on this project drafting is not a recorded step, so the record shows your approval rather than a process step that produced it.",
+          "key": "B",
+          "label": "Draft one for me to approve",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-13",
+      "question": "The to-do screen needs a mock-up (a picture of the page: the field for a new task, the list, and the done / edit / delete controls on each task) before its screen design can be written. On this project a person supplies the mock-up; the process does not draw one by itself. How do you want to get it?",
+      "stage": "design",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T14:27:52Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T14:24:26Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "The screen specification is written from this mock-up, including the placeholder name 'Product name' at the top and the other 23 choices in its notes; you still approve the whole design at the end of the stage.",
+          "key": "A",
+          "label": "Approve as drafted",
+          "recommended": true
+        },
+        {
+          "consequence": "Same, with panel P19's alternative: the navigation then shows two links named 'Guestbook', and the automated screen test has to be adjusted to tell them apart.",
+          "key": "B",
+          "label": "Approve, but keep 'Guestbook' as the name at the top",
+          "recommended": false
+        },
+        {
+          "consequence": "Tell me what to change (a panel or a C-number is enough); the draft is revised and shown to you again before anything is written from it.",
+          "key": "C",
+          "label": "Change something first",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-14",
+      "question": "The drafted mock-up of the to-do screen is open at http://127.0.0.1:8099/ (19 panels: the empty list, a list with done and not-done tasks, editing in place, each refusal message, delete with its confirmation, loading and failure, the navigation between the guestbook and the to-do list). Its 'Notes for approval' panel lists 24 choices no document fixed (C-1 to C-24). The biggest is C-1: the name at the top-left of every page changes from 'Guestbook' to the placeholder 'Product name', because the app now has two screens. Do you approve it as the basis for the screen design?",
+      "stage": "design",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T14:41:16Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T14:35:21Z",
+      "blocking": true,
+      "blocks": [
+        "design-ui"
+      ],
+      "options": [
+        {
+          "consequence": "\"The task was not added: the service answered with an error.\" and \"The change was not made: the service answered with an error.\" -- a true sentence in the shape you already approved (C-18).",
+          "key": "A",
+          "label": "\"...the service answered with an error.\"",
+          "recommended": true
+        },
+        {
+          "consequence": "One sentence fewer, but it is false whenever the service did answer.",
+          "key": "B",
+          "label": "\"...could not be reached\" for every failure",
+          "recommended": false
+        },
+        {
+          "consequence": "\"The task was not added.\" plus e.g. \"Server error\": more detail, but those words then come from frontend code that no specification holds.",
+          "key": "C",
+          "label": "Short sentence plus the browser's error title",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-15",
+      "question": "Asked now because the screen design step is waiting on it. When adding or changing a task fails because the service answered with an error that has no sentence of its own (for example an internal server error), what words does the person see?",
+      "stage": "design",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T14:41:16Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T14:35:21Z",
+      "blocking": true,
+      "blocks": [
+        "design-ui"
+      ],
+      "options": [
+        {
+          "consequence": "The checkbox after a tick settles, the add field after any add, the edit field after a failed correction, and the row's Edit button when the editor closes: keyboard users keep their place.",
+          "key": "A",
+          "label": "Back where the person was",
+          "recommended": true
+        },
+        {
+          "consequence": "As the guestbook does today: focus can drop to the top of the page.",
+          "key": "B",
+          "label": "Leave it to the browser",
+          "recommended": false
+        },
+        {
+          "consequence": "Focus lands on the task itself rather than on its Edit button.",
+          "key": "C",
+          "label": "As A, but the task's checkbox when the editor closes",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-16",
+      "question": "Asked now because the screen design step is waiting on it. While a change is being saved, its control is locked; where does the keyboard focus go when that control is unlocked again, or removed?",
+      "stage": "design",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -1581,7 +1877,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 106,
+  "revision": 124,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1631,7 +1927,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T13:24:23Z",
+  "updated_at": "2026-09-24T14:43:42Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {

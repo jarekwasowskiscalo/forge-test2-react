@@ -1,0 +1,1523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>To-do screen mock-up for approval (CR-2609-823a)</title>
+<style>
+  /* ------------------------------------------------------------------
+     Tokens. Copied verbatim from frontend/src/styles/theme.css (@theme):
+     the only colours on this page. Every rule below names one of them;
+     sizes are Tailwind scale steps (multiples of 0.25rem) or these tokens.
+     theme.css carries one palette (the dark theme was withdrawn,
+     spec/design/ui/system-states.md § One palette), so this page has none.
+     ------------------------------------------------------------------ */
+  :root {
+    color-scheme: light;
+    --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+    --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+    --color-ink: #1b1a17;
+    --color-muted: #5c584f;
+    --color-faint: #6e6a5f;
+    --color-disabled: #c4c0b5;
+    --color-inverse: #f6f5f1;
+    --color-danger: #a3382c;
+    --color-accent: #14503a;
+    --color-accent-strong: #0c3325;
+    --color-card: #ffffff;
+    --color-surface: #f6f5f1;
+    --color-surface-medium: #f1efe8;
+    --color-hairline: #e2dfd6;
+    --color-line: #dbd7cc;
+    --radius-modal: 18px;
+    --radius-card: 14px;
+    --radius-control: 10px;
+    --radius-control-tight: 9px;
+    --radius-chip: 7px;
+    --text-meta: 13px;
+    --text-body: 15px;
+    --container-reading: 860px;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* ---- Base (frontend/src/index.css) ---- */
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--color-surface-medium);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  input, button, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  ::placeholder { color: var(--color-faint); opacity: 1; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+  .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  /* ---- The board: chrome around the drawings, not the screen ---- */
+  .board { max-width: 72rem; margin: 0 auto; padding: 3rem 1rem 6rem; }
+  @media (min-width: 40rem) { .board { padding-inline: 1.5rem; } }
+  .board a { color: var(--color-accent); text-underline-offset: 0.125rem; }
+  .board a:hover { color: var(--color-accent-strong); }
+  .eyebrow { margin: 0; font-size: var(--text-meta); color: var(--color-faint); letter-spacing: 0.025em; }
+  .board-title {
+    margin: 0.5rem 0 0; font-family: var(--font-serif); font-weight: 400;
+    font-size: 2.25rem; line-height: 1.1; letter-spacing: -0.02em;
+  }
+  .board-lede { margin: 0.75rem 0 0; max-width: 48rem; color: var(--color-muted); }
+  .board-how {
+    margin: 1rem 0 0; max-width: 48rem; padding: 0.75rem 1rem;
+    background: var(--color-card); border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-control); font-size: 0.875rem;
+  }
+  .board-how p { margin: 0; }
+  .board-how p + p { margin-top: 0.375rem; color: var(--color-muted); }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: var(--text-meta); background: var(--color-surface-medium);
+    border-radius: 0.25rem; padding: 0 0.25rem;
+  }
+
+  .notes {
+    margin-top: 2rem; background: var(--color-card);
+    border: 1px solid var(--color-hairline); border-radius: var(--radius-card);
+    padding: 1.5rem;
+  }
+  .notes h2 { margin: 0; font-size: 1.25rem; line-height: 1.75rem; letter-spacing: -0.01em; }
+  .notes h3 {
+    margin: 2rem 0 0.75rem; font-size: 0.75rem; line-height: 1rem; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-muted);
+  }
+  .notes ul, .notes ol { margin: 0; padding-left: 1.25rem; font-size: 0.875rem; }
+  .notes li + li { margin-top: 0.375rem; }
+  .state-list { list-style: none; padding-left: 0 !important; columns: 20rem 3; column-gap: 1.5rem; }
+  .state-list li { break-inside: avoid; margin-bottom: 0.375rem; }
+  .state-list li + li { margin-top: 0; }
+  .table-wrap { overflow-x: auto; }
+  .choices { width: 100%; min-width: 48rem; border-collapse: collapse; font-size: 0.875rem; }
+  .choices th, .choices td {
+    text-align: left; vertical-align: top; padding: 0.625rem 0.75rem;
+    border-top: 1px solid var(--color-hairline);
+  }
+  .choices thead th { border-top: 0; font-size: var(--text-meta); font-weight: 600; color: var(--color-muted); }
+  .choices td:first-child { white-space: nowrap; font-weight: 600; }
+  .choices td:nth-child(2) { font-weight: 600; }
+  .choices td:nth-child(4), .choices td:nth-child(5) { color: var(--color-muted); }
+  .choices tr:target td { background: var(--color-surface); }
+
+  .panel { margin-top: 3.5rem; }
+  .panel-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.75rem; }
+  .pid {
+    font-size: var(--text-meta); font-weight: 600; color: var(--color-inverse);
+    background: var(--color-ink); border-radius: var(--radius-chip); padding: 0.125rem 0.5rem;
+  }
+  .panel-head h2 { margin: 0; font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; letter-spacing: -0.01em; }
+  .refs { font-size: var(--text-meta); color: var(--color-muted); }
+  .up { margin-left: auto; font-size: var(--text-meta); }
+  .drawn, .cap { max-width: 48rem; font-size: 0.875rem; color: var(--color-muted); }
+  .drawn { margin: 0.5rem 0 1rem; }
+  .cap { margin: 0.875rem 0 0; }
+  .drawn b, .cap b, .sub b { color: var(--color-ink); font-weight: 600; }
+  .sub { margin: 1.5rem 0 0.5rem; max-width: 48rem; font-size: var(--text-meta); color: var(--color-muted); }
+  .sub:first-of-type { margin-top: 0; }
+  .cref {
+    display: inline-block; font-size: var(--text-meta); font-weight: 600;
+    text-decoration: none; border: 1px solid var(--color-line);
+    border-radius: var(--radius-chip); padding: 0 0.375rem; margin: 0 0.125rem;
+    background: var(--color-card);
+  }
+  .canvas {
+    position: relative; background: var(--color-surface);
+    border: 1px solid var(--color-line); border-radius: var(--radius-modal); overflow: hidden;
+  }
+  .canvas.tall { min-height: 28rem; }
+  .addr {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--color-hairline); background: var(--color-surface-medium);
+    font-size: var(--text-meta); color: var(--color-muted);
+  }
+  .addr b { color: var(--color-ink); font-weight: 600; }
+  .elide {
+    margin: 1rem 0; padding: 0.5rem 0.75rem; border: 1px dashed var(--color-line);
+    border-radius: var(--radius-control); font-size: var(--text-meta); font-style: italic;
+    color: var(--color-muted); text-align: center;
+  }
+  .variant-label {
+    position: absolute; top: 0.75rem; right: 1rem; z-index: 1; font-size: var(--text-meta);
+    font-weight: 600; color: var(--color-muted);
+  }
+
+  /* ---- The frame (frontend/src/components/shell/PageFrame.tsx) ---- */
+  .fr { padding: 0 1.5rem 3rem; }
+  .fr-full { padding-bottom: 6rem; }
+  .fr-crop { padding-bottom: 1.25rem; }
+  .fr.has-toast { padding-bottom: 6rem; }
+  .fr-col { max-width: var(--container-reading); margin: 0 auto; }
+  .fr-head {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.75rem 1rem; padding-top: 1.75rem;
+  }
+  .fr-strip { padding-bottom: 1.75rem; }
+  .fr-left { display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem 2rem; }
+  .board .lockup { display: flex; align-items: center; gap: 0.625rem; color: var(--color-ink); text-decoration: none; }
+  .board .lockup:hover { color: var(--color-ink); }
+  .lockup-mark {
+    display: flex; align-items: center; justify-content: center;
+    width: 1.625rem; height: 1.625rem; border-radius: var(--radius-chip);
+    background: var(--color-accent); color: var(--color-inverse);
+    font-size: var(--text-meta); font-weight: 600;
+  }
+  .lockup-name { font-size: 0.875rem; font-weight: 500; letter-spacing: -0.01em; }
+  .fr-nav { display: flex; gap: 1.25rem; font-size: 0.875rem; }
+  .board .fr-nav a { color: var(--color-muted); text-decoration: none; }
+  .board .fr-nav a:hover { color: var(--color-ink); }
+  .board .fr-nav a[aria-current="page"] {
+    color: var(--color-ink); font-weight: 500; text-decoration: underline;
+    text-decoration-thickness: 2px; text-underline-offset: 0.375rem;
+  }
+  .fr-meta { font-size: var(--text-meta); color: var(--color-muted); font-variant-numeric: tabular-nums; }
+  .fr-title {
+    display: flex; flex-direction: column; gap: 0.625rem;
+    border-bottom: 1px solid var(--color-hairline); padding: 3.5rem 0 2.5rem;
+  }
+  .t-h1 {
+    margin: 0; font-family: var(--font-serif); font-weight: 400;
+    font-size: clamp(2.5rem, 7vw, 4.25rem); line-height: 1.02; letter-spacing: -0.02em;
+  }
+  .t-lede { margin: 0; max-width: 44ch; font-size: 1rem; line-height: 1.55; color: var(--color-muted); text-wrap: pretty; }
+  .fr-foot { padding-top: 4rem; font-size: 0.75rem; line-height: 1rem; color: var(--color-faint); }
+
+  /* ---- The add field (TodoTaskComposer) ---- */
+  .composer-sec { padding: 1.75rem 0 1.25rem; }
+  .composer {
+    display: flex; flex-direction: column; gap: 0.5rem; background: var(--color-card);
+    border: 1px solid var(--color-hairline); border-radius: var(--radius-card);
+    padding: 0.75rem 0.75rem 0.75rem 1.125rem;
+  }
+  .composer-row { display: flex; align-items: center; gap: 0.75rem; }
+  .composer-field { flex: 1; min-width: 0; display: flex; }
+  .composer-input {
+    width: 100%; border: 0; background: transparent; padding: 0;
+    font-size: 1rem; line-height: 1.5rem; color: var(--color-ink);
+  }
+  .composer-input:disabled, .editor-input:disabled { color: var(--color-muted); cursor: progress; }
+  .is-focused { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .btn-add {
+    flex: none; border: 0; border-radius: var(--radius-control); background: var(--color-accent);
+    color: var(--color-inverse); padding: 0.625rem 1.25rem;
+    font-size: 0.875rem; line-height: 1.25rem; font-weight: 500;
+  }
+  .btn-add:hover:not(:disabled) { filter: brightness(1.12); }
+  .btn-add:disabled { opacity: 0.35; cursor: not-allowed; }
+  .field-error { font-size: 0.75rem; line-height: 1rem; font-weight: 500; color: var(--color-danger); }
+
+  /* ---- The list and a task's row (TodoTaskRow, Checkbox) ---- */
+  .tasks {
+    list-style: none; margin: 0; padding: 0; background: var(--color-card);
+    border: 1px solid var(--color-hairline); border-radius: var(--radius-card); overflow: hidden;
+  }
+  .task { display: flex; align-items: flex-start; gap: 1rem; padding: 0.875rem 1.25rem; }
+  .task + .task { border-top: 1px solid var(--color-hairline); }
+  .task.rise { animation: rise 0.28s ease both; }
+  .task-main {
+    position: relative; display: flex; align-items: flex-start; gap: 0.75rem;
+    flex: 1; min-width: 0; cursor: pointer;
+  }
+  .task-main-box { flex: none; }
+  .task-input {
+    position: absolute; left: 0; top: 0.125rem; width: 1.25rem; height: 1.25rem;
+    margin: 0; opacity: 0; cursor: pointer;
+  }
+  .task-input:disabled { cursor: progress; }
+  .box {
+    flex: none; display: flex; align-items: center; justify-content: center;
+    width: 1.25rem; height: 1.25rem; margin-top: 0.125rem;
+    border: 2px solid var(--color-faint); border-radius: 0.375rem; background: var(--color-card);
+  }
+  .box svg {
+    width: 0.875rem; height: 0.875rem; fill: none; stroke: var(--color-inverse);
+    stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0;
+  }
+  .task-input:checked + .box { background: var(--color-accent); border-color: var(--color-accent); }
+  .task-input:checked + .box svg { opacity: 1; }
+  .task-input:focus-visible + .box { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .task-input:disabled + .box { opacity: 0.5; }
+  .task-text { min-width: 0; font-size: 1rem; line-height: 1.5rem; overflow-wrap: anywhere; }
+  .task-input:checked ~ .task-text { text-decoration-line: line-through; color: var(--color-muted); }
+  .marker { flex: none; font-size: var(--text-meta); line-height: 1.5rem; color: var(--color-faint); }
+  .task-actions { flex: none; display: flex; gap: 0.875rem; line-height: 1.5rem; }
+  .act {
+    border: 0; background: transparent; padding: 0; font-size: var(--text-meta);
+    line-height: 1.5rem; color: var(--color-faint);
+  }
+  .act-edit:hover:not(:disabled) { color: var(--color-accent); }
+  .act-del:hover:not(:disabled) { color: var(--color-danger); }
+  .act:disabled { opacity: 0.5; cursor: default; }
+  .task-elide {
+    justify-content: center; background: var(--color-surface); font-size: var(--text-meta);
+    font-style: italic; color: var(--color-muted);
+  }
+
+  /* ---- Editing in place ---- */
+  .editor { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+  .editor-field { display: flex; }
+  .editor-input {
+    width: 100%; border: 1px solid var(--color-hairline); border-radius: var(--radius-control-tight);
+    background: var(--color-card); padding: 0.5rem 0.75rem; font-size: 1rem; line-height: 1.5rem;
+    color: var(--color-ink);
+  }
+  .editor-input:disabled { background: var(--color-surface); }
+  .editor-actions { display: flex; gap: 0.5rem; }
+  .btn-save {
+    border: 0; border-radius: var(--radius-control-tight); background: var(--color-accent);
+    color: var(--color-inverse); padding: 0.5rem 1rem; font-size: var(--text-meta); font-weight: 500;
+  }
+  .btn-save:hover:not(:disabled) { filter: brightness(1.15); }
+  .btn-save:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-cancel {
+    border: 1px solid var(--color-hairline); border-radius: var(--radius-control-tight);
+    background: transparent; color: var(--color-muted); padding: 0.5rem 1rem; font-size: var(--text-meta);
+  }
+  .btn-cancel:hover:not(:disabled) { background: var(--color-surface-medium); }
+  .btn-cancel:disabled { opacity: 0.5; cursor: default; }
+
+  /* ---- Empty, loading, failed ---- */
+  .empty {
+    border: 1px dashed var(--color-line); border-radius: var(--radius-card);
+    padding: 3.5rem 1.25rem; text-align: center; font-size: var(--text-body); color: var(--color-muted);
+  }
+  .task-skel { align-items: center; }
+  .skel { display: block; border-radius: 0.375rem; background: var(--color-surface-medium); }
+  .skel-box { flex: none; width: 1.25rem; height: 1.25rem; }
+  .skel-bar { height: 0.625rem; }
+  .w-2-5 { width: 40%; } .w-1-2 { width: 50%; } .w-3-5 { width: 60%; } .w-4-5 { width: 80%; }
+  .read-failed { margin: 0 0 1rem; font-size: var(--text-meta); color: var(--color-muted); }
+  .err {
+    border: 1px solid var(--color-hairline); border-radius: var(--radius-card);
+    background: var(--color-card); padding: 2rem 1.5rem; text-align: center;
+  }
+  .err-title { margin: 0; font-size: 1rem; font-weight: 700; }
+  .err-detail { margin: 0.5rem auto 0; max-width: 42rem; font-size: 0.875rem; line-height: 1.625; color: var(--color-muted); }
+  .err-actions { margin-top: 0.875rem; display: flex; justify-content: center; }
+
+  /* ---- Buttons (frontend/src/components/ui/Button.tsx) ---- */
+  .btn-outlined, .btn-quiet, .btn-primary, .btn-link-primary {
+    display: inline-flex; align-items: center; justify-content: center; height: 2.125rem;
+    padding: 0 1rem; border-radius: var(--radius-control); font-size: 0.875rem; font-weight: 500;
+    white-space: nowrap;
+  }
+  .btn-outlined { border: 1px solid var(--color-hairline); background: var(--color-card); color: var(--color-ink); }
+  .btn-outlined:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  .btn-quiet { border: 1px solid transparent; background: transparent; color: var(--color-muted); }
+  .btn-quiet:hover:not(:disabled) { background: var(--color-surface-medium); color: var(--color-ink); }
+  .btn-quiet:disabled { color: var(--color-disabled); cursor: default; }
+  .btn-primary { border: 1px solid var(--color-accent); background: var(--color-accent); color: var(--color-inverse); }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.12); }
+  .btn-primary:disabled { opacity: 0.35; cursor: default; }
+  .board .btn-link-primary {
+    border: 1px solid var(--color-accent); background: var(--color-accent);
+    color: var(--color-inverse); text-decoration: none;
+  }
+  .nf-actions { display: flex; justify-content: center; padding-top: 2.5rem; }
+
+  /* ---- Toasts (frontend/src/components/ui/Toast.tsx) ---- */
+  .toasts {
+    position: absolute; right: 1.25rem; bottom: 1.25rem; z-index: 2;
+    display: flex; flex-direction: column; gap: 0.5rem; max-width: calc(100% - 2.5rem);
+  }
+  .toast {
+    display: flex; align-items: flex-start; gap: 0.625rem; max-width: 28rem;
+    border-radius: 0.75rem; background: var(--color-ink); color: var(--color-inverse);
+    padding: 0.625rem 0.875rem; font-size: 0.75rem; line-height: 1.625; font-weight: 700;
+    box-shadow:
+      0 1.25rem 1.5625rem -0.3125rem color-mix(in srgb, var(--color-ink) 10%, transparent),
+      0 0.5rem 0.625rem -0.375rem color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+  .glyph { flex: none; font-weight: 700; }
+  .glyph-ok { color: var(--color-inverse); }
+  .glyph-err { color: var(--color-danger); }
+  .toast-msg { flex: 1; min-width: 0; }
+  .toast-x {
+    flex: none; border: 0; background: transparent; padding: 0 0.25rem; border-radius: 9999px;
+    font-size: 0.875rem; font-weight: 700;
+    color: color-mix(in srgb, var(--color-inverse) 60%, transparent);
+  }
+  .toast-x:hover { color: var(--color-inverse); }
+
+  /* ---- The delete question (DeleteTodoTaskDialog over Modal.tsx) ---- */
+  .backdrop {
+    position: absolute; inset: 0; z-index: 3; display: flex; align-items: center;
+    justify-content: center; padding: 1.5rem;
+    background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  }
+  .dialog {
+    display: flex; flex-direction: column; width: 100%; max-width: 36rem; overflow: hidden;
+    border: 1px solid var(--color-hairline); border-radius: var(--radius-modal);
+    background: var(--color-card);
+    box-shadow: 0 1.5625rem 3.125rem -0.75rem color-mix(in srgb, var(--color-ink) 25%, transparent);
+  }
+  .dialog-head { border-bottom: 1px solid var(--color-hairline); padding: 0.875rem 1.25rem; }
+  .dialog-title { margin: 0; font-size: 1.125rem; line-height: 1.75rem; font-weight: 700; }
+  .dialog-body { padding: 0.875rem 1.25rem; }
+  .quote {
+    margin: 0; border-radius: 0.75rem; background: var(--color-surface);
+    padding: 0.625rem 0.75rem; font-size: 0.875rem; overflow-wrap: anywhere;
+  }
+  .dialog-foot {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 0.625rem;
+    border-top: 1px solid var(--color-hairline); padding: 0.75rem 1.25rem;
+  }
+  .dialog-note { font-size: 0.75rem; color: var(--color-muted); }
+  .dialog-btns { margin-left: auto; display: flex; gap: 0.5rem; }
+
+  /* ---- The guestbook's composer, drawn only in P17 ---- */
+  .gb-composer-sec { border-bottom: 1px solid var(--color-hairline); padding: 1.75rem 0 2rem; }
+  .gb-card {
+    display: flex; flex-direction: column; gap: 0.875rem; background: var(--color-card);
+    border: 1px solid var(--color-hairline); border-radius: var(--radius-card); padding: 1.125rem;
+  }
+  .gb-name {
+    border: 0; background: transparent; padding: 0; font-size: var(--text-body);
+    font-weight: 500; letter-spacing: -0.01em;
+  }
+  .gb-rule { height: 1px; background: var(--color-hairline); }
+  .gb-msg {
+    border: 0; background: transparent; padding: 0; font-family: var(--font-sans);
+    font-size: 1rem; line-height: 1.55; resize: none;
+  }
+  .gb-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+  .gb-count { font-size: 0.75rem; color: var(--color-faint); font-variant-numeric: tabular-nums; }
+
+  @media (prefers-reduced-motion: reduce) { .task.rise { animation: none; } }
+</style>
+</head>
+<body>
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="tick" viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></symbol>
+</svg>
+
+<main class="board">
+
+  <header>
+    <p class="eyebrow">CR-2609-823a · Todo list — add tasks and mark them done · design stage · drafted 2026-09-24 · proposal, not approved</p>
+    <h1 class="board-title">The to-do screen, drafted for approval</h1>
+    <p class="board-lede">A proposal, not a decision. Every state the requirements name is drawn below, each at the moment an acceptance criterion pins, inside the guestbook's frame and in its tokens only. Every choice the documents left open is numbered C-1 to C-24 in the notes, with what was taken, why, and what it was chosen over. Once approved, the screen specification is derived from this page.</p>
+    <div class="board-how">
+      <p><b>To answer:</b> say “approved”, or name a choice or a panel and what to change — for example “C-1: keep Guestbook”, “C-17: no success toasts”, “P6: add a counter”.</p>
+      <p>Inside a drawing, a dashed italic note is for you and is not part of the screen. Screen titles are drawn as paragraphs so this page keeps one heading of its own; on the built screen each is the page's <code>h1</code>. The links in a drawn header jump between the drawn screens.</p>
+    </div>
+  </header>
+
+  <!-- =============================================================
+       NOTES FOR APPROVAL
+       ============================================================= -->
+  <section class="notes" id="notes" aria-labelledby="notes-t">
+    <h2 id="notes-t">Notes for approval</h2>
+
+    <h3>States drawn — one line each</h3>
+    <ol class="state-list">
+      <li><a href="#p1">P1</a> The empty list — R-3.6, R-1 cl. 1 · S-19</li>
+      <li><a href="#p2">P2</a> Six tasks, newest first, done and not done — R-3.1, R-1.2, R-4.4 · S-13, S-25</li>
+      <li><a href="#p3">P3</a> A task just added — R-1.1, R-1.3 · S-1, S-3</li>
+      <li><a href="#p4">P4</a> Editing in place: open, saved, a done task — R-6.1, R-6.2, R-3.4 · S-16, S-31, S-32</li>
+      <li><a href="#p5">P5</a> A correction refused — R-6.3, R-6 cl. 4 · S-33</li>
+      <li><a href="#p6">P6</a> The add field: 200 emoji taken whole; empty, two-line and too-long refused — R-2 · S-6, S-8, S-10, S-11</li>
+      <li><a href="#p7">P7</a> The task no longer exists — R-8.1–8.3, R-10 cl. 1 · S-37–S-39, S-48</li>
+      <li><a href="#p8">P8</a> Delete asks first; deleting in flight — R-7.1–7.3 · S-35, S-36</li>
+      <li><a href="#p9">P9</a> After a confirmed delete — R-7.1, R-7 cl. 2 and 4 · S-34</li>
+      <li><a href="#p10">P10</a> Writes still travelling: nothing shown as made early — R-10 cl. 2 · E-23, E-27</li>
+      <li><a href="#p11">P11</a> A change that did not go through — R-10.1, R-10.2 · S-44–S-46</li>
+      <li><a href="#p12">P12</a> Loading — system-states.md § Skeleton</li>
+      <li><a href="#p13">P13</a> The list failed to load — R-10.3 · S-47</li>
+      <li><a href="#p14">P14</a> Every task done: still a list — R-3 cl. 1 · S-20, E-3</li>
+      <li><a href="#p15">P15</a> 101 tasks on one list — R-3.3 · S-14</li>
+      <li><a href="#p16">P16</a> A fresh environment's example tasks — R-11.1, R-11.7 · S-49</li>
+      <li><a href="#p17">P17</a> The guestbook, with the way to the list — R-5.2, R-5.3 · S-27–S-29</li>
+      <li><a href="#p18">P18</a> The not-found page — R-5.4 · S-30</li>
+      <li><a href="#p19">P19</a> The lockup: the proposal and the alternative — C-1</li>
+    </ol>
+
+    <h3>Choices to approve — nothing in the documents fixed these</h3>
+    <div class="table-wrap">
+      <table class="choices">
+        <thead>
+          <tr><th scope="col">#</th><th scope="col">Choice</th><th scope="col">Taken</th><th scope="col">Why</th><th scope="col">Rejected</th></tr>
+        </thead>
+        <tbody>
+          <tr id="c-1"><td>C-1</td><td>Product name in the lockup</td><td>“Product name”, initial “P”. It still links to the guestbook's address.</td><td>The lockup is a declared placeholder (system-states.md § Regions). With two screens “Guestbook” names one of them, and beside a navigation link of the same name it makes two identical links. With the rename, the UI smoke's exact lookup of the link “Guestbook” finds the navigation link alone and runs unedited.</td><td>Keep “Guestbook” (<a href="#p19">P19</a> B: two links named alike, so the smoke's locator must follow, as requirements A-4 allows). “Your product”. A plausible brand name (the placeholder must look like one).</td></tr>
+          <tr id="c-2"><td>C-2</td><td>The way between the screens</td><td>Two text links after the lockup, “Guestbook” and “To-do list” (navigation named “Screens”). The current one in ink, medium weight, underlined, <code>aria-current="page"</code>. On every screen, the not-found page included, where neither is current.</td><td>R-5.2 in both directions; system-states.md § One column puts navigation in the frame. Text links do not look like the guestbook's Newest/Oldest pills.</td><td>A pill switcher (reads as a filter). The lockup as the only way back (one direction only, and not a screen's name). A top bar or side panel (withdrawn, § One column).</td></tr>
+          <tr id="c-3"><td>C-3</td><td>Address of the list</td><td><code>/todo-list</code>. The main address still opens the guestbook (R-5.3).</td><td>Named after the context, as <code>/guestbook</code> is; English (conventions.md § Frontend). architecture.md leaves the value of <code>TODO_LIST_ROUTE</code> to the screen specification.</td><td><code>/todo</code>. <code>/tasks</code> (“task” alone is also a process word — glossary § Task (process)).</td></tr>
+          <tr id="c-4"><td>C-4</td><td>Title and sentence</td><td>“Things to do” · “No account, no sign-in, one list for everybody. Add what needs doing and tick it off when it is done. Anyone can edit or delete any task.”</td><td>The guestbook's shape: a short serif title and one sentence on what the screen is for and what using it costs (system-states.md § Regions).</td><td>“To-do list” as the title (repeats the navigation). A sentence without the cost.</td></tr>
+          <tr id="c-5"><td>C-5</td><td>Header fact</td><td>The number of tasks: “6 tasks”, “1 task”, “0 tasks”. Nothing while loading or after a failed read.</td><td>The frame's one fact about the page; the guestbook counts its entries the same way and shows the count only after a successful read. <code>total</code> is on the wire (api.md § TodoTaskList).</td><td>“2 of 6 done” (a figure nobody asked for). No fact at all.</td></tr>
+          <tr id="c-6"><td>C-6</td><td>Footer</td><td>Per screen: “Tasks are public and editable by anyone with this link.” here; the guestbook keeps its sentence; the not-found page shows none.</td><td>The footer about entries is false on the to-do screen (requirements § Open questions), and the guestbook keeps every word it has.</td><td>One sentence for every screen (“Everything here is public…”), which rewrites the guestbook's.</td></tr>
+          <tr id="c-7"><td>C-7</td><td>The add field</td><td>One borderless field in a white card: hidden label “New task”, placeholder “What needs doing?”, button “Add task” (“Adding…” while it travels). No character counter; no <code>maxLength</code>.</td><td>The guestbook composer's look; R-2 cl. 5 forbids a field that stops taking text at its bound.</td><td>A visible label (the guestbook's fields have none). A “0 / 200” counter like the guestbook message's — say if you want one.</td></tr>
+          <tr id="c-8"><td>C-8</td><td>When a refusal shows</td><td>“Add task” is closed while the field is empty or the rule refuses the text. The reason appears under the field after the field is left or on Enter, never while typing.</td><td>The guestbook composer's rule (guestbook.md § The composer card); one verdict for screen and service (R-2 cl. 5).</td><td>The reason on every keystroke (noise). Only once something was typed (quieter, but not the guestbook's rule). A button that stays open and refuses on press.</td></tr>
+          <tr id="c-9"><td>C-9</td><td>The field after an add</td><td>After success: emptied, and the focus stays in it. After a failure: the text stays.</td><td>The guestbook clears after success and keeps the text after a failure; the focus stays so the next task can be typed at once.</td><td>Keeping the text after success (invites a duplicate, BR-12). Emptying it after a failure (retyping).</td></tr>
+          <tr id="c-10"><td>C-10</td><td>A second press while an add travels</td><td>Field and button locked until the answer arrives.</td><td>The guestbook composer's in-flight state; answers requirements E-23 (two identical tasks nobody meant).</td><td>Letting a second add through.</td></tr>
+          <tr id="c-11"><td>C-11</td><td>A task's row</td><td>Checkbox, text, and “Edit” / “Delete” as quiet text buttons on the right, always visible. The text is the checkbox's label, so a click on it ticks too. The buttons carry the task's text for screen readers: “Edit “Buy bread””.</td><td>The guestbook card's actions; a real label on every checkbox; a slip is undone in one click (SC-3).</td><td>Actions shown on hover only (hidden from touch and keyboard). A click on the text opening the editor.</td></tr>
+          <tr id="c-12"><td>C-12</td><td>How done looks</td><td>The box filled with the accent colour, with a tick; the text struck through in <code>--color-muted</code> (7.09:1 on the card, no opacity). An unticked box's edge is <code>--color-faint</code> (5.40:1).</td><td>Q-4 (“ticked or crossed out”); R-4 cl. 6. The edge must reach 3:1 to be seen (WCAG 1.4.11), which <code>--color-line</code> (about 1.4:1) does not.</td><td>Greying the text with <code>--color-disabled</code> or opacity (below 4.5:1 — the defect system-states.md § Tokens records). Moving done tasks down (a non-goal).</td></tr>
+          <tr id="c-13"><td>C-13</td><td>Rows in one card</td><td>Every task a row in one white card, rows parted by hairlines.</td><td>One-line tasks read as a list; hairlines are this system's separator (theme.css § Lines).</td><td>One card per task, as the guestbook has per entry (heavy for one line).</td></tr>
+          <tr id="c-14"><td>C-14</td><td>Editing in place</td><td>In the row, one row at a time: a bordered field (hidden label “Edit task”), “Save” and “Cancel”; the action reads “Editing”; Enter saves; the box stays usable. “Save” is closed while the text is empty or refused, with the reason under the field. While saving: “Saving…”, and “Edit” locked on every row.</td><td>The guestbook card's editing and its in-flight lock (guestbook.md § The entry card).</td><td>Editing in a dialog or on a page of its own. Escape cancelling (a stray key would lose an edit; the guestbook has no such key).</td></tr>
+          <tr id="c-15"><td>C-15</td><td>A tick while it travels</td><td>The box is locked and keeps the stored state until the answer, with “Saving…” beside it; other rows stay usable.</td><td>R-10 cl. 2; design/delta/architecture.md decision 6 (no optimistic update).</td><td>Ticking at once and rolling back on failure.</td></tr>
+          <tr id="c-16"><td>C-16</td><td>The delete question</td><td>“Delete this task?”, the task quoted, “This cannot be undone.”, “Cancel” (focused) and “Delete task” (“Deleting…”, and not closeable, while it travels).</td><td>The guestbook's dialog, which quotes what it destroys (guestbook.md § The delete dialog); requirements Self-check 16 left the quoting open.</td><td>A question that does not name the task. An inline “Sure?” in the row.</td></tr>
+          <tr id="c-17"><td>C-17</td><td>Success toasts</td><td>“Task added.”, “Task updated.”, “Task deleted.”; none for a tick.</td><td>The guestbook confirms its three writes this way; the box is a tick's own confirmation.</td><td>No success toasts. A toast on every tick.</td></tr>
+          <tr id="c-18"><td>C-18</td><td>Failure wording (R-10)</td><td>An error toast, kept until dismissed: “The task was not added: the service could not be reached.” / “The change was not made: the service could not be reached.” A refusal with a sentence of its own shows that sentence.</td><td>The guestbook reports a failed write in a toast over an unchanged screen; scenarios.md names the reasons (“not added”, “not made”) and leaves the words to the mock-up (§ Bounds the requirements did not give, item 5).</td><td>The bare browser message the guestbook toasts today (such as “Failed to fetch”), which never says the change was not made.</td></tr>
+          <tr id="c-19"><td>C-19</td><td>After “no longer exists”</td><td>The row stays, unchanged, until the list is read again (a reload, or the next change that goes through).</td><td>The guestbook re-reads its list only after a change that went through; R-8 asks for the sentence alone (requirements Self-check 17).</td><td>Dropping the row at once, or re-reading the list on that refusal — say if you prefer it.</td></tr>
+          <tr id="c-20"><td>C-20</td><td>The empty list</td><td>“No tasks yet. Add the first one above.” in a dashed frame.</td><td>R-3.6: empty, what to do, no error; the guestbook's empty look.</td><td>“No tasks” alone (system-states.md: emptiness always says what to do).</td></tr>
+          <tr id="c-21"><td>C-21</td><td>A list that failed to load</td><td>“The tasks could not be loaded.” above the standard error card (title “Could not reach the service”, the browser's own detail, “Try again”). The field stays usable.</td><td>R-10.3; the guestbook puts “The entries could not be loaded.” above the same card.</td><td>The card alone (its title never says the list failed to load).</td></tr>
+          <tr id="c-22"><td>C-22</td><td>Not-found page</td><td>“Nothing here” · “There is nothing at this address.” · “Go to the guestbook”; the navigation above offers both screens.</td><td>R-5.4; a sentence that counts no screens stays true when a third one arrives.</td><td>“There are two screens…”. A second button to the list (the navigation already has it).</td></tr>
+          <tr id="c-23"><td>C-23</td><td>Long texts</td><td>A long task wraps inside its row; an unbroken run (200 emoji, 200 letters) breaks anywhere rather than widening the page.</td><td>“One line” is a rule about the data, not about the drawing (BR-07).</td><td>Cutting it short with “…” (hides what the task says).</td></tr>
+          <tr id="c-24"><td>C-24</td><td>Loading</td><td>Four rows in outline in the list card (<code>role="status"</code>, “Loading tasks”); the field usable meanwhile.</td><td>system-states.md § Skeleton (height reserved, no spinner); the guestbook keeps its composer usable while it loads.</td><td>A spinner. Locking the field until the list arrives.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Not drawn, and why</h3>
+    <ul>
+      <li><b>R-9, two people changing one task at once:</b> no screen state. The later change wins and nobody is told (todo_list.md § Deliberate non-goals).</li>
+      <li><b><code>todo_task_empty_patch</code></b> (“No change was given. The task is unchanged.”): this screen never sends a change without a text or a done mark.</li>
+      <li><b>The standard validation refusal</b> (FastAPI's list): only a malformed request earns it, and this screen never sends one.</li>
+      <li><b>Live updates:</b> a non-goal; other people's changes appear when the list is read again (R-3.5).</li>
+      <li><b>Other window classes:</b> <code>.specconf/stack.json</code> § <code>window_classes</code> declares none, and a phone layout is a named non-goal (spec/invariants.md). The column narrows with the window, as the guestbook's does.</li>
+      <li><b>Other languages:</b> English only (Q-7, conventions.md § Language).</li>
+      <li><b>A dark theme:</b> withdrawn (system-states.md § One palette); <code>theme.css</code> has one palette.</li>
+      <li><b>Search, filters, pages, “clear all done”, reordering, dates, owners:</b> non-goals (todo_list.md).</li>
+      <li><b>Focus inside the dialog, the Tab cycle, Escape:</b> the Modal primitive's behaviour, unchanged; described under P8, not drawable.</li>
+      <li><b>A write that waits a long time</b> (E-27): nothing beyond P10's markers, which stay until the answer.</li>
+      <li><b>A largest number of tasks:</b> none is set (todo_list.md § Open questions); P15 shows 101.</li>
+      <li><b>The guestbook's own states:</b> unchanged; P17 draws only what the frame changes there.</li>
+    </ul>
+
+    <h3>Contradictions and observations</h3>
+    <ul>
+      <li><b>Contradiction — how long a failure toast stays.</b> system-states.md § Toast says a toast “disappears on its own”; <code>frontend/src/components/ui/Toast.tsx</code> keeps error toasts until they are dismissed. The failure toasts here (C-18) are drawn with their dismiss button, as the code behaves, and the unchanged screen carries the lasting fact. This decides how long the R-10 message stays; the screen specification should settle it.</li>
+      <li><b>Contradiction — the empty-state primitive.</b> system-states.md § Components lists <code>EmptyState</code>; <code>Feedback.tsx</code> records that it was removed (requirements.md § Impact analysis already notes this). The empty sentence is drawn inline, as the guestbook's is (design/delta/architecture.md decision 5).</li>
+      <li><b>Contradiction — sizes off the scale.</b> system-states.md § Tokens allows sizes outside the Tailwind scale (“<code>rounded-[14px]</code> … allowed”); theme.css § Radii and conventions.md § Frontend require a token or the scale. This page uses tokens and scale steps only.</li>
+      <li><b>Observation — colours outside theme.css in two live primitives.</b> The toast glyphs use Tailwind's own green, amber and red, and the dialog's backdrop is black at 45%, against system-states.md § Tokens (“named tokens only”). They are drawn here with tokens (an inverse tick, a danger dot, ink at 45%). This change does not touch them.</li>
+      <li><b>Observation — field edges.</b> Field edges use <code>--color-hairline</code>, as on the guestbook, which is below the 3:1 WCAG 1.4.11 asks of a control's edge. The focus ring marks the field while it is focused. Only the new checkbox is given a stronger edge (C-12).</li>
+      <li><b>Observation — typefaces.</b> This page loads nothing from the network, so Instrument Serif and Instrument Sans show only if installed. Otherwise the token stacks fall back to Georgia and the system sans, as the built screen does when the font host fails.</li>
+    </ul>
+
+    <h3>Where the words come from</h3>
+    <ul>
+      <li><b>The four refusal sentences shown</b> (P5, P6, P7): spec/design/api.md § The to-do list's refusals, verbatim.</li>
+      <li><b>“Could not reach the service”, “Try again”, “Nothing here”, “Go to the guestbook”:</b> spec/design/ui/system-states.md § Copy.</li>
+      <li><b>“Edit”, “Editing”, “Delete”, “Save”, “Saving…”, “Cancel”, “Deleting…”, “This cannot be undone.”, “Dismiss notification”, and all of P17's guestbook copy:</b> spec/design/ui/guestbook.md § Copy and § Accessibility labels.</li>
+      <li><b>Task texts:</b> the acceptance values of requirements.md (R-1.1, R-1.2, R-3.1, R-6.1–6.3, R-7.1) and scenarios.md § Inline values. P2 is the ordinary fixture of scenarios.md § New fixtures, and P16 is scenarios.md § Seed data.</li>
+      <li><b>Colours, radii, type sizes, column width:</b> frontend/src/styles/theme.css, copied into this page's <code>:root</code>. <b>Geometry:</b> PageFrame.tsx, the guestbook's components, and Button, Feedback, Modal and Toast in <code>components/ui/</code>.</li>
+      <li><b>Every other word or placement:</b> invented here, and listed as C-1 to C-24.</li>
+    </ul>
+  </section>
+
+  <!-- =============================================================
+       P1 — THE EMPTY LIST
+       ============================================================= -->
+  <section class="panel" id="p1" aria-labelledby="p1-t">
+    <div class="panel-head">
+      <span class="pid">P1</span><h2 id="p1-t">The empty list</h2>
+      <span class="refs">R-3.6 · R-1 cl. 1 · S-19</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-3.6 — GIVEN no stored task, WHEN the list is opened.</p>
+    <div class="canvas">
+      <div class="addr">Address <span>localhost:8080<b>/todo-list</b></span></div>
+      <div class="fr fr-full" data-component="TodoListPage" data-state="empty">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">0 tasks</span>
+          </header>
+          <div class="fr-title">
+            <p class="t-h1">Things to do</p>
+            <p class="t-lede">No account, no sign-in, one list for everybody. Add what needs doing and tick it off when it is done. Anyone can edit or delete any task.</p>
+          </div>
+          <section class="composer-sec" data-component="TodoTaskComposer" data-state="default">
+            <div class="composer">
+              <div class="composer-row">
+                <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input" type="text" placeholder="What needs doing?" autocomplete="off"></label>
+                <button type="button" class="btn-add" disabled>Add task</button>
+              </div>
+            </div>
+          </section>
+          <div class="empty" data-state="empty">No tasks yet. Add the first one above.</div>
+          <footer class="fr-foot">Tasks are public and editable by anyone with this link.</footer>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> the add field with the list's place right under it (R-1 cl. 1, Q-6). The empty sentence says what to do, and nothing reads as an error. The header counts 0 tasks. <b>Choices</b> <a class="cref" href="#c-1">C-1</a><a class="cref" href="#c-2">C-2</a><a class="cref" href="#c-3">C-3</a><a class="cref" href="#c-4">C-4</a><a class="cref" href="#c-5">C-5</a><a class="cref" href="#c-6">C-6</a><a class="cref" href="#c-7">C-7</a><a class="cref" href="#c-20">C-20</a></p>
+  </section>
+
+  <!-- =============================================================
+       P2 — SIX TASKS, NEWEST FIRST
+       ============================================================= -->
+  <section class="panel" id="p2" aria-labelledby="p2-t">
+    <div class="panel-head">
+      <span class="pid">P2</span><h2 id="p2-t">Six tasks, newest first, done and not done</h2>
+      <span class="refs">R-3.1 · R-1.2 · R-4.4 · R-4 cl. 5–6 · S-13 · S-25</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> S-13 / R-3.1 — the six tasks of the ordinary fixture (scenarios.md § New fixtures; <code>todo-tasks-ordinary.json</code> in testing.md) were added in file order and the done ones then marked; the list is opened. The same frame also holds R-1.2 (two separate “Buy bread”, one of them done) and R-4.4 (a done and a not-done task side by side).</p>
+    <div class="canvas">
+      <div class="addr">Address <span>localhost:8080<b>/todo-list</b></span></div>
+      <div class="fr fr-full" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">6 tasks</span>
+          </header>
+          <div class="fr-title">
+            <p class="t-h1">Things to do</p>
+            <p class="t-lede">No account, no sign-in, one list for everybody. Add what needs doing and tick it off when it is done. Anyone can edit or delete any task.</p>
+          </div>
+          <section class="composer-sec" data-component="TodoTaskComposer" data-state="default">
+            <div class="composer">
+              <div class="composer-row">
+                <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input" type="text" placeholder="What needs doing?" autocomplete="off"></label>
+                <button type="button" class="btn-add" disabled>Add task</button>
+              </div>
+            </div>
+          </section>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task" data-component="TodoTaskRow" data-state="done">
+              <label class="task-main"><input class="task-input" type="checkbox" checked><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Call the plumber</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Call the plumber”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Call the plumber”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Buy bread</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Buy bread”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Buy bread”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">x</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “x”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “x”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Check that café · naïve · Ærø · 日本語 · Ωμέγα survive the whole stack</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Check that café · naïve · Ærø · 日本語 · Ωμέγα survive the whole stack”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Check that café · naïve · Ærø · 日本語 · Ωμέγα survive the whole stack”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="done">
+              <label class="task-main"><input class="task-input" type="checkbox" checked><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Buy bread</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Buy bread”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Buy bread”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Water the plants</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Water the plants”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Water the plants”</span></button></span>
+            </li>
+          </ul>
+          <footer class="fr-foot">Tasks are public and editable by anyone with this link.</footer>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> newest first, done and not done on one list, with no pages and no filter (R-3 cl. 1–2). A done task has a ticked box and struck-through text in <code>--color-muted</code>, at 7.09:1 on the card (R-4 cl. 5–6). The moment of adding orders the list and is not shown (api.md § TodoTaskRead). <b>The boxes in this drawing really tick, and do so at once</b> — the built screen ticks only after the application has answered (P10). <b>Choices</b> <a class="cref" href="#c-11">C-11</a><a class="cref" href="#c-12">C-12</a><a class="cref" href="#c-13">C-13</a><a class="cref" href="#c-23">C-23</a></p>
+  </section>
+
+  <!-- =============================================================
+       P3 — A TASK JUST ADDED
+       ============================================================= -->
+  <section class="panel" id="p3" aria-labelledby="p3-t">
+    <div class="panel-head">
+      <span class="pid">P3</span><h2 id="p3-t">A task just added</h2>
+      <span class="refs">R-1.1 · R-1.3 · S-1 · S-3</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-1.3 — GIVEN the tasks “First” and “Second”, WHEN a person adds “Third”, THEN “Third” is shown first without the page being reloaded; and R-1.1: it is shown not done.</p>
+    <div class="canvas">
+      <div class="fr has-toast" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">3 tasks</span>
+          </header>
+          <div class="elide">⋯ title and introductory sentence as in P1 ⋯</div>
+          <section class="composer-sec" data-component="TodoTaskComposer" data-state="default">
+            <div class="composer">
+              <div class="composer-row">
+                <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input is-focused" type="text" placeholder="What needs doing?" autocomplete="off"></label>
+                <button type="button" class="btn-add" disabled>Add task</button>
+              </div>
+            </div>
+          </section>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task rise" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Third</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Third”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Third”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Second</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Second”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Second”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">First</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “First”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “First”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="toasts" data-component="Toast">
+        <div class="toast"><span class="glyph glyph-ok" aria-hidden="true">✓</span><span class="toast-msg">Task added.</span><button type="button" class="toast-x" aria-label="Dismiss notification"><span aria-hidden="true">×</span></button></div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> the new row at the top, not done, arriving with the frame's one entry animation (rise). The field is emptied and keeps the focus (ring drawn). The success toast appears. <b>Choices</b> <a class="cref" href="#c-9">C-9</a><a class="cref" href="#c-17">C-17</a></p>
+  </section>
+
+  <!-- =============================================================
+       P4 — EDITING IN PLACE
+       ============================================================= -->
+  <section class="panel" id="p4" aria-labelledby="p4-t">
+    <div class="panel-head">
+      <span class="pid">P4</span><h2 id="p4-t">Editing in place</h2>
+      <span class="refs">R-6.1 · R-6.2 · R-6 cl. 2–3 · R-3.4 · S-16 · S-31 · S-32</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+
+    <p class="sub"><b>4a · Drawn at R-6.1</b> — GIVEN the not-done task “Buy bred”: the editor is open and “Buy bread” typed, before Save.</p>
+    <div class="canvas">
+      <div class="fr fr-crop" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <ul class="tasks" aria-label="Tasks" style="margin-top: 1.25rem">
+            <li class="task" data-component="TodoTaskRow" data-state="done">
+              <label class="task-main"><input class="task-input" type="checkbox" checked><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Call the plumber</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Call the plumber”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Call the plumber”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="editing">
+              <label class="task-main task-main-box"><input class="task-input" type="checkbox" aria-label="Buy bred"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span></label>
+              <div class="editor">
+                <label class="editor-field"><span class="sr-only">Edit task</span><input class="editor-input is-focused" type="text" value="Buy bread" autocomplete="off"></label>
+                <div class="editor-actions"><button type="button" class="btn-save">Save</button><button type="button" class="btn-cancel">Cancel</button></div>
+              </div>
+              <span class="task-actions"><button type="button" class="act act-edit" disabled>Editing</button><button type="button" class="act act-del">Delete<span class="sr-only"> “Buy bred”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Water the plants</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Water the plants”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Water the plants”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <p class="sub"><b>4b · Drawn at R-6.1 THEN</b> — after Save: “Buy bread”, not done, in the same place (R-3.4).</p>
+    <div class="canvas">
+      <div class="fr fr-crop has-toast" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <ul class="tasks" aria-label="Tasks" style="margin-top: 1.25rem">
+            <li class="task" data-component="TodoTaskRow" data-state="done">
+              <label class="task-main"><input class="task-input" type="checkbox" checked><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Call the plumber</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Call the plumber”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Call the plumber”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Buy bread</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Buy bread”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Buy bread”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Water the plants</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Water the plants”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Water the plants”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="toasts" data-component="Toast">
+        <div class="toast"><span class="glyph glyph-ok" aria-hidden="true">✓</span><span class="toast-msg">Task updated.</span><button type="button" class="toast-x" aria-label="Dismiss notification"><span aria-hidden="true">×</span></button></div>
+      </div>
+    </div>
+
+    <p class="sub"><b>4c · Drawn at R-6.2</b> — the done task “Call the plumber” is being corrected to “Call the plumber again”; its box stays ticked, and after Save it is still done and in its place (R-6 cl. 2–3).</p>
+    <div class="canvas">
+      <div class="fr fr-crop" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <ul class="tasks" aria-label="Tasks" style="margin-top: 1.25rem">
+            <li class="task" data-component="TodoTaskRow" data-state="editing">
+              <label class="task-main task-main-box"><input class="task-input" type="checkbox" checked aria-label="Call the plumber"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span></label>
+              <div class="editor">
+                <label class="editor-field"><span class="sr-only">Edit task</span><input class="editor-input" type="text" value="Call the plumber again" autocomplete="off"></label>
+                <div class="editor-actions"><button type="button" class="btn-save">Save</button><button type="button" class="btn-cancel">Cancel</button></div>
+              </div>
+              <span class="task-actions"><button type="button" class="act act-edit" disabled>Editing</button><button type="button" class="act act-del">Delete<span class="sr-only"> “Call the plumber”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Buy bread</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Buy bread”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Buy bread”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Water the plants</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Water the plants”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Water the plants”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> one editor at a time, opened in the row; the row's action reads “Editing”; the list does not move. Opening “Edit” on another row closes this editor, as on the guestbook. <b>Choices</b> <a class="cref" href="#c-14">C-14</a><a class="cref" href="#c-17">C-17</a></p>
+  </section>
+
+  <!-- =============================================================
+       P5 — A CORRECTION REFUSED
+       ============================================================= -->
+  <section class="panel" id="p5" aria-labelledby="p5-t">
+    <div class="panel-head">
+      <span class="pid">P5</span><h2 id="p5-t">A correction refused</h2>
+      <span class="refs">R-6.3 · R-6 cl. 4 · S-33</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-6.3 — GIVEN the task “Buy bread”, WHEN its text is changed to “   ” (three spaces), before anything is sent: the screen's rule refuses it (R-2 cl. 5).</p>
+    <div class="canvas">
+      <div class="fr fr-crop" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <ul class="tasks" aria-label="Tasks" style="margin-top: 1.25rem">
+            <li class="task" data-component="TodoTaskRow" data-state="editing-refused">
+              <label class="task-main task-main-box"><input class="task-input" type="checkbox" aria-label="Buy bread"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span></label>
+              <div class="editor">
+                <label class="editor-field"><span class="sr-only">Edit task</span><input class="editor-input" type="text" value="   " aria-invalid="true" autocomplete="off"></label>
+                <span class="field-error" role="alert">A task needs text. Type what there is to do.</span>
+                <div class="editor-actions"><button type="button" class="btn-save" disabled>Save</button><button type="button" class="btn-cancel">Cancel</button></div>
+              </div>
+              <span class="task-actions"><button type="button" class="act act-edit" disabled>Editing</button><button type="button" class="act act-del">Delete<span class="sr-only"> “Buy bread”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Water the plants</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Water the plants”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Water the plants”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> the reason under the field, with Save closed. The stored text stays “Buy bread”, and Cancel shows it again (R-6 cl. 4). An edit of 201 code points, or with a line break inside, gets P6's sentences in the same place (BR-10). If the application itself refuses a correction, its sentence shows the same way and the text stays as it was. <b>Choices</b> <a class="cref" href="#c-8">C-8</a><a class="cref" href="#c-14">C-14</a></p>
+  </section>
+
+  <!-- =============================================================
+       P6 — THE ADD FIELD: BOUNDARY AND REFUSALS
+       ============================================================= -->
+  <section class="panel" id="p6" aria-labelledby="p6-t">
+    <div class="panel-head">
+      <span class="pid">P6</span><h2 id="p6-t">The add field: a boundary text taken whole, three texts refused</h2>
+      <span class="refs">R-2 · R-2.1 · R-2.3 · R-2.7 · S-6 · S-8 · S-10 · S-11</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+
+    <p class="sub"><b>6a · Drawn at R-2.3, first half / S-10</b> — 200 × U+1F600 pasted (400 UTF-16 units): every character is held, nothing is cut, and “Add task” is open.</p>
+    <div class="canvas">
+      <div class="fr fr-crop"><div class="fr-col">
+        <section class="composer-sec" data-component="TodoTaskComposer" data-state="default">
+          <div class="composer">
+            <div class="composer-row">
+              <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input" type="text" placeholder="What needs doing?" autocomplete="off" value="😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀"></label>
+              <button type="button" class="btn-add">Add task</button>
+            </div>
+          </div>
+        </section>
+      </div></div>
+    </div>
+
+    <p class="sub"><b>6b · Drawn at R-2.1</b> — “   ” (three spaces) and Enter pressed → <code>todo_task_text_empty</code>.</p>
+    <div class="canvas">
+      <div class="fr fr-crop"><div class="fr-col">
+        <section class="composer-sec" data-component="TodoTaskComposer" data-state="error">
+          <div class="composer">
+            <div class="composer-row">
+              <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input" type="text" placeholder="What needs doing?" autocomplete="off" value="   " aria-invalid="true"></label>
+              <button type="button" class="btn-add" disabled>Add task</button>
+            </div>
+            <span class="field-error" role="alert">A task needs text. Type what there is to do.</span>
+          </div>
+        </section>
+      </div></div>
+    </div>
+
+    <p class="sub"><b>6c · Drawn at R-2 cl. 6 / R-2.7</b> — “Buy bread”, a pasted U+2028 (line separator), then “and milk”; the break does not show in the field → <code>todo_task_text_multiline</code>.</p>
+    <div class="canvas">
+      <div class="fr fr-crop"><div class="fr-col">
+        <section class="composer-sec" data-component="TodoTaskComposer" data-state="error">
+          <div class="composer">
+            <div class="composer-row">
+              <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input" type="text" placeholder="What needs doing?" autocomplete="off" value="Buy bread&#x2028;and milk" aria-invalid="true"></label>
+              <button type="button" class="btn-add" disabled>Add task</button>
+            </div>
+            <span class="field-error" role="alert">A task is one line, and this text has a line break inside it, which may not be visible. Remove the line break and try again.</span>
+          </div>
+        </section>
+      </div></div>
+    </div>
+
+    <p class="sub"><b>6d · Drawn at R-2.3, second half / S-11</b> — 201 × U+1F600 pasted; all 201 are held → <code>todo_task_text_too_long</code>.</p>
+    <div class="canvas">
+      <div class="fr fr-crop"><div class="fr-col">
+        <section class="composer-sec" data-component="TodoTaskComposer" data-state="error">
+          <div class="composer">
+            <div class="composer-row">
+              <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input" type="text" placeholder="What needs doing?" autocomplete="off" aria-invalid="true" value="😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀😀😀😀😀😀😀😀😀😀
+😀"></label>
+              <button type="button" class="btn-add" disabled>Add task</button>
+            </div>
+            <span class="field-error" role="alert">A task can be at most 200 characters. Shorten it and try again.</span>
+          </div>
+        </section>
+      </div></div>
+    </div>
+    <p class="cap"><b>Shows</b> that in 6b–6d nothing is added and the list below the field is unchanged. A text that is both too long and on two lines gets 6c's sentence (BR-07). A line feed or carriage return never reaches the field at all, because a one-line field drops them (requirements E-9). The two emoji fields hold exactly 200 and 201 characters: the field has no <code>maxLength</code>. <b>Choices</b> <a class="cref" href="#c-7">C-7</a><a class="cref" href="#c-8">C-8</a></p>
+  </section>
+
+  <!-- =============================================================
+       P7 — THE TASK NO LONGER EXISTS
+       ============================================================= -->
+  <section class="panel" id="p7" aria-labelledby="p7-t">
+    <div class="panel-head">
+      <span class="pid">P7</span><h2 id="p7-t">The task no longer exists</h2>
+      <span class="refs">R-8.1–8.3 · R-10 cl. 1 · S-37 · S-38 · S-39 · S-48</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-8.1 / S-48 — person A's screen shows “Buy bread” not done; person B has deleted it; A ticks it.</p>
+    <div class="canvas">
+      <div class="fr has-toast" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">2 tasks</span>
+          </header>
+          <div class="elide">⋯ title, introductory sentence and add field as in P1 ⋯</div>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Buy bread</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Buy bread”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Buy bread”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Water the plants</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Water the plants”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Water the plants”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="toasts" data-component="Toast">
+        <div class="toast"><span class="glyph glyph-err" aria-hidden="true">●</span><span class="toast-msg">This task no longer exists. Somebody may have deleted it, and nothing was changed.</span><button type="button" class="toast-x" aria-label="Dismiss notification"><span aria-hidden="true">×</span></button></div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> the api.md sentence in an error toast. The box stays unticked (R-10 cl. 1, the refused half), and the row stays until the list is read again; the header count stays as read. The same sentence answers a correction (R-8.2: the editor stays open with what was typed, as on the guestbook, and no “Buy rye bread” appears) and a second delete (R-8.3: the dialog closes). <b>Choices</b> <a class="cref" href="#c-18">C-18</a><a class="cref" href="#c-19">C-19</a></p>
+  </section>
+
+  <!-- =============================================================
+       P8 — DELETE ASKS FIRST
+       ============================================================= -->
+  <section class="panel" id="p8" aria-labelledby="p8-t">
+    <div class="panel-head">
+      <span class="pid">P8</span><h2 id="p8-t">Delete asks first</h2>
+      <span class="refs">R-7.1 · R-7.2 · R-7 cl. 1 and 3 · S-35 · S-36</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+
+    <p class="sub"><b>8a · Drawn at R-7.2 / S-35</b> — GIVEN the task “Beta”, WHEN a person asks to delete it: the question is open and “Beta” is still on the list behind it.</p>
+    <div class="canvas tall">
+      <div class="fr" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">3 tasks</span>
+          </header>
+          <div class="elide">⋯ title, introductory sentence and add field as in P1 ⋯</div>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Gamma</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Gamma”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Gamma”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Beta</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Beta”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Beta”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Alpha</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Alpha”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Alpha”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="backdrop">
+        <div class="dialog" role="dialog" aria-labelledby="dlg8a-t" data-component="DeleteTodoTaskDialog" data-state="default">
+          <header class="dialog-head"><p class="dialog-title" id="dlg8a-t">Delete this task?</p></header>
+          <div class="dialog-body"><p class="quote">Beta</p></div>
+          <footer class="dialog-foot">
+            <span class="dialog-note">This cannot be undone.</span>
+            <div class="dialog-btns"><button type="button" class="btn-quiet is-focused">Cancel</button><button type="button" class="btn-primary">Delete task</button></div>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <p class="sub"><b>8b · Drawn at R-7.1, confirmed and not yet answered</b> — “Deleting…”, both buttons locked, and the dialog cannot be closed.</p>
+    <div class="canvas tall">
+      <div class="fr" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">3 tasks</span>
+          </header>
+          <div class="elide">⋯ title, introductory sentence and add field as in P1 ⋯</div>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Gamma</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Gamma”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Gamma”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="deleting">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Beta</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit" disabled>Edit<span class="sr-only"> “Beta”</span></button><button type="button" class="act act-del" disabled>Deleting…</button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Alpha</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Alpha”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Alpha”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="backdrop">
+        <div class="dialog" role="dialog" aria-labelledby="dlg8b-t" data-component="DeleteTodoTaskDialog" data-state="loading">
+          <header class="dialog-head"><p class="dialog-title" id="dlg8b-t">Delete this task?</p></header>
+          <div class="dialog-body"><p class="quote">Beta</p></div>
+          <footer class="dialog-foot">
+            <span class="dialog-note">This cannot be undone.</span>
+            <div class="dialog-btns"><button type="button" class="btn-quiet" disabled>Cancel</button><button type="button" class="btn-primary" disabled>Deleting…</button></div>
+          </footer>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> that Cancel, Escape or a press on the backdrop leaves “Beta” as it was (R-7 cl. 3), and that nothing is deleted before the confirmation. Focus starts on Cancel, Tab stays inside the dialog, and focus comes back to the list afterwards — the Modal primitive as it is today. <b>Choices</b> <a class="cref" href="#c-16">C-16</a></p>
+  </section>
+
+  <!-- =============================================================
+       P9 — AFTER A CONFIRMED DELETE
+       ============================================================= -->
+  <section class="panel" id="p9" aria-labelledby="p9-t">
+    <div class="panel-head">
+      <span class="pid">P9</span><h2 id="p9-t">After a confirmed delete</h2>
+      <span class="refs">R-7.1 · R-7 cl. 2 and 4 · S-34</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-7.1 THEN / S-34 — of “Alpha”, “Beta” and “Gamma”, “Beta” was deleted and confirmed.</p>
+    <div class="canvas">
+      <div class="fr has-toast" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">2 tasks</span>
+          </header>
+          <div class="elide">⋯ title, introductory sentence and add field as in P1 ⋯</div>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Gamma</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Gamma”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Gamma”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Alpha</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Alpha”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Alpha”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="toasts" data-component="Toast">
+        <div class="toast"><span class="glyph glyph-ok" aria-hidden="true">✓</span><span class="toast-msg">Task deleted.</span><button type="button" class="toast-x" aria-label="Dismiss notification"><span aria-hidden="true">×</span></button></div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> “Gamma” and “Alpha” untouched (R-7 cl. 4), with no undo anywhere (R-7 cl. 2). Deleting the last task brings back P1's sentence. <b>Choices</b> <a class="cref" href="#c-17">C-17</a></p>
+  </section>
+
+  <!-- =============================================================
+       P10 — WRITES STILL TRAVELLING
+       ============================================================= -->
+  <section class="panel" id="p10" aria-labelledby="p10-t">
+    <div class="panel-head">
+      <span class="pid">P10</span><h2 id="p10-t">Writes still travelling: nothing is shown as made early</h2>
+      <span class="refs">R-10 cl. 2 · E-23 · E-27</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-10 cl. 2 — three writes sent and not yet answered (requirements E-23, E-27), drawn in one frame for economy; each marker belongs to its own request.</p>
+    <div class="canvas">
+      <div class="fr" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">2 tasks</span>
+          </header>
+          <div class="elide">⋯ title and introductory sentence as in P1 ⋯</div>
+          <section class="composer-sec" data-component="TodoTaskComposer" data-state="loading">
+            <div class="composer">
+              <div class="composer-row">
+                <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input" type="text" placeholder="What needs doing?" autocomplete="off" value="Water the plants" disabled></label>
+                <button type="button" class="btn-add" disabled>Adding…</button>
+              </div>
+            </div>
+          </section>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task" data-component="TodoTaskRow" data-state="saving">
+              <label class="task-main task-main-box"><input class="task-input" type="checkbox" checked aria-label="Call the plumber"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span></label>
+              <div class="editor">
+                <label class="editor-field"><span class="sr-only">Edit task</span><input class="editor-input" type="text" value="Call the plumber again" disabled autocomplete="off"></label>
+                <div class="editor-actions"><button type="button" class="btn-save" disabled>Saving…</button><button type="button" class="btn-cancel" disabled>Cancel</button></div>
+              </div>
+              <span class="task-actions"><button type="button" class="act act-edit" disabled>Editing</button><button type="button" class="act act-del">Delete<span class="sr-only"> “Call the plumber”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="marking">
+              <label class="task-main"><input class="task-input" type="checkbox" disabled><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Buy bread</span></label>
+              <span class="marker">Saving…</span>
+              <span class="task-actions"><button type="button" class="act act-edit" disabled>Edit<span class="sr-only"> “Buy bread”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Buy bread”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> three markers. The add: field and button locked, “Adding…”, and no row yet. The tick on “Buy bread”: the box is locked and still unticked, with “Saving…” beside it. The correction of “Call the plumber”: “Saving…”, its field locked, and “Edit” locked on every row until it settles. Each marker goes when its answer arrives, and only then does the list change (design/delta/architecture.md decision 6: no optimistic update). <b>Choices</b> <a class="cref" href="#c-10">C-10</a><a class="cref" href="#c-14">C-14</a><a class="cref" href="#c-15">C-15</a></p>
+  </section>
+
+  <!-- =============================================================
+       P11 — A CHANGE THAT DID NOT GO THROUGH
+       ============================================================= -->
+  <section class="panel" id="p11" aria-labelledby="p11-t">
+    <div class="panel-head">
+      <span class="pid">P11</span><h2 id="p11-t">A change that did not go through</h2>
+      <span class="refs">R-10.1 · R-10.2 · R-10 cl. 1–2 · S-44 · S-45 · S-46</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+
+    <p class="sub"><b>11a · Drawn at R-10.1 / S-44</b> — the service cannot be reached; a person ticks “Buy bread”.</p>
+    <div class="canvas">
+      <div class="fr has-toast" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">2 tasks</span>
+          </header>
+          <div class="elide">⋯ title, introductory sentence and add field as in P1 ⋯</div>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Buy bread</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Buy bread”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Buy bread”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Water the plants</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Water the plants”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Water the plants”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="toasts" data-component="Toast">
+        <div class="toast"><span class="glyph glyph-err" aria-hidden="true">●</span><span class="toast-msg">The change was not made: the service could not be reached.</span><button type="button" class="toast-x" aria-label="Dismiss notification"><span aria-hidden="true">×</span></button></div>
+      </div>
+    </div>
+
+    <p class="sub"><b>11b · Drawn at R-10.2 / S-45</b> — the service cannot be reached; a person adds “Water the plants” to an empty list.</p>
+    <div class="canvas">
+      <div class="fr has-toast" data-component="TodoListPage" data-state="empty">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">0 tasks</span>
+          </header>
+          <div class="elide">⋯ title and introductory sentence as in P1 ⋯</div>
+          <section class="composer-sec" data-component="TodoTaskComposer" data-state="default">
+            <div class="composer">
+              <div class="composer-row">
+                <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input" type="text" placeholder="What needs doing?" autocomplete="off" value="Water the plants"></label>
+                <button type="button" class="btn-add">Add task</button>
+              </div>
+            </div>
+          </section>
+          <div class="empty" data-state="empty">No tasks yet. Add the first one above.</div>
+        </div>
+      </div>
+      <div class="toasts" data-component="Toast">
+        <div class="toast"><span class="glyph glyph-err" aria-hidden="true">●</span><span class="toast-msg">The task was not added: the service could not be reached.</span><button type="button" class="toast-x" aria-label="Dismiss notification"><span aria-hidden="true">×</span></button></div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> a toast saying what was not done. The box stays unticked; no row appears, and the text stays in the field for a retry. A failed correction or delete (S-46) gets 11a's toast, and the old text or the row stays as it was. <b>Choices</b> <a class="cref" href="#c-9">C-9</a><a class="cref" href="#c-18">C-18</a></p>
+  </section>
+
+  <!-- =============================================================
+       P12 — LOADING
+       ============================================================= -->
+  <section class="panel" id="p12" aria-labelledby="p12-t">
+    <div class="panel-head">
+      <span class="pid">P12</span><h2 id="p12-t">Loading</h2>
+      <span class="refs">system-states.md § Skeleton</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> the moment the list has been asked for and has not yet answered. No acceptance criterion pins this moment; system-states.md § Components defines the state for every list.</p>
+    <div class="canvas">
+      <div class="fr" data-component="TodoListPage" data-state="loading">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+          </header>
+          <div class="elide">⋯ title and introductory sentence as in P1 ⋯</div>
+          <section class="composer-sec" data-component="TodoTaskComposer" data-state="default">
+            <div class="composer">
+              <div class="composer-row">
+                <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input" type="text" placeholder="What needs doing?" autocomplete="off"></label>
+                <button type="button" class="btn-add" disabled>Add task</button>
+              </div>
+            </div>
+          </section>
+          <ul class="tasks" role="status" aria-label="Loading tasks" data-component="Skeleton">
+            <li class="task task-skel"><span class="skel skel-box"></span><span class="skel skel-bar w-3-5"></span></li>
+            <li class="task task-skel"><span class="skel skel-box"></span><span class="skel skel-bar w-2-5"></span></li>
+            <li class="task task-skel"><span class="skel skel-box"></span><span class="skel skel-bar w-4-5"></span></li>
+            <li class="task task-skel"><span class="skel skel-box"></span><span class="skel skel-bar w-1-2"></span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> four rows in outline, with the height reserved and no spinner. There is no count in the header yet, and the field is usable. <b>Choices</b> <a class="cref" href="#c-24">C-24</a></p>
+  </section>
+
+  <!-- =============================================================
+       P13 — THE LIST FAILED TO LOAD
+       ============================================================= -->
+  <section class="panel" id="p13" aria-labelledby="p13-t">
+    <div class="panel-head">
+      <span class="pid">P13</span><h2 id="p13-t">The list failed to load</h2>
+      <span class="refs">R-10.3 · R-10 cl. 3 · S-47</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-10.3 / S-47 — the service cannot be reached, and the list is opened.</p>
+    <div class="canvas">
+      <div class="fr" data-component="TodoListPage" data-state="error">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+          </header>
+          <div class="elide">⋯ title and introductory sentence as in P1 ⋯</div>
+          <section class="composer-sec" data-component="TodoTaskComposer" data-state="default">
+            <div class="composer">
+              <div class="composer-row">
+                <label class="composer-field"><span class="sr-only">New task</span><input class="composer-input" type="text" placeholder="What needs doing?" autocomplete="off"></label>
+                <button type="button" class="btn-add" disabled>Add task</button>
+              </div>
+            </div>
+          </section>
+          <p class="read-failed">The tasks could not be loaded.</p>
+          <div class="err" role="alert" data-component="ErrorState">
+            <p class="err-title">Could not reach the service</p>
+            <p class="err-detail">Failed to fetch</p>
+            <div class="err-actions"><button type="button" class="btn-outlined">Try again</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> the list's own sentence above the standard error card, with “Try again”. The detail line is the browser's own words for an unreachable service, as the guestbook shows today. The empty-list sentence is not shown, and there is no count in the header. <b>Choices</b> <a class="cref" href="#c-21">C-21</a></p>
+  </section>
+
+  <!-- =============================================================
+       P14 — EVERY TASK DONE
+       ============================================================= -->
+  <section class="panel" id="p14" aria-labelledby="p14-t">
+    <div class="panel-head">
+      <span class="pid">P14</span><h2 id="p14-t">Every task done: still a list</h2>
+      <span class="refs">R-3 cl. 1 · R-4 cl. 5 · S-20 · E-3</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> S-20 — the list holds “Water the plants” and “Buy bread”, both done, and is opened.</p>
+    <div class="canvas">
+      <div class="fr" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">2 tasks</span>
+          </header>
+          <div class="elide">⋯ title, introductory sentence and add field as in P1 ⋯</div>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task" data-component="TodoTaskRow" data-state="done">
+              <label class="task-main"><input class="task-input" type="checkbox" checked><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Buy bread</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Buy bread”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Buy bread”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="done">
+              <label class="task-main"><input class="task-input" type="checkbox" checked><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Water the plants</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Water the plants”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Water the plants”</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> both tasks, as done, and nothing calls the list empty. There is no special state for “all done”.</p>
+  </section>
+
+  <!-- =============================================================
+       P15 — A HUNDRED AND ONE TASKS
+       ============================================================= -->
+  <section class="panel" id="p15" aria-labelledby="p15-t">
+    <div class="panel-head">
+      <span class="pid">P15</span><h2 id="p15-t">A hundred and one tasks, on one list</h2>
+      <span class="refs">R-3.3 · R-3 cl. 1 · S-14</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-3.3 / S-14 — “Task 001” to “Task 101” were stored in that order, and the list is opened.</p>
+    <div class="canvas">
+      <div class="fr" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">101 tasks</span>
+          </header>
+          <div class="elide">⋯ title, introductory sentence and add field as in P1 ⋯</div>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Task 101</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Task 101”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Task 101”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Task 100</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Task 100”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Task 100”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Task 099</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Task 099”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Task 099”</span></button></span>
+            </li>
+            <li class="task task-elide">⋯ Task 098 down to Task 004: 95 rows left out of this drawing only; on the screen every one is here ⋯</li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Task 003</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Task 003”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Task 003”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Task 002</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Task 002”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Task 002”</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Task 001</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> “Task 001”</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> “Task 001”</span></button></span>
+            </li>
+          </ul>
+          <footer class="fr-foot">Tasks are public and editable by anyone with this link.</footer>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> one list with “Task 101” first, and the footer straight after “Task 001”: nothing to press to see more. The guestbook's “Load N more” has no counterpart here.</p>
+  </section>
+
+  <!-- =============================================================
+       P16 — A FRESH ENVIRONMENT'S EXAMPLE TASKS
+       ============================================================= -->
+  <section class="panel" id="p16" aria-labelledby="p16-t">
+    <div class="panel-head">
+      <span class="pid">P16</span><h2 id="p16-t">A fresh environment's example tasks</h2>
+      <span class="refs">R-11.1 · R-11.7 · R-11 cl. 6 · S-49</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-11.1 / R-11.7 / S-49 — a freshly created environment has been filled with example data, and the list is opened.</p>
+    <div class="canvas">
+      <div class="fr" data-component="TodoListPage" data-state="list">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">5 tasks</span>
+          </header>
+          <div class="elide">⋯ title, introductory sentence and add field as in P1 ⋯</div>
+          <ul class="tasks" aria-label="Tasks">
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">These example tasks were put here when the environment was created. Newest first, so this one is at the top.</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> this task</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> this task</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Correct the words of any task; editing never changes whether it is done.</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> this task</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> this task</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="done">
+              <label class="task-main"><input class="task-input" type="checkbox" checked><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">This one is already done. Ticking a task never moves it, and ticking it again brings it back.</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> this task</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> this task</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Delete this one when you have seen enough. It asks first, and a deleted task is gone for good.</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> this task</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> this task</span></button></span>
+            </li>
+            <li class="task" data-component="TodoTaskRow" data-state="default">
+              <label class="task-main"><input class="task-input" type="checkbox"><span class="box" aria-hidden="true"><svg><use href="#tick"/></svg></span><span class="task-text">Characters outside ASCII: café · naïve · Ærø · 日本語 · Ωμέγα. If you can read them, they survived the whole stack.</span></label>
+              <span class="task-actions"><button type="button" class="act act-edit">Edit<span class="sr-only"> this task</span></button><button type="button" class="act act-del">Delete<span class="sr-only"> this task</span></button></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> five example tasks, newest first, one of them done. Long texts wrap inside their rows. The texts are the proposal in scenarios.md § Seed data; the file itself, which architecture.md names <code>todo-tasks-example.json</code>, is written at implementation. A person checks this state, because R-11 is verified by hand. On the built screen each Edit and Delete button carries its own task's full text for screen readers; this drawing shortens those hidden names. <b>Choices</b> <a class="cref" href="#c-23">C-23</a></p>
+  </section>
+
+  <!-- =============================================================
+       P17 — THE GUESTBOOK, WITH THE WAY TO THE LIST
+       ============================================================= -->
+  <section class="panel" id="p17" aria-labelledby="p17-t">
+    <div class="panel-head">
+      <span class="pid">P17</span><h2 id="p17-t">The guestbook, with the way to the list</h2>
+      <span class="refs">R-5.2 · R-5.3 · S-27 · S-28 · S-29</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-5.3 / S-29 — the application's main address is opened and lands on the guestbook. The same frame covers R-5.2 / S-27–S-28: the way to the list, and back from it (the to-do screen's “Guestbook” link comes here).</p>
+    <div class="canvas">
+      <div class="addr">Address <span>localhost:8080<b>/guestbook</b></span> (the main address, <code>/</code>, redirects here as today)</div>
+      <div class="fr fr-full" data-component="GuestbookPage">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17" aria-current="page">Guestbook</a><a href="#p2">To-do list</a></nav>
+            </div>
+            <span class="fr-meta">7 entries</span>
+          </header>
+          <div class="fr-title">
+            <p class="t-h1">Leave a note</p>
+            <p class="t-lede">No account, no sign-in. Write something, and it appears below straight away. Anyone can edit or remove an entry.</p>
+          </div>
+          <section class="gb-composer-sec">
+            <div class="gb-card">
+              <input class="gb-name" type="text" aria-label="Your name" placeholder="Your name" autocomplete="off">
+              <div class="gb-rule" aria-hidden="true"></div>
+              <textarea class="gb-msg" aria-label="Your message" placeholder="Write your message…" rows="3"></textarea>
+              <div class="gb-foot"><span class="gb-count">0 / 1000</span><button type="button" class="btn-add" disabled>Post entry</button></div>
+            </div>
+          </section>
+          <div class="elide">⋯ the search, the order and the entries follow, exactly as today ⋯</div>
+          <footer class="fr-foot">Entries are public and editable by anyone with this link.</footer>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> the guestbook as it is today except its header: the navigation, with “Guestbook” current, and the lockup if C-1 is taken. Its count and footer stay its own. <b>Choices</b> <a class="cref" href="#c-1">C-1</a><a class="cref" href="#c-2">C-2</a><a class="cref" href="#c-6">C-6</a></p>
+  </section>
+
+  <!-- =============================================================
+       P18 — THE NOT-FOUND PAGE
+       ============================================================= -->
+  <section class="panel" id="p18" aria-labelledby="p18-t">
+    <div class="panel-head">
+      <span class="pid">P18</span><h2 id="p18-t">The not-found page</h2>
+      <span class="refs">R-5.4 · R-5 cl. 4 · S-30</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> R-5.4 / S-30 — an address the application does not know is opened.</p>
+    <div class="canvas">
+      <div class="addr">Address <span>localhost:8080<b>/no-such-page</b></span></div>
+      <div class="fr fr-full" data-component="NotFoundPage">
+        <div class="fr-col">
+          <header class="fr-head" data-component="PageFrame">
+            <div class="fr-left">
+              <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+              <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2">To-do list</a></nav>
+            </div>
+          </header>
+          <div class="fr-title">
+            <p class="t-h1">Nothing here</p>
+            <p class="t-lede">There is nothing at this address.</p>
+          </div>
+          <div class="nf-actions"><a class="btn-link-primary" href="#p17">Go to the guestbook</a></div>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Shows</b> a sentence that counts no screens, replacing “There is one screen in this application: the guestbook.” The way back stays the same. The navigation shows with no current item, and there is no footer. <b>Choices</b> <a class="cref" href="#c-2">C-2</a><a class="cref" href="#c-6">C-6</a><a class="cref" href="#c-22">C-22</a></p>
+  </section>
+
+  <!-- =============================================================
+       P19 — C-1 IN PICTURES
+       ============================================================= -->
+  <section class="panel" id="p19" aria-labelledby="p19-t">
+    <div class="panel-head">
+      <span class="pid">P19</span><h2 id="p19-t">The lockup: the proposal and the alternative</h2>
+      <span class="refs">C-1 · requirements A-4, Self-check 14</span><a class="up" href="#notes">Notes ↑</a>
+    </div>
+    <p class="drawn"><b>Drawn at</b> the to-do screen's header, as in P2, in both readings of C-1.</p>
+
+    <p class="sub"><b>A · proposed</b> — the lockup reads “Product name”; exactly one link is named “Guestbook”.</p>
+    <div class="canvas">
+      <div class="fr fr-strip"><div class="fr-col">
+        <header class="fr-head" data-component="PageFrame">
+          <div class="fr-left">
+            <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">P</span><span class="lockup-name">Product name</span></a>
+            <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+          </div>
+          <span class="fr-meta">6 tasks</span>
+        </header>
+      </div></div>
+    </div>
+
+    <p class="sub"><b>B · alternative</b> — the lockup keeps “Guestbook”; two links named “Guestbook” sit side by side.</p>
+    <div class="canvas">
+      <div class="fr fr-strip"><div class="fr-col">
+        <header class="fr-head" data-component="PageFrame">
+          <div class="fr-left">
+            <a class="lockup" href="#p17"><span class="lockup-mark" aria-hidden="true">G</span><span class="lockup-name">Guestbook</span></a>
+            <nav class="fr-nav" aria-label="Screens"><a href="#p17">Guestbook</a><a href="#p2" aria-current="page">To-do list</a></nav>
+          </div>
+          <span class="fr-meta">6 tasks</span>
+        </header>
+      </div></div>
+    </div>
+    <p class="cap"><b>Shows</b> what C-1 decides. Under B the UI smoke's exact lookup of the link “Guestbook” (<code>e2e/ui/test_smoke.py</code>) matches two links, so its locator has to follow the approved names, which requirements A-4 allows. Under A it matches the navigation link alone and runs as it is. Both links lead to the guestbook. <b>Choices</b> <a class="cref" href="#c-1">C-1</a><a class="cref" href="#c-2">C-2</a></p>
+  </section>
+
+</main>
+</body>
+</html>
