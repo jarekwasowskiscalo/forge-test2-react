@@ -125,7 +125,7 @@ def test_upgrade_head_creates_the_guestbook_table_with_exactly_these_columns() -
 
 
 def test_the_ordering_the_contract_publishes_has_an_index_behind_it() -> None:
-    """`BR-04` is read on every load of the only screen. An ordering with no index
+    """`BR-04` is read on every load of the guestbook's screen. An ordering with no index
     is a full sort of the table, which is invisible until the table is large."""
     _, engine = _upgraded()
 

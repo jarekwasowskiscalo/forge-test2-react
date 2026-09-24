@@ -569,3 +569,6 @@
 - [21:49] todo_raised: TD-6 (agent): COH-implement-4 (resolved by constitution Art. I): in tests/integration/test_migrations.py:128 replace "read on every lo
 - [21:49] fanout_recorded: dispatched: review-converge, build-tests-unit, build-tests-integration
 - [21:51] fanout_recorded: returned: review-converge; 1 process fault(s): PROC-53
+- [21:51] todo_resolved: TD-4
+- [21:51] boundary_recorded: 35 paths from design/delta/ + 8 the reconciliation will write
+- [21:51] fanout_recorded: returned: build-tests-integration

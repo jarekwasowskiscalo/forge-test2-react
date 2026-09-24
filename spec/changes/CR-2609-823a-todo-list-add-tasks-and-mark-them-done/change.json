@@ -63,6 +63,7 @@
     "frontend/src/contexts/guestbook/lib/entryText.test.ts",
     "frontend/src/contexts/guestbook/lib/entryText.ts",
     "frontend/src/contexts/guestbook/lib/guestbookEntry.ts",
+    "frontend/src/contexts/guestbook/pages/GuestbookPage.tsx",
     "frontend/src/contexts/todo_list/",
     "frontend/src/lib/text.ts",
     "frontend/src/pages/StatusPages.test.tsx",
@@ -865,8 +866,9 @@
       "state": "returned"
     },
     "build-tests-integration": {
-      "at": "2026-09-24T19:49:24Z",
-      "state": "dispatched"
+      "assumptions": "TD-6 only: tests/integration/test_migrations.py:128 now reads \"read on every load of the guestbook's screen\", the COH-implement-4 ready patch word for word; no assertion, test name or marker changed; the other modified files (tests/fitness/*, design/delta/converge.md, bookkeeping) are not this member's.",
+      "at": "2026-09-24T19:51:38Z",
+      "state": "returned"
     },
     "build-tests-uat": {
       "assumptions": "build-backend writes golden-set/seed/todo-tasks-example.json with the five examples from scenarios.md § Seed data, one done (the name is confirmed in tests/_golden_set.py:129). Steps 3 and 17 expect `5 tasks`. seed.sh and `start.sh --no-seed` extend to the to-do list as architecture.md § What a new environment starts with says (each list filled on its own, prod refused through /api/health). `APP_ENV=prod` makes a local copy answer as production (docs/configuration.md). build-frontend uses the screen copy from spec/design/ui/todo-list.md and system-states.md word for word (\"Things to do\", `N tasks`, \"No tasks yet. Add the first one above.\", \"Task updated.\", \"Delete task\", the nav links \"Guestbook\"/\"To-do list\"). The list is read again after a change that went through (todo-list.md § Data), which step 12 relies on.",
@@ -4212,7 +4214,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 797,
+  "revision": 800,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4277,6 +4279,7 @@
       "id": "TD-4",
       "kind": "agent",
       "raised_at": "2026-09-24T19:49:17Z",
+      "resolved_at": "2026-09-24T19:51:23Z",
       "skill": "review-converge",
       "what": "COH-implement-5 (resolved by constitution Art. I) makes one module-docstring line of frontend/src/contexts/guestbook/pages/GuestbookPage.tsx change in this change -- the exception spec/design/architecture.md § The files now records -- but the change boundary, which `set-boundary --from-design` reads from every design delta fragment's \"## This change owns\" table, does not list that file, so build-frontend's edit would be refused. In your own fragment design/delta/converge.md add a \"## This change owns\" section with the header rows \"| Path | Why |\" and \"|---|---|\" (as design/delta/architecture.md writes them) and exactly one row: | `frontend/src/contexts/guestbook/pages/GuestbookPage.tsx` | one line of its module docstring, which called the guestbook the only screen; now one of two (COH-implement-5); nothing the screen does moves (build-frontend) |. Change nothing else."
     },
@@ -4310,7 +4313,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T19:51:23Z",
+  "updated_at": "2026-09-24T19:51:38Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

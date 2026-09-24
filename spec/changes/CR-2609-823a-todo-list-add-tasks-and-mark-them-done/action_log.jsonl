@@ -804,3 +804,6 @@
 {"timestamp": "2026-09-24T19:49:18Z", "agent": "sdd", "action": "todo_raised", "details": "TD-6 (agent): COH-implement-4 (resolved by constitution Art. I): in tests/integration/test_migrations.py:128 replace \"read on every lo", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T19:49:24Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-converge, build-tests-unit, build-tests-integration", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T19:51:23Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-converge; 1 process fault(s): PROC-53", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T19:51:23Z", "agent": "sdd", "action": "todo_resolved", "details": "TD-4", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T19:51:24Z", "agent": "sdd", "action": "boundary_recorded", "details": "35 paths from design/delta/ + 8 the reconciliation will write", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T19:51:38Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: build-tests-integration", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
