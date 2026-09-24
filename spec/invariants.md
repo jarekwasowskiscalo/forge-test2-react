@@ -95,6 +95,15 @@ wording said that `D-01`…`D-03` were held by the data model and by the decisio
 convergence round" — is inherited by the new home: the write set of `review-converge` covers
 `contracts/` for the same reason it covers `spec/`.
 
+**Which stage's convergence round writes a new data invariant is settled by its witnesses.** The
+new home accepts no invariant whose `**Witness:**` names a test that does not exist
+(`tests/fitness/test_invariant_witnesses.py`). So an invariant decided in design whose witnesses
+the implementation stage writes is written by the first convergence round after they exist —
+the `spec_sync` stage's — and until then the design document that decided it states the call,
+and `spec/design/testing.md` names its witnesses and that round. The user decided it so in
+`CR-2609-823a` (`Q-21`): "stated in the data model now and written into the data-rules folder at
+the reconciliation stage, once its tests exist."
+
 ---
 
 ## Deliberate non-goals

@@ -397,6 +397,11 @@ available):
 | amending | `PATCH /api/guestbook-entries/{entry_id}` through `useUpdateGuestbookEntry()` |
 | deleting | `DELETE /api/guestbook-entries/{entry_id}` through `useDeleteGuestbookEntry()` |
 
+**What is posted and amended is the text the screen judged, not the text as typed.** The composer
+and the entry card send each field as the shared text rule leaves it — normalized and trimmed —
+so the browser and the service measure the same value; the service normalizes it again either
+way.
+
 **Components never call `client.GET` directly** — one hook per resource, the query keys in one
 object (`spec/design/conventions.md` § Frontend). The list's key carries the phrase, the order
 and the piece size, so two different questions are two cache entries rather than one that jumps

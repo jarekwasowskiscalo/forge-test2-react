@@ -72,3 +72,75 @@ inside the change record and need no entry.*
   **Why:** COH-design-5 and COH-design-6. design-ui wrote the screen document (`S-02`) in this stage while the header claimed no screen, so `test_every_registered_screen_is_claimed_by_exactly_one_context` went red. Nothing declared that red, and no implement author could clear it. It was settled automatically by the constitution, Article X: a stage never ends red, except for a declared failure of a test written before its implementation. For the black-box file, testing.md left the timing unresolved. No implement author writes `spec/contexts/`, and every option leaves a structural red at a stage boundary. The user decided `Q-19` = A: "List it now, at the end of design".
   **ADR:** none. It is a claim in a context header and when it is written; reversing it edits two front-matter lines.
   **Requirements:** CR-2609-823a/R-1, CR-2609-823a/R-2, CR-2609-823a/R-3, CR-2609-823a/R-4, CR-2609-823a/R-5, CR-2609-823a/R-6, CR-2609-823a/R-7, CR-2609-823a/R-8, CR-2609-823a/R-9, CR-2609-823a/R-10
+
+*Written by the convergence round of coherence pass 5, `design` stage, for the ten findings
+`COH-design-9` to `COH-design-18`. Every decision was taken before this round, automatically from
+the document a finding's `auto_basis` names or by the user at `Q-21`, and this round records it.
+Each finding's edit lands in the earliest document it names as its `ambiguity_source`. Where the
+dispatch also handed this round the ready patch under a finding, that patch landed too, in the
+artefact that carried the contradiction. Both kinds are declared below when they land under
+`spec/` or `contracts/`. This round's edits inside the change record need no entry: the
+requirements (`COH-design-14`), the scenarios (`COH-design-15`), the ADR draft on coded text
+refusals (`COH-design-15`), and the api and architecture fragments (`COH-design-15`,
+`COH-design-9`, `COH-design-13`).*
+
+- `MODIFIED` `spec/design/testing.md` § CR-2609-823a, the to-do list, "Existing detectors that go red on the way": the third bullet replaced, and a last bullet added
+  **Was:** the third bullet declared `test_every_feature_file_is_claimed_by_exactly_one_context` red "from the test wave, when **e2e/suite/features/todo_list.feature** appears, until `spec/contexts/todo_list.md` claims it", and ended "**Unresolved, and handed to the coherence gate.**" The list was scoped to "structural cases" and said nothing of the contract gate.
+  **Now:** the third bullet names `test_every_screen_and_feature_a_context_names_is_on_disk`. It is red since the convergence round claimed the feature file before the file exists (`Q-19`), and it is declared on build-tests-e2e's task in the first implementation wave. The two claim cases stay green, because the header claims both files. A last bullet names `./scripts/contracts.sh`, a gate of `./scripts/check.sh`. It is red since `contracts/openapi/todo_list.yaml` exists, with 11 findings, and green when build-backend's schemas and routers exist. No `**Must be red:**` line can name a gate, so the design boundary and each implementation boundary before build-backend's wave accept `check` red on that gate alone, with that bullet as the reason. The user's words close it.
+  **Why:** COH-design-9 and COH-design-10. The claim case walks the feature files on disk and finds each one claimed once, so it cannot go red when the file appears. The on-disk case is the one `./scripts/test.sh fitness` shows red now. A plan built from the old bullet would have declared a red that never occurs, which the gate refuses, and left the real one undeclared. That half was settled automatically by the constitution, Article X: a deliberate red is declared before the run that shows it and must be proved to have occurred. The contract gate's red was recorded only in design-api's fragment, which nothing reads when the reds are planned, and the engine accepts a declared red only as a junit case, which no contract finding is. The user decided `Q-21` (1) = A: "record that in the test plan and sign it off by name at each stage end until the backend exists".
+  **ADR:** none. Which cases are declared red, and when, is testing.md's to hold (constitution, Article IX).
+  **Requirements:** CR-2609-823a/R-1, CR-2609-823a/R-2, CR-2609-823a/R-3, CR-2609-823a/R-4, CR-2609-823a/R-6, CR-2609-823a/R-7, CR-2609-823a/R-8, CR-2609-823a/R-9
+- `MODIFIED` `spec/design/testing.md` § CR-2609-823a, the to-do list, "The witness for a task's text": its first sentence
+  **Was:** "`data-model.md` calls for a data invariant of the to-do list's own … and the convergence round writes it." `data-model.md` carried no such call. The round that had run neither wrote the invariant nor mentioned it.
+  **Now:** it cites `spec/design/data-model.md` § `todo_tasks`, which now carries the call. It names the convergence round of the `spec_sync` stage as the writer, the first round after the witnesses exist, since `tests/fitness/test_invariant_witnesses.py` refuses a witness that does not.
+  **Why:** COH-design-16. The witnesses are test files the implementation stage writes, so no design-stage round could write the invariant green, and no implementation author writes `contracts/`. The user decided `Q-21` (6) = A: "stated in the data model now and written into the data-rules folder at the reconciliation stage, once its tests exist."
+  **ADR:** none. It names when an existing route runs.
+  **Requirements:** CR-2609-823a/R-2, CR-2609-823a/R-6
+- `MODIFIED` `spec/design/testing.md` § Fitness functions, the row `test_migration_safety.py`
+  **Was:** "the one revision creates its table and its index together".
+  **Now:** "each of the two revisions creates its table and its index together".
+  **Why:** COH-design-17. `spec/design/data-model.md` § Migrations counts two revisions once `todo_tasks` has its own. The two rules stay vacuous, and the count was false. Settled automatically by the constitution, Article IV: the specification edit lands with the change that makes it true.
+  **ADR:** none. It is a count this change makes true.
+  **Requirements:** CR-2609-823a/R-1
+- `MODIFIED` `spec/design/ui/guestbook.md` § Data: one paragraph added after the table
+  **Was:** the table named the posting and amending hooks and not what they send. The rule lived only in the code, in `frontend/src/contexts/guestbook/components/EntryComposer.tsx` ("what is sent should be what the browser measured") and `frontend/src/contexts/guestbook/components/EntryCard.tsx`.
+  **Now:** "What is posted and amended is the text the screen judged, not the text as typed." Each field is sent as the shared text rule leaves it, normalized and trimmed, so the browser and the service measure the same value.
+  **Why:** COH-design-11. The worked example said nothing about its payload. design-ui wrote the to-do screen's add as "sends `text` as typed", and design-testing gave the composer the case "sends the text as the shared rule leaves it". build-frontend would have met a test its builder may not edit. The user decided `Q-21` (2) = A: "Adding a task sends the text cleaned up the same way the screen checked it, as the guestbook does, instead of exactly as typed".
+  **ADR:** none. It writes down what the worked example already does.
+  **Requirements:** CR-2609-823a/R-1
+- `MODIFIED` `spec/design/ui/todo-list.md` § Data, the adding row
+  **Was:** "sends `text` as typed".
+  **Now:** "sends `text` as the shared rule leaves it — normalized and trimmed, the text the screen judged".
+  **Why:** COH-design-11, the artefact half of the entry above, from the ready patch under the finding.
+  **ADR:** none.
+  **Requirements:** CR-2609-823a/R-1
+- `MODIFIED` `spec/design/conventions.md` § Layers: the paragraph on a rule whose refusal carries a code of its own
+  **Was:** "A rule whose refusal carries a code of its own is judged in `services/`, and `schemas/` holds no part of it." It did not say whether a refusal about the request as a whole is such a rule. Nor did it say whether importing the bound or the kernel counts as holding part of the rule.
+  **Now:** the sentence speaks of "a rule about a field's value". A refusal about the request as a whole, a `PATCH` that sets no field, is decided beside the endpoint before the service is called (`spec/design/api.md` § Shapes, `GuestbookEntryUpdate`). "Holding no part of the rule means importing none of it": the service's judgement imports the bound and the kernel's `normalize` and `length`, and `schemas/` imports neither. The user's words for both edges close the paragraph.
+  **Why:** COH-design-12 and COH-design-13. Read literally, the sentence pulled `todo_task_empty_patch` into the service, while `spec/design/architecture.md` left it to the router, as the guestbook's router decides its own empty patch. And `spec/design/data-model.md` and the architecture fragment had the to-do schemas import the bound and the kernel. That can come true only through a use the paragraph forbids, or through a use nothing needs, and ruff's `F` rule removes an unused import. The user decided `Q-21` (3) and (4) = A.
+  **ADR:** none. It narrows a placement rule to the case it was written for, in the document where placement rules live (constitution, Article IX).
+  **Requirements:** CR-2609-823a/R-2, CR-2609-823a/R-6
+- `MODIFIED` `spec/design/architecture.md` § The to-do list — where each rule lives, "The layer per rule": one sentence appended to the router paragraph
+  **Was:** the router translated "the not-found refusal and the three about a task's text". Nothing placed `todo_task_empty_patch`.
+  **Now:** "It answers `todo_task_empty_patch` itself, before it calls the service, as the guestbook's router answers its empty patch."
+  **Why:** COH-design-12, the artefact half of the entry above, from the ready patch under the finding.
+  **ADR:** none.
+  **Requirements:** CR-2609-823a/R-4, CR-2609-823a/R-6
+- `MODIFIED` `spec/design/data-model.md` § `todo_tasks`: one paragraph added after the column table, and one clause changed in "The bound, beside the model"
+  **Was:** the section called for no data invariant on a task's text, and said "the column is declared from it and the schemas import it".
+  **Now:** "Every `text` in this table is NFC, trimmed at both ends, 1 to 200 code points and one line: a data invariant of the to-do list's own under `contracts/invariants/`, the counterpart of `D-04`", with its witnesses named in testing.md. And "the column is declared from it and the service's judgement of a text imports it; the schemas do not".
+  **Why:** COH-design-16: testing.md cited a call this document did not carry, and the user decided `Q-21` (6) = A. COH-design-13: the import contradicted § Layers, and the user decided `Q-21` (4) = A: "The request formats import no part of the text rule; the service does."
+  **ADR:** none.
+  **Requirements:** CR-2609-823a/R-2, CR-2609-823a/R-6
+- `MODIFIED` `spec/invariants.md` § Data invariants: one paragraph added after "The editing route has not changed"
+  **Was:** the section gave every edit to `contracts/` within a change to the convergence round, and did not say which stage's round.
+  **Now:** "Which stage's convergence round writes a new data invariant is settled by its witnesses." An invariant decided in design, whose witnesses the implementation stage writes, is written by the first convergence round after they exist, which is the `spec_sync` stage's. Until then the design document that decided it states the call, and `spec/design/testing.md` names its witnesses and that round. The user's words close it.
+  **Why:** COH-design-16, its ambiguity source. testing.md said "the convergence round writes it", and design-data assumed the same. The design round that ran did not write it, and could not have: `tests/fitness/test_invariant_witnesses.py` refuses a witness that does not exist, and the witnesses are written in implementation. The user decided `Q-21` (6) = A.
+  **ADR:** none. It states when an existing route runs, and no rule about the data moves.
+  **Requirements:** CR-2609-823a/R-2
+- `MODIFIED` `contracts/README.md` § Why a contract is written rather than generated
+  **Was:** "for this template that is three paths, six operations and eight schemas".
+  **Now:** "for this template that is five paths, ten operations and twelve schemas".
+  **Why:** COH-design-18. `contracts/openapi/todo_list.yaml` adds two paths, four operations and four schemas (`TodoTaskCreate`, `TodoTaskUpdate`, `TodoTaskRead`, `TodoTaskList`), counted on the old figure's own convention. `./scripts/contracts.sh` prints "3 contracts, 5 paths, 10 operations". Settled automatically by the constitution, Article IV.
+  **ADR:** none. It is a count this change makes true.
+  **Requirements:** CR-2609-823a/R-1, CR-2609-823a/R-3

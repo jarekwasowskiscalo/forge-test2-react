@@ -18,7 +18,8 @@ that is empty once trimmed is refused as empty (`R-2` clause 2). A text over 200
 refused as too long (clause 3). A text that still carries a line break is refused "with a reason
 of its own" (clause 6, `Q-11`). `BR-07` settles the overlap: a text that is both too long and on
 two lines is refused as more than one line, "on the screen and by the application alike". The
-black box has to tell the three reasons apart (`S-6`, `S-8`, `S-33`). The screen chooses where
+scenarios tell the three reasons apart (`S-6`, `S-8`, `S-33`), and the integration corpus test
+proves each on the wire (`spec/design/testing.md` § CR-2609-823a). The screen chooses where
 to show a refusal by its `detail.code` (`spec/design/ui/todo-list.md` § The refusals this screen
 can show).
 

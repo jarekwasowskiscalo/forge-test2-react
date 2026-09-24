@@ -208,7 +208,7 @@ source rather than importing it; two import `app` for the constants they compare
 | `test_command_references.py` | a command named in prose exists: every `npm run <name>` in the scripts, the frontend and CI resolves to a `scripts` entry in `frontend/package.json` |
 | `test_infra_layout.py` | the Terraform roots stay the shapes they are meant to be: the environment set is discovered rather than listed, no two roots share a state key or a network, `preview/branch` declares **no** state key and creates no shared infrastructure, every environment is built from the same module, only `prod` pays for a capacity floor, `scripts/infra-check.sh` checks every root that exists, and nowhere is an account identifier or a key written down |
 | `test_edge_contract.py` | the edge serves the SPA fallback without rewriting a status or a body it did not produce: no `custom_error_response` anywhere under `infra/` (it is a member of the distribution, so it cannot be narrowed to a behaviour and rewrote the API's refusals too), the fallback is a viewer-request function attached to the static behaviour and **not** to `/api/*`, the function excludes `/api/` and `/assets/`, and the bucket policy can answer that a missing key is missing. The **configuration**, read as text — the behaviour needs a live distribution and is confirmed on the next deploy |
-| `test_migration_safety.py` | what a revision may do to a table that already holds rows: a destructive operation in `upgrade()` names why it is safe (`downgrade()` is exempt — it is *supposed* to destroy what its own `upgrade()` built), an index on a table the revision did not create is built `CONCURRENTLY`, and a revision touching a pre-existing table sets a `lock_timeout` so it backs off rather than queueing every query behind itself. The last two are **vacuously true** today — the one revision creates its table and its index together — and say so, because the deploy runs the migration before the code and has no way back |
+| `test_migration_safety.py` | what a revision may do to a table that already holds rows: a destructive operation in `upgrade()` names why it is safe (`downgrade()` is exempt — it is *supposed* to destroy what its own `upgrade()` built), an index on a table the revision did not create is built `CONCURRENTLY`, and a revision touching a pre-existing table sets a `lock_timeout` so it backs off rather than queueing every query behind itself. The last two are **vacuously true** today — each of the two revisions creates its table and its index together — and say so, because the deploy runs the migration before the code and has no way back |
 | `test_documentation_is_current.py` | what `docs/` claims resolves against the code that owns it: every script and flag it tells somebody to type, every variable in both directions — the application's and the reference's — every AWS name and every per-environment number, the repository variables the workflows really read, that no credential or account identifier is written down there, and that every page is indexed, declares its reader and, where it is a runbook, says how you know it worked |
 | `test_deploy_surface.py` | no workflow assumes the deployment role without declaring a GitHub Environment, the trust policy accepts environment claims and no `ref:` claim, and the environments the workflows name are exactly the ones it accepts |
 | `test_withdrawn_claims.py` | a sentence this repository decided against does not come back into the live tree: the label argument `ci.yml` closed, the equivalence `check.sh` used to claim between itself and CI, the two halves of the withdrawn free-plan paragraph, and any naming of the change process's own workflow file, which the script contract forbids. Phrases rather than meanings, proved on a known positive first. `changelog/`, `spec/changes/` and `spec/rationale/` are excluded rather than exempted: a dated record has to be able to quote what was withdrawn |
@@ -799,10 +799,12 @@ hanging, and a case that needs a re-run to pass goes to quarantine, not to a ret
 not by an index, so there is nothing here for a concurrent insert to prove: the to-do list has no
 uniqueness rule, on purpose (`BR-12`).
 
-**The witness for a task's text.** [`data-model.md`](data-model.md) calls for a data invariant of
-the to-do list's own, the counterpart of `D-04` for a task's text — NFC, trimmed at both ends,
-1 to 200 code points, no line break inside — and the convergence round writes it. Its witnesses
-are named here: `test_a_stored_text_is_normalized_one_line_and_within_the_bound_in_code_points` in
+**The witness for a task's text.** [`data-model.md`](data-model.md) § `todo_tasks` calls for a
+data invariant of the to-do list's own, the counterpart of `D-04` for a task's text — NFC, trimmed
+at both ends, 1 to 200 code points, no line break inside. The convergence round of the
+`spec_sync` stage writes it, the first round after its witnesses exist, since
+`tests/fitness/test_invariant_witnesses.py` refuses a witness that does not. Its witnesses are
+named here: `test_a_stored_text_is_normalized_one_line_and_within_the_bound_in_code_points` in
 **tests/integration/test_todo_tasks_service.py**, a round trip that only a real database can
 answer; `test_every_case_gets_the_verdict_the_corpus_states` in
 **tests/unit/test_todo_task_text_rules.py**, whose file the browser's rule test reads too, which
@@ -974,14 +976,21 @@ until the code arrives; each is declared on the task whose product closes it:
   Registering the name first is the only order in which the implementation stage can end green:
   the other one leaves a file on disk that the locator does not name, and no implementer may
   edit the locator.
-- `tests/fitness/test_context_declarations.py::test_every_feature_file_is_claimed_by_exactly_one_context`
-  — red from the test wave, when **e2e/suite/features/todo_list.feature** appears, until
-  `spec/contexts/todo_list.md` claims it; no implement author writes `spec/contexts/`, and a
-  claim written before the file exists turns
-  `test_every_screen_and_feature_a_context_names_is_on_disk` red instead. **Unresolved, and
-  handed to the coherence gate.** The same holds one stage earlier for
-  `test_every_registered_screen_is_claimed_by_exactly_one_context` and the to-do screen's
-  document, which is written in this stage and has to be claimed in the same one.
+- `tests/fitness/test_context_declarations.py::test_every_screen_and_feature_a_context_names_is_on_disk`
+  — red since the design stage's convergence round claimed **e2e/suite/features/todo_list.feature**
+  in `spec/contexts/todo_list.md` before the file exists (`CR-2609-823a`, `Q-19`), and declared on
+  build-tests-e2e's task, whose product is the file, in the first implementation wave.
+  `test_every_feature_file_is_claimed_by_exactly_one_context` and
+  `test_every_registered_screen_is_claimed_by_exactly_one_context` stay green throughout, because
+  the header claims both files.
+- `./scripts/contracts.sh`, a gate of `./scripts/check.sh` — red since
+  `contracts/openapi/todo_list.yaml` exists, with 11 findings (four schemas and two paths the dump
+  does not have yet, five refusal codes no router module holds yet), green when build-backend's
+  schemas and routers exist. It is a gate, not a test case, so no `**Must be red:**` line can name
+  it. The design boundary, and each implementation boundary before build-backend's wave, accepts
+  `check` red on this gate alone, with this sentence as the reason. The user decided it in
+  `CR-2609-823a` (`Q-21`): "record that in the test plan and sign it off by name at each stage end
+  until the backend exists, instead of writing the contract file only with the backend."
 
 **No test file of their own, and why.** frontend/src/lib/text.ts, the browser half of the shared
 text rule, which [`architecture.md`](architecture.md) moves out of the guestbook's folder: every

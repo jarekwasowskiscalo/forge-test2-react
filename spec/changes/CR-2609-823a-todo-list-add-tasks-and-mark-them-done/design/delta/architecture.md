@@ -189,8 +189,8 @@ half (`tests/fitness/test_golden_set.py`).
   `alembic/versions/a1b2c3d4e5f6_create_guestbook_entries_table.py`, its contract, its welcome
   entries, `e2e/suite/features/guestbook.feature` and its steps (`SC-5`). Its frontend changes by
   three import paths and nothing else.
-- **`app/platform/schemas/text.py`** — the kernel's server half is imported by the to-do schema
-  as it stands; `app/platform/schemas/refusals.py` is reused as the envelope.
+- **`app/platform/schemas/text.py`** — the kernel's server half is imported by the to-do service's
+  judgement as it stands; `app/platform/schemas/refusals.py` is reused as the envelope.
 - **`app/main.py`, `app/core/`, `app/db/`, `alembic/env.py`** — the aggregate and the context
   registry are the only composition points, and `alembic/env.py` already imports every context.
 - **`frontend/src/api/client.ts` and `frontend/src/api/problem.ts`** — both are resource-agnostic.
@@ -225,11 +225,9 @@ half (`tests/fitness/test_golden_set.py`).
 4. **The to-do list's front matter against three fitness tests.**
    `tests/fitness/test_context_boundaries.py::test_every_context_document_has_code_and_every_context_directory_has_a_document`
    is red from the moment `spec/contexts/todo_list.md` exists until build-backend creates
-   `app/contexts/todo_list/`. `tests/fitness/test_context_declarations.py::test_every_registered_screen_is_claimed_by_exactly_one_context`
-   goes red once design-ui's screen document carries an `info_ref` that `screens: []` does not
-   claim, and `::test_every_feature_file_is_claimed_by_exactly_one_context` goes red when
-   build-tests-e2e writes `e2e/suite/features/todo_list.feature` — and no implement member writes
-   `spec/contexts/`.
+   `app/contexts/todo_list/`. Both claims are in `spec/contexts/todo_list.md` since the
+   convergence round (COH-design-5, COH-design-6); the on-disk case is red until build-tests-e2e
+   writes the feature file.
 
 ## This change owns
 

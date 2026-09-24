@@ -237,7 +237,7 @@ screen element calls the client itself.
 | the task count | `GET /api/todo-tasks` through `useTodoTasks()` | `total` |
 | the rows, in the order they arrive | `GET /api/todo-tasks` through `useTodoTasks()` | `items[].id`, `items[].text`, `items[].done` |
 | the empty state | `GET /api/todo-tasks` through `useTodoTasks()` | `items` empty, `total` 0 |
-| adding | `POST /api/todo-tasks` through the add mutation of `useTodoTasks.ts` | sends `text` as typed; answered by one `TodoTaskRead` |
+| adding | `POST /api/todo-tasks` through the add mutation of `useTodoTasks.ts` | sends `text` as the shared rule leaves it — normalized and trimmed, the text the screen judged; answered by one `TodoTaskRead` |
 | ticking | `PATCH /api/todo-tasks/{todo_task_id}` through its mark mutation | sends `done` alone — `true` or `false`, the state the person chose; `todo_task_id` is the row's `id` |
 | correcting | `PATCH /api/todo-tasks/{todo_task_id}` through its correction mutation | sends `text` alone |
 | deleting | `DELETE /api/todo-tasks/{todo_task_id}` through its delete mutation | sends nothing; answered `204` |

@@ -195,6 +195,10 @@ moment of adding; the table holds those three and the identifier, and nothing el
 | `done` | `Boolean` | no | the one state: `true` is done, `false` is not done. Written `false` on every insert whatever the request claims (`BR-08`), and afterwards only by a marking, which writes the state the person chose (`BR-09`). `default=False` on the model; no server default |
 | `created_at` | `DateTime(timezone=True)` | no | the moment of adding: set once, by the service from its clock, when the task is stored, and never assigned again — not by a marking, not by a correction (`BR-08`, `BR-10`). The list is ordered by it (`BR-11`) |
 
+Every `text` in this table is NFC, trimmed at both ends, 1 to 200 code points and one line: a
+data invariant of the to-do list's own under `contracts/invariants/`, the counterpart of `D-04`,
+whose witnesses [`testing.md`](testing.md) § CR-2609-823a, the to-do list names.
+
 **Relations: none.** The to-do list is not a row. There is exactly one list, so every row of
 `todo_tasks` is on it: a `todo_lists` table would hold one row for ever, and a `list_id` column
 would carry the same value in every row. No foreign key leaves this table and none arrives at it.
@@ -250,7 +254,8 @@ Rejected:
   task was ticked, and "not done" would become an absence rather than a value.
 
 **The bound, beside the model.** `TODO_TASK_TEXT_MAX_LENGTH = 200` lives beside `TodoTask`; the
-column is declared from it and the schemas import it — one number, one place, bound on the same
+column is declared from it and the service's judgement of a text imports it; the schemas do not
+([`conventions.md`](conventions.md) § Layers) — one number, one place, bound on the same
 three routes as the guestbook's (§ `guestbook_entries`). The name is qualified because the number
 is the to-do list's own (`BR-06`): the guestbook's search phrase is also bounded at 200, by
 `QUERY_MAX_LENGTH`, and neither constant is ever read to prove the other. The to-do screen's copy

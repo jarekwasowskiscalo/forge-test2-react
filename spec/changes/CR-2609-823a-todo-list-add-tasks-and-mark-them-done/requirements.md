@@ -516,7 +516,7 @@ anything to judge (`Q-8`).
     marks, edits and deletes any task (`R-1` clause 2). CSRF: consistent, since there are no
     sessions. Moderation: consistent. A mobile version: consistent, since the new screen is not
     designed for a phone. A data retention policy: consistent, since a task lives until somebody
-    deletes it (assumed: `A-2`). A second database engine: consistent. Paging and search, lifted for the
+    deletes it (`A-2`, confirmed at approval). A second database engine: consistent. Paging and search, lifted for the
     guestbook alone as `BR-05`: consistent, since the to-do list has neither (`Q-9`).
     **Finding, not a collision:** the authentication and retention items are worded for entries
     ("anybody may add, amend and delete any entry"; "An entry lives until somebody deletes it"),
@@ -717,8 +717,9 @@ the wrong rule.
 
 *This stage's question budget is spent: `sdd-engine loop ask --raise` refused a thirteenth
 question. What no answer decides is written here as an assumption, in the form "Assumed: …, say
-so if not". No item below is a human decision yet. The user confirms or overrules each one
-at the approval of this document, which ends the stage.*
+so if not". The user confirmed or overruled each one at the approval of this document, which
+ended the stage; none was overruled. The user confirmed that reading in the design stage
+(`Q-21`): "Your approval of the requirements confirmed A-1, A-3 and A-4 along with A-2".*
 
 - **`A-1`: which characters are a line break (`R-2` clause 6, `R-6` clause 4).** Assumed: a line
   break is any of U+000A (line feed), U+000B (line tabulation), U+000C (form feed), U+000D
@@ -729,7 +730,7 @@ at the approval of this document, which ends the stage.*
   U+0085 (`text-measurement.json` case `next_line_inside_is_kept`). The set is written down
   because the two languages' own line-break defaults disagree, among others about U+000B, U+000C
   and U+0085 (COH-requirements-4 in `review/coherence.md`), and `R-2` clause 5 fails if each side
-  takes its own. **Status:** assumed, awaiting the user.
+  takes its own. **Status:** confirmed at this document's approval.
 - **`A-2`: a task lives until somebody deletes it (§ Non-Goals).** Assumed: nothing removes a
   task except a person deleting it, with no expiry and no retention policy, as for a guestbook
   entry (`spec/invariants.md` § Deliberate non-goals, "A data retention policy"). Say so if not.
@@ -748,7 +749,7 @@ at the approval of this document, which ends the stage.*
   S-9 already holds ("the line break rule runs before trimming" fails it) and the one
   `spec/contexts/guestbook.md` § `BR-01` uses for entries ("Whitespace *inside* a value is
   content and is kept; only the ends go") (COH-requirements-8 in `review/coherence.md`).
-  **Status:** assumed, awaiting the user.
+  **Status:** confirmed at this document's approval.
 - **`A-4`: what "the guestbook suites run unchanged" promises (`SC-5`).** Assumed: the 22
   scenarios of `e2e/suite/features/guestbook.feature` run unedited, and the UI smoke's guestbook
   tests keep asserting what they assert today, while a locator in `e2e/ui/test_smoke.py` that
@@ -758,7 +759,7 @@ at the approval of this document, which ends the stage.*
   link takes that exact name. The smoke finds the lockup link by that exact name
   (`e2e/ui/test_smoke.py`:40, :93, :373; `frontend/src/components/shell/PageFrame.tsx`:24), so
   under that reading a renamed lockup, or a second link named "Guestbook", turns it red
-  (COH-requirements-9 in `review/coherence.md`). **Status:** assumed, awaiting the user.
+  (COH-requirements-9 in `review/coherence.md`). **Status:** confirmed at this document's approval.
 
 ## Self-check
 
@@ -773,7 +774,7 @@ at the approval of this document, which ends the stage.*
    the set has to be shared rather than copied, or two copies drift.
 4. [Completeness] [§ R-2] What happens to a line break inside a text? It is refused with a reason
    of its own (`Q-11`, `R-2` clause 6, `R-2.7`). Which characters are a line break is assumption
-   `A-1`, for the user to confirm at this document's approval.
+   `A-1`, confirmed at this document's approval.
 5. [Measurability] [§ R-2] Can "the screen takes every character" in `R-2.3` be observed in a
    suite that owns citations? It can over the rule the screen applies, in vitest. The typing and
    pasting half only the UI smoke sees, and the smoke owns no citation. If design finds no vitest

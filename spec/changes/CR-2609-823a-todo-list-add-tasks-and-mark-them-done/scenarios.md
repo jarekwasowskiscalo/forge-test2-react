@@ -37,6 +37,11 @@ screen. So each seed says what observes it:
 | R-10 | S-44, S-45, S-46, S-47, S-48 | yes (all five) | screen |
 | R-11 | S-49, S-50, S-51, S-52, S-53 | yes (S-50, S-51) | person (manual) |
 
+**"Observed through" says where a seed can be seen, not which suite binds it.** An "application"
+seed is one the black box can bind; whether it does is `design-testing`'s call, written in
+`spec/design/testing.md`, and a seed the black box leaves unbound is proved there by a cheaper
+suite that reads the same values.
+
 `R-1` clause 2 (no account, no sign-in) has no seed of its own. Every scenario here runs with
 nobody signed in, so every one of them proves it, and no single scenario could prove it better.
 

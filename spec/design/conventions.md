@@ -39,17 +39,24 @@ knows nothing about the domain. The sentence an operator reads belongs beside th
 produced it, not in a shared table one edit away from telling somebody the wrong column to
 correct. The worked example is `_not_found` in `app/contexts/guestbook/routers/guestbook_entries.py`.
 
-**A rule whose refusal carries a code of its own is judged in `services/`, and `schemas/` holds
-no part of it.** A constraint or a validator in a schema answers before the route runs, with
-FastAPI's list of `{loc, msg, type}` and no code. So a schema holds only a bound whose refusal
-needs no code of its own. The guestbook's `BR-01` bounds are that case, and the guestbook is the
-worked example of that case, not of every bound. Where [`api.md`](api.md) gives a refusal a
-code, the request shapes carry the field with no bound, so a shape built from a refused value is
-still a valid shape. The service judges the value before any write and raises one domain
-exception per verdict, and the router translates each one into its coded refusal, as above. A
-to-do task's text is such a rule: normalize, then empty, then one line, then measure. The user
-decided it in `CR-2609-823a` (`Q-17`) in these words: "The service checks it, with a coded
-reason."
+**A rule about a field's value whose refusal carries a code of its own is judged in `services/`,
+and `schemas/` holds no part of it.** A refusal about the request as a whole, a `PATCH` that sets
+no field, is decided beside the endpoint before the service is called ([`api.md`](api.md)
+§ Shapes, `GuestbookEntryUpdate`). A constraint or a validator in a schema answers before the
+route runs, with FastAPI's list of `{loc, msg, type}` and no code. So a schema holds only a bound
+whose refusal needs no code of its own. The guestbook's `BR-01` bounds are that case, and the
+guestbook is the worked example of that case, not of every bound. Where [`api.md`](api.md) gives
+a refusal a code, the request shapes carry the field with no bound, so a shape built from a
+refused value is still a valid shape. **Holding no part of the rule means importing none of it:**
+the service's judgement imports the rule's parts — the bound beside the model and the shared
+kernel's `normalize` and `length` (`app/platform/schemas/text.py`) — and `schemas/` imports
+neither. The service judges the value before any write and raises one domain exception per
+verdict, and the router translates each one into its coded refusal, as above. A to-do task's
+text is such a rule: normalize, then empty, then one line, then measure. The user decided it in
+`CR-2609-823a` (`Q-17`) in these words: "The service checks it, with a coded reason." The user
+drew both edges of the rule in the same change (`Q-21`): "Refusing an edit that changes nothing
+is decided at the endpoint, as the guestbook does; only rules about a field's value go to the
+service", and "The request formats import no part of the text rule; the service does."
 
 ## Backend — where a file goes
 

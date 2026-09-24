@@ -42,7 +42,7 @@ The comparison is therefore a **subset**: every sentence of the contract must be
 dump, and the dump may carry more — with one rule in the other direction: every `/api/*` path
 the application serves must be covered by some contract's prefix, because without it "subset"
 would mean "an empty contract passes". A contract has to be written and maintained — for this
-template that is three paths, six operations and eight schemas — and refusals with codes had
+template that is five paths, ten operations and twelve schemas — and refusals with codes had
 to stop being prose: `app/platform/schemas/refusals.py` declares their shape, the routers name it in
 `responses=`, and that is why `frontend/src/api/schema.d.ts` carries a `Refusal` type.
 

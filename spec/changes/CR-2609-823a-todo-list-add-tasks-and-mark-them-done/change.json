@@ -396,9 +396,12 @@
       "id": "COH-design-9",
       "kind": "contradiction",
       "raised_at": "2026-09-24T16:24:49Z",
+      "resolution": "the third detector of testing.md names test_every_screen_and_feature_a_context_names_is_on_disk, red since the feature file was claimed before it exists (Q-19), declared on build-tests-e2e's task; the claim cases stay green (constitution, Article X)",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-24T16:30:29Z",
       "severity": "major",
       "stage": "design",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/testing.md § CR-2609-823a, the to-do list",
@@ -413,9 +416,12 @@
       "id": "COH-design-10",
       "kind": "gap",
       "raised_at": "2026-09-24T16:24:49Z",
+      "resolution": "Q-21 (1) = A: record the contract gate's red in the test plan and sign it off by name at each stage end until the backend exists; each boundary before build-backend's wave accepts check red on ./scripts/contracts.sh alone, with testing.md's bullet as the reason",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T16:30:29Z",
       "severity": "major",
       "stage": "design",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/ui/guestbook.md § Data",
@@ -430,9 +436,12 @@
       "id": "COH-design-11",
       "kind": "contradiction",
       "raised_at": "2026-09-24T16:24:49Z",
+      "resolution": "Q-21 (2) = A: adding a task sends the text cleaned up the same way the screen checked it, as the guestbook does, instead of exactly as typed",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T16:30:29Z",
       "severity": "minor",
       "stage": "design",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/conventions.md § Layers",
@@ -447,9 +456,12 @@
       "id": "COH-design-12",
       "kind": "contradiction",
       "raised_at": "2026-09-24T16:24:49Z",
+      "resolution": "Q-21 (3) = A: refusing an edit that changes nothing is decided at the endpoint, as the guestbook does; only rules about a field's value go to the service",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T16:30:29Z",
       "severity": "minor",
       "stage": "design",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/conventions.md § Layers",
@@ -464,9 +476,12 @@
       "id": "COH-design-13",
       "kind": "contradiction",
       "raised_at": "2026-09-24T16:24:49Z",
+      "resolution": "Q-21 (4) = A: the request formats import no part of the text rule; the service does",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T16:30:29Z",
       "severity": "minor",
       "stage": "design",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Named assumptions",
@@ -481,9 +496,12 @@
       "id": "COH-design-14",
       "kind": "contradiction",
       "raised_at": "2026-09-24T16:24:49Z",
+      "resolution": "Q-21 (5) = A: the requirements approval confirmed A-1, A-3 and A-4 along with A-2",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T16:30:29Z",
       "severity": "minor",
       "stage": "design",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/scenarios.md § Coverage",
@@ -498,9 +516,12 @@
       "id": "COH-design-15",
       "kind": "contradiction",
       "raised_at": "2026-09-24T16:24:49Z",
+      "resolution": "the scenarios tell the three text refusals apart and the integration corpus test proves each on the wire; the black box does not bind them (spec/design/testing.md § CR-2609-823a, the suite choice)",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-24T16:30:29Z",
       "severity": "minor",
       "stage": "design",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/invariants.md § Data invariants",
@@ -515,9 +536,12 @@
       "id": "COH-design-16",
       "kind": "contradiction",
       "raised_at": "2026-09-24T16:24:49Z",
+      "resolution": "Q-21 (6) = A: a task's text gets its own data rule (cleaned, 1 to 200 characters, one line), stated in the data model now and written into contracts/invariants/ by the spec_sync stage's convergence round, once its tests exist",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T16:30:29Z",
       "severity": "minor",
       "stage": "design",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/testing.md § Fitness functions",
@@ -532,9 +556,12 @@
       "id": "COH-design-17",
       "kind": "contradiction",
       "raised_at": "2026-09-24T16:24:49Z",
+      "resolution": "testing.md's migration-safety row says each of the two revisions creates its table and its index together (constitution, Article IV)",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-24T16:30:29Z",
       "severity": "minor",
       "stage": "design",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "contracts/README.md § Why a contract is written rather than generated",
@@ -549,9 +576,12 @@
       "id": "COH-design-18",
       "kind": "contradiction",
       "raised_at": "2026-09-24T16:24:49Z",
+      "resolution": "contracts/README.md counts five paths, ten operations and twelve schemas (constitution, Article IV)",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-24T16:30:30Z",
       "severity": "minor",
       "stage": "design",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "coherence_passes": [
@@ -662,8 +692,8 @@
       "state": "returned"
     },
     "review-converge": {
-      "assumptions": "- Reconciled all eight design pass-4 findings in their ambiguity sources (REC-12..REC-19): conventions.md § Layers gains \"A rule whose refusal carries a code of its own is judged in `services/`, and `schemas/` holds no part of it.\" (COH-1/2, Q-17 words quoted); § Frontend gains \"Only the rule moves up.\" (COH-3); architecture.md § Who writes what gains \"[testing.md] decides which files a test author writes, and the change's boundary names every one of them.\" (COH-4); todo_list.md's header paragraph is rewritten and its front matter claims screens: [spec/design/ui/todo-list.md] and features: [e2e/suite/features/todo_list.feature] (COH-5/6, Q-19); spec/README.md and conventions.md:77 say two domain contexts (COH-8); requirements.md :525-527, :673-675, A-2 and Self-check 23 follow spec/invariants.md (COH-7).\n- The artefact-level patches are left to the re-dispatched authors: architecture.md § The layer per rule, :600-603 and § The files; testing.md :759 and :859-860; design/delta/architecture.md Decision 2, Decision 4, the write sets, § This change owns and § Found outside.\n- Still stale and routed elsewhere: conventions.md § Frontend :172-175 (\"the browser has exactly one\") goes to reconcile-design; requirements.md A-1, A-3 and A-4 still read \"awaiting the user\" and need the same write-back later.\n- Expected reds now: test_every_screen_and_feature_a_context_names_is_on_disk (from the features claim; design-plan declares it on build-tests-e2e's task) and test_every_context_document_has_code... (declared in testing.md).",
-      "at": "2026-09-24T16:00:31Z",
+      "assumptions": "- Reconciled all ten design pass-5 findings (REC-20..REC-29), each in its ambiguity source: testing.md's detectors (COH-9 on-disk case; COH-10 the contract-gate bullet accepted by name at each boundary until build-backend's wave); ui/guestbook.md § Data \"What is posted and amended is the text the screen judged, not the text as typed.\" (COH-11); conventions.md § Layers \"A rule about a field's value whose refusal carries a code ...\" and \"Holding no part of the rule means importing none of it\" (COH-12, COH-13); requirements.md preamble, A-1/A-3/A-4 Status lines, :519 and Self-check 4 say the approval confirmed the assumptions (COH-14); scenarios.md § Coverage \"'Observed through' says where a seed can be seen, not which suite binds it.\" (COH-15); invariants.md § Data invariants \"Which stage's convergence round writes a new data invariant is settled by its witnesses\" (COH-16); testing.md:211 \"each of the two revisions\" (COH-17); contracts/README.md \"five paths, ten operations and twelve schemas\" (COH-18).\n- Also applied, at the orchestrator's instruction, the artefact-level ready patches (testing.md bullets, ui/todo-list.md add row, the architecture.md router sentence, data-model.md's invariant call and bound clause, the architecture fragment's item 4 and does-not-move line, the ADR draft's § Context, the api fragment's Why).\n- Q-21 (2) decided adding only; the correction row's payload was not generalized.\n- requirements.md lines 85 and 88 (\"assumed: A-1/A-3\") and the SC-5 cell were left as they are (no ready patch names them).\n- requirements.md and scenarios.md changed, so the requirements approval needs to be given again.",
+      "at": "2026-09-24T16:30:29Z",
       "state": "returned"
     }
   },
@@ -1616,6 +1646,11 @@
           "at": "2026-09-24T16:24:49Z",
           "note": "A contract frozen at design close (contracts/openapi/*.yaml, as design-api requires) makes check red through the contracts gate until build-backend's wave. expected_red accepts only junit classname::name ids (plan_grammar.py:62, :102-108). So every change that adds an endpoint can close design only through an --accept-red written after the failing run, which Article X forbids.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T16:24:54Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/314#issuecomment-5814903764",
+          "state": "filed"
         }
       ],
       "id": "PROC-31",
@@ -1625,6 +1660,32 @@
       "seen": 1,
       "signal": "A contract frozen at design close (contracts/openapi/*.yaml, as design-api requires) makes check red through the contracts gate until build-backend's wave. expected_red accepts only junit classname::name ids (plan_grammar.py:62, :102-108). So every change that adds an endpoint can close design only through an --accept-red written after the failing run, which Article X forbids.",
       "signature": "A contract frozen at design close (contracts· as design-api requires) makes check red through the contracts gate until b",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/314#issuecomment-5814903764"
+    },
+    {
+      "at": "2026-09-24T16:30:29Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T16:30:29Z",
+          "note": "review-converge's SKILL.md says \"Files never written: Any artefact a finding names\" and \"One finding, one edit\", while this dispatch, and the pass-4 precedent recorded in coherence.md, had the convergence round apply the artefact-level ready patches as well. The skill and the orchestrator disagree on who writes artefact patches after a coherence decision.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-32",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-converge",
+      "seen": 1,
+      "signal": "review-converge's SKILL.md says \"Files never written: Any artefact a finding names\" and \"One finding, one edit\", while this dispatch, and the pass-4 precedent recorded in coherence.md, had the convergence round apply the artefact-level ready patches as well. The skill and the orchestrator disagree on who writes artefact patches after a coherence decision.",
+      "signature": "review-converge's SKILL.md says · and ·, while this dispatch, and the pass-· precedent recorded in coherence.md, had the",
       "stage": "design",
       "state": "reported",
       "url": null
@@ -2482,6 +2543,48 @@
       "stage": "design",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T16:26:12Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T16:25:25Z",
+      "blocking": false,
+      "blocks": [
+        "COH-design-10",
+        "COH-design-11",
+        "COH-design-12",
+        "COH-design-13",
+        "COH-design-14",
+        "COH-design-16"
+      ],
+      "options": [
+        {
+          "consequence": "The reconciliation step writes each one into the documents, and the design goes to its final check.",
+          "key": "A",
+          "label": "Accept all six recommendations",
+          "recommended": true
+        },
+        {
+          "consequence": "Six separate questions, each with its alternative and consequence; slower, and the stage waits for all six.",
+          "key": "B",
+          "label": "Go through them one by one",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-21",
+      "question": "The second review left six smaller decisions, each with a recommendation. (1) The API contract check fails until the backend is written: record that in the test plan and sign it off by name at each stage end until the backend exists, instead of writing the contract file only with the backend. (2) Adding a task sends the text cleaned up the same way the screen checked it, as the guestbook does, instead of exactly as typed (nothing stored differs either way). (3) Refusing an edit that changes nothing is decided at the endpoint, as the guestbook does; only rules about a field's value go to the service. (4) The request formats import no part of the text rule; the service does. (5) Your approval of the requirements confirmed A-1, A-3 and A-4 along with A-2: A-1, the seven characters that count as a line break; A-3, the line-break rule looks at the text after its ends are trimmed; A-4, the guestbook's 22 scenarios run unedited while the screen smoke test may follow the names you approved in the mock-up. (6) A task's text gets its own data rule (cleaned, 1 to 200 characters, one line), stated in the data model now and written into the data-rules folder at the reconciliation stage, once its tests exist. Accept all six? (Decides COH-design-10, -11, -12, -13, -14 and -16.)",
+      "stage": "design",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -2723,6 +2826,127 @@
       "id": "REC-19",
       "rule_added": "guestbook is this template's worked example through every layer; the to-do list (todo_list) is a second domain context and is not an example.",
       "source": "auto"
+    },
+    {
+      "at": "2026-09-24T16:30:00Z",
+      "decision": "the third detector of testing.md names test_every_screen_and_feature_a_context_names_is_on_disk, red since the feature file was claimed before it exists (Q-19), declared on build-tests-e2e's task; the claim cases stay green (constitution, Article X)",
+      "edited": [
+        "spec/design/testing.md § CR-2609-823a, the to-do list",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md § Found outside every write set — for the orchestrator"
+      ],
+      "from_finding": "COH-design-9",
+      "id": "REC-20",
+      "rule_added": "testing.md: the on-disk case is the declared red until build-tests-e2e writes e2e/suite/features/todo_list.feature",
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T16:30:01Z",
+      "decision": "Q-21 (1) = A: record the contract gate's red in the test plan and sign it off by name at each stage end until the backend exists; each boundary before build-backend's wave accepts check red on ./scripts/contracts.sh alone, with testing.md's bullet as the reason",
+      "edited": [
+        "spec/design/testing.md § CR-2609-823a, the to-do list"
+      ],
+      "from_finding": "COH-design-10",
+      "id": "REC-21",
+      "rule_added": "testing.md: ./scripts/contracts.sh is a declared red of the specification, green when build-backend's schemas and routers exist",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T16:30:01Z",
+      "decision": "Q-21 (2) = A: adding a task sends the text cleaned up the same way the screen checked it, as the guestbook does, instead of exactly as typed",
+      "edited": [
+        "spec/design/ui/guestbook.md § Data",
+        "spec/design/ui/todo-list.md § Data"
+      ],
+      "from_finding": "COH-design-11",
+      "id": "REC-22",
+      "rule_added": "ui/guestbook.md § Data: what is posted and amended is the text the screen judged, not the text as typed",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T16:30:01Z",
+      "decision": "Q-21 (3) = A: refusing an edit that changes nothing is decided at the endpoint, as the guestbook does; only rules about a field's value go to the service",
+      "edited": [
+        "spec/design/conventions.md § Layers",
+        "spec/design/architecture.md § The to-do list — where each rule lives"
+      ],
+      "from_finding": "COH-design-12",
+      "id": "REC-23",
+      "rule_added": "conventions.md § Layers: a rule about a field's value with a coded refusal is judged in services/; a refusal about the request as a whole is decided beside the endpoint",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T16:30:01Z",
+      "decision": "Q-21 (4) = A: the request formats import no part of the text rule; the service does",
+      "edited": [
+        "spec/design/conventions.md § Layers",
+        "spec/design/data-model.md § todo_tasks",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md § What this change does not move"
+      ],
+      "from_finding": "COH-design-13",
+      "id": "REC-24",
+      "rule_added": "conventions.md § Layers: holding no part of the rule means importing none of it",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T16:30:01Z",
+      "decision": "Q-21 (5) = A: the requirements approval confirmed A-1, A-3 and A-4 along with A-2",
+      "edited": [
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Named assumptions",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Impact analysis",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Self-check"
+      ],
+      "from_finding": "COH-design-14",
+      "id": "REC-25",
+      "rule_added": "requirements.md § Named assumptions: the preamble and every Status line record what the approval did",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T16:30:01Z",
+      "decision": "the scenarios tell the three text refusals apart and the integration corpus test proves each on the wire; the black box does not bind them (spec/design/testing.md § CR-2609-823a, the suite choice)",
+      "edited": [
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/scenarios.md § Coverage",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/adr/task-text-refusals-are-coded-not-schema-constraints.md § Context",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/api.md § spec/design/api.md entry, Why"
+      ],
+      "from_finding": "COH-design-15",
+      "id": "REC-26",
+      "rule_added": "scenarios.md § Coverage: Observed through says where a seed can be seen, not which suite binds it",
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T16:30:01Z",
+      "decision": "Q-21 (6) = A: a task's text gets its own data rule (cleaned, 1 to 200 characters, one line), stated in the data model now and written into contracts/invariants/ by the spec_sync stage's convergence round, once its tests exist",
+      "edited": [
+        "spec/invariants.md § Data invariants",
+        "spec/design/data-model.md § todo_tasks",
+        "spec/design/testing.md § CR-2609-823a, the to-do list"
+      ],
+      "from_finding": "COH-design-16",
+      "id": "REC-27",
+      "rule_added": "invariants.md § Data invariants: a data invariant is written by the first convergence round after its witnesses exist",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T16:30:02Z",
+      "decision": "testing.md's migration-safety row says each of the two revisions creates its table and its index together (constitution, Article IV)",
+      "edited": [
+        "spec/design/testing.md § Fitness functions"
+      ],
+      "from_finding": "COH-design-17",
+      "id": "REC-28",
+      "rule_added": null,
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T16:30:02Z",
+      "decision": "contracts/README.md counts five paths, ten operations and twelve schemas (constitution, Article IV)",
+      "edited": [
+        "contracts/README.md § Why a contract is written rather than generated"
+      ],
+      "from_finding": "COH-design-18",
+      "id": "REC-29",
+      "rule_added": null,
+      "source": "auto"
     }
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
@@ -2739,7 +2963,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 176,
+  "revision": 201,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -2806,7 +3030,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T16:24:49Z",
+  "updated_at": "2026-09-24T16:30:30Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {

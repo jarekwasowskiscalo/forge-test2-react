@@ -600,7 +600,9 @@ rule, which file holds each layer, and which implementer writes each file.
 The router decides nothing on that list. It binds the routes [`api.md`](api.md) publishes,
 declares every refusal it can answer with, and turns each of the service's domain exceptions
 into its coded refusal, explicitly: the not-found refusal and the three about a task's text,
-with the sentences [`api.md`](api.md) § The to-do list's refusals gives.
+with the sentences [`api.md`](api.md) § The to-do list's refusals gives. It answers
+`todo_task_empty_patch` itself, before it calls the service, as the guestbook's router answers
+its empty patch.
 
 ### The files
 
