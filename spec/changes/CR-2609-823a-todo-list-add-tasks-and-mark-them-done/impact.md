@@ -377,3 +377,9 @@ recorded with `sdd-engine change_state set-tier`, not by this paragraph.
 *This table is for a human and nobody parses it. The machine truth is
 `sdd-engine change_state set-signals`, recorded with nine signals present and `infra_touched`,
 `tooling_touched` absent.*
+
+**Re-measured 2026-09-24 (12:05 UTC), after `Q-8` (`brainstorm.md`).** `tooling_touched` is lit,
+because `R-11` reaches `scripts/seed_golden_set.py`: the condition in its row above ("reached
+only if the requirements give the list seed data") is met. The record holds ten signals present
+and `infra_touched` alone absent. The tier stays `p3`. The row and the sentence above are kept
+as the first measurement wrote them.

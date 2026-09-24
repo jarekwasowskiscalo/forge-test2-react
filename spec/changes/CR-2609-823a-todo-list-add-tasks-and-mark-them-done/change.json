@@ -55,9 +55,12 @@
       "id": "COH-requirements-1",
       "kind": "gap",
       "raised_at": "2026-09-24T12:25:08Z",
+      "resolution": "Q-11 = A, the user's words: \"Refuse it, with its own message\". A line break between a task's first and last visible character is refused with a reason of its own, on add and on edit; one at either end is trimmed. D2 is answered.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T12:31:14Z",
       "severity": "major",
       "stage": "requirements",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-11",
@@ -72,9 +75,12 @@
       "id": "COH-requirements-2",
       "kind": "gap",
       "raised_at": "2026-09-24T12:25:08Z",
+      "resolution": "Q-10 = A, the user's words: \"Yes, each list is filled on its own\". An environment whose to-do list is empty gets example tasks whatever the guestbook holds, and the guestbook is filled by what it holds alone. D1 is answered.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T12:31:14Z",
       "severity": "major",
       "stage": "requirements",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-11",
@@ -89,9 +95,12 @@
       "id": "COH-requirements-3",
       "kind": "gap",
       "raised_at": "2026-09-24T12:25:08Z",
+      "resolution": "Q-12 = A, the user's words: \"Yes, at least one is done\". At least one example task is added not done and then marked done. D3 is answered.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T12:31:14Z",
       "severity": "minor",
       "stage": "requirements",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-2",
@@ -106,9 +115,12 @@
       "id": "COH-requirements-4",
       "kind": "quality",
       "raised_at": "2026-09-24T12:25:08Z",
+      "resolution": "NOT a human decision: named assumption A-1, written because the stage question budget is spent (loop ask --raise refused a 13th question). Assumed, with the finding's recommended option A: a line break is any of U+000A, U+000B, U+000C, U+000D, U+0085, U+2028, U+2029, one written set both sides read. The user confirms or overrules it at the requirements.md approval gate.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T12:31:14Z",
       "severity": "major",
       "stage": "requirements",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/invariants.md § Deliberate non-goals",
@@ -123,9 +135,12 @@
       "id": "COH-requirements-5",
       "kind": "gap",
       "raised_at": "2026-09-24T12:25:08Z",
+      "resolution": "NOT a human decision: the retention half. No user answer says that a task lives until somebody deletes it (Q-9 settled only that a deletion is permanent). It is carried as named assumption A-2 because the stage question budget is spent. spec/invariants.md § A data retention policy keeps its wording for entries until the user confirms A-2 at the requirements.md approval gate.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T12:31:14Z",
       "severity": "minor",
       "stage": "requirements",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/impact.md § Tier signals",
@@ -140,9 +155,12 @@
       "id": "COH-requirements-6",
       "kind": "contradiction",
       "raised_at": "2026-09-24T12:25:08Z",
+      "resolution": "NOT a human decision: a factual correction from the record. The signals were re-measured at 2026-09-24T12:05:15Z after Q-8: ten present, infra_touched alone absent. A dated note is added under the Tier signals table, and the original row and closing sentence are kept as the first measurement wrote them.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T12:31:14Z",
       "severity": "minor",
       "stage": "requirements",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "coherence_passes": [
@@ -181,6 +199,11 @@
     "review-coherence": {
       "assumptions": "none -- this skill reads, it does not produce an artefact others depend on",
       "at": "2026-09-24T12:25:08Z",
+      "state": "returned"
+    },
+    "review-converge": {
+      "assumptions": "No review-triage ran. Each ambiguity_source was taken from the finding block as written. COH-5 touches two documents. The dispatch sent the retention half to requirements.md as A-2, so the retention line in spec/invariants.md was deliberately not changed, because no user decision stands behind it.",
+      "at": "2026-09-24T12:31:14Z",
       "state": "returned"
     }
   },
@@ -384,6 +407,11 @@
           "at": "2026-09-24T12:25:08Z",
           "note": "Answers to questions a fan-out member raised (Q-10..Q-12, from cr-requirements D1-D3) are recorded only in change.json, and no step writes them back into the artefact before the next member reads it. A recorded answer cannot be cited as auto_basis, so review-coherence has to file decisions the user already made as HITL and NO_GO, which invites asking an answered question again (constitution Art. VII).",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T12:27:16Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/305",
+          "state": "filed"
         }
       ],
       "id": "PROC-7",
@@ -393,6 +421,63 @@
       "seen": 1,
       "signal": "Answers to questions a fan-out member raised (Q-10..Q-12, from cr-requirements D1-D3) are recorded only in change.json, and no step writes them back into the artefact before the next member reads it. A recorded answer cannot be cited as auto_basis, so review-coherence has to file decisions the user already made as HITL and NO_GO, which invites asking an answered question again (constitution Art. VII).",
       "signature": "Answers to questions a fan-out member raised (Q-·..Q-·, from cr-requirements D1-D3) are recorded only in change.json, an",
+      "stage": "requirements",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/305"
+    },
+    {
+      "at": "2026-09-24T12:26:44Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T12:26:44Z",
+          "note": "Row 11 dead end after the question budget is spent: coherence pass 1 of requirements left six HITL findings; `loop ask --raise` refused a 13th question (budget 12) and named \"a named assumption in this stage's document\" as the exit, but `loop next` keeps returning row 11 (hitl) and renders no review-converge dispatch, so the orchestrator composed the review-converge dispatch by hand from the Phase 3 template. Cost: an improvised dispatch outside the rendered blocks.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T12:27:35Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/306",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-8",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "Row 11 dead end after the question budget is spent: coherence pass 1 of requirements left six HITL findings; `loop ask --raise` refused a 13th question (budget 12) and named \"a named assumption in this stage's document\" as the exit, but `loop next` keeps returning row 11 (hitl) and renders no review-converge dispatch, so the orchestrator composed the review-converge dispatch by hand from the Phase 3 template. Cost: an improvised dispatch outside the rendered blocks.",
+      "signature": "Row · dead end after the question budget is spent: coherence pass · of requirements left six HITL findings; `loop ask --",
+      "stage": "requirements",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/306"
+    },
+    {
+      "at": "2026-09-24T12:31:14Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T12:31:14Z",
+          "note": "review-converge names a delta directory only for design and spec_sync, yet it is dispatched in requirements and made to edit spec/invariants.md; delta.py assembles only design/ and reconcile/, so the worker put the entry in design/delta/converge.md on its own reading. Separately, add-reconciliation --source has only auto or hitl, and neither fits a named assumption (not a human decision, not following from a higher document); the worker used auto and spelled that out in --decision.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-9",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-converge",
+      "seen": 1,
+      "signal": "review-converge names a delta directory only for design and spec_sync, yet it is dispatched in requirements and made to edit spec/invariants.md; delta.py assembles only design/ and reconcile/, so the worker put the entry in design/delta/converge.md on its own reading. Separately, add-reconciliation --source has only auto or hitl, and neither fits a named assumption (not a human decision, not following from a higher document); the worker used auto and spelled that out in --decision.",
+      "signature": "review-converge names a delta directory only for design and spec_sync, yet it is dispatched in requirements and made to ",
       "stage": "requirements",
       "state": "reported",
       "url": null
@@ -870,10 +955,106 @@
   "parent_cr_id": null,
   "parent_merge_commit": null,
   "previous_stage": "intake",
-  "reconciliations": [],
+  "reconciliations": [
+    {
+      "at": "2026-09-24T12:30:43Z",
+      "decision": "Q-11 = A, the user's words: \"Refuse it, with its own message\". A line break between a task's first and last visible character is refused with a reason of its own, on add and on edit; one at either end is trimmed. D2 is answered.",
+      "edited": [
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-2 (clause 4, new clause 6, R-2.7)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-6 (clause 4, R-6.3)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Edge cases (E-9, With no defined behaviour)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Impact analysis (Tests that would fail)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Open questions (D2)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Self-check (4)"
+      ],
+      "from_finding": "COH-requirements-1",
+      "id": "REC-1",
+      "rule_added": "R-2 clause 6 and R-2.7: a task with an inner line break is refused with the one-line reason",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T12:30:43Z",
+      "decision": "Q-10 = A, the user's words: \"Yes, each list is filled on its own\". An environment whose to-do list is empty gets example tasks whatever the guestbook holds, and the guestbook is filled by what it holds alone. D1 is answered.",
+      "edited": [
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-11 (clause 1, new clause 5, R-11.5, R-11.6)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Edge cases (With no defined behaviour)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Impact analysis (Decisions that already settle this; Tests that would fail)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Open questions (D1)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Self-check (21)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md header (Source)"
+      ],
+      "from_finding": "COH-requirements-2",
+      "id": "REC-2",
+      "rule_added": "R-11 clause 1 reworded and clause 5 added: each list is filled on its own",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T12:30:43Z",
+      "decision": "Q-12 = A, the user's words: \"Yes, at least one is done\". At least one example task is added not done and then marked done. D3 is answered.",
+      "edited": [
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-11 (new clause 6, R-11.7)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Bounds (Example tasks done, minimum)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Edge cases (With no defined behaviour)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Open questions (D3)"
+      ],
+      "from_finding": "COH-requirements-3",
+      "id": "REC-3",
+      "rule_added": "R-11 clause 6 and R-11.7: at least one example task is done",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T12:30:49Z",
+      "decision": "NOT a human decision: named assumption A-1, written because the stage question budget is spent (loop ask --raise refused a 13th question). Assumed, with the finding's recommended option A: a line break is any of U+000A, U+000B, U+000C, U+000D, U+0085, U+2028, U+2029, one written set both sides read. The user confirms or overrules it at the requirements.md approval gate.",
+      "edited": [
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-2 (clause 6, the set)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Bounds (Line break inside a task)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Named assumptions (A-1)"
+      ],
+      "from_finding": "COH-requirements-4",
+      "id": "REC-4",
+      "rule_added": "A-1 (assumption): the line-break set U+000A, U+000B, U+000C, U+000D, U+0085, U+2028, U+2029",
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T12:30:50Z",
+      "decision": "The no-login half, confirmed by the user at the Q-9 read-back (brainstorm.md: anybody may add, tick, edit and delete any task). The authentication non-goal now names anything the system stores: any guestbook entry and any to-do task. It rewords and lifts nothing.",
+      "edited": [
+        "spec/invariants.md § Deliberate non-goals (Authentication and authorisation)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Impact analysis (Collisions with invariants)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Self-check (23)"
+      ],
+      "from_finding": "COH-requirements-5",
+      "id": "REC-5",
+      "rule_added": null,
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T12:30:50Z",
+      "decision": "NOT a human decision: the retention half. No user answer says that a task lives until somebody deletes it (Q-9 settled only that a deletion is permanent). It is carried as named assumption A-2 because the stage question budget is spent. spec/invariants.md § A data retention policy keeps its wording for entries until the user confirms A-2 at the requirements.md approval gate.",
+      "edited": [
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Named assumptions (A-2)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Non-Goals (A retention policy for tasks)"
+      ],
+      "from_finding": "COH-requirements-5",
+      "id": "REC-6",
+      "rule_added": null,
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T12:30:50Z",
+      "decision": "NOT a human decision: a factual correction from the record. The signals were re-measured at 2026-09-24T12:05:15Z after Q-8: ten present, infra_touched alone absent. A dated note is added under the Tier signals table, and the original row and closing sentence are kept as the first measurement wrote them.",
+      "edited": [
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/impact.md § Tier signals (dated re-measurement note)"
+      ],
+      "from_finding": "COH-requirements-6",
+      "id": "REC-7",
+      "rule_added": null,
+      "source": "auto"
+    }
+  ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
   "requirements": [],
-  "revision": 41,
+  "revision": 59,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -922,7 +1103,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T12:25:08Z",
+  "updated_at": "2026-09-24T12:31:14Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {

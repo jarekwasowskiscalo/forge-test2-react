@@ -121,8 +121,8 @@ does not try to fix it**. The rule is in this wording because the previous one �
 a single action — did not catch the second case on the same change.
 
 - **Authentication and authorisation.** There are no accounts, sessions or roles; anybody may
-  add, amend and delete any entry. The signature under an entry is a claim rather than an
-  identity, and no document or screen may assign it a meaning it does not have. A product
+  add, amend and delete anything the system stores: any guestbook entry and any to-do task. The
+  signature under an entry is a claim rather than an identity, and no document or screen may assign it a meaning it does not have. A product
   built from this template lifts this non-goal with an ADR and hangs the check on **the router
   aggregate** — once, never per router: a router added later would be left open until somebody
   happened to remember. Which file that is has one home, and it is

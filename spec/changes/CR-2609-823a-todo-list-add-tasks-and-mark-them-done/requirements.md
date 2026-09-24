@@ -1,7 +1,8 @@
 # Requirements — the to-do list: add tasks and mark them done
 
 **Change:** CR-2609-823a
-**Source:** request.md, impact.md, brainstorm.md (answers `Q-1`…`Q-9`)
+**Source:** request.md, impact.md, brainstorm.md (answers `Q-1`…`Q-9`), and the answers
+`Q-10`…`Q-12` recorded in the change record on 2026-09-24
 
 ## Goal
 
@@ -73,11 +74,17 @@ rows on the first day.
 3. IF a task's text is longer than 200 code points after normalizing and trimming, THEN the
    system SHALL refuse it, store nothing, and tell the person that the text is too long.
 4. WHERE a text carries whitespace other than a line break between its first and last visible
-   character, the system SHALL keep that whitespace unchanged. (A line break inside the text is
-   an open question, `D2` in § Open questions.)
+   character, the system SHALL keep that whitespace unchanged.
 5. The system SHALL accept on the screen exactly the texts the service accepts. The field
    SHALL NOT block, cut short or silently stop taking a text the service would store, and the
    screen SHALL NOT let through a text the service would refuse.
+6. IF a task's text carries a line break between its first and last visible character, THEN the
+   system SHALL refuse it, store nothing, and tell the person, with a reason of its own, that a
+   task is one line (`Q-11`: "Refuse it, with its own message"). A line break is any of U+000A,
+   U+000B, U+000C, U+000D, U+0085, U+2028 and U+2029: one written set that the screen and the
+   service both read, never either language's default (assumed: `A-1`, § Named assumptions).
+   Every one of them is in clause 1's trim set, so a line break at either end is removed by
+   clause 1 and is not refused.
 
 **Acceptance**
 - **R-2.1** GIVEN the text "   " (three spaces), WHEN it is submitted as a new task, THEN it is
@@ -96,6 +103,10 @@ rows on the first day.
   the spaces. GIVEN a text of 205 spaces, THEN it is refused as empty, not as too long.
 - **R-2.6** GIVEN the text "Buy  two   lamps", WHEN it is submitted, THEN it is stored with its
   inner spaces exactly as typed.
+- **R-2.7** GIVEN the text "Buy bread", a line feed, then "and milk", WHEN it is submitted as a
+  new task, THEN it is refused with the one-line reason, not as empty or too long, and the list
+  is unchanged. GIVEN "Buy bread" followed by one line feed, THEN it is accepted and stored as
+  "Buy bread".
 
 ### R-3: One shared list, in one order — **P1**
 **Objective:** As anybody who opens the to-do list, I want every task on one list in the order
@@ -205,9 +216,9 @@ the user put it in scope (`Q-3`).
    done or not done").
 3. WHERE a task is done, the system SHALL let a person edit its text exactly as it does for a
    not-done task (`Q-9`).
-4. IF an edited text is empty after trimming or longer than 200 code points after normalizing and
-   trimming, THEN the system SHALL refuse the edit, keep the task's previous text, and tell the
-   person why (`R-2`).
+4. IF an edited text is empty after trimming, is longer than 200 code points after normalizing
+   and trimming, or carries a line break between its first and last visible character, THEN the
+   system SHALL refuse the edit, keep the task's previous text, and tell the person why (`R-2`).
 
 **Acceptance**
 - **R-6.1** GIVEN the not-done task "Buy bred", WHEN it is edited to "Buy bread", THEN the list
@@ -215,7 +226,8 @@ the user put it in scope (`Q-3`).
 - **R-6.2** GIVEN the done task "Call the plumber", WHEN it is edited to "Call the plumber again",
   THEN it is still done and in the same position.
 - **R-6.3** GIVEN the task "Buy bread", WHEN it is edited to "   ", THEN the edit is refused and the
-  task still reads "Buy bread". An edit to a text of 201 code points is refused the same way.
+  task still reads "Buy bread". An edit to a text of 201 code points is refused the same way. An
+  edit to a text with a line break between two words is refused the same way.
 
 ### R-7: Deleting a task — **P2**
 **Objective:** As anybody, I want to remove a task, with one question before it goes, so that a
@@ -313,15 +325,21 @@ anything to judge (`Q-8`).
 **Independent test:** Bring up a freshly created environment and open the to-do list.
 **Verified-by:** manual — the seeder is proved by `tests/tooling/` and the seed corpus by `tests/fitness/`, neither of which carries a requirement citation by rule (`spec/design/testing.md` § The UI smoke is not a traceability surface), and the black box starts the application with `--no-seed`; a person opens a freshly created environment and counts the example tasks.
 
-1. WHEN a freshly created environment, one in which neither the guestbook nor the to-do list
-   holds anything, is filled with example data, the system SHALL put at least three example
-   tasks on the to-do list.
+1. WHEN an environment whose to-do list holds no task is filled with example data, whatever the
+   guestbook holds, the system SHALL put at least three example tasks on the to-do list (`Q-10`:
+   "Yes, each list is filled on its own").
 2. The system SHALL hold every example task to the text rules of `R-2`, and SHALL keep every
    example task under 150 code points (the seed corpus is looked at, not a boundary file).
 3. IF the environment is production, THEN the system SHALL add no example task
    (`spec/design/architecture.md` § What a new environment starts with).
 4. IF the to-do list already holds at least one task, THEN the system SHALL add no example task,
    so that filling an environment again never duplicates them.
+5. WHEN an environment is filled with example data, the system SHALL decide whether to give the
+   guestbook its welcome entries by what the guestbook holds alone, whatever the to-do list holds
+   (`Q-10`).
+6. WHEN the example tasks have been put on the to-do list, the system SHALL mark at least one of
+   them done (`Q-12`: "Yes, at least one is done"). It is added not done and then marked, because
+   a new task is never born done (`R-1` clause 3).
 
 **Acceptance**
 - **R-11.1** GIVEN a freshly created environment, WHEN it has been filled with example data, THEN
@@ -332,6 +350,13 @@ anything to judge (`Q-8`).
   no task is added.
 - **R-11.4** GIVEN the example tasks, WHEN each is measured by the rules of `R-2`, THEN each is
   accepted and none reaches 150 code points.
+- **R-11.5** GIVEN an environment whose guestbook holds its welcome entries and whose to-do list is
+  empty, WHEN it is filled, THEN the list shows the example tasks and the guestbook holds exactly
+  the entries it held before.
+- **R-11.6** GIVEN a to-do list holding one task and an empty guestbook, WHEN it is filled, THEN
+  the guestbook gets its welcome entries and the list still holds exactly that one task.
+- **R-11.7** GIVEN a to-do list just filled with example tasks, WHEN it is shown, THEN at least one
+  example task is shown as done.
 
 ## Edge cases
 
@@ -374,7 +399,7 @@ anything to judge (`Q-8`).
   No upper limit on the number of tasks is stated (§ With no defined behaviour).
 - **E-9: malformed, rarely (only through the API; the field is one line).** A text with a line
   break inside it. It costs a task that renders on several lines, or a stored value nobody can
-  type into the field. The requirements do not say (`D2`).
+  type into the field. The requirements say `R-2` clause 6, `R-2.7` (`Q-11`).
 - **E-10: malformed, rarely (API).** No text at all, or a value that is not text (a number,
   null). It costs a stored task with no words in it. The requirements say `R-2` clause 2 for a
   missing text. A value of the wrong type falls under the contract's standing validation
@@ -466,12 +491,6 @@ anything to judge (`Q-8`).
   has the same exposure today.
 
 ### With no defined behaviour
-- **`D1`:** When the to-do list is empty but the guestbook already holds entries, is the to-do
-  list filled with example tasks? This covers an environment that existed before this change
-  (stage, an open preview) and one where somebody deleted every task.
-- **`D2`:** What happens to a text with a line break inside it? It can be sent only through the
-  API: is it refused, stored as given, or stored with the break replaced?
-- **`D3`:** Is one of the example tasks done, so that a new environment shows both states?
 - When a person presses "add" a second time before the first add is answered, does the second
   press add a second task, or is it held off until the first is answered?
 - After an add fails, does the field keep what was typed? After an add succeeds, is the field
@@ -496,6 +515,9 @@ anything to judge (`Q-8`).
     ("anybody may add, amend and delete any entry"; "An entry lives until somebody deletes it"),
     so their wording no longer covers everything the system stores. Only the convergence round
     edits this file (its own § Deliberate non-goals), so this is reported and not fixed.
+    Converged by COH-requirements-5: the authentication item now names any to-do task (`Q-9`),
+    and the retention item stays worded for entries while `A-2` (§ Named assumptions) waits for
+    the user.
   - `contracts/invariants/guestbook.md`. `D-01`: consistent. A done task stays one record in
     its place (`Q-4`, `R-3.4`). A design that moved done tasks into a second store would breach
     it, and `tests/fitness/test_data_invariants.py::test_no_table_is_shaped_like_an_archive`
@@ -529,8 +551,9 @@ anything to judge (`Q-8`).
   - `spec/design/architecture.md` § What a new environment starts with, decision of 2026-09-05:
     filling goes through the application, never into production, never into a guest book that
     already has entries, and it treats "an environment nobody has written in yet" as one
-    condition. `R-11` clauses 1–4 are consistent with it. `D1` is exactly where the "one
-    condition" wording and the per-guestbook refusal stop giving the same answer.
+    condition. `Q-10` → A fills each list on its own. The seeder gains a refusal per list beside
+    "It will not seed a guest book that already has entries", which is a design edit to that
+    section.
   - `spec/design/conventions.md` § Language: English. Consistent (`Q-7`).
   - `spec/design/data-model.md` § Identifiers, decision of 2026-08-30. Consistent.
 - **Dependencies:**
@@ -576,14 +599,16 @@ anything to judge (`Q-8`).
     - `::test_every_entry_meant_to_pass_really_passes` and
       `::test_no_seed_entry_stands_near_a_published_limit`, which index `author` and `message`;
     - `::test_the_corpus_exercises_a_message_with_line_breaks`, which demands a line break in
-      every sequence file. This runs straight into `D2`.
+      every sequence file. Under `Q-11` no task file may carry an inner line break, so that rule
+      has to be scoped to guest book entries.
 
     `::test_the_corpus_exercises_characters_outside_ascii` stays green only if an example task
     carries a character above U+007F.
   - `tests/tooling/test_seed_golden_set.py::test_an_empty_environment_gets_the_whole_seed_corpus`
     derives its expectation from `SEED_FILES` and reads `author` from every item.
     `::test_a_guest_book_with_entries_is_left_alone` expects nothing posted to an environment
-    whose guestbook holds entries, and **goes red under `D1` option A**.
+    whose guestbook holds entries, and **goes red, because `Q-10` chose option A**: tasks are now
+    posted where the guestbook holds entries.
   - `e2e/ui/test_smoke.py::test_the_built_spa_boots_and_a_deep_link_resolves` and
     `::test_an_unknown_address_says_so` look up the link named exactly "Guestbook" and call it
     "the only navigation this application has". A navigation link with that same name would make
@@ -638,8 +663,9 @@ anything to judge (`Q-8`).
   nothing else sets it.
 - **A mobile design of the new screen.** This is the standing non-goal (`spec/invariants.md`
   § Deliberate non-goals, "A mobile version").
-- **A retention policy for tasks.** This is the standing non-goal: a task lives until somebody
-  deletes it.
+- **A retention policy for tasks.** A task lives until somebody deletes it, as an entry does
+  under the standing non-goal. For tasks this is assumed, not decided (`A-2`, § Named
+  assumptions).
 - **Detecting a duplicate caused by a retried add.** The same text twice is two tasks by
   decision (`Q-9`, `R-1` clause 5), so `E-20` leaves a duplicate for a person to delete.
 
@@ -650,12 +676,14 @@ anything to judge (`Q-8`).
 | Task text, maximum | 200 code points, after NFC normalization and trimming | `Q-9` ("up to 200 characters"). The unit is the one every text field is measured in (`spec/design/conventions.md` § Backend on `text.py`; `spec/design/api.md` § Collection read parameters) |
 | Task text, minimum | 1 code point after trimming | `Q-9` ("An empty task, or one made only of spaces, is refused") |
 | Trim set | the written 30-code-point set | `spec/contexts/guestbook.md` § `BR-01`, `app/platform/schemas/text.py` |
+| Line break inside a task | refused; the set is U+000A, U+000B, U+000C, U+000D, U+0085, U+2028, U+2029 | `Q-11` for the refusal; the set is assumption `A-1` (§ Named assumptions) |
 | Emoji boundary value | 200 × U+1F600 = 200 code points = 400 UTF-16 code units; 201 refused | `R-2.3`, from the `D-04` incident |
 | Decomposed boundary value | 200 × (U+0065 U+0301) = 400 code points before NFC, 200 after | `R-2.4`, from `BR-01`'s normalization |
 | Padding boundary value | 2 + 200 + 2 = 204 as typed, accepted; 205 spaces, refused as empty | `R-2.5`, from the `api.md` trim-order incident |
 | Tasks shown per read | all of them, with no pages | `Q-9` |
 | List size that proves "no pages" | 101 tasks | one more than 100, the guestbook's largest piece (`spec/design/api.md` § Collection read parameters), and more than its default of 20 |
 | Example tasks, minimum | 3 | `Q-8` ("a few"), with the seed-half rule that a list is at least three items (`tests/fitness/test_golden_set.py::test_the_seed_half_shows_a_list_rather_than_an_entry`) |
+| Example tasks done, minimum | 1 | `Q-12` |
 | Example task, maximum length | under 150 code points (0.75 × 200) | the seed-half margin in `tests/fitness/test_golden_set.py::test_no_seed_entry_stands_near_a_published_limit` |
 | Contrast of a done task's text | at least 4.5:1 against the surface behind it | `spec/design/ui/system-states.md` § Tokens (WCAG 2.1, 1.4.3) |
 | "At the same moment" | both changes sent before either is answered | `R-9` |
@@ -665,16 +693,9 @@ sharing a number, and a test that reads the phrase's constant to prove the task'
 the wrong rule.
 
 ## Open questions
-- **`D1`: example tasks when the to-do list is empty and the guestbook is not.** This blocks
-  the design of `R-11` and the change to `scripts/seed_golden_set.py`. It also decides whether
-  `tests/tooling/test_seed_golden_set.py::test_a_guest_book_with_entries_is_left_alone` changes.
-  It is for the user.
-- **`D2`: a line break inside a task's text.** This blocks the contract's refusal set (design
-  stage, API) and the corpus rule on line breaks
-  (`tests/fitness/test_golden_set.py::test_the_corpus_exercises_a_message_with_line_breaks`).
-  It is for the user.
-- **`D3`: whether one example task is done.** This blocks the shape of the seed corpus and
-  whether filling has to mark a task after adding it. It is for the user.
+- **`D1`: answered.** `Q-10` → A, each list is filled on its own (`R-11` clause 1).
+- **`D2`: answered.** `Q-11` → A, refuse it with its own message (`R-2` clause 6).
+- **`D3`: answered.** `Q-12` → A, at least one example is done (`R-11` clause 6).
 - **Double add while the first is in flight, what the field holds after an add, the screen while
   a write waits, the list after "no longer exists", and a largest number of tasks.** None of
   these blocks the requirements. They are for the design stage: the screen specification and the
@@ -684,6 +705,30 @@ the wrong rule.
   fact, and where the not-found page leads.** These block nothing here. `brainstorm.md` § Open
   gives them to the mock-up, for the user to approve there. `R-5` clause 4 is the only
   constraint on them in this document.
+
+## Named assumptions
+
+*This stage's question budget is spent: `sdd-engine loop ask --raise` refused a thirteenth
+question. What no answer decides is written here as an assumption, in the form "Assumed: …, say
+so if not". Neither item below is a human decision yet. The user confirms or overrules each one
+at the approval of this document, which ends the stage.*
+
+- **`A-1`: which characters are a line break (`R-2` clause 6, `R-6` clause 4).** Assumed: a line
+  break is any of U+000A (line feed), U+000B (line tabulation), U+000C (form feed), U+000D
+  (carriage return), U+0085 (next line), U+2028 (line separator) and U+2029 (paragraph
+  separator): one written set that the screen and the service both read, so a pasted text is
+  refused the same way on both sides. Say so if not. The other reading is U+000A and U+000D
+  alone, which keeps the other five as content inside a task, the way a guestbook signature keeps
+  U+0085 (`text-measurement.json` case `next_line_inside_is_kept`). The set is written down
+  because the two languages' own line-break defaults disagree, among others about U+000B, U+000C
+  and U+0085 (COH-requirements-4 in `review/coherence.md`), and `R-2` clause 5 fails if each side
+  takes its own. **Status:** assumed, awaiting the user.
+- **`A-2`: a task lives until somebody deletes it (§ Non-Goals).** Assumed: nothing removes a
+  task except a person deleting it, with no expiry and no retention policy, as for a guestbook
+  entry (`spec/invariants.md` § Deliberate non-goals, "A data retention policy"). Say so if not.
+  `Q-9` settled that anybody may delete any task and that a deleted task is gone for good. It did
+  not settle whether a task can go without anybody deleting it. Until this is confirmed, that
+  non-goal keeps its wording for entries alone. **Status:** assumed, awaiting the user.
 
 ## Self-check
 
@@ -696,8 +741,9 @@ the wrong rule.
 3. [Clarity] [§ R-2] Can a second implementer find "the written 30-code-point set" without
    reading guestbook code? It points at `BR-01` and `text.py`. If tasks land in another context,
    the set has to be shared rather than copied, or two copies drift.
-4. [Completeness] [§ R-2] What happens to a line break inside a text? It is open (`D2`). Until it
-   is answered, clause 4 says nothing about line breaks, and `R-2.6` uses spaces only.
+4. [Completeness] [§ R-2] What happens to a line break inside a text? It is refused with a reason
+   of its own (`Q-11`, `R-2` clause 6, `R-2.7`). Which characters are a line break is assumption
+   `A-1`, for the user to confirm at this document's approval.
 5. [Measurability] [§ R-2] Can "the screen takes every character" in `R-2.3` be observed in a
    suite that owns citations? It can over the rule the screen applies, in vitest. The typing and
    pasting half only the UI smoke sees, and the smoke owns no citation. If design finds no vitest
@@ -748,15 +794,17 @@ the wrong rule.
 20. [Completeness] [§ R-10] Is the typed text still in the field after a failed add? That is open.
     If it is not, the person retypes it, and nothing here says whether that is acceptable.
 21. [Completeness] [§ R-11] What happens in an environment that existed before this change and
-    whose to-do list is empty? That is `D1`. Option A turns
-    `tests/tooling/test_seed_golden_set.py::test_a_guest_book_with_entries_is_left_alone` red.
+    whose to-do list is empty? That is `D1`, answered by `Q-10` → A (`R-11` clause 1). Option A
+    turns `tests/tooling/test_seed_golden_set.py::test_a_guest_book_with_entries_is_left_alone`
+    red.
 22. [Compliance] [§ R-11] Is `**Verified-by:** manual` honest here, or does a citation-owning
     suite exist that proves it? `tests/tooling/` and `tests/fitness/` own no citation, and the black box runs
     with `--no-seed`. If design-testing finds a surface, the marker has to be removed, not left
     standing beside a test.
 23. [Coherence] [Gap] Do the non-goals in `spec/invariants.md`, worded for entries, bind the to-do
     list? By intent yes, by wording no. Only the convergence round edits that file, so the finding
-    goes there.
+    goes there. It went there as COH-requirements-5: authentication now covers tasks, and
+    retention waits on `A-2`.
 24. [Compliance] [Gap] Which bounded context owns a task? That is not a requirement: it is
     design-domain's call. If tasks live inside the guestbook context, the closing sentence of
     `P-01` ("An entry either exists or it does not") stops describing that context.
