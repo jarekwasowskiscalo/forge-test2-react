@@ -35,7 +35,8 @@ at the end: an operator reads a runbook one step at a time.
 | [`restore-the-database.md`](restore-the-database.md) | data has been lost. Slow, coarse, and never performed on this stack |
 | [`preview-environment.md`](preview-environment.md) | putting a branch in front of somebody, and taking it down again |
 | [`rotate-database-credentials.md`](rotate-database-credentials.md) | the master password has to change |
+| [`refill-the-example-data.md`](refill-the-example-data.md) | a preview or stage came up with its example tasks or welcome entries partial or doubled. Not for production |
 
 Two of these are one decision apart and it is worth knowing which is which before you need either:
 a bad **deploy** is undone in seconds by a rollback, and only bad **data** needs a restore, which
-returns the whole book to a moment in the past.
+returns the whole database, both lists, to a moment in the past.

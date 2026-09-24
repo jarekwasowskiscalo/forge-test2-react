@@ -54,6 +54,38 @@ payload in the workflow log carries the real message too.
 
 **Then.** [`runbooks/run-a-migration.md`](runbooks/run-a-migration.md) § When it fails.
 
+## The to-do list says "The tasks could not be loaded." while the guest book works
+
+**How to tell which cause.** Ask the route directly:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' https://<the environment>/api/todo-tasks
+```
+
+| It answers | Cause | Fix |
+|---|---|---|
+| `404` | the version serving has no to-do list. A rollback past the first release that carried it moved the alias to an older version, and the SPA, which a rollback never reverts, still offers the screen | expected. Roll forward — [`runbooks/roll-back-a-release.md`](runbooks/roll-back-a-release.md) § What it did not undo. The tasks are still in the database |
+| `500` | the version serving has the route, and its database has no `todo_tasks` table: revision `5c58af1f8e8a` has not run against it. Two ways lead here: an alias moved by hand onto a version whose deployment stopped at the migration, and a restore to a moment before the first deployment that carried the to-do list | `/aws/lambda/sdd-guestbook-<env>-migrate` says how far the last migration got. Deploy again: step 3 applies what is missing before the alias moves. For a restore, [`runbooks/restore-the-database.md`](runbooks/restore-the-database.md) step 3 |
+
+The `500` leaves the catch-all's block in the application log, and its frames run through
+`app/contexts/todo_list/services/todo_tasks.py`. The to-do list's modules write no log line of
+their own, so that block and the access log are all there is to read.
+
+## A new environment's to-do list has too few example tasks, none done, or each twice
+
+**Cause.** The seeder checks once that the list is empty and then writes, and nothing in the
+database holds that check ([`spec/design/data-model.md`](../spec/design/data-model.md) § Two writers
+on one task). A run that stopped part way is the warning *"the seed corpus did not go in; the
+deployment itself is fine"* in the deploy log, with the seeder's `error: seeding <env> failed: …`
+line above it naming the task and the status it got. It leaves a list that is no longer empty, so
+every later run prints `the to-do list of <env> already holds a task; left alone`. The seeder adds
+all five example tasks before it marks the done one, so a run that stopped between the two leaves
+five tasks and none done. Two runs at the same moment both find the list empty and both fill it.
+The guest book's welcome entries have the same exposure.
+
+**Fix.** Nothing is broken, and no deployment will change it. If somebody is going to judge the
+screen by it: [`runbooks/refill-the-example-data.md`](runbooks/refill-the-example-data.md).
+
 ## Requests are being throttled
 
 **Cause.** The API function's reserved concurrency has been reached — 20 on stage, 40 on prod. That
@@ -243,8 +275,9 @@ Two entries are worth knowing because they are not obvious from the job names:
 - **`app/` routes the frontend job.** `dump_openapi.py` generates the contract from the Pydantic
   models, so a backend-only change is exactly how the committed TypeScript goes stale.
 - **`golden-set/` routes the frontend job too**, since 2026-09-17. The vitest suite reads
-  `text-measurement.json` to prove the browser and the server measure text identically, so a
-  corpus-only edit that skipped the frontend job would leave half of that claim unrechecked.
+  `text-measurement.json`, and `todo-task-text.json` for the to-do list's text rule, to prove the
+  browser and the server measure text identically, so a corpus-only edit that skipped the frontend
+  job would leave half of that claim unrechecked.
 
 ## Something else
 

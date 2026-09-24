@@ -1,5 +1,14 @@
 {
-  "adrs": [],
+  "adrs": [
+    {
+      "id": "ADR-0001",
+      "path": "spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md"
+    },
+    {
+      "id": "ADR-0002",
+      "path": "spec/ADR/ADR-0002-task-text-refusals-are-coded-not-schema-constraints.md"
+    }
+  ],
   "artifacts": {
     "session-092a5770": "sessions/092a5770-6598-4789-b97c-7cdd1c63afe8/summary.md",
     "session-76720804": "sessions/76720804-74cc-4a32-b0f2-3b64b73aa9dd/summary.md",
@@ -9,10 +18,10 @@
     "session-fb772134": "sessions/fb772134-4626-4cf4-a734-3930e8cb1dbd/summary.md"
   },
   "attempt": {
-    "heartbeat_at": "2026-09-24T18:07:49Z",
-    "n": 4,
+    "heartbeat_at": "2026-09-24T21:05:53Z",
+    "n": 5,
     "session_id": "",
-    "started_at": "2026-09-24T18:07:49Z"
+    "started_at": "2026-09-24T21:05:53Z"
   },
   "base_branch": "main",
   "base_commit": "6ccb49af3828fb250fb2d188ddbd87758004c403",
@@ -939,9 +948,48 @@
   },
   "deferred": false,
   "deferred_findings": [],
-  "docs_touched": [],
+  "docs_touched": [
+    "docs/solution-overview.md",
+    "docs/operations.md",
+    "docs/deployment.md",
+    "docs/backup-and-recovery.md",
+    "docs/security.md",
+    "docs/troubleshooting.md",
+    "docs/aws-account-setup.md",
+    "docs/runbooks/README.md",
+    "docs/runbooks/refill-the-example-data.md",
+    "docs/runbooks/restore-the-database.md",
+    "docs/runbooks/roll-back-a-release.md",
+    "docs/runbooks/release-to-production.md",
+    "docs/runbooks/preview-environment.md",
+    "docs/runbooks/incident-first-response.md",
+    "README.md",
+    "CLAUDE.md",
+    "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/user-guide-todo-list.md"
+  ],
   "expected_red": [],
-  "fanout": {},
+  "fanout": {
+    "reconcile-design": {
+      "assumptions": "reconcile-spec owns spec/contexts/ and glossary.md; neither edited. Found outside the allowlist and now false: spec/README.md ('The directory is empty today') and glossary.md ADR row ('empty today'). The to-do text invariant under contracts/invariants/ is still unwritten; testing.md hands it to the spec_sync convergence round. Pre-existing drift left alone: conventions lists a nonexistent number.ts, a spliced sentence in the 2026-09-17 Rejected list, system-states still has an EmptyState section. ADR-0001/0002 promoted, status Proposed.",
+      "at": "2026-09-24T21:15:58Z",
+      "state": "returned"
+    },
+    "reconcile-docs": {
+      "assumptions": "reconcile-ops owns docs/. The user guide's home is docs/user-guide-todo-list.md plus a row in docs/README.md, so it was written whole in the change record (reconcile/user-guide-todo-list.md) for someone to move. reconcile-design owns spec/design/; the rejection of an optimistic update has no decision paragraph in architecture.md -- listed as a candidate. ADR-0001 and ADR-0002 are the promoted drafts. Scripts whose help/comments still describe one list (start.sh, deploy.sh:621, preview.sh:199, help.sh:89) are for the orchestrator. No spec/rationale document written on purpose.",
+      "at": "2026-09-24T21:15:58Z",
+      "state": "returned"
+    },
+    "reconcile-ops": {
+      "assumptions": "No other member writes docs/. CLAUDE.md belongs to reconcile-docs. The design documents win: pages cite architecture.md § What a new environment starts with, data-model.md § Two writers on one task, contexts/todo_list.md § Open questions. Searched design/delta/*.md rather than reading all. Findings: F-1 start.sh --help (48-51) and comments start.sh:106/113/170, deploy.sh:620-622, preview.sh:199-201, CLAUDE.md:148 still describe only the guest book (outside allowlist); F-2 /todo-list has no user guide under docs/ and no spec_sync write set covers one; F-3 pre-existing: operations.md quotes a log line no module emits, deployment.md says 'seven steps' listing eight.",
+      "at": "2026-09-24T21:15:58Z",
+      "state": "returned"
+    },
+    "reconcile-spec": {
+      "assumptions": "reconcile-design owns the technical request-shape behaviours (a PATCH setting both text and done, the empty-patch refusal, the standard 422); api.md already describes them and the screen never sends them, so they stay out of the context documents and are named in the fragment. reconcile-docs writes for the back-office reader and does not restate BR-13. The converge-written header paragraph of todo_list.md (feature-claim history) was not audited as a design claim. Gap found: BR-13 vs refused corrected text -- the text refusal wins (judge before lookup, api.md 'the lookup last', R-8 test); one paragraph added under BR-13.",
+      "at": "2026-09-24T21:15:58Z",
+      "state": "returned"
+    }
+  },
   "faults": [
     {
       "at": "2026-09-24T11:42:41Z",
@@ -2737,6 +2785,84 @@
       "stage": "implement",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5821735814"
+    },
+    {
+      "at": "2026-09-24T21:15:58Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T21:15:58Z",
+          "note": "check.sh --fast inside the parallel reconcile wave cannot pass because the backend untracked-file hygiene check flags sibling workers' mid-run files; and the mandated gen_indexes step writes spec/changes/status.json which the preflight lists under NEVER WRITE",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-59",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "reconcile-design",
+      "seen": 1,
+      "signal": "check.sh --fast inside the parallel reconcile wave cannot pass because the backend untracked-file hygiene check flags sibling workers' mid-run files; and the mandated gen_indexes step writes spec/changes/status.json which the preflight lists under NEVER WRITE",
+      "signature": "check.sh --fast inside the parallel reconcile wave cannot pass because the backend untracked-file hygiene check flags si",
+      "stage": "spec_sync",
+      "state": "reported",
+      "url": null
+    },
+    {
+      "at": "2026-09-24T21:15:58Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T21:15:58Z",
+          "note": "dispatch carried none of the implementers' INTENT paragraphs the skill says the orchestrator supplies, and the history tools truncate hand-backs; and the skill places user docs 'where the subject lives' but docs/ is outside reconcile-docs' write set, so the user guide was parked in the change record",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-60",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "reconcile-docs",
+      "seen": 1,
+      "signal": "dispatch carried none of the implementers' INTENT paragraphs the skill says the orchestrator supplies, and the history tools truncate hand-backs; and the skill places user docs 'where the subject lives' but docs/ is outside reconcile-docs' write set, so the user guide was parked in the change record",
+      "signature": "dispatch carried none of the implementers·where the subject lives· write set, so the user guide was parked in the change",
+      "stage": "spec_sync",
+      "state": "reported",
+      "url": null
+    },
+    {
+      "at": "2026-09-24T21:15:58Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T21:15:58Z",
+          "note": "reconcile-spec QUICK REFERENCE hardcodes 'git diff --stat origin/develop...HEAD'; this trunk is main with no develop branch, so the worker improvised the base",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-61",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "reconcile-spec",
+      "seen": 1,
+      "signal": "reconcile-spec QUICK REFERENCE hardcodes 'git diff --stat origin/develop...HEAD'; this trunk is main with no develop branch, so the worker improvised the base",
+      "signature": "reconcile-spec QUICK REFERENCE hardcodes ·; this trunk is main with no develop branch, so the worker improvised the base",
+      "stage": "spec_sync",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -4612,7 +4738,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 862,
+  "revision": 883,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4644,7 +4770,7 @@
     "requirements": 1,
     "spec_sync": 1
   },
-  "stage_status": "not_started",
+  "stage_status": "in_progress",
   "status": "draft",
   "supersedes": [],
   "tasks": [],
@@ -4763,7 +4889,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T20:59:53Z",
+  "updated_at": "2026-09-24T21:15:58Z",
   "verification_last": {
     "content_digest": "dd8c251ff7634c10453cf80cd92896b20e4d941582648ab0d0d2ff3fe5345ae3",
     "counts": {

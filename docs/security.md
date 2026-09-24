@@ -8,7 +8,8 @@ controls; [`infra/README.md`](../infra/README.md) § The roles for the IAM detai
 ## The first thing to know
 
 **The application has no authentication and no authorisation.** Anybody who can reach the URL can
-read every entry, write one, amend anybody's and delete anybody's. This is a *named non-goal*, not
+read every guest book entry and every to-do task, write either, amend anybody's, tick anybody's task
+done or back, and delete anybody's. This is a *named non-goal*, not
 an oversight — it is written down in [`spec/invariants.md`](../spec/invariants.md), and the hook
 point is `app/api.py`, where the `/api` prefix is applied and where a dependency would
 go.

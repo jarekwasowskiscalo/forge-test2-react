@@ -11,7 +11,7 @@ seconds. It is the right first move for almost any production incident caused by
 fast, it is reversible, and it buys time to diagnose.
 
 **It is not for bad data.** A rollback moves code and touches nothing in the database. If entries
-have been damaged or deleted, this will not bring them back — see
+or tasks have been damaged or deleted, this will not bring them back — see
 [`restore-the-database.md`](restore-the-database.md), and read it before doing anything else,
 because a restore's recovery point is "a moment in the past" and every minute of new writes widens
 what you lose.
@@ -67,6 +67,10 @@ since that release, the older version is being asked for something it never prom
 exactly like a broken rollback and is not one. The failing endpoint is named in the log; check it
 before you conclude the older version is bad.
 
+Rolling back past the first release that carried the to-do list is exactly this case. The smoke
+asks `GET /api/todo-tasks` of a version that has no such route, gets a 404, and fails, while the
+alias has already moved.
+
 ## What it did not undo, and what to do about each
 
 **The schema.** Deliberately. Migrating before moving the alias is the whole shape of a deployment,
@@ -82,6 +86,12 @@ that survivable rather than lucky — but if the bad release changed the contrac
 calling an endpoint the rolled-back API does not have, and the fix has to go forward rather than
 back. That is the case where a rollback is not enough, and it is worth checking early: the failing
 requests will be 404s or 422s from the browser, not errors in the application log.
+
+Past the first release that carried the to-do list, this is what you will see. The shell still
+offers the "To-do list" link, and that screen says "The tasks could not be loaded." because its
+requests to `/api/todo-tasks` are 404s. No data is wrong: the `todo_tasks` table and every task in
+it stay where they were, since the schema is not reverted, and they are back on screen once the
+fix rolls forward.
 
 ## Then
 

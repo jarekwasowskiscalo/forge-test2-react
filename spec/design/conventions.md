@@ -186,16 +186,18 @@ frontend/src/
   per file, named after it (`datetime.ts`, `relativeTime.ts`, `number.ts`, `cn.ts`). A rule
   about one context's data lives in that context's `lib/`
   (`contexts/guestbook/lib/guestbookEntry.ts`, `contexts/guestbook/lib/entryListCopy.ts`,
-  `contexts/guestbook/lib/entryText.ts`), and moves up here the day a second context needs it —
+  `contexts/todo_list/lib/todoTask.ts`), and moves up here the day a second context needs it —
   never before, because a shared module with one caller is a boundary drawn in the wrong place.
   **Only the rule moves up.** A test that proves it through one context's bounds stays beside
   that context's modules and changes one import. The corpus reader
   `frontend/src/contexts/guestbook/lib/entryText.test.ts` is one such test. Moved up here, it
   would have to import a context's bound, and nothing here imports from `contexts/`.
-  `entryText.ts` is the case worth naming: its Python counterpart sits in `app/platform/`
-  because the server has more than one caller for it, and this one stays in the context because
-  the browser has exactly one. The asymmetry is each tree following its own rule rather than an
-  oversight in either.
+  `text.ts` is the case worth naming: the browser half of the shared text rule, whose Python
+  counterpart is `app/platform/schemas/text.py`. It was the guestbook's `lib/entryText.ts` while
+  the browser had one caller, and it moved up here, unchanged and under the name that pairs it
+  with its other half, when the to-do list became the second (`CR-2609-823a`). Until then the
+  two halves sat asymmetrically, each tree following its own rule rather than an oversight in
+  either.
 
   Rejected (decision of 2026-09-17, `cr: historical` — where the two halves of the text rule go,
   decided on GitHub issue #28, outside `/forge:sdd`):
@@ -580,7 +582,8 @@ date and without a rejected alternative — and that is the knowledge whose abse
 take the same lost decision again two years later); an ADR editable in place (after a year it
 says what somebody thinks today, not what was decided then).
 
-**The state of `spec/ADR/`: empty, until the first change carried out through `/sdd`.** Eleven
+**The state of `spec/ADR/`: the decisions of changes carried out through `/sdd`, the first two
+from `CR-2609-823a`.** It was empty until that change. Eleven
 decisions taken between 2026-08-30 and 2026-09-02 without a change record (`cr: historical`)
 were written on 2026-09-02 into the normative documents they concern — with a date, a reason and
 the rejected alternatives, where the rule stands — because an ADR with no parent in

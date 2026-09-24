@@ -65,9 +65,14 @@ environment has to be reachable — the release stops and waits for them.
 
 ## How you know it worked
 
-`/api/health` reports the new version and `environment: prod`; the screen loads and lists entries;
-the tag exists on the default branch and the GitHub release names it. If all four hold, the release
-is done.
+`/api/health` reports the new version and `environment: prod`; the guest book loads and lists
+entries, and `/todo-list` loads; the tag exists on the default branch and the GitHub release names
+it. If all four hold, the release is done.
+
+On the first release that carries the to-do list, production's list is **empty** and says "No tasks
+yet. Add the first one above." That is correct and not a failed seed: the seeder never gives
+production example tasks, and the deploy log's *"the seed corpus did not go in"* warning on `prod`
+is that refusal.
 
 If `/api/health` still reports the previous version, the alias did not move — the deploy log says at
 which step it stopped, and production is still serving the old version, which is the safe direction

@@ -58,9 +58,10 @@ twice, and it must exit green either way.
 
 ## How you know it worked
 
-**Raised:** the URL in the pull request comment loads the screen, and the guest book has the seed
-entries in it — a preview that comes up empty means the seed step did not run, and the workflow log
-says why.
+**Raised:** the URL in the pull request comment loads the guest book with its seed entries in it,
+and `/todo-list` shows the example tasks, one of them done. A list that comes up empty means the
+seed step did not reach it, and the workflow log says why. A list that came up partial is
+[`refill-the-example-data.md`](refill-the-example-data.md).
 
 **Torn down:** the URL stops answering, and
 

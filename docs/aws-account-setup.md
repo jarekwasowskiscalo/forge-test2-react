@@ -207,7 +207,8 @@ What the ruleset carries:
 ## 11. First runs, in this order
 
 1. Push a branch → Actions → **Preview** → Run workflow. The URL arrives as a comment on the pull
-   request. Confirm the guest book has entries in it — a new environment seeds itself.
+   request. Confirm the guest book has entries in it and the to-do list its example tasks — a new
+   environment seeds itself.
 2. Close the pull request → confirm **Preview teardown** ran and the stack is gone.
 3. Actions → **Deploy** → `stage`, from that same branch. This is where acceptance testing happens,
    before the merge rather than after it.

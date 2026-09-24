@@ -218,6 +218,12 @@ that created the task again on finding it absent would bring back what somebody 
 reporting success for a deletion that was not performed is what makes a person believe they
 deleted twice.
 
+**A correction whose text is refused is told about its text first.** When a corrected text that
+`BR-06` or `BR-07` refuses is aimed at a task that no longer exists, the person is told the
+text's reason — on the screen and by the application alike, because the screen refuses such a
+text before anything is sent and cannot know the task is gone. Only a change that could
+otherwise be made learns that its task no longer exists.
+
 ## Deliberate non-goals
 
 Named, so that an absence does not read as an oversight. The system-wide ones — no accounts, no

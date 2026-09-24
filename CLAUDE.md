@@ -1,7 +1,8 @@
 # sdd-app-template
 
 An application template built with the SDD process: FastAPI (`app/`) + React/TS (`frontend/`) +
-Postgres, one process on `:8080`. One example feature — **a guestbook**.
+Postgres, one process on `:8080`. One example feature — **a guestbook** — and beside it a to-do
+list, which is not an example and stays.
 
 This repository's value is the **process**, not the product. The system's normative
 specification lives in `spec/`; the change process's contract (SDD) in
@@ -132,7 +133,17 @@ that bind it, the contracts `contracts/openapi/guestbook.yaml` and
 `spec/rationale/mockup-guestbook/`, the user guide `docs/user-guide.md` and the request file
 `http/guestbook-entries.http`.
 
-**Everything else is the template and stays.** There is no authentication and that is a named
+**One thing moves before the guestbook goes: the words of the text rule.** Both contexts are held
+to one rule for how a text is normalized, trimmed and counted, and its words live in
+`spec/contexts/guestbook.md` § `BR-01`, which the to-do list cites. Move them into
+`spec/contexts/todo_list.md` first; its § Neighbours says so, and the `frozen-ids` gate goes red on
+a citation of `BR-01` left pointing nowhere (`spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md`).
+The rule's code is already outside the guestbook, in `app/platform/schemas/text.py` and
+`frontend/src/lib/text.ts`, and stays. So does the seeder: it loses the half that posts the welcome
+entries and keeps the half that posts the example tasks.
+
+**Everything else is the template and stays**, the to-do list (`todo_list`) included: it is a
+second domain context, not an example. There is no authentication and that is a named
 non-goal (`spec/invariants.md`), not an absence nobody noticed.
 
 ## Running and developing
@@ -145,8 +156,8 @@ checks its own prerequisites and takes `--help`. The full list: `./scripts/help.
 ./scripts/start.sh --development   # the backend on :8000 with reload + Vite on :5173
 ./scripts/start.sh --container     # EVERYTHING in Docker: the image + the migration + Postgres
 ./scripts/start.sh --port 8090     # another port — it decides the poll and TARGET_BASE_URL too
-./scripts/start.sh --no-seed       # leave the guest book empty; by default an empty one is
-                                   # filled from golden-set/seed/ once the app answers
+./scripts/start.sh --no-seed       # leave both lists empty; by default an empty guest book or
+                                   # to-do list is filled from golden-set/seed/ once the app answers
 ./scripts/seed.sh --base-url ...   # fill some other environment — a preview, a stage
 ./scripts/stop.sh                  # stopping
 ./scripts/status.sh --json         # the state of the machine and the application

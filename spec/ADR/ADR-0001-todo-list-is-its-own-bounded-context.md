@@ -1,5 +1,5 @@
 ---
-id: ADR-NNNN
+id: ADR-0001
 title: The to-do list is a bounded context of its own, sharing only the text rule with the guestbook
 status: Proposed
 date: 2026-09-24
@@ -9,7 +9,7 @@ superseded_by: null
 aliases: []
 ---
 
-# ADR-NNNN — The to-do list is a bounded context of its own, sharing only the text rule with the guestbook
+# ADR-0001 — The to-do list is a bounded context of its own, sharing only the text rule with the guestbook
 
 ## Context
 

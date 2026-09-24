@@ -339,8 +339,8 @@ Keyboard: every action above works without a mouse — see the next section.
   "Add task"; the box; the edit field, "Save" or "Cancel" — and a person who has put the focus
   somewhere else meanwhile keeps it where they put it.
 - **The question takes the focus on "Cancel"**, keeps Tab inside itself, and on closing hands the
-  focus back to the "Delete" that opened it — or, when that row is gone, to the list, never to
-  the page's start.
+  focus back to the "Delete" that opened it — or, when that row is gone, to the list, and to the
+  empty sentence when it was the last task; never to the page's start.
 - **The focus ring is the screen's**, in the accent colour, on everything that can take the focus:
   the add field, each box (drawn around the box), "Edit", "Delete", the edit field, "Save",
   "Cancel", the question's buttons and a notice's "×". No component removes it

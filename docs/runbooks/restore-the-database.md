@@ -10,13 +10,14 @@ and for how long.
 
 ## When to use this
 
-When entries have been damaged or deleted and you want them back. Only then — this is slow,
-disruptive and coarse.
+When guest book entries or to-do tasks have been damaged or deleted and you want them back. Only
+then — this is slow, disruptive and coarse.
 
 **Not for a bad deploy.** If the code is wrong but the data is intact,
 [`roll-back-a-release.md`](roll-back-a-release.md) takes seconds. Establish which of the two you
-have before doing anything: a restore returns the *whole book* to a moment in the past, so every
-entry written since that moment is lost by the act of recovering.
+have before doing anything: a restore returns the *whole database*, both lists, to a moment in the
+past. Every entry written and every task added, ticked or corrected since that moment is lost by
+the act of recovering.
 
 **Not available past the window.** 14 days on production, 7 on stage, 1 on a preview. Beyond that
 there is no copy of anything.
@@ -46,7 +47,8 @@ there is no copy of anything.
    [`backup-and-recovery.md`](../backup-and-recovery.md), replacing the estimate.
 
 2. **Check that what came back is what you wanted**, before touching anything live. Connect with the
-   master credentials from Secrets Manager (`sdd-guestbook-<env>/database/master`) and count. The
+   master credentials from Secrets Manager (`sdd-guestbook-<env>/database/master`) and count the
+   rows of `guestbook_entries` and of `todo_tasks`. The
    restored cluster is reachable only from inside the VPC, so this is done from a bastion or a
    throwaway Lambda in the same subnets — there is no public endpoint anywhere in this stack.
 
@@ -56,10 +58,17 @@ there is no copy of anything.
    cluster that is not the live one, and it stays wrong until you reconcile it — which is a second
    piece of work, on the same day, not "later".
 
+   **The restored cluster is at the schema of the target moment too.** A moment earlier than the
+   first deployment that carried the to-do list has no `todo_tasks` table: its `alembic_version`
+   names a revision older than `5c58af1f8e8a`, the one that creates it. Served by a version that has the to-do list, that
+   database answers the to-do screen with a failure until a migration has run against it. Under A,
+   check `alembic_version` in step 2 before you point anything at it.
+
    **B — copy the data into the running cluster.** `pg_dump` from the restored cluster,
    `pg_restore` into the live one. Slower, keeps Terraform truthful throughout, and it is the only
    option when only *part* of the data is wrong, because you can copy the rows you need instead of
-   the whole database.
+   the whole database. The two lists are two tables with no key between them, so when only one
+   list is wrong, B can copy that table alone and leave the other list as it is now.
 
    B is the default. Take A only when the whole database is wrong and the clock matters more than
    the tidiness.
@@ -72,8 +81,8 @@ there is no copy of anything.
 
 ## How you know it worked
 
-The entries that were lost are visible in the screen, the application is accepting writes again, and
-a collection read returns the expected count. Terraform agrees with reality:
+The entries or tasks that were lost are visible on their screen, the application is accepting writes
+again, and a collection read returns the expected count. Terraform agrees with reality:
 
 ```bash
 ./scripts/infra.sh <env> plan

@@ -385,7 +385,7 @@ becomes a query called more often than the screen is opened; the change is then 
 | Revision | Parent | What it does |
 |---|---|---|
 | `a1b2c3d4e5f6` | — | creates `guestbook_entries` and the ordering index |
-| issued by `./scripts/db.sh revision` | the head at the time of implementation | creates `todo_tasks` and its ordering index |
+| `5c58af1f8e8a` | `a1b2c3d4e5f6` | creates `todo_tasks` and its ordering index |
 
 Two revisions, and the second is the head. Every next one declares as its parent the head **at
 the time of implementation**, never the one the author remembered.
@@ -401,7 +401,8 @@ applied that revision will not learn about the correction.
 
 ### The revision that creates `todo_tasks`
 
-Its parent is the head at the time of implementation. `upgrade()`, in this order:
+`5c58af1f8e8a`, whose parent is `a1b2c3d4e5f6`, the head at the time of implementation.
+`upgrade()`, in this order:
 
 1. `op.create_table("todo_tasks", …)` with the four columns of § `todo_tasks` exactly — `id`
    `sa.Uuid()` as the primary key, `text` `sa.String(length=200)`, `done` `sa.Boolean()`,
@@ -446,7 +447,7 @@ code:
 **History:** `a1b2c3d4e5f6` — the initial one, creating the schema from nothing. The mode does
 not apply here: there is nothing to break, because there is no previous state.
 
-The revision that creates `todo_tasks` — **`backward compatible`**. A new table and an index on
+`5c58af1f8e8a`, the revision that creates `todo_tasks` — **`backward compatible`**. A new table and an index on
 it: the code released before it never names `todo_tasks`, so it runs unchanged over the new
 schema, and a rollback that moves the code back while the table stays is safe for the same
 reason. The release migrates before it moves the alias ([`architecture.md`](architecture.md)

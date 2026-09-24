@@ -216,7 +216,7 @@ source rather than importing it; two import `app` for the constants they compare
 | `test_design_tokens.py` | article XIII, the half with no mechanism: no component carries a raw hex or an arbitrary pixel value (`rounded-[14px]`), no stylesheet writes `border-radius` as a number, and every declared radius and type-size token is used somewhere. The only file in which a value may be written as a number is `frontend/src/styles/theme.css`. It also holds the palette's **contrast floor** (`spec/design/ui/system-states.md` § Tokens): every text token clears 4.5:1 against every surface it can be painted on, with one written exemption (`--color-disabled`, which WCAG 1.4.3 exempts) |
 | `test_data_invariants.py` | the data invariants `D-01`…`D-03` swept over `Base.metadata` rather than checked on one table: no table is another's archive, no column is a copy of somebody else's with no key between them, every primary key is a UUID with an application-side default. The first two were **vacuously true** while there was one table, which is why each carries a known positive over synthetic metadata; `todo_tasks` made them real, and the sweep reached it with no edit, which is the property a sweep is chosen for |
 | `test_invariant_witnesses.py` | every invariant in `contracts/invariants/` carries a `**Witness:**` and a `**Kind of evidence:**`, and the witness resolves to an existing test. `none — <reason>` is a legal answer and costs a sentence: a gap counted is a different thing from a gap passed over |
-| `test_length_constants.py` | the four length bounds have one home beside the model or the schemas and one named copy in the browser — the guestbook's three in `frontend/src/contexts/guestbook/lib/guestbookEntry.ts`, and since `CR-2609-823a` the to-do list's `TODO_TASK_TEXT_MAX_LENGTH`, beside `TodoTask`, with its copy in the to-do list's own browser rule — and the copy is legal only while the literals are equal — the generated contract carries no `maxLength`, so nothing else binds them. **It compares numbers and cannot compare units**, which is why `golden-set/fixtures/text-measurement.json` exists beside it: for the whole life of this repository all four literals read `80` while the browser counted UTF-16 code units and every other layer counted code points |
+| `test_length_constants.py` | the four length bounds have one home beside the model or the schemas and one named copy in the browser — the guestbook's three in `frontend/src/contexts/guestbook/lib/guestbookEntry.ts`, and since `CR-2609-823a` the to-do list's `TODO_TASK_TEXT_MAX_LENGTH`, beside `TodoTask`, with its copy in the to-do list's own browser rule, together with `LINE_BREAKS` beside it, held equal to its browser copy as a set of code points — and the copy is legal only while the literals are equal — the generated contract carries no `maxLength`, so nothing else binds them. **It compares numbers and cannot compare units**, which is why `golden-set/fixtures/text-measurement.json` exists beside it: for the whole life of this repository all four literals read `80` while the browser counted UTF-16 code units and every other layer counted code points |
 | `test_alembic_env_metadata.py` | the metadata `alembic/env.py` hands to autogeneration knows every table: the file's own `app.*` imports are replayed in a fresh interpreter and `Base.metadata` is asked what it holds. The integration suite could not see an empty metadata, because the session fixture imports every `app.*` module first — this asks about the imports `env.py` itself makes, which is what `--autogenerate` reads |
 | `test_gate_parity.py` | the script contract's mechanical half, from this template's side: `check.sh` still files exit 4 as a named gap rather than a failure, it leaves the junit of every suite handed `--junitxml` (backend, fitness) at the path `.specconf/stack.json` names, the two pytest suites are disjoint and cover every group under `tests/`, and every contract script the profile names is committed executable |
 | `test_profile_mechanisms.py` | `.specconf/stack.json` answers all four mechanism questions the engine renders into a worker's brief (`storage_contract`, `migration_mechanism`, `readiness`, `binding_target`), every path those sentences name exists, and the readiness route is the one `scripts/_lib.sh` polls and `app/platform/routers/health.py` serves. The engine keeps the four optional, so a key dropped here fails nothing there; this row is what does |
@@ -747,8 +747,8 @@ The map the test authors of `CR-2609-823a` write from. The citation is always fu
 names a requirement, never an acceptance criterion: `@pytest.mark.req("CR-2609-823a/R-n")` in
 `tests/unit/` and `tests/integration/`, the tag `@req:CR-2609-823a/R-n` on a Gherkin scenario, and
 `[req:CR-2609-823a/R-n]` in a vitest test's name. A test that proves two requirements carries two
-citations. A file the test wave will create is named in bold rather than in backticks, because
-it does not exist until then. The contract the tests hold the application to is
+citations. A file the test wave created is named in bold rather than in backticks, because the map
+was written before it existed. The contract the tests hold the application to is
 [`api.md`](api.md) § The to-do list's refusals, the schema and the write shapes are
 [`data-model.md`](data-model.md) § `todo_tasks`, and the files and their writers are
 [`architecture.md`](architecture.md) § The to-do list — where each rule lives.
@@ -936,11 +936,11 @@ application answers.
 - **frontend/src/components/shell/PageFrame.test.tsx** — "offers the way to the other screen on
   each screen" (`[req:CR-2609-823a/R-5]`).
 - **frontend/src/pages/StatusPages.test.tsx** — "does not say the application has one screen"
-  (`[req:CR-2609-823a/R-5]`) — red today on the sentence "There is one screen in this application: the guestbook."
+  (`[req:CR-2609-823a/R-5]`) — red before the implementation, on the sentence "There is one screen in this application: the guestbook."
 - **e2e/suite/features/todo_list.feature** — every scenario it holds, by title, as listed in the
   map above.
 - Edits of existing tests, red until the code they wait for: in `tests/unit/test_guestbook_entry_model.py`,
-  `test_this_schema_holds_exactly_one_table`, renamed for the two tables it expects,
+  `test_this_schema_holds_exactly_one_table`, renamed `test_this_schema_holds_exactly_two_tables` for the two tables it expects,
   `guestbook_entries` and `todo_tasks`, until `TodoTask` is registered; in
   `tests/integration/test_migrations.py`, the new cases for the `todo_tasks` columns and its
   ordering index, until the revision; in `tests/tooling/test_seed_golden_set.py`,
@@ -1029,7 +1029,7 @@ and the example-task file's name, in `tests/_golden_set.py`.
   or `todo_task_text_multiline`) rather than the guestbook's mechanism word.
 - **todo-task-text.json** — `cases`: each `{case, description, input, verdict}`, plus `length`
   exactly when the verdict is `accepted`; no `field`, because there is one. The verdicts are
-  `accepted`, `empty`, `too_long` and `multiline`. The cases are the nineteen `scenarios.md` lists
+  `accepted`, `empty`, `too_long` and `multiline`. The cases are the eighteen `scenarios.md` lists
   for the task's text, and one more that `BR-07` added after it was written: 201 letters with a
   line feed after the hundredth, `multiline`. Every input is written in escapes.
 - The example-task file — **todo-tasks-example.json** under `golden-set/seed/`, written by

@@ -93,16 +93,45 @@ the two things the proxy would still need before it could serve a connection. So
 manage is this ceiling against Aurora's maximum capacity, not a proxy somebody can switch on. What
 it would take is written in `infra/terraform/modules/database/main.tf` § header.
 
+**The to-do list has no pages and no ceiling.** `GET /api/todo-tasks` takes no parameters and
+answers with every task, newest first, read through the index `ix_todo_tasks_created_at_id`. That
+whole read is made on every opening of the to-do screen, again after every change somebody makes
+on it, by every run of the seeder and by every deployment's smoke. Its cost grows with the
+`todo_tasks` table, and nothing bounds the table. Whether there should be a largest number of tasks
+is an open question in [`spec/contexts/todo_list.md`](../spec/contexts/todo_list.md) § Open
+questions, and no limit exists anywhere today.
+
 ## Filling an environment with something to look at
 
 ```bash
 ./scripts/seed.sh --base-url https://<the environment>/api
 ```
 
-Safe to run at any time: it refuses production, and it refuses a guest book that already has
-entries. `--boundary` adds the fixture entries that sit exactly on the published limits, which is
-worth doing when the thing being reviewed is the screen rather than the flow. No deployment passes
-that flag.
+Safe to run at any time. It refuses production: it asks `/api/health` and stops at `prod` before
+it reads either list. It fills two lists, **each on its own condition**. The guest book gets its
+welcome entries when it holds no entry. The to-do list gets its example tasks when its `total` is
+zero, whatever the guest book holds. Every example task is added not done, and the done one is
+then marked through `PATCH /api/todo-tasks/{todo_task_id}`, the way a person's task gets there.
+Every run after the first costs one `GET` per list, and every run prints one line per list:
+
+```
+the guest book of stage already has entries; left alone
+seeded the to-do list of stage with 5 example tasks
+```
+
+Those two lines are what **the first deployment of the to-do list to an environment that already
+existed** prints: stage, or a preview raised again. Its guest book is left alone, and its empty
+to-do list gets the examples. Production gets neither.
+
+`--boundary` adds the fixture entries that sit exactly on the published limits, which is worth
+doing when the thing being reviewed is the screen rather than the flow. It adds guest book entries
+only, and no deployment passes that flag.
+
+**"Only while the list is empty" is a read followed by writes, and no key or index holds it**
+([`spec/design/data-model.md`](../spec/design/data-model.md) § Two writers on one task). A run
+that stopped part way leaves a list the next run no longer calls empty. Two runs at the same
+moment leave the examples twice. Neither repairs itself, and
+[`runbooks/refill-the-example-data.md`](runbooks/refill-the-example-data.md) is the repair.
 
 ## Previews
 

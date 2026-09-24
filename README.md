@@ -9,10 +9,12 @@ black box in Gherkin and a smoke in a real browser. One process on `:8080` serve
 screen. On AWS it is a Lambda behind CloudFront with an Aurora Serverless cluster, and there is a
 disposable environment per branch.
 
-**The one feature is an example: a guest book.** It exists so that every step of the process has
-something real to travel through, and it is meant to be deleted once your first feature replaces it.
-[`CLAUDE.md`](CLAUDE.md) § What is an example, and what is the template says exactly what goes with
-it.
+**There are two features, and only one of them is an example.** The guest book exists so that every
+step of the process has something real to travel through, and it is meant to be deleted once your
+first feature replaces it. The to-do list beside it (one shared list of one-line tasks, ticked done
+and back) was added through the process as change `CR-2609-823a`, and it stays when the guest book
+goes. [`CLAUDE.md`](CLAUDE.md) § What is an example, and what is the template says exactly what
+goes with the guest book, and the one thing that has to move before it does.
 
 ## Start here
 
@@ -21,7 +23,8 @@ it.
 ```
 
 On a machine that already has `uv`, Docker and Node, `./scripts/start.sh` is enough. Either way the
-application is at <http://127.0.0.1:8080> with a guest book that already has entries in it.
+application is at <http://127.0.0.1:8080>. The guest book already has entries in it, and the to-do
+list, one link away in the header, opens with five example tasks, one of them already done.
 
 **Every task has a script, and the scripts are the interface** — not the commands inside them, and
 not this file. `./scripts/help.sh` lists them all and each takes `--help`. Before a push,

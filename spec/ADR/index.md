@@ -22,4 +22,5 @@ because renaming would break the citations they are worth having for.
 
 | ADR | Decision | Status | Date | Supersedes | Aliases | Superseded by |
 |---|---|---|---|---|---|---|
-| — | no decisions recorded | — | — | — | — | — |
+| [ADR-0001](ADR-0001-todo-list-is-its-own-bounded-context.md) | The to-do list is a bounded context of its own, sharing only the text rule with the guestbook | Proposed | 2026-09-24 | — | — | — |
+| [ADR-0002](ADR-0002-task-text-refusals-are-coded-not-schema-constraints.md) | A task's text is refused with a stable code, never by a constraint in the published schema | Proposed | 2026-09-24 | — | — | — |

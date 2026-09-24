@@ -42,10 +42,10 @@ for a while. Ask when it was first seen; the answer shapes step 4.
    Do it before diagnosing. Diagnosis is easier with the service working.
 
 4. **Decide whether data has been damaged**, and decide it early, because the cost of getting this
-   wrong grows every minute. If entries are missing or wrong — as opposed to unreachable — stop and
-   read [`restore-the-database.md`](restore-the-database.md) before anything else: a restore returns
-   the whole book to a moment in the past, so every write that happens while you deliberate is a
-   write you will lose recovering.
+   wrong grows every minute. If entries or tasks are missing or wrong — as opposed to unreachable —
+   stop and read [`restore-the-database.md`](restore-the-database.md) before anything else: a restore
+   returns the whole database, both lists, to a moment in the past, so every write that happens
+   while you deliberate is a write you will lose recovering.
 
 5. **Read the logs, by request id.** `/aws/lambda/sdd-guestbook-prod-api` in CloudWatch Logs:
 

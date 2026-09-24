@@ -52,7 +52,8 @@ and the schema disagree:
 8. **Record what served.** The version, its build digest and the commit go into the environment's
    release manifest — an SSM parameter — and that record is what a rollback reads.
 
-Then the seed runs, and does nothing unless the guest book is empty.
+Then the seed runs. It does nothing unless the guest book or the to-do list is empty, and it fills
+each list on its own condition (§ A new environment is not empty).
 
 If step 3 fails, nothing has gone live — the alias has not moved, and the script says so: *"the
 migration failed. The code has NOT been rolled; the previous version is still serving."*
@@ -97,10 +98,18 @@ So a rollback buys time; it is followed by a fix, not treated as one. The proced
 
 `deploy.sh` and `preview.sh` both call `scripts/seed.sh` once the environment answers, and it posts
 the seed corpus through the application's own HTTP API — not into the database — so what a reviewer
-looks at arrived the way a guest's entry arrives, and could not be something the rules would have
-refused. Two refusals make it safe to run unconditionally: it asks `/api/health` and **will not seed
-production**, and it **will not seed a guest book that already has entries**. Every deploy after the
-first costs one `GET`.
+looks at arrived the way a guest's entry or a person's task arrives, and could not be something the
+rules would have refused. Two refusals make it safe to run unconditionally: it asks `/api/health`
+and **will not seed production**, and it **will not seed a list that already holds something** — a
+guest book with entries, a to-do list with a task. It asks each list on its own, so every deploy
+after the first costs one `GET` per list. An environment that existed before the to-do list, stage
+or a preview raised again, gets the example tasks on its next deploy, and its welcome entries are
+not posted a second time.
+
+A seed that does not go in is a warning, not a failure: `deploy.sh` prints *"the seed corpus did
+not go in; the deployment itself is fine"* and carries on. A seed that stopped part way leaves a
+list the next deploy will not fill again. [`runbooks/refill-the-example-data.md`](runbooks/refill-the-example-data.md)
+is the repair.
 
 ## Previews
 

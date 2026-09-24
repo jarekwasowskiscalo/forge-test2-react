@@ -871,3 +871,25 @@
 {"timestamp": "2026-09-24T20:59:17Z", "agent": "sdd", "action": "stage_closed", "details": "closed clean_room, opened spec_sync (boundary -> GREEN; delta.md from 8 fragments (40 current, 0 superseded))", "session_id": "e1e6d306-158d-4d94-9ad9-252c7383101f"}
 {"timestamp": "2026-09-24T20:59:28Z", "agent": "sdd-retro", "action": "session_captured", "details": "2 files, 626665 bytes, session e1e6d306-158d-4d94-9ad9-252c7383101f", "session_id": "e1e6d306-158d-4d94-9ad9-252c7383101f"}
 {"timestamp": "2026-09-24T20:59:53Z", "agent": "sdd-retro", "action": "session_archive_committed", "details": "archive committed for session e1e6d306-158d-4d94-9ad9-252c7383101f", "session_id": "e1e6d306-158d-4d94-9ad9-252c7383101f"}
+{"timestamp": "2026-09-24T21:05:05Z", "agent": "session-capture", "action": "session_captured_auto", "details": "3 files, 916253 bytes, marked partial, trigger prompt_input_exit", "session_id": "e1e6d306-158d-4d94-9ad9-252c7383101f"}
+{"timestamp": "2026-09-24T21:05:53Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: reconcile-spec, reconcile-design, reconcile-docs, reconcile-ops", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:10:40Z", "agent": "reconcile-design", "action": "adr_registered", "details": "ADR-0001", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:10:40Z", "agent": "reconcile-design", "action": "adr_registered", "details": "ADR-0002", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:29Z", "agent": "sdd", "action": "doc_registered", "details": "docs/solution-overview.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:29Z", "agent": "sdd", "action": "doc_registered", "details": "docs/operations.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:29Z", "agent": "sdd", "action": "doc_registered", "details": "docs/deployment.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:30Z", "agent": "sdd", "action": "doc_registered", "details": "docs/backup-and-recovery.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:30Z", "agent": "sdd", "action": "doc_registered", "details": "docs/security.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:30Z", "agent": "sdd", "action": "doc_registered", "details": "docs/troubleshooting.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:30Z", "agent": "sdd", "action": "doc_registered", "details": "docs/aws-account-setup.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:30Z", "agent": "sdd", "action": "doc_registered", "details": "docs/runbooks/README.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:30Z", "agent": "sdd", "action": "doc_registered", "details": "docs/runbooks/refill-the-example-data.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:31Z", "agent": "sdd", "action": "doc_registered", "details": "docs/runbooks/restore-the-database.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:31Z", "agent": "sdd", "action": "doc_registered", "details": "docs/runbooks/roll-back-a-release.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:31Z", "agent": "sdd", "action": "doc_registered", "details": "docs/runbooks/release-to-production.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:31Z", "agent": "sdd", "action": "doc_registered", "details": "docs/runbooks/preview-environment.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:13:31Z", "agent": "sdd", "action": "doc_registered", "details": "docs/runbooks/incident-first-response.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:14:47Z", "agent": "sdd", "action": "doc_registered", "details": "README.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:14:48Z", "agent": "sdd", "action": "doc_registered", "details": "CLAUDE.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:14:48Z", "agent": "sdd", "action": "doc_registered", "details": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/user-guide-todo-list.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-24T21:15:58Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: reconcile-spec, reconcile-design, reconcile-docs, reconcile-ops; 3 process fault(s): PROC-59, PROC-60, PROC-61", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}

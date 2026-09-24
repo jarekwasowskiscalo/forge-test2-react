@@ -1,5 +1,5 @@
 ---
-id: ADR-NNNN
+id: ADR-0002
 title: A task's text is refused with a stable code, never by a constraint in the published schema
 status: Proposed
 date: 2026-09-24
@@ -9,7 +9,7 @@ superseded_by: null
 aliases: []
 ---
 
-# ADR-NNNN — A task's text is refused with a stable code, never by a constraint in the published schema
+# ADR-0002 — A task's text is refused with a stable code, never by a constraint in the published schema
 
 ## Context
 

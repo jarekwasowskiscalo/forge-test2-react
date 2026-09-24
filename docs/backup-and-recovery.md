@@ -38,7 +38,8 @@ can be.
 | Terraform state | S3 versioning is on for the state bucket, and the bucket carries `prevent_destroy` |
 
 So the only thing in this system that cannot be reconstructed from the repository is **the contents
-of the database** — the entries people wrote. Everything else is a build artefact.
+of the database** — the guest book's entries (`guestbook_entries`) and the to-do list's tasks
+(`todo_tasks`) people wrote. Everything else is a build artefact.
 
 ## What a restore costs
 

@@ -7,11 +7,17 @@ page and that document disagree, that document is right and this one is a defect
 
 ## In one paragraph
 
-A guestbook. One screen, one resource, one table. A visitor signs an entry with a name and a
-message; the entries can be searched, sorted, read a page at a time, corrected and deleted. It is
-a **worked example** — the point of this repository is the process that produced it, and the
-guestbook exists so that every step of that process has something real to travel through. It is
-meant to be deleted once a first real feature replaces it.
+Two screens over one API and one database. The first is a guestbook: a visitor signs an entry with
+a name and a message; the entries can be searched, sorted, read a page at a time, corrected and
+deleted. It is a **worked example** — the point of this repository is the process that produced
+it, and the guestbook exists so that every step of that process has something real to travel
+through. It is meant to be deleted once a first real feature replaces it.
+
+The second, at `/todo-list`, is **not** an example: one to-do list every visitor shares, each task
+one line of text that is added, ticked done and back, corrected and deleted. It shares one rule
+with the guestbook — how a text is trimmed and measured — and nothing else, so deleting the example
+leaves it standing. Each screen has one resource and one table: `guestbook_entries` and
+`todo_tasks`.
 
 ## The parts
 
@@ -28,7 +34,7 @@ meant to be deleted once a first real feature replaces it.
 | Part | What it is |
 |---|---|
 | The API | FastAPI, cut by bounded context (`app/contexts/<name>/`) and layered inside each one: `routers/` → `services/` → `models/` + `schemas/` |
-| The screen | React and TypeScript, built by Vite into `app/static/` and served by the same process |
+| The screens | React and TypeScript, one bundle holding both (`/guestbook`, `/todo-list`), built by Vite into `app/static/` and served by the same process |
 | The database | Postgres 16. Aurora Serverless v2 on AWS, a container locally, and **the only engine** — there is no SQLite fallback anywhere |
 | The schema | Owned by `alembic/versions/`. The application never calls `create_all()` |
 | The client | Generated from the API contract into `frontend/src/api/schema.d.ts`, committed, and regenerated and compared by CI |
@@ -73,10 +79,10 @@ recorded with their consequences in [`infra/README.md`](../infra/README.md).
 
 | Question | Document |
 |---|---|
-| What the system must do | [`spec/contexts/guestbook.md`](../spec/contexts/guestbook.md) — the business rules |
+| What the system must do | [`spec/contexts/guestbook.md`](../spec/contexts/guestbook.md) and [`spec/contexts/todo_list.md`](../spec/contexts/todo_list.md) — the business rules |
 | What the API promises | [`spec/design/api.md`](../spec/design/api.md), and [`contracts/openapi/`](../contracts/README.md) as the contract |
 | What the tables are | [`spec/design/data-model.md`](../spec/design/data-model.md) |
-| What the screen does, state by state | [`spec/design/ui/guestbook.md`](../spec/design/ui/guestbook.md) |
+| What each screen does, state by state | [`spec/design/ui/guestbook.md`](../spec/design/ui/guestbook.md) and [`spec/design/ui/todo-list.md`](../spec/design/ui/todo-list.md) |
 | How anybody knows it works | [`spec/design/testing.md`](../spec/design/testing.md) |
 | How to set the AWS account up | [`aws-account-setup.md`](aws-account-setup.md) |
 | How to deploy it | [`deployment.md`](deployment.md) |
