@@ -939,63 +939,7 @@
   "deferred_findings": [],
   "docs_touched": [],
   "expected_red": [],
-  "fanout": {
-    "build-backend": {
-      "assumptions": "No departure from spec/design/api.md (routes, shapes, five codes, sentences verbatim, refusal order, 422 anyOf on POST/PATCH, 404 on PATCH/DELETE, total ge=0). One addition past architecture.md: `change_todo_task(id, *, text=None, done=None)` is the one judgement-then-single-UPDATE that the PATCH calls; `correct_todo_task` and `mark_todo_task` are defined through it. build-migration: the model relies on todo_tasks (id uuid PK, text varchar(200), done boolean, created_at timestamptz, all NOT NULL, no server defaults) and the non-unique ix_todo_tasks_created_at_id(created_at, id); revision 5c58af1f8e8a exists and the model-against-revision tests pass. build-frontend: I did not run generate.sh in write mode, because schema.d.ts is T-23's and outside my allowlist; it now matches this backend (generate --check exits 0). Outside my files, still saying \"guest book\" only: the comments in scripts/help.sh:89, start.sh:113, deploy.sh:621 and preview.sh:199 (for reconcile-ops). Every write is one statement with RETURNING, no read before it; total = len(items) from one read; StrictStr/StrictBool shapes with no bound; the router's match ends in assert_never; exception messages carry ids, never the typed text (art. XI).",
-      "at": "2026-09-24T19:16:56Z",
-      "state": "returned"
-    },
-    "build-frontend": {
-      "assumptions": "TD-7 only: staleTime: 0 plus a comment citing CR-2609-823a/R-3 clause 5, system-states.md § Interactions and Q-25, in the useTodoTasks useQuery options only; GuestbookPage.tsx:30 changed to the dispatch's prose word for word. main.tsx keeps refetchOnWindowFocus: false globally, so staleTime: 0 means a fresh read each time the to-do screen mounts (header link, address, reload) and no refetch on focus. No vitest case asserts the header-link read; R-3 clause 5 is proved in the suites only by the reload scenarios.",
-      "at": "2026-09-24T19:56:08Z",
-      "state": "returned"
-    },
-    "build-migration": {
-      "assumptions": "TodoTask matches this exactly (checked in app/contexts/todo_list/models/todo_task.py): Uuid PK with an app-side default. String(200) from TODO_TASK_TEXT_MAX_LENGTH. Boolean with default=False on the model only. DateTime(timezone=True). No server default anywhere. Index ix_todo_tasks_created_at_id(created_at, id) in __table_args__. The PK is unnamed, so Postgres names it todo_tasks_pkey. The data model gives no uniqueness rule, so no concurrency test is owed. The revision writes the literal 200 so a released revision never moves with the constant; the index build is plain (the table is created in the same revision); no lock_timeout, backfill or data. Environment: its first plain `./scripts/db.sh migrate` reached another project's database on localhost:5432 (forge-test1-pythin-react-db-1 held 0.0.0.0:5432); the orchestrator reverted that with the user's approval and moved this repository's dev Postgres back to 127.0.0.1:5432 after stopping the other container.",
-      "at": "2026-09-24T19:16:56Z",
-      "state": "returned"
-    },
-    "build-platform": {
-      "assumptions": "build-backend creates app/contexts/todo_list/ (T-14..T-16) and the seed file (T-17). build-frontend writes the todo_list modules and regenerates schema.d.ts (T-18..T-23). Those clear every red above, and nothing I own is on their path. A CODEOWNERS path does not need to exist yet: app/contexts/todo_list/ was absent when I wrote the row. The rows go last because GitHub applies the last matching rule; the comment now says so. No rows for the guestbook (the example that gets replaced). Left alone, outside the task: the header's \"a few hundred bytes\" (the file is 7842 bytes).",
-      "at": "2026-09-24T19:16:56Z",
-      "state": "returned"
-    },
-    "build-tests-e2e": {
-      "assumptions": "TD-12 only: e2e/suite/steps/guestbook_steps.py:25 now reads \"The one resource this module drives.\" (the COH-implement-9 ready patch); the file is in the boundary via design/delta/converge.md's row limited to that one comment; no step text, decorator, binding or ENTRIES value moved; 78 tests collect.",
-      "at": "2026-09-24T20:27:38Z",
-      "state": "returned"
-    },
-    "build-tests-frontend": {
-      "assumptions": "TD-9 only: new top-level case src/router.test.tsx::reads the to-do list again when its header link opens it a second time [req:CR-2609-823a/R-3], under a query client copying main.tsx's defaults (staleTime 30_000, refetchOnWindowFocus false): opens /todo-list, the stub changes, leaves by \"Guestbook\" in the Screens nav, returns by \"To-do list\", asserts the new task and the tick are shown, two reads, under 30 s. Green by design: useTodoTasks sets staleTime: 0 (TD-7). A temporary mutation probe removing staleTime made this case alone fail (router.test.tsx:224); the probe was deleted. open() gained an optional queryClient parameter defaulting to the client the three existing cases used.",
-      "at": "2026-09-24T20:29:10Z",
-      "state": "returned"
-    },
-    "build-tests-integration": {
-      "assumptions": "TD-11 only: tests/integration/test_e2e_reset.py:43 replaced word for word by the COH-implement-9 ready patch (wrapped over :43-45); REQUIRED = frozenset({\"guestbook_entries\"}) and the comment's last two lines unchanged; test_e2e_reset 5 passed.",
-      "at": "2026-09-24T20:27:56Z",
-      "state": "returned"
-    },
-    "build-tests-uat": {
-      "assumptions": "Convergence round 1: uat.md step 14 now reads \"When the prompt returns, reload window A, then open the guestbook with the header link \"Guestbook\".\" (the COH-implement-1 ready patch, word for word; 1 insertion, 1 deletion). build-frontend's staleTime: 0 in useTodoTasks.ts is the delivered behaviour; the guestbook's hook and main.tsx stay frozen (staleTime 30_000), so step 14 still needs the reload; step 15 now reads the to-do list fresh by header link; steps 16, 17, 19, 20 already reload or enter the address. R-11 is still the only manual requirement, covered by steps 3 and 14-20.",
-      "at": "2026-09-24T19:58:16Z",
-      "state": "returned"
-    },
-    "build-tests-unit": {
-      "assumptions": "TD-10 only: the COH-implement-9 ready patch pasted word for word into the docstring of test_the_entity_carries_no_relationship (tests/unit/test_guestbook_entry_model.py, now :163-165, reflowed under 100 characters); no assertion, case name or marker changed; unit 269 passed, fitness 364 passed.",
-      "at": "2026-09-24T20:27:48Z",
-      "state": "returned"
-    },
-    "review-coherence": {
-      "assumptions": "none -- this skill reads. Pass 9 (verify, round 2 of 3): all 10 recorded resolutions landed, checked against the working tree at c24ac49 with file and line; the router.test.tsx case COH-implement-8 names exists and passes (243 frontend tests); no verification finding opened; the old COH-implement-10 sentence survives only in the assembled delta-history.md:273, which the resolution did not name.",
-      "at": "2026-09-24T20:34:40Z",
-      "state": "returned"
-    },
-    "review-converge": {
-      "assumptions": "Pass 8 reconciled: REC-36 COH-implement-7 (system-states.md § Interactions, with Q-28's words), REC-37 COH-implement-8 (testing.md R-3 row names the router.test.tsx header-link case, Q-29), REC-38 COH-implement-9 (three testing.md cells; the guestbook_steps.py row in design/delta/converge.md § This change owns; the freeze exception), REC-39 COH-implement-10 (design/delta/architecture.md bullet names both exceptions; tasks.md :724-727 and :950). The router.test.tsx case and the three comment edits are their authors', afterwards. delta-history.md:273 still carries the old sentence (an assembled record). requirements.md § R-3 clause 5 left unedited: system-states.md ranks above the change's requirements, and editing the approved requirements would void their approval.",
-      "at": "2026-09-24T20:25:01Z",
-      "state": "returned"
-    }
-  },
+  "fanout": {},
   "faults": [
     {
       "at": "2026-09-24T11:42:41Z",
@@ -2942,6 +2886,11 @@
       "at": "2026-09-24T17:43:25Z",
       "fingerprint": "14e0ca21ff499d7f",
       "stage": "implement"
+    },
+    {
+      "at": "2026-09-24T20:37:20Z",
+      "fingerprint": "089994095f40d977",
+      "stage": "clean_room"
     }
   ],
   "legacy_spec": null,
@@ -4166,7 +4115,7 @@
   ],
   "parent_cr_id": null,
   "parent_merge_commit": null,
-  "previous_stage": "plan",
+  "previous_stage": "implement",
   "reconciliations": [
     {
       "at": "2026-09-24T12:30:43Z",
@@ -4656,7 +4605,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 857,
+  "revision": 858,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4678,15 +4627,16 @@
     "unmeasured": []
   },
   "slug": "todo-list-add-tasks-and-mark-them-done",
-  "stage": "implement",
-  "stage_entered_at": "2026-09-24T17:43:25Z",
+  "stage": "clean_room",
+  "stage_entered_at": "2026-09-24T20:37:20Z",
   "stage_entries": {
+    "clean_room": 1,
     "design": 1,
     "implement": 1,
     "plan": 1,
     "requirements": 1
   },
-  "stage_status": "in_progress",
+  "stage_status": "not_started",
   "status": "draft",
   "supersedes": [],
   "tasks": [],
@@ -4805,38 +4755,38 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T20:34:40Z",
+  "updated_at": "2026-09-24T20:37:20Z",
   "verification_last": {
-    "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
+    "content_digest": "f7cf53add41463c656f6f9d3a8b8747a37fb69ca62f1ec969c9e920ba6dfb62f",
     "counts": {
       "Suite backend": {
-        "collected": 748,
-        "executed": 724,
+        "collected": 856,
+        "executed": 832,
         "skipped": 24
       },
       "Suite e2e": {
-        "collected": 52,
-        "executed": 52,
+        "collected": 78,
+        "executed": 78,
         "skipped": 0
       },
       "Suite fitness": {
-        "collected": 339,
-        "executed": 339,
+        "collected": 364,
+        "executed": 364,
         "skipped": 0
       },
       "Suite frontend": {
-        "collected": 213,
-        "executed": 213,
+        "collected": 243,
+        "executed": 243,
         "skipped": 0
       }
     },
-    "duration_s": 158.79,
+    "duration_s": 153.23,
     "gaps": [],
-    "git_head": "15e25bd6fbd81df189439def7c1a4888d76098d0",
-    "git_tree": "eeb0ff40c7ba3087c645e9a4bdf80542e421a637",
+    "git_head": "3812cf728046cf54d104d3d462144e2e17732032",
+    "git_tree": "f8687af226e50492c8a9825af5db13d7d177123e",
     "profile": "boundary",
-    "started_at": "2026-09-24T17:22:54Z",
-    "verdict": "RED",
+    "started_at": "2026-09-24T20:34:47Z",
+    "verdict": "GREEN",
     "worktree_dirty": true
   }
 }

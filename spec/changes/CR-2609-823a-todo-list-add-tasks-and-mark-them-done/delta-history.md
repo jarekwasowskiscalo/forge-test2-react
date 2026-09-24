@@ -269,8 +269,12 @@ half (`tests/fitness/test_golden_set.py`).
 
 - **The guestbook's backend, whole** — `app/contexts/guestbook/` in every layer, its revision
   `alembic/versions/a1b2c3d4e5f6_create_guestbook_entries_table.py`, its contract, its welcome
-  entries, `e2e/suite/features/guestbook.feature` and its steps (`SC-5`). Its frontend changes by
-  three import paths and nothing else.
+  entries, `e2e/suite/features/guestbook.feature` and its steps (`SC-5`), save one comment in
+  `e2e/suite/steps/guestbook_steps.py`, on `ENTRIES`, that counted one resource
+  (`spec/design/testing.md` § Four file sets, disjoint, COH-implement-9): prose alone, and no step
+  text or binding moves. Its frontend changes by three import paths and one line of
+  `GuestbookPage.tsx`'s module docstring (`spec/design/architecture.md` § The files,
+  COH-implement-5), and nothing else.
 - **`app/platform/schemas/text.py`** — the kernel's server half is imported by the to-do service's
   judgement as it stands; `app/platform/schemas/refusals.py` is reused as the envelope.
 - **`app/main.py`, `app/core/`, `app/db/`, `alembic/env.py`** — the aggregate and the context
@@ -378,6 +382,39 @@ artefact that carried the contradiction. Both kinds are declared below when they
 requirements (`COH-design-14`), the scenarios (`COH-design-15`), the ADR draft on coded text
 refusals (`COH-design-15`), and the api and architecture fragments (`COH-design-15`,
 `COH-design-9`, `COH-design-13`).*
+
+
+*Written by the convergence round of coherence pass 7, `implement` stage, for the six findings
+`COH-implement-1` to `COH-implement-6`. The implement stage has no fragment directory of its own,
+so these entries sit here, as the requirements stage's did. Each edit lands in the earliest
+document a finding names as its `ambiguity_source`; for `COH-implement-3` and `COH-implement-6`
+the ready patch under the finding names that document itself, and it landed with the small
+adjustments the entries below name. The
+artefact-level patches that fall outside this round's write set — `useTodoTasks.ts`
+(`staleTime: 0`), `GuestbookPage.tsx`:30, `uat.md` step 14 and the five test docstrings of
+`COH-implement-4` — belong to their authors in the convergence round that follows, and they are
+not declared here as made.*
+
+
+*Written by the convergence round of coherence pass 8, `implement` stage, for the four findings
+`COH-implement-7` to `COH-implement-10`, each with the ready patch under it. `COH-implement-7`
+names `requirements.md` § R-3 clause 5 as its `ambiguity_source`; its patch and the user's
+decision (`Q-28`) land in `spec/design/ui/system-states.md` § Interactions, which ranks above the
+change's requirements (constitution, Article VIII) and now decides what is shown while the read is
+under way, so the approved requirements are left as they are. `COH-implement-10`'s edits
+(`design/delta/architecture.md` § What this change does not move, `tasks.md` T-22 and § Outside
+every task, item 6), `COH-implement-9`'s exception in that same fragment bullet, and the
+`guestbook_steps.py` row of § This change owns below are inside the change record and need no
+entry. The three comment edits of `COH-implement-9` and the `frontend/src/router.test.tsx` case of
+`COH-implement-8` belong to their authors afterwards, and they are not declared here as made.*
+
+
+## This change owns
+
+| Path | Why |
+|---|---|
+| `frontend/src/contexts/guestbook/pages/GuestbookPage.tsx` | one line of its module docstring, which called the guestbook the only screen; now one of two (COH-implement-5); nothing the screen does moves (build-frontend) |
+| `e2e/suite/steps/guestbook_steps.py` | one comment, on `ENTRIES`, that counted one resource (COH-implement-9); no step text or binding moves (build-tests-e2e) |
 
 <!-- z spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/data-model.md -->
 # Delta fragment — `design-data`
