@@ -39,3 +39,6 @@
 - [16:43] fanout_recorded: returned: design-ui
 - [16:43] fanout_recorded: dispatched: design-adr
 - [16:47] fanout_recorded: returned: design-adr; 1 process fault(s): PROC-24
+- [16:47] fanout_recorded: dispatched: review-coherence
+- [16:47] process_fault_resolved: PROC-24 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/338
+- [16:54] fanout_recorded: returned: review-coherence; coherence pass 4 NO_GO, 8 new finding(s); 1 process fault(s): PROC-25

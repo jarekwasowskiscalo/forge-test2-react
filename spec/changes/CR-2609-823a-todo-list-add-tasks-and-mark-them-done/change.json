@@ -221,6 +221,143 @@
       "severity": "minor",
       "stage": "requirements",
       "status": "resolved"
+    },
+    {
+      "ambiguity_source": "spec/design/conventions.md § Layers",
+      "artifacts": [
+        "spec/design/api.md",
+        "spec/design/architecture.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Who refuses a task's text, and in what shape: the service, with a coded refusal, or the schema, with FastAPI's list?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-design-1",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T14:54:34Z",
+      "severity": "critical",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/conventions.md § Layers",
+      "artifacts": [
+        "spec/design/testing.md",
+        "spec/design/api.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Do the create and update shapes refuse a text, and with its code?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-design-2",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T14:54:34Z",
+      "severity": "major",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/conventions.md § Frontend — where a file goes",
+      "artifacts": [
+        "design/delta/architecture.md",
+        "design/delta/testing.md"
+      ],
+      "auto_basis": "spec/design/conventions.md § Frontend — where a file goes",
+      "contradiction": "Does the text-measurement corpus reader move to `frontend/src/lib/text.test.ts`?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-design-3",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T14:54:34Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/architecture.md § Who writes what, and where the sets meet",
+      "artifacts": [
+        "design/delta/architecture.md",
+        "spec/design/testing.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Is `frontend/src/router.test.tsx` inside the change's boundary?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-design-4",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T14:54:34Z",
+      "severity": "major",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/contexts/todo_list.md, the paragraph \"The header claims a screen and a black-box file only once they exist\"",
+      "artifacts": [
+        "spec/contexts/todo_list.md",
+        "spec/design/ui/todo-list.md"
+      ],
+      "auto_basis": "spec/constitution.md § Article X — Between two steps the application works",
+      "contradiction": "Does the to-do list claim the screen that now exists?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-design-5",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T14:54:34Z",
+      "severity": "critical",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/contexts/todo_list.md, the paragraph \"The header claims a screen and a black-box file only once they exist\"",
+      "artifacts": [
+        "spec/design/testing.md",
+        "spec/contexts/todo_list.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Which step claims `e2e/suite/features/todo_list.feature`, and which stage carries the red meanwhile?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-design-6",
+      "kind": "gap",
+      "raised_at": "2026-09-24T14:54:34Z",
+      "severity": "major",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Named assumptions",
+      "artifacts": [
+        "requirements.md",
+        "design/delta/converge.md"
+      ],
+      "auto_basis": "spec/invariants.md § Deliberate non-goals",
+      "contradiction": "Does the retention non-goal name tasks, or is `A-2` still awaiting the user?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-design-7",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T14:54:34Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/conventions.md § Backend — where a file goes",
+      "artifacts": [
+        "spec/design/conventions.md",
+        "spec/README.md",
+        "spec/design/architecture.md"
+      ],
+      "auto_basis": "spec/constitution.md § Article IV — The specification changes on the same branch as the code",
+      "contradiction": "Is the guestbook still the only domain context?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-design-8",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T14:54:34Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
     }
   ],
   "coherence_passes": [
@@ -247,6 +384,14 @@
       "pass": 3,
       "stage": "requirements",
       "verdict": "GO"
+    },
+    {
+      "at": "2026-09-24T14:54:34Z",
+      "epoch": 1,
+      "inputs": "f7ea5dd1085a95fb342b8a528d3e8519e0309e31c06e3b8e0de5ab1372723843",
+      "pass": 4,
+      "stage": "design",
+      "verdict": "NO_GO"
     }
   ],
   "contention_events": 0,
@@ -302,6 +447,11 @@
     "design-ui": {
       "assumptions": "- Every binding is to the live spec/design/api.md: GET /api/todo-tasks via useTodoTasks() -> total (header count, not items.length), items[].id/.text/.done (rows, shown in arrival order), items empty (empty state); POST /api/todo-tasks sends text and gets a TodoTaskRead; PATCH /api/todo-tasks/{todo_task_id} sends done alone (the chosen state) for a tick, or text alone for a correction; DELETE -> 204. A refused write has detail.code (decides where it shows) and detail.message (the words). Refusals shown: todo_task_text_empty/multiline/too_long (under the field), todo_task_not_found (notice). created_at is not shown. The mutation names inside useTodoTasks.ts are left to build-frontend.\n- The Q-15 rule (\"...the service answered with an error.\") depends on design-api keeping every coded to-do refusal in {detail:{code,message}}, and on a server error carrying no detail.message; \"no sentence of its own\" is read as an answer with no refusal message, not a 5xx status code.\n- The Q-16 rule (focus back where the person was) applies only when focus was on the control that was locked or closed; a person who tabbed elsewhere keeps focus where they put it. It lives once, in § Keyboard and accessibility.\n- The navigation, the lockup (\"Product name\"/\"P\", mock-up C-1 approved in Q-14) and the 404 page live in system-states.md (the frame), not in the to-do document, because no context owns them; guestbook.md's opening sentence, region 1 and footer copy row changed with them.\n- The screen is in the live tree with info_ref S-02. No scenario ids (S-nn) appear in spec/design/ui/ (frozen-ids would read them as screen ids; PROC-23).\n- A failed correction keeps the editor open with what was typed and the stored text unchanged; build-tests-e2e: after a failed correction, the old text stays as the box's accessible name and comes back on Cancel.\n- Handed to the orchestrator (fragment § Found outside): spec/contexts/todo_list.md `screens: []` must claim spec/design/ui/todo-list.md, or test_every_registered_screen_is_claimed_by_exactly_one_context goes red; and the UI smoke's comment about \"the only navigation\" is now false.",
       "at": "2026-09-24T14:43:42Z",
+      "state": "returned"
+    },
+    "review-coherence": {
+      "assumptions": "none -- this skill reads and produces no artefact others depend on",
+      "at": "2026-09-24T14:54:34Z",
       "state": "returned"
     }
   },
@@ -1037,6 +1187,11 @@
           "at": "2026-09-24T14:47:10Z",
           "note": "The design-adr SKILL.md says it runs \"after the design fan-out converges\" and reads findings under {change_dir}/coherence/. In fact process.json p3 runs it as the last member of the design fan-out, before any design coherence pass, and the findings are in review/coherence.md. So it drafts an ADR over an unresolved contradiction (api.md against architecture.md) on the very decision it records.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T14:47:36Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/338",
+          "state": "filed"
         }
       ],
       "id": "PROC-24",
@@ -1046,6 +1201,32 @@
       "seen": 1,
       "signal": "The design-adr SKILL.md says it runs \"after the design fan-out converges\" and reads findings under {change_dir}/coherence/. In fact process.json p3 runs it as the last member of the design fan-out, before any design coherence pass, and the findings are in review/coherence.md. So it drafts an ADR over an unresolved contradiction (api.md against architecture.md) on the very decision it records.",
       "signature": "The design-adr SKILL.md says it runs · and reads findings under {change_dir}· In fact process.json p3 runs it as the las",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/338"
+    },
+    {
+      "at": "2026-09-24T14:54:34Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T14:54:34Z",
+          "note": "The preflight's ARTEFACTS list for design omits design/delta/converge.md. The requirements stage's last convergence edit to spec/invariants.md (1c51b88, after the verify-only pass 3) was never hunted, and COH-design-7 surfaced only by listing the directory.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-25",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-coherence",
+      "seen": 1,
+      "signal": "The preflight's ARTEFACTS list for design omits design/delta/converge.md. The requirements stage's last convergence edit to spec/invariants.md (1c51b88, after the verify-only pass 3) was never hunted, and COH-design-7 surfaced only by listing the directory.",
+      "signature": "The preflight·s last convergence edit to spec· (1c51b88, after the verify-only pass ·) was never hunted, and COH-design-",
       "stage": "design",
       "state": "reported",
       "url": null
@@ -1908,7 +2089,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 126,
+  "revision": 129,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1958,7 +2139,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T14:47:10Z",
+  "updated_at": "2026-09-24T14:54:34Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {
