@@ -41,8 +41,120 @@
   "boundary": [],
   "branch": "sdd/CR-2609-823a-todo-list-add-tasks-and-mark-them-done",
   "ci_receipt": null,
-  "coherence": [],
-  "coherence_passes": [],
+  "coherence": [
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-2",
+      "artifacts": [
+        "requirements.md",
+        "scenarios.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Is a line break inside a task's text refused, or still an open question?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-requirements-1",
+      "kind": "gap",
+      "raised_at": "2026-09-24T12:25:08Z",
+      "severity": "major",
+      "stage": "requirements",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-11",
+      "artifacts": [
+        "requirements.md",
+        "scenarios.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Does an existing environment with guestbook entries and an empty to-do list get example tasks?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-requirements-2",
+      "kind": "gap",
+      "raised_at": "2026-09-24T12:25:08Z",
+      "severity": "major",
+      "stage": "requirements",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-11",
+      "artifacts": [
+        "requirements.md",
+        "scenarios.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Is one of the example tasks done?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-requirements-3",
+      "kind": "gap",
+      "raised_at": "2026-09-24T12:25:08Z",
+      "severity": "minor",
+      "stage": "requirements",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-2",
+      "artifacts": [
+        "requirements.md",
+        "scenarios.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Which characters count as \"a line break\" inside a task?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-requirements-4",
+      "kind": "quality",
+      "raised_at": "2026-09-24T12:25:08Z",
+      "severity": "major",
+      "stage": "requirements",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/invariants.md § Deliberate non-goals",
+      "artifacts": [
+        "requirements.md",
+        "spec/invariants.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Does the standing non-goal on authentication and retention cover tasks?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-requirements-5",
+      "kind": "gap",
+      "raised_at": "2026-09-24T12:25:08Z",
+      "severity": "minor",
+      "stage": "requirements",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/impact.md § Tier signals",
+      "artifacts": [
+        "impact.md",
+        "requirements.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Does the change reach `scripts/`?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-requirements-6",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T12:25:08Z",
+      "severity": "minor",
+      "stage": "requirements",
+      "status": "open"
+    }
+  ],
+  "coherence_passes": [
+    {
+      "at": "2026-09-24T12:25:08Z",
+      "epoch": 1,
+      "inputs": "11ced9addd009c7661995233ef3dd4904f0a958f2a3bb55bc42e2f2ca7e58d54",
+      "pass": 1,
+      "stage": "requirements",
+      "verdict": "NO_GO"
+    }
+  ],
   "contention_events": 0,
   "cr_id": "CR-2609-823a",
   "created_at": "2026-09-24T11:26:53Z",
@@ -64,6 +176,11 @@
     "cr-scenarios": {
       "assumptions": "I took requirements.md as the authority. The user answered Q-10, Q-11 and Q-12 after it was written, and it still lists them as the open questions D1, D2 and D3. I wrote seeds for those answers (S-8, S-9, the last row of S-33, S-49, S-52, S-53) under the requirement each one would amend, and flagged each of them (finding 8). The coherence round has to amend R-2 and R-11, or those seeds prove clauses nobody wrote. Every boundary I used is stated in the requirements, apart from S-9 (a line break at the end of a task is trimmed), which I read from Q-11's word \"inside\" together with R-2 clause 1 and flagged.",
       "at": "2026-09-24T12:19:43Z",
+      "state": "returned"
+    },
+    "review-coherence": {
+      "assumptions": "none -- this skill reads, it does not produce an artefact others depend on",
+      "at": "2026-09-24T12:25:08Z",
       "state": "returned"
     }
   },
@@ -236,6 +353,11 @@
           "at": "2026-09-24T12:19:43Z",
           "note": "cr_scenarios_verify.py every_requirement_covered does not exempt a `**Verified-by:** manual` requirement, so R-11 had to get seeds tagged @req R-11 that the black box must not bind (it starts with --no-seed). This invites build-tests-e2e to put a citation beside the manual marker.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T12:20:18Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/300",
+          "state": "filed"
         }
       ],
       "id": "PROC-6",
@@ -245,6 +367,32 @@
       "seen": 1,
       "signal": "cr_scenarios_verify.py every_requirement_covered does not exempt a `**Verified-by:** manual` requirement, so R-11 had to get seeds tagged @req R-11 that the black box must not bind (it starts with --no-seed). This invites build-tests-e2e to put a citation beside the manual marker.",
       "signature": "cr_scenarios_verify.py every_requirement_covered does not exempt a `**Verified-by:** manual` requirement, so R-· had to ",
+      "stage": "requirements",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/300"
+    },
+    {
+      "at": "2026-09-24T12:25:08Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T12:25:08Z",
+          "note": "Answers to questions a fan-out member raised (Q-10..Q-12, from cr-requirements D1-D3) are recorded only in change.json, and no step writes them back into the artefact before the next member reads it. A recorded answer cannot be cited as auto_basis, so review-coherence has to file decisions the user already made as HITL and NO_GO, which invites asking an answered question again (constitution Art. VII).",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-7",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-coherence",
+      "seen": 1,
+      "signal": "Answers to questions a fan-out member raised (Q-10..Q-12, from cr-requirements D1-D3) are recorded only in change.json, and no step writes them back into the artefact before the next member reads it. A recorded answer cannot be cited as auto_basis, so review-coherence has to file decisions the user already made as HITL and NO_GO, which invites asking an answered question again (constitution Art. VII).",
+      "signature": "Answers to questions a fan-out member raised (Q-·..Q-·, from cr-requirements D1-D3) are recorded only in change.json, an",
       "stage": "requirements",
       "state": "reported",
       "url": null
@@ -725,7 +873,7 @@
   "reconciliations": [],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
   "requirements": [],
-  "revision": 38,
+  "revision": 41,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -774,7 +922,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T12:19:43Z",
+  "updated_at": "2026-09-24T12:25:08Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {

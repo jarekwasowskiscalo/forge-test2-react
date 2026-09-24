@@ -32,3 +32,6 @@
 - [14:14] process_fault_resolved: PROC-5 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/299
 - [14:14] fanout_recorded: dispatched: cr-scenarios
 - [14:19] fanout_recorded: returned: cr-scenarios; 1 process fault(s): PROC-6
+- [14:20] process_fault_resolved: PROC-6 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/300
+- [14:20] fanout_recorded: dispatched: review-coherence
+- [14:25] fanout_recorded: returned: review-coherence; coherence pass 1 NO_GO, 6 new finding(s); 1 process fault(s): PROC-7
