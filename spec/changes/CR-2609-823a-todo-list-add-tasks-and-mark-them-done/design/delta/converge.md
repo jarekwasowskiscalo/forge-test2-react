@@ -198,3 +198,9 @@ not declared here as made.*
   **Why:** COH-implement-6, the second of the two documents its decision names. The paragraph said the plan declared the red on a task, while `tasks.md` T-11 says "It is not declared" and carries it as a baseline red accepted at the design close. The user decided `Q-27` = A: "Yes, record what happened."
   **ADR:** none. It records how one red was carried.
   **Requirements:** CR-2609-823a/R-1, CR-2609-823a/R-2, CR-2609-823a/R-3, CR-2609-823a/R-4, CR-2609-823a/R-5, CR-2609-823a/R-6, CR-2609-823a/R-7, CR-2609-823a/R-8, CR-2609-823a/R-9, CR-2609-823a/R-10
+
+## This change owns
+
+| Path | Why |
+|---|---|
+| `frontend/src/contexts/guestbook/pages/GuestbookPage.tsx` | one line of its module docstring, which called the guestbook the only screen; now one of two (COH-implement-5); nothing the screen does moves (build-frontend) |

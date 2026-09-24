@@ -865,9 +865,8 @@
       "state": "returned"
     },
     "build-tests-integration": {
-      "assumptions": "- The names T-9 and T-15 must use, in app.contexts.todo_list.services.todo_tasks. The tests call them with keyword arguments.\n  - add_todo_task(text=)\n  - list_todo_tasks(), returning an envelope with .items and .total\n  - correct_todo_task(id, text=)\n  - mark_todo_task(id, done=)\n  - delete_todo_task(id)\n  - TodoTaskNotFoundError, TodoTaskTextEmptyError, TodoTaskTextMultilineError, TodoTaskTextTooLongError\n  - TODO_TASK_TEXT_MAX_LENGTH in app.contexts.todo_list.models.todo_task\n- Contract lines asserted: api.md § TodoTaskRead (the four fields and nothing else), § TodoTaskList, § TodoTaskUpdate (a null field reads as absent; done is a strict boolean), § The to-do list's refusals (codes, sentences word for word, id only on not_found, the order of refusals), and data-model.md § todo_tasks.\n- The e2e author owns the scenarios the black box binds; this suite owns the corpus seeds, the store-ordered seeds (S-18, S-41, S-43) and every refusal.\n- tests/tooling carries no req marker: test_requirement_citations forbids a citation there.\n- The dispatch's \"concurrent insert\" applies to no rule here: the to-do list has no uniqueness rule (BR-12). Its rules are held by the shape of each write statement, so they are proved by two writers interleaved on one row lock, as testing.md prescribes.\n- The plan expected a JSON 404 from the missing routes. GET does answer 404, but POST, PATCH and DELETE answer 405: a GET-only route matches those paths.\n- Values I chose that no document fixes: the letter 'a' for \"ASCII letters\"; the descriptions of the todo-task-text cases; every second task marked done in the 101-task test.\nFitness reds to declare, per T-1: caused by SEED_FILES naming todo-tasks-example.json before T-17 writes it -- test_golden_set::{test_every_corpus_file_is_named_by_the_locator, test_every_file_says_which_story_it_is_and_what_it_demonstrates, test_every_file_is_utf8_json_and_ends_with_a_newline, test_each_half_agrees_with_the_locator_about_what_is_in_it, test_no_seed_entry_stands_near_a_published_limit, test_the_seed_half_shows_a_list_rather_than_an_entry}; six more that T-10 does not list, which sweep SEED_FILES through _SEQUENCE_FILES and _ENTRY_FILES so T-10 must rescope them -- test_every_entry_carries_the_keys_an_entry_has, test_the_sequence_files_have_no_case_names, test_every_entry_meant_to_pass_really_passes, test_the_corpus_exercises_characters_outside_ascii, test_the_corpus_exercises_a_message_with_line_breaks, test_no_corpus_value_looks_like_a_real_person. Caused by T-5's todoTask.test.ts naming 'golden-set': test_the_frontend_reads_no_corpus_file. Red before this wave: test_context_boundaries (T-14 closes it) and test_context_declarations (T-11 closes it).",
-      "at": "2026-09-24T18:22:36Z",
-      "state": "returned"
+      "at": "2026-09-24T19:49:24Z",
+      "state": "dispatched"
     },
     "build-tests-uat": {
       "assumptions": "build-backend writes golden-set/seed/todo-tasks-example.json with the five examples from scenarios.md § Seed data, one done (the name is confirmed in tests/_golden_set.py:129). Steps 3 and 17 expect `5 tasks`. seed.sh and `start.sh --no-seed` extend to the to-do list as architecture.md § What a new environment starts with says (each list filled on its own, prod refused through /api/health). `APP_ENV=prod` makes a local copy answer as production (docs/configuration.md). build-frontend uses the screen copy from spec/design/ui/todo-list.md and system-states.md word for word (\"Things to do\", `N tasks`, \"No tasks yet. Add the first one above.\", \"Task updated.\", \"Delete task\", the nav links \"Guestbook\"/\"To-do list\"). The list is read again after a change that went through (todo-list.md § Data), which step 12 relies on.",
@@ -875,9 +874,8 @@
       "state": "returned"
     },
     "build-tests-unit": {
-      "assumptions": "- T-15 names the judgement judge_todo_task_text(text: str) -> str in app.contexts.todo_list.services.todo_tasks. T-9 left the name to this task. It returns the normalized, trimmed text, or raises exactly TodoTaskTextEmptyError, TodoTaskTextMultilineError or TodoTaskTextTooLongError, the class itself and not a shared parent.\n- T-15's TodoTaskCreate and TodoTaskUpdate carry text with no minLength, maxLength or pattern, and keep it exactly as sent.\n- T-14 writes the bare literal TODO_TASK_TEXT_MAX_LENGTH = 200 and LINE_BREAKS as int code points, in the shape the docstring of test_length_constants gives. T-19 writes the TS copies in the same shape.\n- T-14 registers TodoTask in app/contexts/__init__.py. `done` has a scalar default False. There are no server defaults and no onupdate on created_at.\n- T-17's example file lists `tasks` of exactly {text, done}: at least 3, at least one done, one text outside ASCII, each under 150 code points.\n- build-tests-integration owns the persisted halves: the round trip to the column and the codes on the wire.\nClosing block: further reds to declare (tests.fitness.test_golden_set) -- reason 1, the seed file T-17 writes: ::test_every_task_in_a_sequence_is_a_text_and_a_done_mark_on_one_line, ::test_the_task_sequences_exercise_characters_outside_ascii, ::test_no_task_looks_like_a_real_person; reason 2, the constant T-14 declares: ::test_every_ordinary_task_is_one_the_rules_accept, ::test_every_refused_task_really_breaks_the_rule_its_code_names. Green by design: eleven test_golden_set rules over the four to-do fixture files and test_length_constants::test_the_line_break_reader_would_see_a_drift. Now green: the six entry rules and test_the_frontend_reads_no_corpus_file declared red after wave 1a.",
-      "at": "2026-09-24T18:44:38Z",
-      "state": "returned"
+      "at": "2026-09-24T19:49:24Z",
+      "state": "dispatched"
     },
     "review-coherence": {
       "assumptions": "none -- this skill reads, it does not produce an artefact others depend on. Compared the whole implement diff (3c74dfd..72ff77e) against the live design and the requirements: 13 pairs, 6 contradictions (3 resolvable by citation), 0 gaps; items already routed in tasks.md (the 19/20 case count, conventions.md § Frontend, the task-text invariant) not raised again.",
@@ -885,8 +883,8 @@
       "state": "returned"
     },
     "review-converge": {
-      "assumptions": "The implement stage has no fragment directory of its own, so the entries go in design/delta/converge.md, as the requirements stage's did (reconcile/delta/ would have superseded every design entry for testing.md and architecture.md). RISK: frontend/src/contexts/guestbook/pages/GuestbookPage.tsx is not in design/delta/architecture.md § This change owns, which the boundary is recorded from; unless the boundary is extended, build-frontend's COH-implement-5 edit may be refused. The COH-implement-4 docstring files are covered by the tests/fitness/ and tests/integration/ rows. Deliberately not edited: code, tests, uat.md, todo-list.md, and the design fragment's \"three import paths and nothing else\" prose.",
-      "at": "2026-09-24T19:45:48Z",
+      "assumptions": "TD-4 only: added one \"## This change owns\" section with one row (frontend/src/contexts/guestbook/pages/GuestbookPage.tsx, build-frontend, COH-implement-5) at the end of design/delta/converge.md; no prose, no delta entry, no reconciliation; set-boundary --from-design is the orchestrator's to run before build-frontend goes out.",
+      "at": "2026-09-24T19:51:23Z",
       "state": "returned"
     }
   },
@@ -2451,6 +2449,11 @@
           "at": "2026-09-24T19:45:48Z",
           "note": "The preflight printed `[--edited EDITED ...]`, which reads as a flag taking several values, but it has to be repeated once per document (one call failed with exit 2). The skill also names no delta fragment directory for a convergence round in the implement stage.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T19:46:02Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/309#issuecomment-5821052007",
+          "state": "filed"
         }
       ],
       "id": "PROC-51",
@@ -2460,6 +2463,63 @@
       "seen": 1,
       "signal": "The preflight printed `[--edited EDITED ...]`, which reads as a flag taking several values, but it has to be repeated once per document (one call failed with exit 2). The skill also names no delta fragment directory for a convergence round in the implement stage.",
       "signature": "The preflight printed `[--edited EDITED ...]`, which reads as a flag taking several values, but it has to be repeated on",
+      "stage": "implement",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/309#issuecomment-5821052007"
+    },
+    {
+      "at": "2026-09-24T19:47:36Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T19:47:36Z",
+          "note": "implement convergence round 1 (row 27a, \"6 finding(s) were resolved since the last round; the documents they named go back to their authors\") dispatched build-tests-uat alone, although the resolved findings' artifacts also name frontend/src/contexts/todo_list/hooks/useTodoTasks.ts (COH-implement-1), frontend/src/contexts/guestbook/pages/GuestbookPage.tsx (COH-implement-5) and five test files (COH-implement-4) whose authors build-frontend, build-tests-unit and build-tests-integration were not dispatched: the code-side resolutions would never have been applied. Same root as PROC-29 (matching artifacts only against a contract's produces). Worked around with agent todos.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T19:47:38Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/349#issuecomment-5821078600",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-52",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "implement convergence round 1 (row 27a, \"6 finding(s) were resolved since the last round; the documents they named go back to their authors\") dispatched build-tests-uat alone, although the resolved findings' artifacts also name frontend/src/contexts/todo_list/hooks/useTodoTasks.ts (COH-implement-1), frontend/src/contexts/guestbook/pages/GuestbookPage.tsx (COH-implement-5) and five test files (COH-implement-4) whose authors build-frontend, build-tests-unit and build-tests-integration were not dispatched: the code-side resolutions would never have been applied. Same root as PROC-29 (matching artifacts only against a contract's produces). Worked around with agent todos.",
+      "signature": "implement convergence round · (row 27a, ·) dispatched build-tests-uat alone, although the resolved findings·s produces).",
+      "stage": "implement",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/349#issuecomment-5821078600"
+    },
+    {
+      "at": "2026-09-24T19:51:23Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T19:51:23Z",
+          "note": "When design-architecture's owns table is the only one, the boundary has no route to grow by a path that a later-stage convergence edit to spec/design/architecture.md § The files adds. COH-implement-5 added a GuestbookPage.tsx row there, but the boundary is read from the design delta fragments alone, so the gap only showed as a refused write (TD-4) and needed a hand-made owns section in converge.md.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-53",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-converge",
+      "seen": 1,
+      "signal": "When design-architecture's owns table is the only one, the boundary has no route to grow by a path that a later-stage convergence edit to spec/design/architecture.md § The files adds. COH-implement-5 added a GuestbookPage.tsx row there, but the boundary is read from the design delta fragments alone, so the gap only showed as a refused write (TD-4) and needed a hand-made owns section in converge.md.",
+      "signature": "When design-architecture's owns table is the only one, the boundary has no route to grow by a path that a later-stage co",
       "stage": "implement",
       "state": "reported",
       "url": null
@@ -4152,7 +4212,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 789,
+  "revision": 797,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4212,6 +4272,27 @@
       "resolved_at": "2026-09-24T19:20:52Z",
       "skill": "build-tests-frontend",
       "what": "TEST_DISPUTED by build-frontend: frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx lines 185, 252, 259, 272 and 280 use `await act(() => result.current.<mutation>.mutate(...))`, which awaits the void TanStack's mutate returns, so @typescript-eslint/await-thenable fails ./scripts/lint.sh (--max-warnings 0) and so check.sh. The cases pass and their behaviour is right. Rewrite only those five calls so nothing awaits a non-thenable (e.g. `await act(async () => { ... })`), keep every case's title, assertions and behaviour exactly as they are, change nothing else in the file or elsewhere, and prove ./scripts/lint.sh and ./scripts/test.sh frontend green."
+    },
+    {
+      "id": "TD-4",
+      "kind": "agent",
+      "raised_at": "2026-09-24T19:49:17Z",
+      "skill": "review-converge",
+      "what": "COH-implement-5 (resolved by constitution Art. I) makes one module-docstring line of frontend/src/contexts/guestbook/pages/GuestbookPage.tsx change in this change -- the exception spec/design/architecture.md § The files now records -- but the change boundary, which `set-boundary --from-design` reads from every design delta fragment's \"## This change owns\" table, does not list that file, so build-frontend's edit would be refused. In your own fragment design/delta/converge.md add a \"## This change owns\" section with the header rows \"| Path | Why |\" and \"|---|---|\" (as design/delta/architecture.md writes them) and exactly one row: | `frontend/src/contexts/guestbook/pages/GuestbookPage.tsx` | one line of its module docstring, which called the guestbook the only screen; now one of two (COH-implement-5); nothing the screen does moves (build-frontend) |. Change nothing else."
+    },
+    {
+      "id": "TD-5",
+      "kind": "agent",
+      "raised_at": "2026-09-24T19:49:18Z",
+      "skill": "build-tests-unit",
+      "what": "COH-implement-4 (resolved by constitution Art. I): apply the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-4 to the docstrings of tests/fitness/test_context_declarations.py (:31-32, :299), tests/fitness/test_context_boundaries.py (:28-29, :145, :213-214), tests/fitness/test_data_invariants.py (:16-18, :92) and tests/fitness/test_migration_safety.py (:27), which still say the sweeps are vacuously true over one context, one table or one revision while spec/design/testing.md § Fitness functions says they judge two. Prose only: no assertion, case name, import or behaviour changes, nothing else in any file; prove ./scripts/test.sh fitness and ./scripts/lint.sh green."
+    },
+    {
+      "id": "TD-6",
+      "kind": "agent",
+      "raised_at": "2026-09-24T19:49:18Z",
+      "skill": "build-tests-integration",
+      "what": "COH-implement-4 (resolved by constitution Art. I): in tests/integration/test_migrations.py:128 replace \"read on every load of the only screen\" with \"read on every load of the guestbook's screen\", as the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-4 gives it. Prose only: no assertion, case name or behaviour changes, nothing else in the file; prove ./scripts/test.sh integration -k test_migrations and ./scripts/lint.sh green."
     }
   ],
   "toolchain": [
@@ -4229,7 +4310,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T19:45:48Z",
+  "updated_at": "2026-09-24T19:51:23Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {
