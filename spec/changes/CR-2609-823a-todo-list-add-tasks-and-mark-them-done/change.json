@@ -174,9 +174,12 @@
       "id": "COH-requirements-7",
       "kind": "contradiction",
       "raised_at": "2026-09-24T12:37:30Z",
+      "resolution": "E-9's route and cost corrected from R-2 clauses 5 and 6 with A-1: a one-line field strips only U+000A and U+000D, so the other five characters of the set paste into the field and the screen refuses them for the same reason the service does. Decides no product question; dropped if the user overrules A-1.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T12:39:15Z",
       "severity": "minor",
       "stage": "requirements",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-2",
@@ -191,9 +194,12 @@
       "id": "COH-requirements-8",
       "kind": "quality",
       "raised_at": "2026-09-24T12:37:30Z",
+      "resolution": "Named assumption A-3 (recommended option), awaiting the user at the requirements.md approval gate: the line-break rule reads the text as R-2 clause 1 has trimmed it; a non-trimmed invisible character such as U+200B is content, so a line break beside it is inside the text.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T12:39:15Z",
       "severity": "minor",
       "stage": "requirements",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Success criteria",
@@ -208,9 +214,12 @@
       "id": "COH-requirements-9",
       "kind": "contradiction",
       "raised_at": "2026-09-24T12:37:30Z",
+      "resolution": "Named assumption A-4 (recommended option), awaiting the user at the requirements.md approval gate: SC-5 promises that the 22 guestbook scenarios run unchanged and the UI smoke's guestbook tests keep what they assert; a locator naming the lockup or a navigation link may follow the names the user approves in the mock-up.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T12:39:15Z",
       "severity": "minor",
       "stage": "requirements",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "coherence_passes": [
@@ -268,8 +277,8 @@
       "state": "returned"
     },
     "review-converge": {
-      "assumptions": "No review-triage ran. Each ambiguity_source was taken from the finding block as written. COH-5 touches two documents. The dispatch sent the retention half to requirements.md as A-2, so the retention line in spec/invariants.md was deliberately not changed, because no user decision stands behind it.",
-      "at": "2026-09-24T12:31:14Z",
+      "assumptions": "The edits sit inside the change record, so they get no delta fragment entry. design/delta/converge.md from pass 1 states this rule, and verify accepted it. I recorded all three with --source auto. No human answered them: COH-7 follows from R-2 clauses 5 and 6. COH-8 and COH-9 are assumptions awaiting the user. The claim in E-9 rests on jsdom's HTML sanitization, not on a Chromium measurement, and the finding says so too. If the user overrules A-1, E-9 goes back to its old premise.",
+      "at": "2026-09-24T12:39:15Z",
       "state": "returned"
     }
   },
@@ -588,6 +597,32 @@
       "stage": "requirements",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/310"
+    },
+    {
+      "at": "2026-09-24T12:39:15Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T12:39:15Z",
+          "note": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]`, which in argparse notation means one flag taking several values; the CLI accepts only a repeated `--edited` flag, so the first call for COH-requirements-8 was refused (exit 2) and cost a retry.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-11",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-converge",
+      "seen": 1,
+      "signal": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]`, which in argparse notation means one flag taking several values; the CLI accepts only a repeated `--edited` flag, so the first call for COH-requirements-8 was refused (exit 2) and cost a retry.",
+      "signature": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]`, which in argparse notation",
+      "stage": "requirements",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -1165,11 +1200,48 @@
       "id": "REC-7",
       "rule_added": null,
       "source": "auto"
+    },
+    {
+      "at": "2026-09-24T12:38:47Z",
+      "decision": "E-9's route and cost corrected from R-2 clauses 5 and 6 with A-1: a one-line field strips only U+000A and U+000D, so the other five characters of the set paste into the field and the screen refuses them for the same reason the service does. Decides no product question; dropped if the user overrules A-1.",
+      "edited": [
+        "requirements.md § Edge cases, Attacks, E-9"
+      ],
+      "from_finding": "COH-requirements-7",
+      "id": "REC-8",
+      "rule_added": null,
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T12:38:52Z",
+      "decision": "Named assumption A-3 (recommended option), awaiting the user at the requirements.md approval gate: the line-break rule reads the text as R-2 clause 1 has trimmed it; a non-trimmed invisible character such as U+200B is content, so a line break beside it is inside the text.",
+      "edited": [
+        "requirements.md § R-2 clause 4",
+        "requirements.md § R-2 clause 6",
+        "requirements.md § R-6 clause 4",
+        "requirements.md § Named assumptions, preamble and A-3"
+      ],
+      "from_finding": "COH-requirements-8",
+      "id": "REC-9",
+      "rule_added": "A-3: IF a task's text, once clause 1 has trimmed it, still carries a line break, THEN the system SHALL refuse it (R-2 clause 6; R-2 clause 4 and R-6 clause 4 worded by the trim)",
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T12:38:52Z",
+      "decision": "Named assumption A-4 (recommended option), awaiting the user at the requirements.md approval gate: SC-5 promises that the 22 guestbook scenarios run unchanged and the UI smoke's guestbook tests keep what they assert; a locator naming the lockup or a navigation link may follow the names the user approves in the mock-up.",
+      "edited": [
+        "requirements.md § Success criteria, SC-5 How measured",
+        "requirements.md § Named assumptions, A-4"
+      ],
+      "from_finding": "COH-requirements-9",
+      "id": "REC-10",
+      "rule_added": "A-4: SC-5 measures the guestbook's tests by what they assert, not by their exact text; the smoke's lockup and navigation locators may follow the mock-up's approved names",
+      "source": "auto"
     }
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
   "requirements": [],
-  "revision": 67,
+  "revision": 75,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1218,7 +1290,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T12:37:30Z",
+  "updated_at": "2026-09-24T12:39:15Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {

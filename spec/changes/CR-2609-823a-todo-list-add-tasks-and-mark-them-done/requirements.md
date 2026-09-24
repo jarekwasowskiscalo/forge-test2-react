@@ -24,7 +24,7 @@ list and never changes.
 | **SC-2** | Two people looking at the list after a reload see the same tasks, in the same order, with the same done marks. | None. The guestbook is the only thing people share today, and it has no state anybody marks. | The requester checks it at UAT with two browser windows (`uat.md`). The scenarios tagged `CR-2609-823a/R-3` and `CR-2609-823a/R-9` re-check it on every CI run of the branch. |
 | **SC-3** | A task ticked done by mistake goes back to not done in one action, and neither action moves it in the list. | None. Nothing the application stores has a state that can be switched (`spec/contexts/guestbook.md` § `P-01`: "An entry either exists or it does not"). | A `uat.md` step at UAT, plus the scenarios tagged `CR-2609-823a/R-4` on every CI run. |
 | **SC-4** | A reviewer who opens a freshly created environment sees example tasks on the list without typing any. | A freshly created environment opens today with the guestbook's welcome entries (`golden-set/seed/entries-welcome.json`) and nothing else. | The reviewer opens the first preview of this branch (Actions → Preview), or runs `./scripts/start.sh` on a fresh clone, and counts the example tasks. This is manual because the black box starts with `--no-seed` (`R-11`). |
-| **SC-5** | A guest who knows the guestbook finds it where it was: the main address still opens it and everything it did before still works. | The main address redirects to the guestbook (`spec/design/ui/system-states.md` § Interactions). The 22 scenarios in `e2e/suite/features/guestbook.feature` pass. | The existing guestbook suites run unchanged on every CI run of this branch (the same 22 scenarios plus the UI smoke), and the requester checks at UAT. |
+| **SC-5** | A guest who knows the guestbook finds it where it was: the main address still opens it and everything it did before still works. | The main address redirects to the guestbook (`spec/design/ui/system-states.md` § Interactions). The 22 scenarios in `e2e/suite/features/guestbook.feature` pass. | The 22 scenarios of `e2e/suite/features/guestbook.feature` run unchanged on every CI run of this branch. The UI smoke's guestbook tests keep asserting what they assert today; a locator that names the lockup or a navigation link may follow the names the user approves in the mock-up (§ Open questions; Self-check 14; assumed: `A-4`, § Named assumptions). The requester checks at UAT. |
 
 ## Requirements
 
@@ -73,18 +73,20 @@ rows on the first day.
    tell the person that a task needs text.
 3. IF a task's text is longer than 200 code points after normalizing and trimming, THEN the
    system SHALL refuse it, store nothing, and tell the person that the text is too long.
-4. WHERE a text carries whitespace other than a line break between its first and last visible
-   character, the system SHALL keep that whitespace unchanged.
+4. WHERE a text, once clause 1 has trimmed it, still carries whitespace other than a line break,
+   the system SHALL keep that whitespace unchanged.
 5. The system SHALL accept on the screen exactly the texts the service accepts. The field
    SHALL NOT block, cut short or silently stop taking a text the service would store, and the
    screen SHALL NOT let through a text the service would refuse.
-6. IF a task's text carries a line break between its first and last visible character, THEN the
+6. IF a task's text, once clause 1 has trimmed it, still carries a line break, THEN the
    system SHALL refuse it, store nothing, and tell the person, with a reason of its own, that a
    task is one line (`Q-11`: "Refuse it, with its own message"). A line break is any of U+000A,
    U+000B, U+000C, U+000D, U+0085, U+2028 and U+2029: one written set that the screen and the
    service both read, never either language's default (assumed: `A-1`, § Named assumptions).
    Every one of them is in clause 1's trim set, so a line break at either end is removed by
-   clause 1 and is not refused.
+   clause 1 and is not refused. A character that shows nothing but is not in the trim set, such
+   as U+200B, is content, so a line break beside it is inside the text (assumed: `A-3`, § Named
+   assumptions).
 
 **Acceptance**
 - **R-2.1** GIVEN the text "   " (three spaces), WHEN it is submitted as a new task, THEN it is
@@ -217,8 +219,8 @@ the user put it in scope (`Q-3`).
 3. WHERE a task is done, the system SHALL let a person edit its text exactly as it does for a
    not-done task (`Q-9`).
 4. IF an edited text is empty after trimming, is longer than 200 code points after normalizing
-   and trimming, or carries a line break between its first and last visible character, THEN the
-   system SHALL refuse the edit, keep the task's previous text, and tell the person why (`R-2`).
+   and trimming, or, once trimmed, still carries a line break, THEN the system SHALL refuse the
+   edit, keep the task's previous text, and tell the person why (`R-2`).
 
 **Acceptance**
 - **R-6.1** GIVEN the not-done task "Buy bred", WHEN it is edited to "Buy bread", THEN the list
@@ -397,9 +399,12 @@ anything to judge (`Q-8`).
 - **E-8: boundary, rarely.** 101 or more tasks on a list with no pages. It costs tasks past a
   default piece of 20 or a largest piece of 100 silently missing. The requirements say `R-3.3`.
   No upper limit on the number of tasks is stated (§ With no defined behaviour).
-- **E-9: malformed, rarely (only through the API; the field is one line).** A text with a line
-  break inside it. It costs a task that renders on several lines, or a stored value nobody can
-  type into the field. The requirements say `R-2` clause 6, `R-2.7` (`Q-11`).
+- **E-9: malformed, rarely.** A text with a line break inside it. A line feed or a carriage
+  return arrives only through the API, because a one-line field strips those two. The other five
+  characters of `R-2` clause 6's set (`A-1`) paste into the field, so the screen meets them and
+  refuses them for the same reason the service does (`R-2` clause 5). It costs a task that
+  renders on several lines, or a text the screen lets through and the service refuses. The
+  requirements say `R-2` clause 6, `R-2.7` (`Q-11`).
 - **E-10: malformed, rarely (API).** No text at all, or a value that is not text (a number,
   null). It costs a stored task with no words in it. The requirements say `R-2` clause 2 for a
   missing text. A value of the wrong type falls under the contract's standing validation
@@ -712,7 +717,7 @@ the wrong rule.
 
 *This stage's question budget is spent: `sdd-engine loop ask --raise` refused a thirteenth
 question. What no answer decides is written here as an assumption, in the form "Assumed: …, say
-so if not". Neither item below is a human decision yet. The user confirms or overrules each one
+so if not". No item below is a human decision yet. The user confirms or overrules each one
 at the approval of this document, which ends the stage.*
 
 - **`A-1`: which characters are a line break (`R-2` clause 6, `R-6` clause 4).** Assumed: a line
@@ -731,6 +736,29 @@ at the approval of this document, which ends the stage.*
   `Q-9` settled that anybody may delete any task and that a deleted task is gone for good. It did
   not settle whether a task can go without anybody deleting it. Until this is confirmed, that
   non-goal keeps its wording for entries alone. **Status:** assumed, awaiting the user.
+- **`A-3`: where the inside of a task's text ends (`R-2` clauses 4 and 6, `R-6` clause 4).**
+  Assumed: the line-break rule reads the text as `R-2` clause 1 has trimmed it, so a line break
+  the trim leaves in the text is refused wherever it sits. A character that shows nothing but is
+  not in the trim set, such as U+200B (zero width space) or U+180E (Mongolian vowel separator), is
+  content: "Buy bread", a line feed, then U+200B is refused, because clause 1 removes neither the
+  U+200B nor the line feed before it. Say so if not. The other reading is "between the first and
+  last visible character", the phrase the first draft used as a gloss on "inside": it lets that
+  line feed through and stores it, and it needs a written definition of "visible" that the screen
+  and the service both read, which no document has. The trim reading is the one `scenarios.md`
+  S-9 already holds ("the line break rule runs before trimming" fails it) and the one
+  `spec/contexts/guestbook.md` § `BR-01` uses for entries ("Whitespace *inside* a value is
+  content and is kept; only the ends go") (COH-requirements-8 in `review/coherence.md`).
+  **Status:** assumed, awaiting the user.
+- **`A-4`: what "the guestbook suites run unchanged" promises (`SC-5`).** Assumed: the 22
+  scenarios of `e2e/suite/features/guestbook.feature` run unedited, and the UI smoke's guestbook
+  tests keep asserting what they assert today, while a locator in `e2e/ui/test_smoke.py` that
+  names the lockup or a navigation link may follow the names the user approves in the mock-up.
+  Say so if not. The other reading keeps the smoke unedited too, and so decides in advance a copy
+  question § Open questions gives to the mock-up: the lockup stays "Guestbook", and no navigation
+  link takes that exact name. The smoke finds the lockup link by that exact name
+  (`e2e/ui/test_smoke.py`:40, :93, :373; `frontend/src/components/shell/PageFrame.tsx`:24), so
+  under that reading a renamed lockup, or a second link named "Guestbook", turns it red
+  (COH-requirements-9 in `review/coherence.md`). **Status:** assumed, awaiting the user.
 
 ## Self-check
 
