@@ -1,0 +1,940 @@
+=== components/ui/Modal.tsx
+import { useCallback, useEffect, useId, useLayoutEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
+import type { ReactNode, RefObject } from 'react'
+
+import { cn } from '@/lib/cn'
+
+/**
+ * A modal dialog: portal, backdrop, focus trap, inert background, focus restore.
+ *
+ * Written from scratch rather than pulled in: a dependency-free dialog is
+ * ~80 lines of focus handling, and every headless-dialog package would arrive
+ * with its own focus-trap and portal opinions to argue with.
+ *
+ * Everything here is mechanism. It knows nothing about what is being
+ * confirmed -- that lives in the caller (`DeleteEntryDialog`), which is what
+ * lets the focus behaviour below be reviewed as one thing instead of read past
+ * on the way to what it is confirming.
+ *
+ * **Not `<dialog>` (decision of 2026-09-16, `cr: historical`).** `showModal()`
+ * would give the backdrop, the inertness, the entering focus and the Escape
+ * handling for free. Three things argue against it, and none of them is the
+ * reason this comment used to give -- "this app's `position: absolute`
+ * overlays", of which there is not one in the tree:
+ *
+ * 1. `showModal()` puts the element in the browser's **top layer**, which paints
+ *    over every z-index there is. `Toast.tsx` renders its host as an ordinary
+ *    `fixed z-50` node that is always mounted, and a failed delete is announced
+ *    exactly there -- so `::backdrop` would cover the one region that has
+ *    something to say while this dialog is open.
+ * 2. `spec/design/ui/guestbook.md` § The delete dialog requires a dialog that is
+ *    **not dismissable** while the request is in flight. A `<dialog>` closes on
+ *    Escape natively, so keeping that promise means intercepting `cancel` --
+ *    which is the same amount of code as owning the key.
+ * 3. Both `aria-live` regions are deliberately mounted at all times
+ *    (`Toast.tsx`), and moving the dialog to the top layer changes what a reader
+ *    observes about a region it is already watching.
+ *
+ * The parts `<dialog>` would have given are implemented below, and the reason
+ * is recorded here rather than left to be rediscovered: an argument written
+ * down wrongly is worse than one not written down, because the next reader
+ * checks it, finds it false, and throws out the decision with it.
+ */
+
+/** Everything Tab should be able to reach inside the dialog. */
+const FOCUSABLE =
+  'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+
+/**
+ * The element chain from a node up to `<body>`, closest first.
+ *
+ * Recorded while the trigger is still in the document, because it is needed
+ * after the trigger has left it: a confirmed delete removes the card, and with
+ * it the button that opened this dialog.
+ */
+function lineageOf(element: Element): HTMLElement[] {
+  const chain: HTMLElement[] = []
+  let node = element.parentElement
+  while (node !== null && node !== document.body) {
+    chain.push(node)
+    node = node.parentElement
+  }
+  return chain
+}
+
+/**
+ * Focus `element`, and say whether it actually took it.
+ *
+ * The whole point. `element.focus()` on a *disabled* button is silently ignored,
+ * and so is one on a hidden, `display: none` or detached node -- so asking the
+ * document afterwards is the only way to distinguish "focused" from "asked". A
+ * null check cannot: a disabled button is a perfectly live `HTMLButtonElement`.
+ */
+function focusTook(element: HTMLElement | null | undefined): boolean {
+  if (element === null || element === undefined) return false
+  element.focus()
+  return document.activeElement === element
+}
+
+export interface ModalProps {
+  /** Small caps line above the title -- process and rule ids. */
+  eyebrow?: ReactNode
+  title: ReactNode
+  /** The scrolling body. */
+  children: ReactNode
+  /** The footer strip: explanation on the left, actions on the right. */
+  footer: ReactNode
+  /**
+   * Called on Escape and on a backdrop press.
+   *
+   * Omit it to make the dialog undismissable -- which is what a caller does
+   * once its action is in flight and there is nothing left to cancel.
+   */
+  onDismiss?: () => void
+  /**
+   * Focused when the dialog opens. Falls back to the dialog container.
+   *
+   * A confirmation exists to be answered, so a caller points this at the
+   * decision rather than at the first focusable. The fallback matters: a
+   * disabled confirm button cannot take focus, and without a container to
+   * catch it focus would stay on the trigger *behind* the modal -- where Tab
+   * then walks into the page the dialog is covering.
+   *
+   * It is a fallback the implementation reaches, and that sentence is load
+   * bearing: this comment described the behaviour correctly for a while before
+   * `focusTook` existed, and the code underneath it chose the disabled button
+   * every time.
+   */
+  initialFocusRef?: RefObject<HTMLElement | null>
+  className?: string
+}
+
+export function Modal({
+  eyebrow,
+  title,
+  children,
+  footer,
+  onDismiss,
+  initialFocusRef,
+  className,
+}: ModalProps) {
+  const headingId = useId()
+  const bodyId = useId()
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const overlayRef = useRef<HTMLDivElement>(null)
+
+  const dismiss = useCallback(() => onDismiss?.(), [onDismiss])
+
+  useLayoutEffect(() => {
+    // **One effect, and the order inside it is the design.** Marking the
+    // background `inert` blurs whatever is focused inside it, so reading the
+    // trigger has to happen first; restoring focus to the trigger needs the
+    // background to be live again, so the cleanup has to undo them in the
+    // opposite order. Two effects could not promise either, because React
+    // orders effects by position and cleanups by the same -- not in the pairs
+    // this needs.
+    //
+    // A layout effect rather than a passive one for a second reason as well:
+    // `GuestbookPage` clears this dialog and pushes an error toast in the same
+    // commit when a delete fails, and the toast's `aria-live` host lives inside
+    // `#root`. A cleanup that ran after paint would insert the announcement
+    // into a subtree that was still inert, and nobody would hear it.
+
+    // 1. The element that opened the dialog, so focus can be handed back. Read
+    //    from the document rather than taken as a prop: the trigger is whatever
+    //    had focus, which for a form is the submit button when clicked and the
+    //    last field when submitted with Enter.
+    const trigger = document.activeElement
+    // Its ancestry, recorded while it is still in the document -- by the time
+    // focus is handed back it may not be. See step 4.
+    const lineage =
+      trigger === null || trigger === document.body ? [] : lineageOf(trigger)
+
+    // 2. `aria-modal` is a claim; this is what makes it true. Without it the
+    //    page behind stays reachable by mouse, by Tab and by a screen reader's
+    //    own navigation -- and a reader told the background is inert while focus
+    //    is physically in it gets two incompatible models of one page, which is
+    //    worse than never having claimed it.
+    //
+    //    Everything under <body> except this dialog's own portal node, rather
+    //    than a hard-coded `#root`: in the application those are the same
+    //    element, and saying it this way keeps the rule true under a test
+    //    renderer, a second root, or anything else mounted beside it. Nodes that
+    //    were already inert are left out of the list, so the cleanup restores
+    //    the page it found rather than the page it assumed.
+    const overlay = overlayRef.current
+    const backgrounded = Array.from(document.body.children).filter(
+      (node): node is HTMLElement =>
+        node instanceof HTMLElement && node !== overlay && !node.hasAttribute('inert'),
+    )
+    for (const node of backgrounded) node.setAttribute('inert', '')
+
+    // 3. Asked, then verified. A disabled confirm button is a live element, so
+    //    `??` never falls through to the container -- it picked the button, the
+    //    browser ignored the call, and focus stayed on the trigger *behind* the
+    //    modal. Checking where the focus landed covers the whole class of
+    //    refusals rather than the one case reported: disabled, hidden,
+    //    `display: none`, or a node that has already left the document.
+    if (!focusTook(initialFocusRef?.current)) dialogRef.current?.focus()
+
+    return () => {
+      for (const node of backgrounded) node.removeAttribute('inert')
+
+      // 4. The trigger first, then up its own ancestry. A confirmed delete
+      //    removes the card the Delete button sat in, so `trigger.focus()` is a
+      //    call on a detached node: it does nothing, focus drops to <body>, and
+      //    the next Tab restarts at the top of the document instead of where the
+      //    person was. The nearest ancestor still on screen is the list they
+      //    were reading, which is the honest answer to "where did that go".
+      const home = [trigger, ...lineage].find(
+        (node): node is HTMLElement =>
+          node instanceof HTMLElement && node !== document.body && node.isConnected,
+      )
+      if (home === undefined) return
+      if (!home.hasAttribute('tabindex')) {
+        // A container is not focusable on its own. Marked -1 so it can take
+        // focus programmatically without joining the Tab order, and unmarked
+        // again the moment focus leaves it: a dialog should not leave attributes
+        // behind on a page it only borrowed.
+        home.setAttribute('tabindex', '-1')
+        home.addEventListener('blur', () => home.removeAttribute('tabindex'), { once: true })
+      }
+      home.focus()
+    }
+    // Deliberately once, on mount: re-running would steal focus from whatever
+    // the operator moved to inside the dialog.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    // On the document, not on the dialog: clicking a non-focusable part of the
+    // dialog moves focus to <body> in some browsers, and Escape has to keep
+    // working after that.
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') dismiss()
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [dismiss])
+
+  useEffect(() => {
+    /**
+     * Keep Tab inside the dialog.
+     *
+     * `aria-modal` tells assistive technology the rest of the page is inert, and
+     * the effect above makes that true for a reader and a mouse -- but a sighted
+     * keyboard user still needs the cycle closed, and `inert` is not universally
+     * honoured by every environment this runs in (jsdom implements the attribute
+     * and none of its behaviour).
+     *
+     * **On the document, exactly as Escape is, and for the same reason.** This
+     * handler used to sit on the overlay's `onKeyDown`. React events propagate up
+     * the React tree, and the dialog is rendered as a *sibling* of the page
+     * content (`GuestbookPage`), so a keydown from a control behind the modal
+     * bubbled through that control's own ancestors and never reached the overlay
+     * at all: the handler simply did not run, and the branch below that recovers
+     * focus from outside the container was dead code for as long as it existed.
+     */
+    function handleTab(event: KeyboardEvent) {
+      if (event.key !== 'Tab') return
+      const container = dialogRef.current
+      if (container === null) return
+
+      const nodes = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE))
+      const first = nodes[0]
+      const last = nodes.at(-1)
+      if (first === undefined || last === undefined) return
+
+      const active = document.activeElement
+      const outside = !container.contains(active)
+      if (event.shiftKey && (active === first || outside)) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && (active === last || outside)) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleTab)
+    return () => document.removeEventListener('keydown', handleTab)
+  }, [])
+
+  return createPortal(
+    <div
+      ref={overlayRef}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-6"
+      // mousedown, not click: a click that starts inside the dialog and ends on
+      // the backdrop (a drag while selecting text) must not dismiss it.
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) dismiss()
+      }}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={headingId}
+        aria-describedby={bodyId}
+        // Focusable container so a click on its chrome keeps focus in the
+        // subtree instead of dropping it on <body>.
+        tabIndex={-1}
+        className={cn(
+          'flex max-h-[86vh] w-full max-w-xl flex-col overflow-hidden',
+          'rounded-modal border border-hairline bg-card shadow-2xl',
+          'animate-rise',
+          className,
+        )}
+      >
+        <header className="shrink-0 border-b border-hairline px-5 py-3.5">
+          {eyebrow !== undefined && <p className="m-0 text-xs font-bold tracking-wider text-faint uppercase">{eyebrow}</p>}
+          <h2 id={headingId} className="m-0 mt-1 text-lg font-bold">
+            {title}
+          </h2>
+        </header>
+
+        {/* tabIndex on a scroll container, not decoration: the body can be
+            taller than the dialog, and a container that cannot take focus
+            cannot be scrolled with the arrow keys. Without it a keyboard-only
+            agent would be asked to confirm consequences they cannot reach.
+            It is also the first stop in the Tab cycle, before the buttons. */}
+        <div id={bodyId} tabIndex={0} className="min-h-0 flex-1 overflow-y-auto px-5 py-3.5">
+          {children}
+        </div>
+
+        <footer className="flex shrink-0 items-center gap-2.5 border-t border-hairline bg-card px-5 py-3">
+          {footer}
+        </footer>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+=== components/ui/Button.tsx
+import { forwardRef } from 'react'
+import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import { Link } from 'react-router-dom'
+
+import { cn } from '@/lib/cn'
+
+/**
+ * The button, in the mock-up's language: 10px radius, 34px tall, medium weight.
+ *
+ * Three variants:
+ * - `primary`  solid accent green. The one decisive action on a surface.
+ * - `outlined` white on a hairline, going accent on hover. Secondary.
+ * - `quiet`    borderless, tints on hover. Chrome.
+ *
+ * **Green is the accent and the accent is a decision.** Only `primary` fills
+ * with it, and only one primary belongs on a surface -- a screen with three
+ * green buttons has told the reader nothing about which one it means.
+ *
+ * Deliberately not shadcn/ui: shadcn's defaults (radii, 36/40px heights, `ring`
+ * focus) contradict the hairline-and-cream language this screen is drawn in, so
+ * every component would need overriding into the ground. These primitives are
+ * source-in-repo for the same reason shadcn is -- no dependency drift with the
+ * designed components -- but they adhere to this system's tokens.
+ */
+export type ButtonVariant = 'primary' | 'outlined' | 'quiet'
+export type ButtonSize = 'md' | 'lg'
+
+const VARIANT: Record<ButtonVariant, string> = {
+  primary:
+    'bg-accent text-inverse border border-accent hover:brightness-112 active:scale-[0.97] ' +
+    'disabled:opacity-35 disabled:brightness-100',
+  outlined:
+    'bg-card text-ink border border-hairline hover:border-accent hover:text-accent ' +
+    'active:scale-[0.97] disabled:text-disabled disabled:border-hairline',
+  quiet:
+    'bg-transparent text-muted border border-transparent hover:bg-surface-medium hover:text-ink ' +
+    'active:scale-[0.97] disabled:text-disabled',
+}
+
+const SIZE: Record<ButtonSize, string> = {
+  md: 'h-8.5 px-4',
+  lg: 'h-10 px-5',
+}
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant
+  size?: ButtonSize
+  /** Stretch to the container's width, as in a sidebar or panel footer. */
+  block?: boolean
+  children?: ReactNode
+}
+
+/** Shared shell so a button and a link-styled-as-a-button cannot drift apart. */
+function shell(variant: ButtonVariant, size: ButtonSize, block: boolean, className?: string) {
+  return cn(
+    'inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-control no-underline',
+    'font-medium text-sm whitespace-nowrap',
+    'transition-colors duration-100',
+    'disabled:cursor-default',
+    VARIANT[variant],
+    SIZE[size],
+    block && 'w-full',
+    className,
+  )
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  { variant = 'primary', size = 'md', block = false, className, type = 'button', ...rest },
+  ref,
+) {
+  return (
+    <button
+      ref={ref}
+      type={type}
+      className={shell(variant, size, block, className)}
+      {...rest}
+    />
+  )
+})
+
+export interface LinkButtonProps {
+  to: string
+  variant?: ButtonVariant
+  size?: ButtonSize
+  block?: boolean
+  children?: ReactNode
+  className?: string
+}
+
+/**
+ * A router link wearing the button's clothes.
+ *
+ * Navigation stays an `<a>` -- middle-click, copy-link and the browser's own
+ * affordances all keep working, which a `<button onClick={navigate}>` throws
+ * away.
+ */
+export function LinkButton({
+  to,
+  variant = 'primary',
+  size = 'md',
+  block = false,
+  children,
+  className,
+}: LinkButtonProps) {
+  return (
+    <Link to={to} className={shell(variant, size, block, className)}>
+      {children}
+    </Link>
+  )
+}
+=== components/ui/Feedback.tsx
+import type { CSSProperties } from 'react'
+
+import { describeProblem, type Problem } from '@/api/problem'
+import { cn } from '@/lib/cn'
+
+import { Button } from './Button'
+
+/**
+ * Loading and error surfaces.
+ *
+ * Every list and detail view in this app needs both, so they live together here
+ * rather than being re-derived per page. Neither knows a status code or a domain
+ * rule: `ErrorState` takes a `Problem` and asks `describeProblem` what it means,
+ * which is where the knowledge of this API belongs. (An `EmptyState` used to live
+ * beside them and nothing rendered it -- the guestbook says "nothing here" in its
+ * own words, `entryListCopy.ts` -- so it went, as `conventions.md` § Frontend asks
+ * of a primitive with no caller.)
+ */
+
+export interface SkeletonProps {
+  className?: string
+  style?: CSSProperties
+}
+
+/** A static grey block. Skeletons in this system do NOT shimmer. */
+export function Skeleton({ className, style }: SkeletonProps) {
+  return (
+    <div
+      className={cn('rounded-md bg-surface-medium', className)}
+      style={style}
+      aria-hidden="true"
+    />
+  )
+}
+
+export interface ErrorStateProps {
+  problem: Problem
+  onRetry?: () => void
+  className?: string
+}
+
+/** The error surface for a failed query or mutation. */
+export function ErrorState({ problem, onRetry, className }: ErrorStateProps) {
+  const { title, detail, fields, retryable } = describeProblem(problem)
+
+  return (
+    <div
+      role="alert"
+      className={cn(
+        'rounded-card border border-hairline bg-card px-6 py-8 text-center',
+        className,
+      )}
+    >
+      <p className="m-0 text-base font-bold">{title}</p>
+      <p className="mx-auto mt-2 mb-0 max-w-2xl text-sm text-muted leading-relaxed text-pretty">{detail}</p>
+      {fields.length > 0 && (
+        <ul className="mx-auto mt-3 mb-0 max-w-2xl list-none p-0 text-left text-xs">
+          {fields.map(([field, messages]) => (
+            <li key={field} className="flex gap-2 border-t border-hairline py-1.5">
+              <span className="shrink-0 font-bold text-danger">●</span>
+              <span className="min-w-0 flex-1">
+                <b>{field === '_' ? 'Request' : field}</b> — {messages.join('; ')}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {onRetry !== undefined && retryable && (
+        <div className="mt-3.5 flex justify-center">
+          <Button variant="outlined" onClick={onRetry}>
+            Try again
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
+=== components/ui/Toast.tsx
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
+
+import { cn } from '@/lib/cn'
+
+/**
+ * Toasts: bottom-right, dark ink fill, 8px stack gap.
+ *
+ * Confirmations in this app name their consequence -- not "Saved" but
+ * "Entry posted." `message` is therefore a sentence, not a status word.
+ *
+ * The tone is carried by a single leading glyph (green ✓ / amber ● / red ●),
+ * never by a coloured background: a large green fill behind text is explicitly
+ * out of bounds in this system.
+ *
+ * **An error toast does not expire and is announced immediately.** The other
+ * two report something that went as intended, so they can be missed without
+ * cost and live 3.6s in a `polite` region that waits its turn. An error is the
+ * only thing a toast says that the operator has to act on -- and a run whose
+ * upload failed leaves nothing else on screen naming the reason. Letting that
+ * sentence disappear after 3.6s, behind whatever a screen reader happened to
+ * be reading, would make the failure quieter than the success. So errors sit
+ * in an `assertive` region and stay until dismissed.
+ *
+ * Every toast carries a close button for the same reason: 3.6s is short for a
+ * long sentence, and a live region a user cannot dismiss re-announces itself
+ * on some readers.
+ */
+
+/** How long a toast stays up before it dismisses itself. */
+const TOAST_LIFE_MS = 3600
+
+export type ToastTone = 'success' | 'warning' | 'error'
+
+interface Toast {
+  id: number
+  tone: ToastTone
+  message: string
+}
+
+interface ToastApi {
+  /** Show a toast. Returns nothing -- toasts are fire-and-forget. */
+  push: (message: string, tone?: ToastTone) => void
+}
+
+const ToastContext = createContext<ToastApi | undefined>(undefined)
+
+const GLYPH: Record<ToastTone, { char: string; className: string }> = {
+  success: { char: '✓', className: 'text-green-600' },
+  warning: { char: '●', className: 'text-amber-600' },
+  error: { char: '●', className: 'text-red-600' },
+}
+
+export interface ToastProviderProps {
+  children: ReactNode
+}
+
+export function ToastProvider({ children }: ToastProviderProps) {
+  const [toasts, setToasts] = useState<Toast[]>([])
+
+  const push = useCallback((message: string, tone: ToastTone = 'success') => {
+    setToasts((current) => [
+      ...current,
+      // Not Date.now(): two toasts pushed in the same tick would collide on
+      // the React key. A monotonic counter derived from the list cannot.
+      { id: (current.at(-1)?.id ?? 0) + 1, tone, message },
+    ])
+  }, [])
+
+  const dismiss = useCallback((id: number) => {
+    setToasts((current) => current.filter((toast) => toast.id !== id))
+  }, [])
+
+  const api = useMemo<ToastApi>(() => ({ push }), [push])
+
+  // Two regions, because a region's `aria-live` is fixed at the point the
+  // browser starts observing it -- flipping the attribute on one shared region
+  // per toast is unreliable across readers. Both are rendered at all times so
+  // neither is a newly-inserted live region, which some readers skip.
+  return (
+    <ToastContext.Provider value={api}>
+      {children}
+      <div className="pointer-events-none fixed right-5 bottom-5 z-50 flex flex-col gap-2">
+        <ToastStack
+          toasts={toasts.filter((toast) => toast.tone !== 'error')}
+          onDismiss={dismiss}
+          live="polite"
+          label="Notifications"
+          expires
+        />
+        <ToastStack
+          toasts={toasts.filter((toast) => toast.tone === 'error')}
+          onDismiss={dismiss}
+          live="assertive"
+          label="Errors"
+          expires={false}
+        />
+      </div>
+    </ToastContext.Provider>
+  )
+}
+
+function ToastStack({
+  toasts,
+  onDismiss,
+  live,
+  label,
+  expires,
+}: {
+  toasts: readonly Toast[]
+  onDismiss: (id: number) => void
+  live: 'polite' | 'assertive'
+  label: string
+  expires: boolean
+}) {
+  return (
+    <div role="region" aria-label={label} aria-live={live} className="flex flex-col gap-2">
+      {toasts.map((toast) => (
+        <ToastItem key={toast.id} toast={toast} onDismiss={onDismiss} expires={expires} />
+      ))}
+    </div>
+  )
+}
+
+function ToastItem({
+  toast,
+  onDismiss,
+  expires,
+}: {
+  toast: Toast
+  onDismiss: (id: number) => void
+  expires: boolean
+}) {
+  useEffect(() => {
+    if (!expires) return
+    const timer = window.setTimeout(() => onDismiss(toast.id), TOAST_LIFE_MS)
+    return () => window.clearTimeout(timer)
+  }, [toast.id, onDismiss, expires])
+
+  const glyph = GLYPH[toast.tone]
+
+  return (
+    <div
+      className={cn(
+        'pointer-events-auto flex max-w-md items-start gap-2.5 rounded-xl',
+        'bg-ink px-3.5 py-2.5 text-xs font-bold text-inverse shadow-xl',
+        'animate-rise leading-relaxed text-pretty',
+      )}
+    >
+      <span className={cn('shrink-0 font-bold', glyph.className)} aria-hidden="true">
+        {glyph.char}
+      </span>
+      <span className="min-w-0 flex-1">{toast.message}</span>
+      <button
+        type="button"
+        onClick={() => onDismiss(toast.id)}
+        aria-label="Dismiss notification"
+        className={cn(
+          'shrink-0 cursor-pointer rounded-full border-0 bg-transparent px-1',
+          'text-sm font-bold text-inverse/60 hover:text-inverse',
+        )}
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+  )
+}
+
+// The provider and its hook are one module by design -- the context object is
+// private to this file, so a separate `useToast.ts` would have to export it and
+// make the context reachable without the provider. Fast refresh loses this
+// file's state on edit; a toast's state is a 3.6s timer, which is not state
+// worth restructuring a context around.
+// eslint-disable-next-line react-refresh/only-export-components
+export function useToast(): ToastApi {
+  const api = useContext(ToastContext)
+  if (!api) throw new Error('useToast must be used inside <ToastProvider>')
+  return api
+}
+=== styles/theme.css
+/* ============================================================
+   The application's theme — the only place colour lives.
+
+   The values come from the mock-up this screen was built from and are
+   quoted as hex, because the mock-up is their source: a cream
+   background, a white card, a dark green accent. A component NEVER
+   writes a hex of its own — a raw colour in a component is a token
+   nobody has named, and it is invisible to every later change of the
+   palette.
+
+   THE DARK THEME WAS WITHDRAWN, and that is a decision rather than an
+   oversight: the switch lived in a top bar that no longer exists, and
+   the mock-up has a single palette. The reason and the consequences:
+   `spec/design/ui/system-states.md` § One palette. It comes back
+   together with a mock-up that describes it — and then this file gets
+   a second block while the components get not one branch.
+
+   NOTE: `@theme`, not `@theme inline`. `inline` puts the DECLARED
+   VALUE straight into the class, so `.text-ink` would set as a
+   particular colour and redefining the variable below would stop doing
+   anything — silently.
+   ============================================================ */
+
+@theme {
+  /* ---- Typeface -----------------------------------------------
+     Two families and their fallback stacks. The stack is part of the
+     token rather than an ornament: a font from the network can fail to
+     arrive, and the screen should then look plainer, not disappear. */
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+
+  /* ---- Text ---------------------------------------------------- */
+  --color-ink: #1b1a17;
+  --color-muted: #5c584f;
+  /* Darkened from `#9b978c` on 2026-09-16. The old value measured 2.92:1 on a
+     white card and 2.54:1 on `--color-surface-medium` -- below AA's 4.5:1 and
+     below even the 3:1 large-text floor, so the problem did not go away by
+     making the text bigger. It painted the card's own Edit and Delete actions,
+     every timestamp, the character counter, the footer, and -- through
+     `::placeholder` -- the ONLY label the composer's fields have.
+     `--color-muted` measured 7.09:1 throughout, which is what says one token
+     was wrong rather than the palette.
+     This value is the lightest member of the token's own hue family
+     (R = B+15, G = B+11, the relationship `#9b978c` already had) that clears
+     4.5:1 against the DARKEST surface this palette paints, `#f1efe8`: 4.69:1
+     there, 4.95:1 on the page, 5.40:1 on a card. Lightest on purpose -- the
+     token exists to be quieter than `--color-muted`, and every step darker
+     spends that distinction. Held by `tests/fitness/test_design_tokens.py` and,
+     where it lands on screen, by `e2e/ui/test_smoke.py`. */
+  --color-faint: #6e6a5f;
+  /* Text of an inactive control, and nothing else. It measures 1.82:1 and stays
+     there: WCAG 1.4.3 exempts a disabled control outright. The decision is
+     written down in `spec/design/ui/system-states.md` § Tokens and carried as
+     the single entry of `PERMITTED_BELOW_FLOOR`, because an exemption nobody
+     recorded cannot be told from an oversight. */
+  --color-disabled: #c4c0b5;
+  --color-inverse: #f6f5f1;
+  --color-danger: #a3382c;
+
+  /* ---- Accent. One colour for one decision on a surface. -------
+     The primary button, an active link, the focus ring. Nothing else —
+     green used as decoration stops meaning "this is the thing to do". */
+  --color-accent: #14503a;
+  --color-accent-strong: #0c3325;
+
+  /* ---- Surfaces ------------------------------------------------
+     THE NAME IS `card`, NOT `base`, and this is a trap worth recording:
+     Tailwind generates a `text-X` class from every `--color-X`, so
+     `--color-base` produced `.text-base { color: … }` BESIDE the
+     built-in `.text-base { font-size: 1rem }`. The colour won, so every
+     `text-base` on a white card painted white text on a white
+     background — the body of an entry and the title of `ErrorState`
+     were INVISIBLE and nothing shouted. A token's name
+     may not collide with a class name from the Tailwind scale. */
+  --color-card: #ffffff;
+  --color-surface: #f6f5f1;
+  --color-surface-medium: #f1efe8;
+
+  /* ---- Lines. This system's primary separator, not a shadow. ---- */
+  --color-hairline: #e2dfd6;
+  --color-line: #dbd7cc;
+
+  /* ---- Radii --------------------------------------------------
+     Four, because the mock-up has four, and not because they sound
+     nice. The name says WHAT is rounded rather than by how many pixels
+     — a component that asks for "the card radius" survives a change of
+     value; one that writes `rounded-[14px]` is one of six places to
+     find and one to forget. Article XIII forbids the second, and for a
+     while this repository broke that ban 33 times, because there was
+     neither a token nor a detector.
+
+     `card` and `control` differ by four pixels and that is the whole
+     hierarchy: a surface something rests on is gentler than a thing you
+     click. `control-tight` is a control INSIDE a card (the entry's edit
+     fields), where the same radius as the outside would read as a
+     second card. */
+  --radius-modal: 18px;
+  --radius-card: 14px;
+  --radius-control: 10px;
+  --radius-control-tight: 9px;
+  --radius-chip: 7px;
+
+  /* ---- Type sizes outside the Tailwind scale -------------------
+     Two, both from the mock-up, both between `text-sm` (14px) and
+     `text-base` (16px) — that is, exactly where the scale has no name,
+     which is why they previously stood in components as `text-[13px]`
+     (7 times) and `text-[15px]` (4 times).
+
+     THE NAMES ARE DELIBERATELY NOT NUMBERS AND DO NOT COLLIDE WITH THE
+     SCALE. This file records above the failure in which `--color-base`
+     produced a `.text-base` beside the built-in one and painted white
+     text on a white background. `--text-meta` and `--text-body` have no
+     built-in counterpart, so that trap does not recur here. */
+  --text-meta: 13px;
+  --text-body: 15px;
+
+  /* ---- The width of the content column -------------------------
+     One column up to 860 px — this is not a "mobile version", which
+     remains a named non-goal (`spec/invariants.md`). */
+  --container-reading: 860px;
+
+  /* ---- The only entry animation. No bounce, no scaling. --------- */
+  --animate-rise: rise 0.28s ease both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+=== lib/cn.ts
+type ClassValue = string | number | false | null | undefined
+
+/**
+ * Join class names, dropping falsy entries.
+ *
+ * Deliberately not `tailwind-merge`: no component here takes a `className`
+ * that has to override a base utility, so conflict resolution would be dead
+ * weight. If a variant needs to win, it is spelled out in the variant map
+ * rather than layered on top.
+ */
+export function cn(...values: ClassValue[]): string {
+  return values.filter(Boolean).join(' ')
+}
+=== main.tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { RouterProvider } from 'react-router-dom'
+
+import { ApiError } from '@/api/problem'
+import { ToastProvider } from '@/components/ui/Toast'
+import { router } from '@/router'
+
+import './index.css'
+
+/**
+ * All server state goes through TanStack Query -- nothing here hand-rolls a
+ * fetch-in-useEffect.
+ *
+ * `retry` is a function rather than a number because retrying a 4xx is
+ * pointless: a 404 entry id will still be missing, and a 422 will still fail
+ * validation. Only 5xx and transport failures (status 0) are worth a second
+ * attempt. **Mutations never retry at all**: a POST that timed out may have
+ * been carried out anyway, and a blind second attempt is how one entry becomes
+ * two.
+ */
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry(failureCount, error) {
+        if (failureCount >= 2) return false
+        if (error instanceof ApiError) return error.status === 0 || error.status >= 500
+        return true
+      },
+      // Refetching on every window focus is noise for a list this small and
+      // this slow-moving; each mutation invalidates the key it affected, which
+      // is the refresh that actually corresponds to something happening.
+      refetchOnWindowFocus: false,
+      staleTime: 30_000,
+    },
+    mutations: { retry: false },
+  },
+})
+
+const container = document.getElementById('root')
+if (!container) throw new Error('#root is missing from index.html')
+
+createRoot(container).render(
+  <StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </QueryClientProvider>
+  </StrictMode>,
+)
+=== index.css
+/* The stylesheet's entry point. Two imports and a handful of base rules — all the
+   rest of the appearance is ordinary Tailwind classes in the components.
+
+   Colour and typeface live in `./styles/theme.css` and only there; this file knows
+   not one colour value. */
+@import 'tailwindcss';
+@import './styles/theme.css';
+
+@layer base {
+  body {
+    margin: 0;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    /* 16px is this screen's DEFAULT size, because the screen is text to be read
+       rather than a dense table: a guest's entry reads like a paragraph. The chrome
+       (header, footer, the actions in a card) goes smaller on its own. */
+    font-size: var(--text-base);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* The focus ring stays native and deliberately visible: this screen is walked
+     with a keyboard. Drawn in the accent colour so that it shows equally on the
+     cream background and on a white card. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::placeholder {
+    color: var(--color-faint);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    /* The same token as a control inside a card. It was `8px` — the one raw radius
+       outside the components, and therefore invisible to every grep over Tailwind
+       syntax. */
+    border-radius: var(--radius-control-tight);
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+}
+
+@layer utilities {
+  /* Numbers, dates and identifiers — aligned in a column. */
+  .nums {
+    font-variant-numeric: tabular-nums;
+  }
+}

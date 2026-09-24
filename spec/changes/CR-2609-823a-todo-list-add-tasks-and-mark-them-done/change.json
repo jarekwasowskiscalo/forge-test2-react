@@ -2,6 +2,7 @@
   "adrs": [],
   "artifacts": {
     "session-092a5770": "sessions/092a5770-6598-4789-b97c-7cdd1c63afe8/summary.md",
+    "session-76720804": "sessions/76720804-74cc-4a32-b0f2-3b64b73aa9dd/summary.md",
     "session-7ec2cbab": "sessions/7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6/summary.md",
     "session-870fece5": "sessions/870fece5-b8f9-4a47-84da-b3456aa1de97/summary.md",
     "session-fb772134": "sessions/fb772134-4626-4cf4-a734-3930e8cb1dbd/summary.md"
@@ -4605,7 +4606,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 858,
+  "revision": 859,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4755,7 +4756,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T20:37:20Z",
+  "updated_at": "2026-09-24T20:40:06Z",
   "verification_last": {
     "content_digest": "f7cf53add41463c656f6f9d3a8b8747a37fb69ca62f1ec969c9e920ba6dfb62f",
     "counts": {

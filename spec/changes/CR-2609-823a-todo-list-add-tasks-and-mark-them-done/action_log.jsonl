@@ -865,3 +865,5 @@
 {"timestamp": "2026-09-24T20:31:26Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-coherence", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T20:34:40Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-coherence; coherence pass 9 GO, 0 new finding(s)", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T20:37:20Z", "agent": "sdd", "action": "stage_closed", "details": "closed implement, opened clean_room (boundary -> GREEN; delta.md from 8 fragments (40 current, 0 superseded))", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T20:38:14Z", "agent": "sdd-retro", "action": "session_captured", "details": "59 files, 43212917 bytes, session 76720804-74cc-4a32-b0f2-3b64b73aa9dd", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T20:40:06Z", "agent": "sdd-retro", "action": "session_archive_committed", "details": "archive committed for session 76720804-74cc-4a32-b0f2-3b64b73aa9dd", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}

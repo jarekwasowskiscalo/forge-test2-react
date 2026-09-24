@@ -1,0 +1,336 @@
+ e2e/suite/steps/guestbook_steps.py                 |   2 +-
+ frontend/src/router.test.tsx                       |  97 ++++++-
+ .../action_log.jsonl                               |  28 ++
+ .../change.json                                    | 286 +++++++++++++++++++--
+ .../design/delta/architecture.md                   |   8 +-
+ .../design/delta/converge.md                       |  32 +++
+ .../76720804-74cc-4a32-b0f2-3b64b73aa9dd/trace.md  | Bin 94865 -> 97157 bytes
+ .../tasks.md                                       |   9 +-
+ spec/changes/status.json                           | Bin 2995 -> 2995 bytes
+ spec/design/testing.md                             |   8 +-
+ spec/design/ui/system-states.md                    |  15 +-
+ tests/integration/test_e2e_reset.py                |   4 +-
+ tests/unit/test_guestbook_entry_model.py           |   5 +-
+ 13 files changed, 453 insertions(+), 41 deletions(-)
+diff --git a/e2e/suite/steps/guestbook_steps.py b/e2e/suite/steps/guestbook_steps.py
+index 073df5b..53e6c63 100644
+--- a/e2e/suite/steps/guestbook_steps.py
++++ b/e2e/suite/steps/guestbook_steps.py
+@@ -22,7 +22,7 @@ from e2e.harness.list_response import row_where, rows, total_of
+ from e2e.suite.golden_set import BOUNDARY, ORDINARY, REFUSED, bodies_of, body_of, described
+ from e2e.suite.target import Target
+ 
+-#: The one resource this suite drives. Named once: a path spelled a second time
++#: The one resource this module drives. Named once: a path spelled a second time
+ #: is a path that can be spelled differently.
+ ENTRIES = "/guestbook-entries"
+ 
+diff --git a/frontend/src/router.test.tsx b/frontend/src/router.test.tsx
+index 5c4c7b9..17c4dd8 100644
+--- a/frontend/src/router.test.tsx
++++ b/frontend/src/router.test.tsx
+@@ -1,5 +1,6 @@
+ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+-import { render, screen, waitFor } from '@testing-library/react'
++import { render, screen, waitFor, within } from '@testing-library/react'
++import userEvent from '@testing-library/user-event'
+ import { RouterProvider } from 'react-router-dom'
+ import { beforeEach, expect, it, vi } from 'vitest'
+ 
+@@ -26,6 +27,17 @@ import { ToastProvider } from '@/components/ui/Toast'
+  * system to `R-5` clause 3 (`spec/design/testing.md` § CR-2609-823a, "Green by
+  * design").
+  *
++ * One case belongs to `R-3` rather than `R-5`, and it sits here because only the
++ * composition root can leave one screen and come back to the other: the to-do
++ * list opened a second time by its header link reads its list again and shows
++ * what is stored then (`Q-25`, `spec/design/ui/system-states.md` § Interactions;
++ * the proof the user chose in `Q-29`). It runs under `main.tsx`'s query defaults,
++ * because under the other cases' client -- TanStack's `staleTime` of 0 -- every
++ * screen reads again on every visit, so the case could not tell the hook's
++ * `staleTime: 0` from the 30 seconds it overrides. It is green on its first run,
++ * on purpose: the hook already overrides them, and until this case nothing failed
++ * if that one line went.
++ *
+  * This file sits beside the composition root, outside every context folder, so it
+  * imports no context module (`tests/fitness/test_context_boundaries.py`): the
+  * task is aliased from the generated contract, and the screens are reached
+@@ -33,6 +45,7 @@ import { ToastProvider } from '@/components/ui/Toast'
+  */
+ 
+ type TodoTask = components['schemas']['TodoTaskRead']
++type TodoTaskList = components['schemas']['TodoTaskList']
+ 
+ const stubs = vi.hoisted(() => {
+   const RealRequest = globalThis.Request
+@@ -89,13 +102,31 @@ beforeEach(() => {
+   })
+ })
+ 
++/**
++ * A query client with the defaults `main.tsx` gives the application, above all
++ * its `staleTime` of 30 seconds. Copied rather than imported: `main.tsx` exports
++ * nothing and mounts the application the moment it is imported. `retry` is off
++ * rather than `main.tsx`'s function, which only acts on a failed read, and no
++ * read fails in the case that uses this.
++ */
++function applicationQueryClient(): QueryClient {
++  return new QueryClient({
++    defaultOptions: {
++      queries: { retry: false, refetchOnWindowFocus: false, staleTime: 30_000 },
++      mutations: { retry: false },
++    },
++  })
++}
++
+ /** The application's router, at `address`, rendered as `main.tsx` renders it. */
+-async function open(address: string) {
++async function open(
++  address: string,
++  queryClient = new QueryClient({
++    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
++  }),
++) {
+   const { router } = await reach<typeof import('@/router')>('@/router')
+   await router.navigate(address)
+-  const queryClient = new QueryClient({
+-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+-  })
+   render(
+     <QueryClientProvider client={queryClient}>
+       <ToastProvider>
+@@ -141,3 +172,59 @@ it('answers an unknown address with the page that says nothing is there [req:CR-
+   // Not moved somewhere else: the address the person typed stays in the bar.
+   expect(router.state.location.pathname).toBe('/no-such-page')
+ })
++
++it('reads the to-do list again when its header link opens it a second time [req:CR-2609-823a/R-3]', async () => {
++  // What the service stores, as a variable: somebody else changes it between the
++  // two visits. Every other address keeps the answers `beforeEach` gives it.
++  let stored: TodoTaskList = { items: [WATER], total: 1 }
++  const otherAnswers = stubs.fetchStub.getMockImplementation()
++  stubs.fetchStub.mockImplementation((request: Request) =>
++    new URL(request.url).pathname === '/api/todo-tasks'
++      ? Promise.resolve(json(stored))
++      : (otherAnswers?.(request) ?? Promise.reject(new Error('no answer configured'))),
++  )
++  const listReads = () =>
++    stubs.fetchStub.mock.calls.filter(
++      ([request]) =>
++        request.method === 'GET' && new URL(request.url).pathname === '/api/todo-tasks',
++    ).length
++
++  const user = userEvent.setup()
++  await open('/todo-list', applicationQueryClient())
++  const firstVisit = Date.now()
++
++  // The first visit reads the list as it stands: one task, not done.
++  expect(await screen.findByRole('checkbox', { name: 'Water the plants' })).not.toBeChecked()
++  expect(listReads()).toBe(1)
++
++  // Somebody else, in another tab: ticks it and adds a task. Nothing on this
++  // screen changed, so no change of its own reads the list again.
++  const bread: TodoTask = {
++    id: '00000000-0000-4000-8000-000000000002',
++    text: 'Buy bread',
++    done: false,
++    created_at: '2026-09-24T09:05:00Z',
++  }
++  stored = { items: [bread, { ...WATER, done: true }], total: 2 }
++
++  // Away to the guestbook by the header link, and back by the other one.
++  await user.click(
++    within(screen.getByRole('navigation', { name: 'Screens' })).getByRole('link', {
++      name: 'Guestbook',
++    }),
++  )
++  expect(await screen.findByRole('heading', { name: 'Leave a note' })).toBeInTheDocument()
++  await user.click(
++    within(screen.getByRole('navigation', { name: 'Screens' })).getByRole('link', {
++      name: 'To-do list',
++    }),
++  )
++
++  // Read again, and what is stored now is shown: the new task, and the tick.
++  expect(await screen.findByRole('checkbox', { name: 'Buy bread' })).not.toBeChecked()
++  expect(screen.getByRole('checkbox', { name: 'Water the plants' })).toBeChecked()
++  expect(listReads()).toBe(2)
++  // Well inside the 30 seconds `main.tsx` allows, or the default alone would
++  // have read again and the case would pass without the hook's `staleTime: 0`.
++  expect(Date.now() - firstVisit).toBeLessThan(30_000)
++})
+diff --git a/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md b/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md
+index dd9b121..17e8214 100644
+--- a/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md
++++ b/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md
+@@ -187,8 +187,12 @@ half (`tests/fitness/test_golden_set.py`).
+ 
+ - **The guestbook's backend, whole** — `app/contexts/guestbook/` in every layer, its revision
+   `alembic/versions/a1b2c3d4e5f6_create_guestbook_entries_table.py`, its contract, its welcome
+-  entries, `e2e/suite/features/guestbook.feature` and its steps (`SC-5`). Its frontend changes by
+-  three import paths and nothing else.
++  entries, `e2e/suite/features/guestbook.feature` and its steps (`SC-5`), save one comment in
++  `e2e/suite/steps/guestbook_steps.py`, on `ENTRIES`, that counted one resource
++  (`spec/design/testing.md` § Four file sets, disjoint, COH-implement-9): prose alone, and no step
++  text or binding moves. Its frontend changes by three import paths and one line of
++  `GuestbookPage.tsx`'s module docstring (`spec/design/architecture.md` § The files,
++  COH-implement-5), and nothing else.
+ - **`app/platform/schemas/text.py`** — the kernel's server half is imported by the to-do service's
+   judgement as it stands; `app/platform/schemas/refusals.py` is reused as the envelope.
+ - **`app/main.py`, `app/core/`, `app/db/`, `alembic/env.py`** — the aggregate and the context
+diff --git a/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/converge.md b/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/converge.md
+index b910ae8..9f3e62a 100644
+--- a/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/converge.md
++++ b/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/converge.md
+@@ -199,8 +199,40 @@ not declared here as made.*
+   **ADR:** none. It records how one red was carried.
+   **Requirements:** CR-2609-823a/R-1, CR-2609-823a/R-2, CR-2609-823a/R-3, CR-2609-823a/R-4, CR-2609-823a/R-5, CR-2609-823a/R-6, CR-2609-823a/R-7, CR-2609-823a/R-8, CR-2609-823a/R-9, CR-2609-823a/R-10
+ 
++*Written by the convergence round of coherence pass 8, `implement` stage, for the four findings
++`COH-implement-7` to `COH-implement-10`, each with the ready patch under it. `COH-implement-7`
++names `requirements.md` § R-3 clause 5 as its `ambiguity_source`; its patch and the user's
++decision (`Q-28`) land in `spec/design/ui/system-states.md` § Interactions, which ranks above the
++change's requirements (constitution, Article VIII) and now decides what is shown while the read is
++under way, so the approved requirements are left as they are. `COH-implement-10`'s edits
++(`design/delta/architecture.md` § What this change does not move, `tasks.md` T-22 and § Outside
++every task, item 6), `COH-implement-9`'s exception in that same fragment bullet, and the
++`guestbook_steps.py` row of § This change owns below are inside the change record and need no
++entry. The three comment edits of `COH-implement-9` and the `frontend/src/router.test.tsx` case of
++`COH-implement-8` belong to their authors afterwards, and they are not declared here as made.*
++
++- `MODIFIED` `spec/design/ui/system-states.md` § Interactions: the paragraph on opening the to-do list, its second sentence reworded and three sentences added
++  **Was:** "the screen shows the tasks as they are stored at that moment, other people's changes of the last few seconds included, and never a copy it read earlier". Nothing said what is drawn while the read made on opening is under way.
++  **Now:** "the screen reads its list afresh and shows the tasks as they are stored at that moment, other people's changes of the last few seconds included." Then: "A list it read earlier in the same tab stays on screen only until that read answers, and is then replaced; it is not swapped for the loading outline meanwhile." The user's words follow, and a reload and an entered address are named as having no earlier list to show.
++  **Why:** COH-implement-7. The paragraph promised "never a copy it read earlier". The code written for it (`useTodoTasks.ts`, `staleTime: 0` alone) keeps a cached list for TanStack Query's default five minutes and draws it, as a success, until the fresh read answers. So a to-do list left and reopened by its header link first shows the list it read before. `requirements.md` § R-3 clause 5, "SHALL show the tasks exactly as they are stored at that moment", said what is shown once the list is read, not while the read is under way: the convergence round of pass 7 read it as "nothing else is ever shown", build-frontend as "a read is always made". The user decided `Q-28` = A: "Briefly showing it is fine." The code stays as it is.
++  **ADR:** none. It states what one screen draws for the length of one read; reversing it is one query option (`gcTime: 0`) and this paragraph.
++  **Requirements:** CR-2609-823a/R-3
++- `MODIFIED` `spec/design/testing.md` § CR-2609-823a, the to-do list: the `CR-2609-823a/R-3` row, one proof added after the `TodoListPage.test.tsx` entry
++  **Was:** the row proved clause 5 only through "A task somebody else added appears after a reload", and named no case for the header link that `Q-25` made read the list again.
++  **Now:** "**frontend/src/router.test.tsx** (the to-do list opened a second time by its header link is read again and shows what is stored then, under a query client with `frontend/src/main.tsx`'s defaults, so that the case fails if the list inherits their 30 seconds …)", closed by the user's words.
++  **Why:** COH-implement-8. The convergence round of pass 7 wrote `Q-25` into `system-states.md` and sent the code to build-frontend and the UAT line to build-tests-uat, and sent nothing to a test author. Every query client the tests build takes TanStack's default `staleTime` of 0, the UI smoke asserts headings and addresses, and UAT step 15 shows the same task whether or not the list is read again. So the one line that carries `Q-25` could be deleted with every suite green, while `uat.md` says the suites prove all of `R-1` to `R-10`. The user decided `Q-29` = A: "Add an automated test". The case is build-tests-frontend's to write afterwards, in a file already in its cell.
++  **ADR:** none. Which suite proves a decision is testing.md's to hold (constitution, Article IX).
++  **Requirements:** CR-2609-823a/R-3
++- `MODIFIED` `spec/design/testing.md` § Four file sets, disjoint: three cells of the to-do list's table
++  **Was:** the cells named the five files of COH-implement-4 whose docstrings counted one. build-tests-unit's cell gave `tests/unit/test_guestbook_entry_model.py` for its assertion alone ("the schema holds two tables"), and `tests/integration/test_e2e_reset.py` and `e2e/suite/steps/guestbook_steps.py` stood in no cell.
++  **Now:** build-tests-unit's cell reads "(the schema holds two tables, in an assertion and in the docstring that counted one)". build-tests-integration's cell adds "`tests/integration/test_e2e_reset.py` (text only: the comment on `REQUIRED` that counted one table)". build-tests-e2e's cell adds "text only, `e2e/suite/steps/guestbook_steps.py` (the comment on `ENTRIES` that counted one resource)". Two joins became commas, so that each list keeps a single "and".
++  **Why:** COH-implement-9. The rule this section gained in pass 7 names a class of prose, a docstring that states a count the change alters, while its cells named a closed list drawn from COH-implement-4's grep over `tests/fitness/` and `tests/integration/test_migrations.py` alone. Three more comments still counted one: "The template's schema is one table and no edges", "The one table in this application's schema that holds a scenario's state" and "The one resource this suite drives". `spec/design/data-model.md` and `spec/design/api.md` say two tables and two resources. Settled automatically by the constitution, Article I: code contradicting `spec/` is a defect in the code. `guestbook_steps.py` lies outside the recorded boundary and under the architecture fragment's freeze of the guestbook's steps, so this round also adds its row to § This change owns below and states the one-comment exception where that freeze lives. The three edits are their authors' to make afterwards.
++  **ADR:** none. Which author edits which test is testing.md's to hold (constitution, Article IX).
++  **Requirements:** CR-2609-823a/R-1
++
+ ## This change owns
+ 
+ | Path | Why |
+ |---|---|
+ | `frontend/src/contexts/guestbook/pages/GuestbookPage.tsx` | one line of its module docstring, which called the guestbook the only screen; now one of two (COH-implement-5); nothing the screen does moves (build-frontend) |
++| `e2e/suite/steps/guestbook_steps.py` | one comment, on `ENTRIES`, that counted one resource (COH-implement-9); no step text or binding moves (build-tests-e2e) |
+diff --git a/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/tasks.md b/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/tasks.md
+index 07b9f74..235a609 100644
+--- a/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/tasks.md
++++ b/spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/tasks.md
+@@ -722,8 +722,9 @@ accessibility gives it (`Q-16`), and its own footer sentence.
+ navigation group `Screens` with `Guestbook` and `To-do list`, the current one marked, as
+ `spec/design/ui/system-states.md` § The navigation between the screens gives it. Each screen gets its
+ own footer, and the not-found page none. `frontend/src/contexts/guestbook/pages/GuestbookPage.tsx` is
+-outside this change, because the guestbook's frontend changes by three import paths and nothing else
+-(`design/delta/architecture.md` § What this change does not move). So the guestbook's own sentence
++outside this task. The guestbook's frontend changes by three import paths, and later by one line of
++that file's docstring, which the implement stage's convergence round gave build-frontend
++(`spec/design/architecture.md` § The files, COH-implement-5). So the guestbook's own sentence
+ reaches its screen without an edit there, and a way the frame cannot provide is reported rather than
+ taken by editing that file. The not-found page's sentence becomes `There is nothing at this address.`.
+ `TODO_LIST_ROUTE = '/todo-list'` is added, with one route binding it to `TodoListPage`. `/` still
+@@ -947,8 +948,8 @@ builder turns green was written, and seen red, in wave 1.
+ 5. **The task-text data invariant** under `contracts/invariants/` is written by the `spec_sync`
+    stage's convergence round, once T-2's and T-9's witnesses exist (`Q-21`, item 6).
+ 6. **The guestbook's footer.** `spec/design/ui/system-states.md` makes the footer each screen's own,
+-   while the architecture keeps `GuestbookPage.tsx` untouched. T-22 is told to satisfy both, and to
+-   report rather than edit that file if the frame cannot.
++   while the architecture keeps what `GuestbookPage.tsx` does untouched. T-22 is told to satisfy
++   both, and to report rather than edit that file if the frame cannot.
+ 7. **Production and the seeder.** `spec/design/testing.md` lists "production refused for tasks too"
+    as red until the seeder changes. It is green by design (T-4), because the seeder refuses production
+    before it reads either list.
+diff --git a/spec/design/testing.md b/spec/design/testing.md
+index dc3608a..ce3a129 100644
+--- a/spec/design/testing.md
++++ b/spec/design/testing.md
+@@ -757,7 +757,7 @@ it does not exist until then. The contract the tests hold the application to is
+ |---|---|---|
+ | `CR-2609-823a/R-1` — adding a task | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (an added task is stored with its text, not done, with a moment of adding from the service's clock; the same text added twice is two tasks, and marking one leaves the other not done) · **tests/integration/test_todo_tasks_router.py** (a `POST` carrying `done: true` answers `201` with a task that is not done, and stores it not done) · **tests/unit/test_todo_task_model.py** (`done` is declared not null, `False` by the model's default, with no server default) · **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx** (an added task is shown first with no reload) · **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx** (a change that went through refetches the list) · **e2e/suite/features/todo_list.feature** ("Adding the first task", "The same text added twice makes two separate tasks", "A task sent as already done is still saved as not done"). Fixtures: the inline values "Water the plants", "Buy bread", "Already finished". Clause 2 — no account — gets no test of its own: every test here runs with nobody signed in |
+ | `CR-2609-823a/R-2` — what is not a task is refused | `tests/unit/` | **tests/unit/test_todo_task_text_rules.py** (every case of `todo-task-text.json` gets its verdict and, when accepted, its length — through the rule, while every case builds a valid create and update shape, so only the rule can refuse a text; the seven line breaks are the written set and every one is in the trim set; a text both too long and on two lines is refused as `multiline`; the bound read from `TODO_TASK_TEXT_MAX_LENGTH`, from both sides; and a **generator**, because `BR-06` and `BR-07` are rules about a value: any text drawn is either refused or kept NFC, trimmed, on one line and 1–200 code points long) · **tests/integration/test_todo_tasks_corpus.py** (every case of `todo-tasks-boundary.json` is accepted and stored as the file states; every case of `todo-tasks-refused.json` is refused with its code and stores nothing) · **tests/integration/test_todo_tasks_service.py** (a decomposed, a padded and an emoji text read back from the column NFC, trimmed, on one line and within the bound in code points; whitespace inside a text is stored as typed) · **tests/integration/test_todo_tasks_router.py** (each of the three `todo_task_text_*` codes, on `POST` and on `PATCH`) · **tests/unit/test_todo_task_model.py** (`text` is declared `String(TODO_TASK_TEXT_MAX_LENGTH)`, not null) · **frontend/src/contexts/todo_list/lib/todoTask.test.ts** (the same `todo-task-text.json`, the same verdicts and lengths, through the browser's rule) · **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx** (the field carries no `maxLength`; 200 pasted emoji are held whole and the task can be added; 201 are held, the screen says the text is too long and sends nothing; a pasted U+2028 between two words gets the one-line sentence and sends nothing) · **e2e/suite/features/todo_list.feature** ("Spaces between the words of a task are kept as typed", "A line break after the last word is trimmed, not refused"). Supplementary, owning no citation: `tests/fitness/test_length_constants.py` (the 200 and the seven line breaks equal their browser copies), `tests/fitness/test_golden_set.py` (the to-do files obey the corpus rules), and the UI smoke (200 and 201 emoji typed into the built screen) |
+-| `CR-2609-823a/R-3` — one shared list, in one order | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (newest first; two tasks stored with one `created_at` come back in the same order on two reads, the tie settled by `id` descending — the equal moment is arranged, through the service's clock or rows written directly as the guestbook's tie test does, never hoped for from two quick calls; 101 tasks, "Task 001" to "Task 101", done and not done, all in one read; marking and correcting leave the order and `created_at` as they were) · **tests/integration/test_todo_tasks_router.py** (the `GET` answers every task in one envelope whose `total` equals the length of `items`, and ignores `limit` and `offset`) · **tests/integration/test_todo_tasks_corpus.py** (`todo-tasks-ordinary.json`, added in file order with the done ones then marked, reads back as the reversal of the file with its marks) · **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx** (the tasks are shown in the order they arrive and never sorted again; an empty list says it is empty and how to begin, with no error; a list whose tasks are all done is shown and not called empty) · **e2e/suite/features/todo_list.feature** ("The list shows the newest task at the top", "A hundred and one tasks are all shown on one list", "Marking a task done leaves it where it was", "Correcting a task's text leaves it where it was", "A task somebody else added appears after a reload"). Supplementary: `tests/integration/test_migrations.py` (the ordering index exists) |
++| `CR-2609-823a/R-3` — one shared list, in one order | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (newest first; two tasks stored with one `created_at` come back in the same order on two reads, the tie settled by `id` descending — the equal moment is arranged, through the service's clock or rows written directly as the guestbook's tie test does, never hoped for from two quick calls; 101 tasks, "Task 001" to "Task 101", done and not done, all in one read; marking and correcting leave the order and `created_at` as they were) · **tests/integration/test_todo_tasks_router.py** (the `GET` answers every task in one envelope whose `total` equals the length of `items`, and ignores `limit` and `offset`) · **tests/integration/test_todo_tasks_corpus.py** (`todo-tasks-ordinary.json`, added in file order with the done ones then marked, reads back as the reversal of the file with its marks) · **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx** (the tasks are shown in the order they arrive and never sorted again; an empty list says it is empty and how to begin, with no error; a list whose tasks are all done is shown and not called empty) · **frontend/src/router.test.tsx** (the to-do list opened a second time by its header link is read again and shows what is stored then, under a query client with `frontend/src/main.tsx`'s defaults, so that the case fails if the list inherits their 30 seconds — `Q-25`, `spec/design/ui/system-states.md` § Interactions; the user chose this proof in `CR-2609-823a` (`Q-29`) in these words: "Add an automated test") · **e2e/suite/features/todo_list.feature** ("The list shows the newest task at the top", "A hundred and one tasks are all shown on one list", "Marking a task done leaves it where it was", "Correcting a task's text leaves it where it was", "A task somebody else added appears after a reload"). Supplementary: `tests/integration/test_migrations.py` (the ordering index exists) |
+ | `CR-2609-823a/R-4` — marking done and not done | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (marking records the state chosen for all four pairs of stored and chosen state, so a flip shows on done over done and not done over not done; marking leaves the text and `created_at` alone) · **tests/integration/test_todo_tasks_router.py** (a `PATCH` carrying `done` alone writes `done` alone) · **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx** (a done task is shown differently: its checkbox is checked and its text carries the done style, and a not-done task has neither; ticking sends the state the person chose) · **e2e/suite/features/todo_list.feature** ("A task marked done stays done after a reload", "A task marked done by mistake goes back to not done", "Marking done a task that is already done leaves it done", "Marking not done a task that is already not done leaves it not done"). Clause 6, the contrast floor, is measured by no suite that owns a citation, because jsdom loads no application CSS: the UI smoke measures a done task's text against the surface it is painted on, opacity included, at 4.5:1 or more; `tests/fitness/test_design_tokens.py` holds every text token to the floor; and a step in this change's `uat.md` looks. A gap in citation, named, and not a gap in proof |
+ | `CR-2609-823a/R-5` — two screens and the way between them | `frontend` | **frontend/src/router.test.tsx** (the to-do list's own address opens the to-do list; the main address opens the guestbook; an unknown address gets the page that says nothing is there) · **frontend/src/components/shell/PageFrame.test.tsx** (on each screen the frame offers the way to the other one) · **frontend/src/pages/StatusPages.test.tsx** (the not-found page does not say the application has one screen). Supplementary: `tests/unit/test_spa_fallback.py` already answers any address with the shell, `/no-such-page` included, so the server half of clause 1 needs no case of its own; the UI smoke opens the to-do address directly in the built bundle and walks the way between the screens in both directions |
+ | `CR-2609-823a/R-6` — editing a task's text | `tests/integration/` | **tests/integration/test_todo_tasks_service.py** (a correction changes the text and nothing else; a done task is corrected exactly as a not-done one is; a refused correction keeps the text it had) · **tests/integration/test_todo_tasks_corpus.py** (every case of `todo-tasks-refused.json`, sent as a correction, is refused with its code and the task keeps its text) · **tests/integration/test_todo_tasks_router.py** (a `PATCH` carrying `text` alone writes `text` alone; a refused `text` in a `PATCH` that also carries `done` writes neither) · **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx** (a corrected text is shown in the task's place; a refused correction shows the old text and the reason) · **e2e/suite/features/todo_list.feature** ("Correcting a typo in a task", "Editing a done task keeps it done and where it was") |
+@@ -1114,10 +1114,10 @@ files without a test of their own are named there, each with its reason.
+ 
+ | Author | Writes |
+ |---|---|
+-| `build-tests-unit` | **tests/unit/test_todo_task_text_rules.py**, **tests/unit/test_todo_task_model.py** (new) · edits to `tests/unit/test_guestbook_entry_model.py` (the schema holds two tables), `tests/fitness/test_golden_set.py` (the to-do files' rules, the line-break rule scoped to entries, and a second browser reader allowed its own context's file alone), `tests/fitness/test_length_constants.py` (the 200 and the seven line breaks against their browser copies) and, text only, the docstrings of `tests/fitness/test_context_declarations.py`, `tests/fitness/test_context_boundaries.py`, `tests/fitness/test_data_invariants.py` and `tests/fitness/test_migration_safety.py` (two contexts, two tables, two revisions, where they counted one) |
+-| `build-tests-integration` | **tests/integration/test_todo_tasks_service.py**, **tests/integration/test_todo_tasks_concurrency.py**, **tests/integration/test_todo_tasks_router.py**, **tests/integration/test_todo_tasks_corpus.py**, **tests/integration/test_todo_tasks_contract.py** (new) · edits to `tests/integration/test_migrations.py` (the second table and its index, and a docstring that called the guestbook's screen the only one) and `tests/tooling/test_seed_golden_set.py` (each list filled on its own) · **the corpus's fixture half**: the four to-do files under `golden-set/fixtures/`, and their names, with the example-task file's, in `tests/_golden_set.py` |
++| `build-tests-unit` | **tests/unit/test_todo_task_text_rules.py**, **tests/unit/test_todo_task_model.py** (new) · edits to `tests/unit/test_guestbook_entry_model.py` (the schema holds two tables, in an assertion and in the docstring that counted one), `tests/fitness/test_golden_set.py` (the to-do files' rules, the line-break rule scoped to entries, and a second browser reader allowed its own context's file alone), `tests/fitness/test_length_constants.py` (the 200 and the seven line breaks against their browser copies) and, text only, the docstrings of `tests/fitness/test_context_declarations.py`, `tests/fitness/test_context_boundaries.py`, `tests/fitness/test_data_invariants.py` and `tests/fitness/test_migration_safety.py` (two contexts, two tables, two revisions, where they counted one) |
++| `build-tests-integration` | **tests/integration/test_todo_tasks_service.py**, **tests/integration/test_todo_tasks_concurrency.py**, **tests/integration/test_todo_tasks_router.py**, **tests/integration/test_todo_tasks_corpus.py**, **tests/integration/test_todo_tasks_contract.py** (new) · edits to `tests/integration/test_migrations.py` (the second table and its index, and a docstring that called the guestbook's screen the only one), `tests/integration/test_e2e_reset.py` (text only: the comment on `REQUIRED` that counted one table) and `tests/tooling/test_seed_golden_set.py` (each list filled on its own) · **the corpus's fixture half**: the four to-do files under `golden-set/fixtures/`, and their names, with the example-task file's, in `tests/_golden_set.py` |
+ | `build-tests-frontend` | **frontend/src/contexts/todo_list/lib/todoTask.test.ts**, **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx**, **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx**, **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx**, **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx**, **frontend/src/router.test.tsx**, **frontend/src/components/shell/PageFrame.test.tsx**, **frontend/src/pages/StatusPages.test.tsx** (new) · edits to `frontend/src/contexts/guestbook/lib/entryText.test.ts` (one import line, to **frontend/src/lib/text.ts**, where the shared rule moves; its place and its cases stay) |
+-| `build-tests-e2e` | **e2e/suite/features/todo_list.feature**, **e2e/suite/steps/todo_list_steps.py** (new) · edits to `e2e/suite/test_scenarios.py` (binds the feature and imports the steps) and `e2e/ui/test_smoke.py` (the to-do screen's smoke, and the locators `A-4` lets follow the approved names) |
++| `build-tests-e2e` | **e2e/suite/features/todo_list.feature**, **e2e/suite/steps/todo_list_steps.py** (new) · edits to `e2e/suite/test_scenarios.py` (binds the feature and imports the steps), `e2e/ui/test_smoke.py` (the to-do screen's smoke, and the locators `A-4` lets follow the approved names) and, text only, `e2e/suite/steps/guestbook_steps.py` (the comment on `ENTRIES` that counted one resource) |
+ 
+ The four are disjoint by tree and by shape: `tests/unit/` and `tests/fitness/`; `tests/integration/`,
+ `tests/tooling/`, `golden-set/fixtures/` and `tests/_golden_set.py`; the `*.test.ts` and
+diff --git a/spec/design/ui/system-states.md b/spec/design/ui/system-states.md
+index 876c780..0e786fc 100644
+--- a/spec/design/ui/system-states.md
++++ b/spec/design/ui/system-states.md
+@@ -192,12 +192,15 @@ to-do list's number of tasks. The navigation is two fixed addresses and reads no
+ | entering an unknown route | the 404 page **inside** the frame — the way back stays on screen |
+ 
+ **Opening the to-do list reads its list, every time — the header link included.** Opened by its
+-address, by a reload or by the link "To-do list", the screen shows the tasks as they are stored at
+-that moment, other people's changes of the last few seconds included, and never a copy it read
+-earlier (`CR-2609-823a/R-3`). The user decided it in `CR-2609-823a` (`Q-25`) in these words:
+-"Always fetch the latest." The guestbook is unchanged by that decision: opened by a link within
+-30 seconds of its last read, it shows that read without asking the service again
+-(`frontend/src/main.tsx`, `staleTime`), and a reload, or a change made on it, reads it afresh.
++address, by a reload or by the link "To-do list", the screen reads its list afresh and shows the
++tasks as they are stored at that moment, other people's changes of the last few seconds included
++(`CR-2609-823a/R-3`). The user decided it in `CR-2609-823a` (`Q-25`) in these words:
++"Always fetch the latest." A list it read earlier in the same tab stays on screen only until that
++read answers, and is then replaced; it is not swapped for the loading outline meanwhile. The user
++decided that in `CR-2609-823a` (`Q-28`) in these words: "Briefly showing it is fine." A reload and
++an entered address have no earlier list to show. The guestbook is unchanged by either decision:
++opened by a link within 30 seconds of its last read, it shows that read without asking the service
++again (`frontend/src/main.tsx`, `staleTime`), and a reload, or a change made on it, reads it afresh.
+ 
+ **The browser stores nothing.** There is no `localStorage`, no cookie, no state that survives a
+ tab — after the theme was withdrawn nothing was left that belonged there.
+diff --git a/tests/integration/test_e2e_reset.py b/tests/integration/test_e2e_reset.py
+index 059ad43..7c47180 100644
+--- a/tests/integration/test_e2e_reset.py
++++ b/tests/integration/test_e2e_reset.py
+@@ -40,7 +40,9 @@ from e2e.harness.database import (
+ )
+ from tests._database import create_migrated_database
+ 
+-#: The one table in this application's schema that holds a scenario's state.
++#: The table that marks this application's schema. Since `CR-2609-823a`,
++#: `todo_tasks` holds a scenario's state too. Discovery finds it because it
++#: exists, as `e2e/suite/conftest.py` says of `REQUIRED_TABLES`.
+ #: Named rather than discovered, because this file is asserting that discovery
+ #: found it.
+ REQUIRED: frozenset[str] = frozenset({"guestbook_entries"})
+diff --git a/tests/unit/test_guestbook_entry_model.py b/tests/unit/test_guestbook_entry_model.py
+index 5a6a07f..e0dd515 100644
+--- a/tests/unit/test_guestbook_entry_model.py
++++ b/tests/unit/test_guestbook_entry_model.py
+@@ -160,8 +160,9 @@ def test_no_other_temporal_column_slipped_in() -> None:
+ 
+ 
+ def test_the_entity_carries_no_relationship() -> None:
+-    """The template's schema is one table and no edges. A relationship appearing
+-    here means a second context arrived, and `spec/contexts/` has to say so."""
++    """The guestbook's table has no edges. Since `CR-2609-823a` the schema holds
++    two tables, and no foreign key joins them. A relationship appearing here means
++    one context reached into another's data, and `spec/contexts/` has to say so."""
+     assert list(sa.inspect(GuestbookEntry).relationships) == []
+ 
+ 

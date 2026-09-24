@@ -1,0 +1,681 @@
+=== app/contexts/guestbook/services/guestbook_entries.py
+     1	"""Guestbook entry persistence and the rules that govern it.
+     2	
+     3	Framework-agnostic seam for the guestbook: owns the SQLAlchemy session and the
+     4	transaction boundary, raises domain exceptions, and never names an HTTP status
+     5	code -- the router translates. Must not import anything from
+     6	`fastapi`/`starlette`, so every rule here stays callable from a migration, a
+     7	script or a future scheduled job (spec/design/conventions.md § Layers).
+     8	
+     9	Three rules live here rather than in the schema, because all three are about an
+    10	entry's life rather than about one request's shape:
+    11	
+    12	- **`BR-02`** -- an edit moves `updated_at` and never `created_at`. Enforced by
+    13	  simply not assigning `created_at` anywhere except at creation.
+    14	- **`BR-04`** -- the list has a total order in **both** directions, and the
+    15	  ordering is part of the contract rather than a coincidence of insertion order.
+    16	  Ties break on `id`, so two entries written in the same clock tick still come
+    17	  back in a stable order; without it a paged read shows one entry twice and
+    18	  misses another.
+    19	- **`BR-05`** -- a read may be narrowed by a phrase and cut into pages, and the
+    20	  two counts it answers with are counted rather than inferred from the page.
+    21	"""
+    22	
+    23	import datetime
+    24	import uuid
+    25	
+    26	from sqlalchemy import ColumnElement, Select, func, or_, select
+    27	from sqlalchemy.orm import Session
+    28	
+    29	from app.contexts.guestbook.models.guestbook_entry import GuestbookEntry
+    30	from app.contexts.guestbook.schemas.guestbook_entries import (
+    31	    PAGE_SIZE_DEFAULT,
+    32	    GuestbookEntryCreate,
+    33	    GuestbookEntryPage,
+    34	    GuestbookEntryRead,
+    35	    GuestbookEntrySort,
+    36	    GuestbookEntryUpdate,
+    37	)
+    38	from app.db.session import SessionLocal
+    39	from app.platform.schemas.text import normalize
+    40	
+    41	
+    42	class GuestbookEntryNotFoundError(Exception):
+    43	    """Raised when a requested entry id does not exist."""
+    44	
+    45	
+    46	def _now() -> datetime.datetime:
+    47	    """The one clock this module reads.
+    48	
+    49	    A single function rather than scattered `datetime.now(UTC)` calls so a test
+    50	    that needs to control time has one seam to take, and so `created_at` and
+    51	    `updated_at` of a freshly created entry are provably the same instant rather
+    52	    than two instants that happen to round the same way.
+    53	    """
+    54	    return datetime.datetime.now(datetime.UTC)
+    55	
+    56	
+    57	def _read(row: GuestbookEntry) -> GuestbookEntryRead:
+    58	    return GuestbookEntryRead(
+    59	        id=row.id,
+    60	        author=row.author,
+    61	        message=row.message,
+    62	        created_at=row.created_at,
+    63	        updated_at=row.updated_at,
+    64	    )
+    65	
+    66	
+    67	def _match(phrase: str) -> ColumnElement[bool]:
+    68	    """Rows whose signature **or** whose text contains `phrase`, ignoring case.
+    69	
+    70	    Both columns, because a guest looking for "Anna" cannot be expected to know
+    71	    whether Anna signed the entry or is named inside somebody else's. One field
+    72	    would make half the hits invisible with no way to tell.
+    73	
+    74	    `autoescape=True` is doing real work: `%` and `_` are `LIKE` wildcards, so a
+    75	    guest searching for `100%` would otherwise match every entry in the book --
+    76	    silently, and looking exactly like a search that found a lot.
+    77	
+    78	    **`icontains` and not a `lower()` in Python.** `icontains` folds both sides
+    79	    with the *same* `lower()`, the database's own, and the symmetry is the point:
+    80	    lowering the phrase here and the column in SQL would compare a folded needle
+    81	    against a haystack folded by different rules, and an exact phrase would stop
+    82	    matching itself.
+    83	
+    84	    Postgres folds by Unicode, so `É` finds `é` -- which is a property of the
+    85	    engine this application runs on and of no other (`spec/design/architecture.md` § One engine).
+    86	
+    87	    **The same symmetry argument applies to normalization, and it is met on one
+    88	    side only.** Since `app/platform/schemas/text.py` landed, every value written
+    89	    here is NFC, and so is every phrase -- so needle and haystack are folded alike
+    90	    for anything stored from that point on. Rows written BEFORE it were stored as
+    91	    they arrived, so a decomposed `é` sitting in an old row is not found by a
+    92	    phrase the caller typed precomposed. That was left rather than migrated: the
+    93	    guestbook is this template's worked example, no deployment holds data anybody
+    94	    depends on, and a backfill is an irreversible rewrite of a column against a
+    95	    complaint nobody has made. A deployment that does hold such data runs one
+    96	    `UPDATE ... SET author = normalize(author)` before trusting search over its
+    97	    history.
+    98	    """
+    99	    return or_(
+   100	        GuestbookEntry.author.icontains(phrase, autoescape=True),
+   101	        GuestbookEntry.message.icontains(phrase, autoescape=True),
+   102	    )
+   103	
+   104	
+   105	def _ordered(
+   106	    statement: Select[tuple[GuestbookEntry]], sort: GuestbookEntrySort
+   107	) -> Select[tuple[GuestbookEntry]]:
+   108	    """Apply `BR-04`'s order, whichever end the caller asked to read from.
+   109	
+   110	    The tiebreaker turns with the sort rather than staying `id DESC` in both
+   111	    branches. Reversing only the date would leave the two entries written in the
+   112	    same tick in the *same* relative order under both sorts, so a book read
+   113	    oldest-first would not be the reverse of the same book read newest-first --
+   114	    and a page boundary landing between those two entries would drop one of them.
+   115	    """
+   116	    if sort is GuestbookEntrySort.OLDEST:
+   117	        return statement.order_by(GuestbookEntry.created_at.asc(), GuestbookEntry.id.asc())
+   118	    return statement.order_by(GuestbookEntry.created_at.desc(), GuestbookEntry.id.desc())
+   119	
+   120	
+   121	def _count(session: Session, condition: ColumnElement[bool] | None) -> int:
+   122	    """How many rows satisfy `condition`, or how many there are when it is `None`.
+   123	
+   124	    `COUNT(*)` over the table rather than `len()` over the rows, so the number
+   125	    means the population and not the page -- and so the whole-book count stays
+   126	    one cheap query even when the page is four entries out of four thousand.
+   127	    """
+   128	    statement = select(func.count()).select_from(GuestbookEntry)
+   129	    if condition is not None:
+   130	        statement = statement.where(condition)
+   131	    return int(session.scalar(statement) or 0)
+   132	
+   133	
+   134	def list_entries(
+   135	    *,
+   136	    query: str | None = None,
+   137	    sort: GuestbookEntrySort = GuestbookEntrySort.NEWEST,
+   138	    limit: int = PAGE_SIZE_DEFAULT,
+   139	    offset: int = 0,
+   140	) -> GuestbookEntryPage:
+   141	    """One page of entries, plus how many match and how many exist (`BR-05`).
+   142	
+   143	    `query` is normalized before it is measured, for the same reason `BR-01`
+   144	    normalizes what it stores: a phrase of spaces is no phrase, and treating it as
+   145	    one would hand back an empty book to somebody who typed nothing.
+   146	
+   147	    Normalized here as well as at the router, and the repetition is deliberate:
+   148	    this module is the framework-agnostic seam, so a script or a scheduled job
+   149	    calling `list_entries` directly must get the same phrase the HTTP caller gets.
+   150	    `normalize` is idempotent, so the second application costs a comparison.
+   151	
+   152	    Both counts are counted in the database rather than derived from `items`. A
+   153	    page cannot imply the size of the population it came from, which is the whole
+   154	    reason the envelope exists -- and `len(items)` is a plausible-looking number,
+   155	    so the mistake would not announce itself.
+   156	    """
+   157	    phrase = normalize(query or "")
+   158	    with SessionLocal() as session:
+   159	        total_all = _count(session, None)
+   160	        if phrase:
+   161	            condition = _match(phrase)
+   162	            total = _count(session, condition)
+   163	            rows_statement = select(GuestbookEntry).where(condition)
+   164	        else:
+   165	            # No phrase means the question is the whole book, so the two counts
+   166	            # are the same fact and counting twice would only be slower.
+   167	            total = total_all
+   168	            rows_statement = select(GuestbookEntry)
+   169	        rows = session.scalars(_ordered(rows_statement, sort).limit(limit).offset(offset)).all()
+   170	        return GuestbookEntryPage(
+   171	            items=[_read(row) for row in rows],
+   172	            total=total,
+   173	            total_all=total_all,
+   174	        )
+   175	
+   176	
+   177	def get_entry(entry_id: uuid.UUID) -> GuestbookEntryRead:
+   178	    """Return one entry.
+   179	
+   180	    Raises:
+   181	        GuestbookEntryNotFoundError: if no entry with `entry_id` exists.
+   182	    """
+   183	    with SessionLocal() as session:
+   184	        row = session.get(GuestbookEntry, entry_id)
+   185	        if row is None:
+   186	            raise GuestbookEntryNotFoundError(str(entry_id))
+   187	        return _read(row)
+   188	
+   189	
+   190	def create_entry(data: GuestbookEntryCreate) -> GuestbookEntryRead:
+   191	    """Store a new entry with a freshly generated id."""
+   192	    written_at = _now()
+   193	    with SessionLocal() as session:
+   194	        row = GuestbookEntry(
+   195	            author=data.author,
+   196	            message=data.message,
+   197	            created_at=written_at,
+   198	            updated_at=written_at,
+   199	        )
+   200	        session.add(row)
+   201	        session.commit()
+   202	        session.refresh(row)
+   203	        return _read(row)
+   204	
+   205	
+   206	def update_entry(entry_id: uuid.UUID, data: GuestbookEntryUpdate) -> GuestbookEntryRead:
+   207	    """Apply the fields the caller gave and stamp `updated_at` (`BR-02`).
+   208	
+   209	    A field left unset is left alone -- this is a PATCH, so "absent" means "do
+   210	    not touch" and never "clear".
+   211	
+   212	    Raises:
+   213	        GuestbookEntryNotFoundError: if no entry with `entry_id` exists.
+   214	    """
+   215	    with SessionLocal() as session:
+   216	        row = session.get(GuestbookEntry, entry_id)
+   217	        if row is None:
+   218	            raise GuestbookEntryNotFoundError(str(entry_id))
+   219	        if data.author is not None:
+   220	            row.author = data.author
+   221	        if data.message is not None:
+   222	            row.message = data.message
+   223	        row.updated_at = _now()
+   224	        session.commit()
+   225	        session.refresh(row)
+   226	        return _read(row)
+   227	
+   228	
+   229	def delete_entry(entry_id: uuid.UUID) -> None:
+   230	    """Remove an entry permanently (`BR-03`).
+   231	
+   232	    Raises:
+   233	        GuestbookEntryNotFoundError: if no entry with `entry_id` exists, so a
+   234	            second delete of the same id refuses rather than reporting success
+   235	            for something it did not do.
+   236	    """
+   237	    with SessionLocal() as session:
+   238	        row = session.get(GuestbookEntry, entry_id)
+   239	        if row is None:
+   240	            raise GuestbookEntryNotFoundError(str(entry_id))
+   241	        session.delete(row)
+   242	        session.commit()
+=== app/contexts/guestbook/routers/guestbook_entries.py
+     1	"""Guestbook entries -- the one resource this template ships with.
+     2	
+     3	Mounted at `/api/guestbook-entries`. HTTP binding and nothing else: it reads
+     4	the path and the body, calls `app.contexts.guestbook.services.guestbook_entries`, and translates
+     5	that module's domain exceptions into status codes in an explicit `match`. No
+     6	rule about entries is decided here (spec/design/conventions.md § Layers).
+     7	
+     8	**Refusals carry a stable code and a finished English sentence.** The code is
+     9	what the screen branches on and never changes; the sentence is what a person
+    10	reads and may be reworded. Keeping the sentence beside the endpoint that
+    11	produced it -- rather than in a shared table one edit away from telling somebody
+    12	to fix the wrong field -- is the rule spec/design/api.md § Refusals states and
+    13	this module follows.
+    14	
+    15	This is the resource to copy when you add your own, and the resource to delete
+    16	once yours has replaced it as the template's worked example.
+    17	"""
+    18	
+    19	import uuid
+    20	from typing import Annotated, Any
+    21	
+    22	from fastapi import APIRouter, HTTPException, Query
+    23	
+    24	from app.contexts.guestbook.schemas.guestbook_entries import (
+    25	    PAGE_SIZE_DEFAULT,
+    26	    PAGE_SIZE_MAX,
+    27	    QUERY_MAX_LENGTH,
+    28	    GuestbookEntryCreate,
+    29	    GuestbookEntryPage,
+    30	    GuestbookEntryRead,
+    31	    GuestbookEntrySort,
+    32	    GuestbookEntryUpdate,
+    33	)
+    34	from app.contexts.guestbook.services.guestbook_entries import (
+    35	    GuestbookEntryNotFoundError,
+    36	    create_entry,
+    37	    delete_entry,
+    38	    get_entry,
+    39	    list_entries,
+    40	    update_entry,
+    41	)
+    42	from app.platform.schemas.refusals import Refusal
+    43	from app.platform.schemas.text import NormalizedText
+    44	
+    45	router = APIRouter()
+    46	
+    47	#: What every route taking an id answers when the id does not resolve.
+    48	#:
+    49	#: Declared rather than merely raised, and the difference is the whole point:
+    50	#: FastAPI builds `openapi.json` from the decorator, never from the bodies of
+    51	#: raised exceptions, so a 404 that only ever appears inside `_not_found` below
+    52	#: reaches no document and no generated type. `spec/design/api.md` promised this
+    53	#: refusal all along and `frontend/src/api/schema.d.ts` had no shape for it.
+    54	_NOT_FOUND_RESPONSE: dict[int | str, dict[str, Any]] = {
+    55	    404: {"model": Refusal, "description": "There is no entry with that identifier."}
+    56	}
+    57	
+    58	#: The 422 on PATCH, which is genuinely two shapes and must be published as two.
+    59	#:
+    60	#: This route is the only one that can refuse with a *coded* 422 -- the body
+    61	#: that sets no field (`guestbook_entry_empty_patch`). Every other way to earn a
+    62	#: 422 here is Pydantic's: an empty or over-long field, a wrong type, an
+    63	#: unreadable id in the path. Those answer with FastAPI's standard
+    64	#: `HTTPValidationError`, a LIST under `detail`, through
+    65	#: `app/core/errors.py`.
+    66	#:
+    67	#: Declaring `{"model": Refusal}` said the first was the only one. Worse, an
+    68	#: explicit 422 REPLACES the `HTTPValidationError` FastAPI would have generated
+    69	#: (`fastapi/openapi/utils.py` adds its own only when the operation declares
+    70	#: none), so the shape a caller meets most often vanished from the document and
+    71	#: from `frontend/src/api/schema.d.ts` -- leaving a consumer of the generated
+    72	#: types no way to describe it at all. `frontend/src/api/problem.ts` has always
+    73	#: handled both; it was the published contract that knew about one.
+    74	#:
+    75	#: Written as raw `$ref`s rather than `model=Refusal | HTTPValidationError`
+    76	#: because `HTTPValidationError` is not an importable Pydantic model -- FastAPI
+    77	#: injects it into `components/schemas` as a plain dict. This form is also the
+    78	#: only one that keeps the component NAMES `schema.d.ts` already knows: renaming
+    79	#: a component is itself a breaking change, whatever the shape underneath.
+    80	_EITHER_REFUSAL_OR_VALIDATION: dict[str, Any] = {
+    81	    "description": "The body sets no field at all, or a field is outside its bounds. "
+    82	    "Two different shapes under one status code: a coded refusal for the first, "
+    83	    "FastAPI's validation error for the rest.",
+    84	    "content": {
+    85	        "application/json": {
+    86	            "schema": {
+    87	                "anyOf": [
+    88	                    {"$ref": "#/components/schemas/Refusal"},
+    89	                    {"$ref": "#/components/schemas/HTTPValidationError"},
+    90	                ]
+    91	            }
+    92	        }
+    93	    },
+    94	}
+    95	
+    96	#: The sentence an operator reads when the id does not resolve. One constant
+    97	#: rather than four copies: this is the same fact on every route that takes an
+    98	#: id, and four copies drift.
+    99	_NOT_FOUND = "There is no such entry. Somebody else may have deleted it."
+   100	
+   101	#: Refused before anything is read, because a PATCH that sets no field is a
+   102	#: request that cannot be carried out rather than one that succeeds by doing
+   103	#: nothing -- a client that meant to change something would otherwise get 200
+   104	#: and never learn its body was empty.
+   105	_EMPTY_PATCH = "No field was given to change. The entry is unchanged."
+   106	
+   107	
+   108	def _not_found(entry_id: uuid.UUID) -> HTTPException:
+   109	    return HTTPException(
+   110	        status_code=404,
+   111	        detail={"code": "guestbook_entry_not_found", "message": _NOT_FOUND, "id": str(entry_id)},
+   112	    )
+   113	
+   114	
+   115	@router.get("/guestbook-entries", response_model=GuestbookEntryPage)
+   116	def list_guestbook_entries(
+   117	    q: Annotated[
+   118	        str | None,
+   119	        # Ahead of `Query`, and that ordering is the fix rather than a detail.
+   120	        # `max_length` used to measure the phrase as it arrived, while an entry's
+   121	        # fields were measured after trimming -- so `spec/design/api.md` § Narrowing
+   122	        # ("the phrase is trimmed before it is measured") was true of the document
+   123	        # and of nothing else, and two hundred and five spaces earned a 422 instead
+   124	        # of being no phrase at all. `NormalizedText` is a `BeforeValidator`, so the
+   125	        # bound now applies to the same string the service will search with.
+   126	        NormalizedText,
+   127	        Query(max_length=QUERY_MAX_LENGTH, description="Narrow to entries containing this."),
+   128	    ] = None,
+   129	    sort: Annotated[
+   130	        GuestbookEntrySort, Query(description="Which end of the book to read from.")
+   131	    ] = GuestbookEntrySort.NEWEST,
+   132	    limit: Annotated[int, Query(ge=1, le=PAGE_SIZE_MAX)] = PAGE_SIZE_DEFAULT,
+   133	    offset: Annotated[int, Query(ge=0)] = 0,
+   134	) -> GuestbookEntryPage:
+   135	    """One page of entries, with how many match and how many the book holds.
+   136	
+   137	    The four parameters are bounded here rather than in the service, because
+   138	    every one of them is a fact about *this request* -- and FastAPI turns each
+   139	    bound into the standard 422 the frontend already normalises
+   140	    (`frontend/src/api/problem.ts`). A bad `sort` is therefore a refusal a
+   141	    caller can act on rather than a silent fall back to the default.
+   142	    """
+   143	    return list_entries(query=q, sort=sort, limit=limit, offset=offset)
+   144	
+   145	
+   146	@router.get(
+   147	    "/guestbook-entries/{entry_id}",
+   148	    response_model=GuestbookEntryRead,
+   149	    responses=_NOT_FOUND_RESPONSE,
+   150	)
+   151	def read_guestbook_entry(entry_id: uuid.UUID) -> GuestbookEntryRead:
+   152	    """One entry by id.
+   153	
+   154	    Raises:
+   155	        HTTPException: 404 if no entry with `entry_id` exists.
+   156	    """
+   157	    try:
+   158	        return get_entry(entry_id)
+   159	    except GuestbookEntryNotFoundError as exc:
+   160	        raise _not_found(entry_id) from exc
+   161	
+   162	
+   163	@router.post("/guestbook-entries", response_model=GuestbookEntryRead, status_code=201)
+   164	def create_guestbook_entry(data: GuestbookEntryCreate) -> GuestbookEntryRead:
+   165	    """Add an entry. The length and emptiness rules refuse with 422 in Pydantic."""
+   166	    return create_entry(data)
+   167	
+   168	
+   169	@router.patch(
+   170	    "/guestbook-entries/{entry_id}",
+   171	    response_model=GuestbookEntryRead,
+   172	    responses={
+   173	        **_NOT_FOUND_RESPONSE,
+   174	        422: _EITHER_REFUSAL_OR_VALIDATION,
+   175	    },
+   176	)
+   177	def update_guestbook_entry(entry_id: uuid.UUID, data: GuestbookEntryUpdate) -> GuestbookEntryRead:
+   178	    """Change an entry's author, its message, or both.
+   179	
+   180	    Raises:
+   181	        HTTPException: 422 if the body sets no field; 404 if no entry with
+   182	            `entry_id` exists.
+   183	    """
+   184	    if data.author is None and data.message is None:
+   185	        raise HTTPException(
+   186	            status_code=422,
+   187	            detail={"code": "guestbook_entry_empty_patch", "message": _EMPTY_PATCH},
+   188	        )
+   189	    try:
+   190	        return update_entry(entry_id, data)
+   191	    except GuestbookEntryNotFoundError as exc:
+   192	        raise _not_found(entry_id) from exc
+   193	
+   194	
+   195	@router.delete("/guestbook-entries/{entry_id}", status_code=204, responses=_NOT_FOUND_RESPONSE)
+   196	def delete_guestbook_entry(entry_id: uuid.UUID) -> None:
+   197	    """Remove an entry permanently.
+   198	
+   199	    Raises:
+   200	        HTTPException: 404 if no entry with `entry_id` exists, so deleting the
+   201	            same id twice refuses the second time instead of reporting success.
+   202	    """
+   203	    try:
+   204	        delete_entry(entry_id)
+   205	    except GuestbookEntryNotFoundError as exc:
+   206	        raise _not_found(entry_id) from exc
+=== app/platform/schemas/text.py
+     1	"""How this API trims a text field and how long it considers it to be.
+     2	
+     3	Not named after a resource, like `refusals.py` beside it, and for the same reason:
+     4	the unit a bound is counted in is a fact about EVERY text field this API accepts,
+     5	not about guest book entries. The *bounds* stay where their domain is
+     6	(`AUTHOR_MAX_LENGTH` beside the model); what lives here is what the number counts.
+     7	
+     8	**The unit is code points, after NFC normalization. Not graphemes, and not UTF-16
+     9	code units.** The choice is forced rather than preferred, and the argument is worth
+    10	keeping because the alternative looks more humane:
+    11	
+    12	- `author` is `varchar(80)` and PostgreSQL counts **code points** in it. Eighty
+    13	  graphemes of family emoji is up to four hundred code points, so a grapheme rule
+    14	  would have the column refuse a value the application had just accepted.
+    15	- `maxLength: 80` in `contracts/openapi/guestbook.yaml` is, by the JSON Schema
+    16	  specification, in code points. A grapheme rule would make the published contract
+    17	  false for every independent client built against it.
+    18	- Python has no grapheme segmentation in its standard library; JavaScript has
+    19	  `Intl.Segmenter`. Two implementations would have to declare the same version of
+    20	  UAX #29 or the disagreement returns one floor up.
+    21	
+    22	So three of the four layers already count code points, and the repair is to bring
+    23	the fourth -- the browser -- to the rule, rather than to move the other three.
+    24	
+    25	**Trimming is a written set rather than a default.** `str.strip()` removes 29 code
+    26	points; JavaScript's `String.prototype.trim` removes 25. Five are stripped only by
+    27	Python (the C0 separators and NEL) and one only by JavaScript (the BOM), so before
+    28	this module six code points were content in one language and whitespace in the
+    29	other -- in both directions, which is why no amount of care on one side could have
+    30	found it. The set below is the **union**, listed literally: both runtimes now
+    31	perform the same written operation instead of their own.
+    32	
+    33	`golden-set/fixtures/text-measurement.json` is where the rule is proved, and it is
+    34	read by this suite and by the browser's own, against the same bytes.
+    35	"""
+    36	
+    37	import unicodedata
+    38	from typing import Final
+    39	
+    40	from pydantic import BeforeValidator
+    41	
+    42	#: Unicode's `White_Space` property -- the 25 code points both runtimes already
+    43	#: agreed about.
+    44	WHITE_SPACE: Final[tuple[int, ...]] = (
+    45	    0x0009,
+    46	    0x000A,
+    47	    0x000B,
+    48	    0x000C,
+    49	    0x000D,
+    50	    0x0020,
+    51	    0x0085,
+    52	    0x00A0,
+    53	    0x1680,
+    54	    0x2000,
+    55	    0x2001,
+    56	    0x2002,
+    57	    0x2003,
+    58	    0x2004,
+    59	    0x2005,
+    60	    0x2006,
+    61	    0x2007,
+    62	    0x2008,
+    63	    0x2009,
+    64	    0x200A,
+    65	    0x2028,
+    66	    0x2029,
+    67	    0x202F,
+    68	    0x205F,
+    69	    0x3000,
+    70	)
+    71	
+    72	#: The C0 separators. `str.isspace()` is true of all four, so `str.strip()` has
+    73	#: always removed them; `String.prototype.trim` never has. Kept in the set rather
+    74	#: than dropped from it, because a file separator arriving inside a signature is a
+    75	#: paste accident either way and neither side should store it as content.
+    76	C0_SEPARATORS: Final[tuple[int, ...]] = (0x001C, 0x001D, 0x001E, 0x001F)
+    77	
+    78	#: The byte order mark, which JavaScript trims and Python does not. It is in the
+    79	#: set for the plainest of reasons: it arrives by itself, at the front of text
+    80	#: pasted out of an ordinary editor, and a guest who pasted it did not type it.
+    81	BYTE_ORDER_MARK: Final[tuple[int, ...]] = (0xFEFF,)
+    82	
+    83	#: The 30 code points removed from either end of a value, and the only ones.
+    84	#: `U+200B` ZERO WIDTH SPACE and `U+180E` MONGOLIAN VOWEL SEPARATOR are deliberately
+    85	#: absent -- neither runtime treats them as whitespace, so they are content, and the
+    86	#: corpus says so in a case of its own rather than leaving it to be discovered.
+    87	TRIMMED: Final[frozenset[str]] = frozenset(
+    88	    chr(code) for code in WHITE_SPACE + C0_SEPARATORS + BYTE_ORDER_MARK
+    89	)
+    90	
+    91	#: `str.strip` takes a string of characters rather than a set. Built once here so
+    92	#: the set above stays the single declaration and this is only its other spelling.
+    93	_TRIMMED_CHARACTERS: Final[str] = "".join(sorted(TRIMMED))
+    94	
+    95	
+    96	def normalize(value: str) -> str:
+    97	    """The value as it will be measured, sent and stored.
+    98	
+    99	    NFC first, then the edges. The order matters and only in one direction:
+   100	    normalizing afterwards could compose a combining mark with a letter the trim
+   101	    had just exposed, so a value would measure differently depending on what was
+   102	    trimmed off it.
+   103	
+   104	    Normalization is what makes the bound honest to a person. Without it the same
+   105	    eighty letters are accepted or refused depending on nothing but whether the
+   106	    keyboard emitted `e` + U+0301 or the single `U+00E9` -- a distinction no guest
+   107	    can see and no guest chose.
+   108	
+   109	    Only the ends are trimmed. Whitespace inside a value is content: a message is
+   110	    written in lines and keeping them is the point (`BR-01`).
+   111	    """
+   112	    return unicodedata.normalize("NFC", value).strip(_TRIMMED_CHARACTERS)
+   113	
+   114	
+   115	def length(value: str) -> int:
+   116	    """How long `value` is, in the unit the bounds are written in.
+   117	
+   118	    `len()` over a `str` is already code points in Python, so this function adds no
+   119	    arithmetic -- it adds a NAME. The browser's counterpart cannot be `.length`,
+   120	    which is UTF-16 code units, and a rule that is implicit on one side is a rule
+   121	    the other side can quietly stop keeping. Calling the same named function on
+   122	    both sides is what makes the agreement reviewable.
+   123	
+   124	    Measures the value as given: a caller that means the trimmed length normalizes
+   125	    first, which is what `NormalizedText` does before Pydantic counts.
+   126	    """
+   127	    return len(value)
+   128	
+   129	
+   130	def _normalized(value: object) -> object:
+   131	    """`normalize` for Pydantic, which may hand this anything at all.
+   132	
+   133	    A non-string passes straight through so that Pydantic's own type error is what
+   134	    the caller reads -- a `TypeError` from inside a validator would replace a
+   135	    sentence about the field with a stack trace about this module. `None` reaches
+   136	    here on every optional field (`GuestbookEntryUpdate`, the search phrase), and
+   137	    passing it on is what lets those stay `str | None` without a second validator.
+   138	    """
+   139	    return normalize(value) if isinstance(value, str) else value
+   140	
+   141	
+   142	#: Put in a field's `Annotated[...]` **before** its bound, which is the whole point:
+   143	#: `BeforeValidator` runs ahead of the length constraint, so what Pydantic measures
+   144	#: is the normalized, trimmed value. A signature of nothing but spaces is then empty
+   145	#: rather than three characters long, and a phrase of two hundred and five spaces is
+   146	#: no phrase rather than a refusal.
+   147	NormalizedText: Final = BeforeValidator(_normalized)
+=== app/platform/schemas/refusals.py
+     1	"""The body of a refusal that carries a stable code.
+     2	
+     3	`spec/design/api.md` section Refusals states this shape and calls the code "a
+     4	contract the screen branches on, and it never changes". Until this module existed
+     5	the sentence was true of the running application and of nothing else: the code is
+     6	raised inside `HTTPException(detail=...)`, FastAPI does not look into a raised
+     7	exception, so the shape reached neither `openapi.json` nor
+     8	`frontend/src/api/schema.d.ts`. The frontend normalised it by hand from an
+     9	untyped payload -- which is exactly the state Article VI of the constitution
+    10	forbids, one boundary over.
+    11	
+    12	Declaring it here and naming it in each route's `responses=` is what carries the
+    13	shape into the generated types. `contracts/openapi/guestbook.yaml` freezes it
+    14	from the other side, and `./scripts/contracts.sh` holds the two together.
+    15	
+    16	Not named after a resource, unlike its neighbours in this package, and that is
+    17	the rule rather than an exception to it: the refusal envelope is a fact about
+    18	every coded refusal this API makes, not about guest book entries. The *sentences*
+    19	stay beside the endpoint that produces them (`app/contexts/guestbook/routers/guestbook_entries.py`);
+    20	only the envelope is shared.
+    21	"""
+    22	
+    23	from pydantic import BaseModel
+    24	
+    25	
+    26	class RefusalDetail(BaseModel):
+    27	    """The code, the sentence, and the identifier the refusal is about."""
+    28	
+    29	    #: Stable, machine-readable, and never reworded. This is what a screen
+    30	    #: branches on.
+    31	    code: str
+    32	    #: A finished English sentence, written for the person reading it. May be reworded
+    33	    #: freely -- it is product text, not contract.
+    34	    message: str
+    35	    #: Present only when the refusal is about one identified thing. Absent on a
+    36	    #: refusal about the request as a whole, such as a PATCH that sets no field.
+    37	    id: str | None = None
+    38	
+    39	
+    40	class Refusal(BaseModel):
+    41	    """The envelope FastAPI puts a raised `HTTPException.detail` into."""
+    42	
+    43	    detail: RefusalDetail
+app/platform/__init__.py
+
+app/core:
+__init__.py
+__pycache__
+build_info.py
+errors.py
+logging_config.py
+request_id.py
+robots.py
+
+app/db:
+__init__.py
+__pycache__
+alembic_url.py
+base.py
+iam_auth.py
+session.py
+
+app/platform:
+__init__.py
+__pycache__
+routers
+schemas
+
+app/platform/__pycache__:
+__init__.cpython-314.pyc
+
+app/platform/routers:
+__init__.py
+__pycache__
+health.py
+
+app/platform/schemas:
+__init__.py
+__pycache__
+health.py
+refusals.py
+text.py
