@@ -77,3 +77,9 @@
 - [18:12] question_answered: Q-20 -> A
 - [18:12] gate_approved: requirements by user
 - [18:12] fanout_recorded: returned: design-architecture, design-testing; 2 process fault(s): PROC-29, PROC-30
+- [18:12] todo_raised: TD-1 (agent): spec/design/testing.md:1098 names `frontend/src/lib/text.ts` in backticks, a file that does not exist until implement, s
+- [18:12] fanout_recorded: dispatched: design-testing
+- [18:13] todo_raised: TD-2 (agent): Apply the recorded resolution of COH-design-2 (Q-17 = A), which the convergence brief left out: spec/design/testing.md :
+- [18:13] process_fault_resolved: PROC-29 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/349
+- [18:13] process_fault_resolved: PROC-30 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/350
+- [18:13] fanout_recorded: returned: design-testing

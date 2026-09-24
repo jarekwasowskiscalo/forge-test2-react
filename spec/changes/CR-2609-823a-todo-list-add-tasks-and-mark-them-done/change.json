@@ -469,8 +469,8 @@
       "state": "returned"
     },
     "design-testing": {
-      "assumptions": "- Applied COH-design-3 as two small edits: the \"No test file of their own\" paragraph cites conventions.md § Frontend — where a file goes (\"Only the rule moves up\"); the build-tests-frontend row in § Four file sets names the rule's new home, frontend/src/lib/text.ts. The fragment's § Where this departs from design/delta/architecture.md records \"Resolved as COH-design-3\" and no longer claims frontend/src/lib/text.test.ts stays in the boundary.\n- The architecture fragment's ready patch (Decision 4, write set, This change owns, Found outside) belonged to design-architecture's write set and was left to it.\n- conventions.md § Frontend (lines 184-187) reads as converge.md records.",
-      "at": "2026-09-24T16:12:47Z",
+      "assumptions": "TD-1 only: spec/design/testing.md:1098 now writes the future path as **frontend/src/lib/text.ts** (bold, the idiom of the four-file-sets table); design/delta/testing.md lines 91 and 101 still name it in backticks, which backtick-paths does not scan; nothing else changed.",
+      "at": "2026-09-24T16:13:51Z",
       "state": "returned"
     },
     "design-ui": {
@@ -1371,6 +1371,11 @@
           "at": "2026-09-24T16:12:47Z",
           "note": "The preflight's RESOLUTIONS list comes from skill_brief.py:_resolutions_for_author (lines 312-328), which matches finding artifacts only against contract.produces (the fragment). So COH-design-1, whose artifacts name the live spec/design/architecture.md that this skill edits, was left out of the convergence brief.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T16:13:43Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/349",
+          "state": "filed"
         }
       ],
       "id": "PROC-29",
@@ -1381,8 +1386,8 @@
       "signal": "The preflight's RESOLUTIONS list comes from skill_brief.py:_resolutions_for_author (lines 312-328), which matches finding artifacts only against contract.produces (the fragment). So COH-design-1, whose artifacts name the live spec/design/architecture.md that this skill edits, was left out of the convergence brief.",
       "signature": "The preflight's RESOLUTIONS list comes from skill_brief.py:_resolutions_for_author (lines ·-·), which matches finding ar",
       "stage": "design",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/349"
     },
     {
       "at": "2026-09-24T16:12:47Z",
@@ -1397,6 +1402,11 @@
           "at": "2026-09-24T16:12:47Z",
           "note": "sdd-skill design-testing verify refuses because a stage question (Q-20) is unanswered, but preflight for the same dispatch passed moments earlier. The unanswered question blocks verification of a convergence edit, not the start of the work, even though the refusal text says \"cannot start\".",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T16:13:45Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/350",
+          "state": "filed"
         }
       ],
       "id": "PROC-30",
@@ -1407,8 +1417,8 @@
       "signal": "sdd-skill design-testing verify refuses because a stage question (Q-20) is unanswered, but preflight for the same dispatch passed moments earlier. The unanswered question blocks verification of a convergence edit, not the start of the work, even though the refusal text says \"cannot start\".",
       "signature": "sdd-skill design-testing verify refuses because a stage question (Q-·) is unanswered, but preflight for the same dispatc",
       "stage": "design",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/350"
     }
   ],
   "files_changed": [],
@@ -2520,7 +2530,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 164,
+  "revision": 170,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -2554,7 +2564,22 @@
   "tasks": [],
   "tier": "p3",
   "title": "Todo list - add tasks and mark them done",
-  "todo": [],
+  "todo": [
+    {
+      "id": "TD-1",
+      "kind": "agent",
+      "raised_at": "2026-09-24T16:12:51Z",
+      "skill": "design-testing",
+      "what": "spec/design/testing.md:1098 names `frontend/src/lib/text.ts` in backticks, a file that does not exist until implement, so the backtick-paths lint (sdd-specs --at-boundary) is red: write that future path the way this repository writes one (in bold, not backticks), with the smallest edit, and change nothing else."
+    },
+    {
+      "id": "TD-2",
+      "kind": "agent",
+      "raised_at": "2026-09-24T16:13:24Z",
+      "skill": "design-testing",
+      "what": "Apply the recorded resolution of COH-design-2 (Q-17 = A), which the convergence brief left out: spec/design/testing.md :759 and :859-860 still test that the create and update shapes refuse a text with its code. Apply the ready patch written under COH-design-2 in review/coherence.md § Pass 4 -- :759 \"through the rule, while every case builds a valid create and update shape, so only the rule can refuse a text\" and :859-860 test_the_create_and_update_shapes_carry_no_bound -- with the smallest edit, and change nothing else."
+    }
+  ],
   "toolchain": [
     {
       "at": "2026-09-24T11:48:48Z",
@@ -2570,7 +2595,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T16:12:47Z",
+  "updated_at": "2026-09-24T16:13:51Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {
