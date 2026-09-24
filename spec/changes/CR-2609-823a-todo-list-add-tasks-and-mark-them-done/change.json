@@ -238,6 +238,14 @@
       "pass": 2,
       "stage": "requirements",
       "verdict": "GO_WITH_QUESTIONS"
+    },
+    {
+      "at": "2026-09-24T12:47:35Z",
+      "epoch": 1,
+      "inputs": "2c943ce5c58d0f6c49588aea8ee1c84e00ce74a8d43ca31107bd7b8518e12cf0",
+      "pass": 3,
+      "stage": "requirements",
+      "verdict": "GO"
     }
   ],
   "contention_events": 0,
@@ -245,9 +253,9 @@
   "created_at": "2026-09-24T11:26:53Z",
   "critique": {
     "requirements_critique": {
-      "at": "2026-09-24T12:31:23Z",
-      "findings_at_round": 6,
-      "rounds": 1
+      "at": "2026-09-24T12:46:20Z",
+      "findings_at_round": 9,
+      "rounds": 2
     }
   },
   "deferred": false,
@@ -272,8 +280,8 @@
       "state": "returned"
     },
     "review-coherence": {
-      "assumptions": "none -- this skill reads; it does not produce an artefact others depend on. The four authors assumptions were checked against their neighbours; the cr-requirements claim that the line-break data uses U+000A only is narrower than the file, but its conclusion holds.",
-      "at": "2026-09-24T12:37:30Z",
+      "assumptions": "none -- this skill reads and produces nothing another member depends on; the cr-impact and review-converge assumptions were checked against impact.md and spec/invariants.md and hold.",
+      "at": "2026-09-24T12:47:35Z",
       "state": "returned"
     },
     "review-converge": {
@@ -611,6 +619,11 @@
           "at": "2026-09-24T12:39:15Z",
           "note": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]`, which in argparse notation means one flag taking several values; the CLI accepts only a repeated `--edited` flag, so the first call for COH-requirements-8 was refused (exit 2) and cost a retry.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T12:46:49Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/311",
+          "state": "filed"
         }
       ],
       "id": "PROC-11",
@@ -621,8 +634,8 @@
       "signal": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]`, which in argparse notation means one flag taking several values; the CLI accepts only a repeated `--edited` flag, so the first call for COH-requirements-8 was refused (exit 2) and cost a retry.",
       "signature": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]`, which in argparse notation",
       "stage": "requirements",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/311"
     }
   ],
   "files_changed": [],
@@ -1100,6 +1113,48 @@
       "stage": "requirements",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T12:46:16Z",
+        "choice": "B",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T12:39:24Z",
+      "blocks": [],
+      "esc": {
+        "consumed": [],
+        "row": "14e1",
+        "skills": [
+          "review-coherence"
+        ],
+        "trigger": "convergence_round"
+      },
+      "options": [
+        {
+          "consequence": "No extra cost; this offer will not come back for round 2, the next round gets its own.",
+          "key": "B",
+          "label": "No -- the round goes on opus",
+          "recommended": true
+        },
+        {
+          "consequence": "cost: the fable rates per .specconf/pricing.json -- the buckets differ in their multiplier, check the table before consenting; a smarter author applies changes better, a smarter judge verifies more sharply -- it covers the round's members and its coherence pass.",
+          "key": "A",
+          "label": "Yes -- the whole round on fable",
+          "recommended": false
+        }
+      ],
+      "qid": "ESC-requirements-r2",
+      "question": "Convergence round no. 2 z 3 of the requirements stage is about to start: the previous one brought 3 findings and all of them are resolved. Going out: review-coherence. Send this round on fable? (cost: the fable rates per .specconf/pricing.json -- the buckets differ in their multiplier, check the table before consenting)",
+      "stage": "requirements",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -1241,7 +1296,7 @@
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
   "requirements": [],
-  "revision": 75,
+  "revision": 82,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1290,7 +1345,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T12:39:15Z",
+  "updated_at": "2026-09-24T12:47:35Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {

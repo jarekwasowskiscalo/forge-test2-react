@@ -76,3 +76,10 @@
 {"timestamp": "2026-09-24T12:39:15Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-requirements-7", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
 {"timestamp": "2026-09-24T12:39:15Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-requirements-8", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
 {"timestamp": "2026-09-24T12:39:15Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-requirements-9", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:39:24Z", "agent": "sdd", "action": "question_raised", "details": "oferta eskalacji ESC-requirements-r2 (convergence_round)", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:46:16Z", "agent": "sdd", "action": "question_answered", "details": "ESC-requirements-r2 -> B", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:46:20Z", "agent": "sdd", "action": "critique_round", "details": "ladder requirements_critique untouched (a verifying round -- no rung of the ladder): 3 findings, all resolved -- a verifying round", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:46:20Z", "agent": "sdd", "action": "fanout_recorded", "details": "convergence round: cleared review-coherence", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:46:20Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-coherence", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:46:49Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-11 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/311", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T12:47:35Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-coherence; coherence pass 3 GO, 0 new finding(s)", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}

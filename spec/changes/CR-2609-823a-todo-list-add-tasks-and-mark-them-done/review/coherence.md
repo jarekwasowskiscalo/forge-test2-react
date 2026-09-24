@@ -595,3 +595,64 @@ on its own forces no edit to the smoke. Only a change of name does.
 - **Glossary and invariants.** "To-do task" in `spec/invariants.md`:124 and "task" in
   `requirements.md` name one thing, and no word is used for two. The new text leaves
   `D-01`…`D-03` unaffected.
+
+## Pass 3 — verification
+
+The preflight printed `CONVERGENCE ROUND: 2 of 3 -- MODE: VERIFYING`, so only Phases 1, 1b and 4
+ran. There was no hunt. The question was whether each of the nine recorded resolutions of the
+`requirements` stage landed in the document its reconciliation named. Artefacts read whole:
+`brainstorm.md`, `impact.md`, `requirements.md`, `scenarios.md`, this file, and the four
+`ASSUMPTIONS` blocks from the preflight. The ranked documents read above them:
+`spec/constitution.md`, `spec/invariants.md`, `spec/glossary.md`, `contracts/README.md`.
+
+Line numbers were taken from the working tree with `grep -n` over each resolution's own
+wording. `git status --short` shows no uncommitted edit to any artefact or to
+`spec/invariants.md`. Every line cited below is committed at `35a2234`.
+
+### Recorded resolutions
+
+- COH-requirements-1: landed. `requirements.md`:76-77 (clause 4, no `D2` note), :81-89 (clause 6,
+  refused "with a reason of its own", `Q-11`), :108-111 (`R-2.7`), :221-223 (`R-6` clause 4),
+  :230-232 (`R-6.3`), :402-407 (E-9, "The requirements say `R-2` clause 6, `R-2.7` (`Q-11`)"), :704
+  (`D2` answered), :608-610 (Tests that would fail), :774-776 (Self-check 4). § With no defined
+  behaviour, :500-510, has no `D2` bullet. The resolution words the rule as "between a task's
+  first and last visible character". COH-requirements-8's later resolution changed that wording
+  to the trim reading. The refusal itself, its own reason, add and edit alike, and the trimmed
+  ends all stand.
+- COH-requirements-2: landed. `requirements.md`:4-5 (Source), :330-332 (clause 1), :339-341
+  (clause 5), :355-359 (`R-11.5`, `R-11.6`), :558-563 (Decisions), :614-618 (Tests that would
+  fail), :703 (`D1` answered), :826-829 (Self-check 21). § With no defined behaviour has no `D1`
+  bullet.
+- COH-requirements-3: landed. `requirements.md`:342-344 (clause 6), :360-361 (`R-11.7`), :693
+  (Bounds, "Example tasks done, minimum | 1"), :705 (`D3` answered). § With no defined behaviour
+  has no `D3` bullet.
+- COH-requirements-4: landed. `requirements.md`:83-85 (the seven-character set in clause 6), :686
+  (Bounds, "Line break inside a task"), :723-732 (`A-1`).
+- COH-requirements-5: landed, as its resolution describes. `spec/invariants.md`:123-124 reads
+  "anything the system stores: any guestbook entry and any to-do task". `spec/invariants.md`:162,
+  the retention line, still reads "An entry lives until somebody deletes it". That half is
+  carried as `A-2` at `requirements.md`:733-738. The other edits: `requirements.md`:521-527 (Impact
+  analysis, Collisions with invariants), :834-837 (Self-check 23).
+- COH-requirements-6: landed. `impact.md`:381-385 holds the dated re-measurement note. The
+  original row at :370 and the sentence at :377-379 are kept as the first measurement wrote them.
+- COH-requirements-7: landed. `requirements.md`:402-407. E-9 matches the pass 2 ready patch word
+  for word and keeps its closing sentence, "The requirements say…".
+- COH-requirements-8: landed. `requirements.md`:76-77 (clause 4, "once clause 1 has trimmed it"),
+  :81-89 (clause 6, the same wording, with the U+200B sentence at :86-89), :221-223 (`R-6`
+  clause 4, "once trimmed, still carries a line break"), :720 (preamble, now "No item below is a
+  human decision yet"; `git show 35a2234` shows the removed line "Neither item below…"), :739-751
+  (`A-3`). `grep -n "visible character"` finds the phrase only at :745, inside `A-3`, where it
+  names the rejected reading.
+- COH-requirements-9: landed. `requirements.md`:27 (the SC-5 "How measured" cell, with the
+  pass 2 ready patch's text plus "assumed: `A-4`"), :752-761 (`A-4`).
+
+A grep of `requirements.md` for the wording these resolutions replaced found no occurrence. The
+strings searched were "open question, `D2`", "under `D1` option", "blocks the design of", "only
+through the API; the field is one line" and "unchanged (the same 22 scenarios plus".
+
+The authors' assumptions match the text. The cr-impact author says `impact.md` still quotes the
+trunk's "any entry" and keeps the pre-`Q-8` sentence. Both are there, at `impact.md`:58-59 and
+:343-345. review-converge says the retention line is unchanged, and `spec/invariants.md`:162
+confirms it.
+
+No `verification` finding. All nine resolutions landed.
