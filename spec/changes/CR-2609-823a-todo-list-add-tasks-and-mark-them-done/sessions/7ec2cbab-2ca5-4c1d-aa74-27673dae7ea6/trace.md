@@ -9,3 +9,7 @@
 - [13:42] process_fault_reported: PROC-1 (engine): cr-request Phase 5 takes the boundary baseline straight after `cr new`, but `cr new` leaves spec/cha
 - [13:43] process_fault_resolved: PROC-1 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/290
 - [13:45] stage_closed: closed intake, opened requirements (boundary -> GREEN)
+- [13:45] stage intake closed, requirements opened, state persisted
+- [13:46] process_fault_reported: PROC-2 (engine): After cr-request finished and `loop approve --artifact request.md --confirmed` printed "OK gate=inta
+- [13:46] process_fault_resolved: PROC-2 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/291
+- [13:47] session_archive_committed: archive committed for session 7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6

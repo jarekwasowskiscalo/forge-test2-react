@@ -1,6 +1,8 @@
 {
   "adrs": [],
-  "artifacts": {},
+  "artifacts": {
+    "session-7ec2cbab": "sessions/7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6/summary.md"
+  },
   "attempt": {
     "heartbeat_at": null,
     "n": 0,
@@ -80,6 +82,37 @@
       "stage": "intake",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/290"
+    },
+    {
+      "at": "2026-09-24T11:46:11Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T11:46:11Z",
+          "note": "After cr-request finished and `loop approve --artifact request.md --confirmed` printed \"OK gate=intake / Next: sdd-engine loop close --next <stage>\", `loop next` still computed \"ACTION hitl (row 18) intake runs cr-request\" because stage_status stayed not_started; walking the table lands on row 18 too, and re-running cr-request on a branch that holds a change is a dead end. `loop close --next requirements` (the pipeline table closing call) then closed GREEN, so the stage was closable all along; cost one judgement call against the computed step.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T11:46:26Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/291",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-2",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "After cr-request finished and `loop approve --artifact request.md --confirmed` printed \"OK gate=intake / Next: sdd-engine loop close --next <stage>\", `loop next` still computed \"ACTION hitl (row 18) intake runs cr-request\" because stage_status stayed not_started; walking the table lands on row 18 too, and re-running cr-request on a branch that holds a change is a dead end. `loop close --next requirements` (the pipeline table closing call) then closed GREEN, so the stage was closable all along; cost one judgement call against the computed step.",
+      "signature": "After cr-request finished and `loop approve --artifact request.md --confirmed` printed ·, `loop next` still computed · b",
+      "stage": "requirements",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/291"
     }
   ],
   "files_changed": [],
@@ -118,7 +151,7 @@
   "reconciliations": [],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
   "requirements": [],
-  "revision": 6,
+  "revision": 9,
   "schema_version": 3,
   "signals": null,
   "slug": "todo-list-add-tasks-and-mark-them-done",
@@ -137,7 +170,7 @@
   "toolchain": [],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T11:45:58Z",
+  "updated_at": "2026-09-24T11:47:36Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {
