@@ -176,29 +176,32 @@
   "contention_events": 0,
   "cr_id": "CR-2609-823a",
   "created_at": "2026-09-24T11:26:53Z",
+  "critique": {
+    "requirements_critique": {
+      "at": "2026-09-24T12:31:23Z",
+      "findings_at_round": 6,
+      "rounds": 1
+    }
+  },
   "deferred": false,
   "deferred_findings": [],
   "docs_touched": [],
   "expected_red": [],
   "fanout": {
     "cr-impact": {
-      "assumptions": "The request is a to-do list: anybody adds a task, marks it done, and possibly edits or deletes it. It is persisted on the server, because system-states.md says the browser stores nothing. cr-requirements and cr-scenarios will take impact.md as today's state and will turn its \"could not determine\" list into questions. That list covers: keep or replace the guestbook; whether \"odznaczenie\" means a done task can be unticked; whether \"ew.\" makes edit/delete optional; what fields a task has; seed data; the route and the `/` redirect; and simultaneous toggles.",
-      "at": "2026-09-24T11:53:33Z",
+      "assumptions": "cr-requirements and cr-scenarios read impact.md as the pre-change trunk. impact.md lines 57-59 quote spec/invariants.md as it stood on the trunk (\"any entry\"). This change's own convergence edit has since reworded it to \"anything the system stores: any guestbook entry and any to-do task\". No resolution names that section, so I left it as a description of today. For the same reason I left untouched the pre-Q-8 sentence at impact.md line 345 in § What I could not determine (\"`tooling_touched` is recorded absent on that basis\").",
+      "at": "2026-09-24T12:33:33Z",
+      "nil_return": "COH-requirements-6 was already applied to impact.md by review-converge (commit a014ab4); the smallest edit that satisfies the resolution was no edit, and the note was checked against the record, the brainstorm, the requirements and the tier arithmetic.",
       "state": "returned"
     },
     "cr-requirements": {
-      "assumptions": "What I assume scenarios.md will do: Every one of R-1 to R-10 gets at least one scenario. Screen-only clauses get their proof from the frontend suite, because the black box speaks HTTP. These are R-1 cl.1, R-3.6, R-4 cl.5-6, R-5, the R-7 confirmation, and R-10. R-9 scenarios send both changes before either one is answered. Values are used as written: 200/201 code points, 200xU+1F600, 200x(U+0065 U+0301), 2+200+2 as typed and 205 spaces, 101 tasks, and at least 3 example tasks each under 150 code points. R-11 is manual, so it needs a numbered step in uat.md. No scenario asserts D1, D2 or D3 behaviour until the user decides them.",
-      "at": "2026-09-24T12:14:15Z",
+      "assumptions": "scenarios.md covers the converged clauses as they stand: S-8 and S-9 (R-2 cl.6), S-33 (R-6 cl.4), S-49 (R-11 cl.6), S-52 and S-53 (R-11 cl.1/5). Its line-break data uses U+000A only, which fits within A-1's seven. No scenario asserts which refusal wins for a text that is both over 200 and multi-line. No scenario covers the new E-21 half-filled case, and it does not need one: it is a recorded exposure, not a requirement.",
+      "at": "2026-09-24T12:33:33Z",
       "state": "returned"
     },
     "cr-scenarios": {
-      "assumptions": "I took requirements.md as the authority. The user answered Q-10, Q-11 and Q-12 after it was written, and it still lists them as the open questions D1, D2 and D3. I wrote seeds for those answers (S-8, S-9, the last row of S-33, S-49, S-52, S-53) under the requirement each one would amend, and flagged each of them (finding 8). The coherence round has to amend R-2 and R-11, or those seeds prove clauses nobody wrote. Every boundary I used is stated in the requirements, apart from S-9 (a line break at the end of a task is trimmed), which I read from Q-11's word \"inside\" together with R-2 clause 1 and flagged.",
-      "at": "2026-09-24T12:19:43Z",
-      "state": "returned"
-    },
-    "review-coherence": {
-      "assumptions": "none -- this skill reads, it does not produce an artefact others depend on",
-      "at": "2026-09-24T12:25:08Z",
+      "assumptions": "requirements.md as reconciled is the authority: R-2 clause 6 with R-2.7, R-6 clause 4 with R-6.3, R-11 clauses 1, 5 and 6 with R-11.5, R-11.6 and R-11.7, and A-1 still assumed and waiting for the user. If the user overrules A-1 with U+000A and U+000D only, five of the new rows flip to accepted, and the paragraph says so. The rest of cr-requirements' boundaries are unchanged since pass 1, so the remaining unstated bounds still stand: which refusal wins when a text breaks two rules, the largest number of tasks, and the floor on not-done examples.",
+      "at": "2026-09-24T12:33:33Z",
       "state": "returned"
     },
     "review-converge": {
@@ -469,6 +472,11 @@
           "at": "2026-09-24T12:31:14Z",
           "note": "review-converge names a delta directory only for design and spec_sync, yet it is dispatched in requirements and made to edit spec/invariants.md; delta.py assembles only design/ and reconcile/, so the worker put the entry in design/delta/converge.md on its own reading. Separately, add-reconciliation --source has only auto or hitl, and neither fits a named assumption (not a human decision, not following from a higher document); the worker used auto and spelled that out in --decision.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T12:31:55Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/309",
+          "state": "filed"
         }
       ],
       "id": "PROC-9",
@@ -478,6 +486,37 @@
       "seen": 1,
       "signal": "review-converge names a delta directory only for design and spec_sync, yet it is dispatched in requirements and made to edit spec/invariants.md; delta.py assembles only design/ and reconcile/, so the worker put the entry in design/delta/converge.md on its own reading. Separately, add-reconciliation --source has only auto or hitl, and neither fits a named assumption (not a human decision, not following from a higher document); the worker used auto and spelled that out in --decision.",
       "signature": "review-converge names a delta directory only for design and spec_sync, yet it is dispatched in requirements and made to ",
+      "stage": "requirements",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/309"
+    },
+    {
+      "at": "2026-09-24T12:33:33Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T12:33:33Z",
+          "note": "A convergence round re-dispatches the authors to APPLY resolutions that review-converge already wrote into their own artefacts (commit a014ab4: impact.md, requirements.md), because for a requirements-stage finding the earliest ambiguous document is the author artefact itself; each dispatch was a re-verification billed as an application (cr-impact produced a zero-byte diff).",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T12:33:33Z",
+          "note": "seen again: A convergence round re-dispatches the authors to APPLY resolutions that review-converge already wrote into their own artefacts (commit a014ab4: impact.md, requirements.md), because for a requirements-stage finding the earliest ambiguous document is the author artefact itself; each dispatch was a re-verification billed as an application (cr-impact produced a zero-byte diff).",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-10",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "cr-impact",
+      "seen": 2,
+      "signal": "A convergence round re-dispatches the authors to APPLY resolutions that review-converge already wrote into their own artefacts (commit a014ab4: impact.md, requirements.md), because for a requirements-stage finding the earliest ambiguous document is the author artefact itself; each dispatch was a re-verification billed as an application (cr-impact produced a zero-byte diff).",
+      "signature": "A convergence round re-dispatches the authors to APPLY resolutions that review-converge already wrote into their own art",
       "stage": "requirements",
       "state": "reported",
       "url": null
@@ -497,7 +536,15 @@
   },
   "green_by_design": [],
   "kind": "feature",
-  "ladders": {},
+  "ladders": {
+    "requirements_critique": {
+      "last_error": "convergence round: 6 findings, all resolved",
+      "max_attempts": 3,
+      "repeats": 1,
+      "rung": "attempt_1_failed",
+      "signature": "convergence round: · findings, all resolved"
+    }
+  },
   "laps": [
     {
       "at": "2026-09-24T11:45:58Z",
@@ -1054,7 +1101,7 @@
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
   "requirements": [],
-  "revision": 59,
+  "revision": 64,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1103,7 +1150,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T12:31:14Z",
+  "updated_at": "2026-09-24T12:33:33Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {

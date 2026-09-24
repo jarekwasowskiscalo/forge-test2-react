@@ -414,7 +414,7 @@ anything to judge (`Q-8`).
   requirements say this is a standing non-goal (§ Non-Goals, authentication and moderation).
 - **E-14: permission, sometimes.** Somebody types personal data into a task, such as a telephone
   number. It costs that value being shown to every visitor and kept until somebody deletes it.
-  The requirements say this is a standing non-goal (retention policy). Constitution article XI
+  The requirements say this is a standing non-goal (retention policy; for tasks, `A-2`). Constitution article XI
   adds no new field here.
 - **E-15: concurrent, sometimes.** An edit and a mark on one task at the same moment. It costs a
   tick silently undone by an edit, or an edit silently undone by a tick. The requirements say
@@ -435,7 +435,8 @@ anything to judge (`Q-8`).
 - **E-21: partial failure, rarely.** Filling a new environment stops after the first of three
   example tasks. The next run sees a list that is not empty and adds nothing, so the environment
   keeps one example task. The requirements say `R-11` clause 4. The guestbook's filling behaves
-  the same way today.
+  the same way today. The same holds when filling stops after the example tasks are added and
+  before one is marked done (`R-11` clause 6): the next run adds nothing and marks nothing.
 - **E-22: partial failure.** The database goes away in the middle of a write. Every operation
   here touches one task, and no operation touches several ("clear all done" is a non-goal), so
   nothing can be half-applied. Clean.
@@ -484,8 +485,9 @@ anything to judge (`Q-8`).
 - **W-5: filling a new environment against a person adding.** The read-then-write: filling reads
   "the to-do list is empty", a person adds a task, then filling posts the example tasks. The
   database ends with the person's task plus the examples. No constraint stands behind the check.
-  The guestbook's filling has the same exposure today, and it is rare, because it only happens in
-  the seconds after a new environment comes up.
+  The guestbook's filling has the same exposure today. It is rare, because it needs a person to
+  add a task in the seconds between that read and those posts, during a deploy to an environment
+  whose to-do list is empty (`R-11` clause 1, `Q-10`).
 - **W-6: two fillings of one environment.** Deploy and preview both run on one environment.
   Both read "empty" and both post, so the examples appear twice. This is rare, and the guestbook
   has the same exposure today.
@@ -509,7 +511,7 @@ anything to judge (`Q-8`).
     marks, edits and deletes any task (`R-1` clause 2). CSRF: consistent, since there are no
     sessions. Moderation: consistent. A mobile version: consistent, since the new screen is not
     designed for a phone. A data retention policy: consistent, since a task lives until somebody
-    deletes it (`R-7`). A second database engine: consistent. Paging and search, lifted for the
+    deletes it (assumed: `A-2`). A second database engine: consistent. Paging and search, lifted for the
     guestbook alone as `BR-05`: consistent, since the to-do list has neither (`Q-9`).
     **Finding, not a collision:** the authentication and retention items are worded for entries
     ("anybody may add, amend and delete any entry"; "An entry lives until somebody deletes it"),

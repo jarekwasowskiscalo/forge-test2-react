@@ -22,12 +22,6 @@ screen. So each seed says what observes it:
   it owns no citation (`spec/design/testing.md` § The UI smoke is not a traceability surface).
 - **person**: a person at acceptance. `R-11` is `**Verified-by:** manual`.
 
-**Seeds that rest on decisions `requirements.md` does not carry yet.** The user answered `Q-10`,
-`Q-11` and `Q-12` after `requirements.md` was written, and that file still lists them as the open
-questions `D1`, `D2` and `D3`. Five seeds depend on those answers: S-8, S-9, the last row of S-33,
-S-49 (the "done" line), S-52 and S-53. Each one carries a comment saying which answer it rests on.
-§ Requirements no scenario can fully observe, finding 8, reports the gap.
-
 ## Coverage
 | Requirement | Scenarios | Unhappy path? | Observed through |
 |---|---|---|---|
@@ -162,7 +156,6 @@ three after "two" (`R-2.6`).
 
 ### S-8 — A task with a line break inside it is refused
 ```gherkin
-  # Rests on Q-11 (refuse it, with its own message); R-2 clause 4 still calls it open (D2).
   @req:CR-2609-823a/R-2
   Scenario: A task whose text runs over two lines is not saved
     Given the to-do list is empty
@@ -172,13 +165,14 @@ three after "two" (`R-2.6`).
 ```
 **Observed through:** application. Only a caller that goes around the screen can send it
 (`Q-11`). **Data:** `tasks-refused.json` case "the text has a line break between two words",
-whose text is "Buy bread", a line feed, then "and milk".
+whose text is "Buy bread", a line feed, then "and milk" (`R-2.7`, `R-2` clause 6). The other six
+characters of that clause's set are proved at the rule, on both sides, by the additions to
+`text-measurement.json` (§ New fixtures).
 **Fails if:** the text is stored as given, stored with the break replaced, or refused with the
 "no text" or "too long" reason instead of a reason of its own.
 
 ### S-9 — A line break at the end of a task is trimmed like a space
 ```gherkin
-  # Rests on Q-11's word "inside": the line break rule reads the text after trimming.
   @req:CR-2609-823a/R-2
   Scenario: A line break after the last word is trimmed, not refused
     Given the to-do list is empty
@@ -187,7 +181,7 @@ whose text is "Buy bread", a line feed, then "and milk".
     And the stored text should be exactly "Buy bread"
 ```
 **Observed through:** application. **Data:** "Buy bread" followed by one line feed. The line
-feed is in the written trim set (`R-2` clause 1; `text-measurement.json` case
+feed is in the written trim set (`R-2.7`; `R-2` clauses 1 and 6; `text-measurement.json` case
 `only_the_line_feed`).
 **Fails if:** the line break rule runs before trimming and refuses a text whose only line break
 sits at its edge. That is the same class of defect as the one `api.md` records for measuring
@@ -507,7 +501,6 @@ moment of adding.
       | case | reason |
       | the text is three spaces | having no text |
       | the text is one character too long | being too long |
-      # The next row rests on Q-11; requirements.md does not state it yet.
       | the text has a line break between two words | being more than one line |
 ```
 **Observed through:** application. **Data:** "Buy bread", plus the texts of the three
@@ -719,7 +712,6 @@ made.
 
 ### S-49 — A freshly created environment opens with example tasks, one of them done
 ```gherkin
-  # The "done" line rests on Q-12; requirements.md does not state it yet.
   @req:CR-2609-823a/R-11
   Scenario: A freshly created environment opens with example tasks
     Given a freshly created environment in which neither the guestbook nor the to-do list holds anything
@@ -728,7 +720,7 @@ made.
     And at least one of them should be shown as done
 ```
 **Observed through:** person (manual; the black box starts with nothing filled). **Data:**
-`golden-set/seed/tasks-welcome.json` (§ Seed data; `R-11.1`, `Q-8`, `Q-12`).
+`golden-set/seed/tasks-welcome.json` (§ Seed data; `R-11.1`, `R-11.7`, `Q-8`, `Q-12`).
 **Fails if:** the filler knows the guestbook alone, or adds the example tasks without marking the
 done one after adding it.
 
@@ -756,8 +748,6 @@ done one after adding it.
 
 ### S-52 — Guestbook entries and an empty list: the list is filled
 ```gherkin
-  # Rests on Q-10 (each list is filled on its own); R-11 clause 1 still says
-  # "neither the guestbook nor the to-do list holds anything".
   @req:CR-2609-823a/R-11
   Scenario: An environment with guestbook entries and an empty to-do list gets example tasks
     Given an environment whose guestbook holds its welcome entries and whose to-do list is empty
@@ -766,14 +756,13 @@ done one after adding it.
     And the guestbook should hold exactly the entries it held before
 ```
 **Observed through:** person. **Data:** `golden-set/seed/entries-welcome.json`, as it stands, and
-`tasks-welcome.json` (`Q-10`).
+`tasks-welcome.json` (`R-11.5`, `Q-10`).
 **Fails if:** the filler still treats "anything written anywhere" as one condition, which leaves
 stage and every open preview with an empty list. It also fails if the welcome entries are posted
 a second time.
 
 ### S-53 — Tasks on the list and an empty guestbook: only the guestbook is filled
 ```gherkin
-  # Rests on Q-10 (each list is filled on its own).
   @req:CR-2609-823a/R-11
   Scenario: An environment with tasks and an empty guestbook fills only the guestbook
     Given an environment whose to-do list holds the one task "Water the plants" and whose guestbook is empty
@@ -781,8 +770,8 @@ a second time.
     Then the guestbook should show its welcome entries
     And the to-do list should still hold exactly 1 task, "Water the plants"
 ```
-**Observed through:** person. **Data:** "Water the plants", `entries-welcome.json` (`Q-10`, `R-11`
-clause 4).
+**Observed through:** person. **Data:** "Water the plants", `entries-welcome.json` (`R-11.6`,
+`R-11` clauses 4 and 5, `Q-10`).
 **Fails if:** a task on the list stops the guestbook from being filled, or the example tasks are
 added next to a task somebody already wrote.
 
@@ -822,13 +811,6 @@ cannot make fail.
    the screen's copy and controls, and no behaviour can be made to fail on it.
 7. **The confirmation itself (`R-7` clauses 1 and 3).** It exists only on the screen. In the black
    box "deletes and confirms" binds to a plain deletion. S-35 and S-36 need a screen test.
-8. **`requirements.md` lags behind three answers the user has given.** `Q-11` refuses an inner line
-   break "with its own message", while `R-2` clause 4 and § Open questions still hold it open as
-   `D2`. `Q-10` fills each list on its own, while `R-11` clause 1 still requires "neither the
-   guestbook nor the to-do list holds anything". `Q-12` puts at least one done task among the
-   examples, and no clause states it. S-8, S-9, the last row of S-33, S-49's "done" line, S-52 and
-   S-53 prove those answers under the tag of the requirement each would amend (`R-2`, `R-6`,
-   `R-11`). The requirement text has to follow, or those seeds prove a clause nobody wrote.
 
 ## Test data
 
@@ -871,7 +853,7 @@ texts are errands with no person, place or number in them.
   S-13 expects the reverse of this table. Boundary values: none; task 4 is the one-character
   minimum as an ordinary value. Personal data: none. The non-ASCII line exists to prove the round
   trip and names nobody. **No line break anywhere**, because `Q-11` refuses one, which collides
-  with a corpus rule (§ Bounds the requirements did not give, item 9).
+  with a corpus rule (§ Bounds the requirements did not give, item 7).
 - **`tasks-boundary.json`** (fixtures). The rule: values **exactly on** the bound, every one
   accepted. The requirement: R-2. The shape: five cases, each with a `case` and a sentence a
   scenario names:
@@ -919,13 +901,22 @@ texts are errands with no person, place or number in them.
   | 2 spaces + 200 ASCII letters + 2 spaces | accepted | 200 |
   | 205 × U+0020 | empty | none |
   | "Buy bread" U+000A "and milk" | a new verdict for "more than one line" (`Q-11`) | none |
+  | "Buy bread", then one of U+000D, U+000B, U+000C, U+0085, U+2028 and U+2029, then "and milk": six cases, one per character | more than one line | none |
+  | "Buy" U+0009 "bread" | accepted | 9 |
   | "Buy bread" U+000A | accepted | 9 |
 
   The 101-emoji case is this field's known positive: a counter of UTF-16 units refuses it and a
-  counter of code points accepts it. Two things are left to the design, because they touch rules
+  counter of code points accepts it. The seven line-break rows are the set of `R-2` clause 6.
+  U+000B, U+000C and U+0085 are the ones on which the two languages' own defaults disagree
+  (COH-requirements-4), so they fail a side that reads its language's default instead of the
+  written set. U+0085 also fails a task rule borrowed from the signature's, which keeps it between
+  two words (case `next_line_inside_is_kept`). The tab is whitespace outside the set, so it is kept
+  between two words (`R-2` clause 4). The set is assumption `A-1`: under its other reading,
+  U+000A and U+000D alone, the rows for U+000B, U+000C, U+0085, U+2028 and U+2029 become
+  accepted. Two things are left to the design, because they touch rules
   the corpus states about itself. First, the verdict set is closed today (accepted, empty, too
   long), and it gains a fourth. Second, exactly one frontend module may read this file, and it
-  lives inside the guestbook's folder. See § Bounds the requirements did not give, items 9 and 10.
+  lives inside the guestbook's folder. See § Bounds the requirements did not give, items 7 and 8.
 - **101 tasks for S-14: a producing rule, not a file.** "Task 001" to "Task 101", zero-padded to
   three digits and added in that order. The expectation is derived: "Task 101" first, "Task 001"
   last, and 101 in total. A 101-row file would be a second copy of a counting rule.
@@ -948,7 +939,7 @@ Every quoted value a scenario names comes from here. Most are the acceptance val
 | "Already finished" | S-4 | this document |
 | "Alpha", "Beta", "Gamma" | S-34, S-35, S-36 | `R-7.1` |
 | "Buy  two   lamps" (two spaces, then three) | S-7 | `R-2.6` |
-| "Buy bread" followed by U+000A | S-9 | this document, from `R-2` clause 1 and `Q-11` |
+| "Buy bread" followed by U+000A | S-9 | `R-2.7` |
 | 200 and 201 × U+1F600 ("grinning-face emoji") | S-10, S-11 | `R-2.3` |
 
 ### Seed data
@@ -1006,34 +997,26 @@ committed.
 ### Bounds the requirements did not give
 Each item is a gap reported here, not a value chosen to fill it.
 
-1. **Which characters count as a line break inside a task.** `Q-11` says "a line break". The seeds
-   use U+000A alone, the one a caller going around the field is sure to send. Nothing says whether
-   U+000D, U+000D U+000A, U+0085 (next line), U+2028, U+2029, U+000B or U+000C inside a task are
-   refused too. The guestbook keeps a next line between two words of a signature
-   (`text-measurement.json` case `next_line_inside_is_kept`), so the answer for a task may
-   differ from the answer for a signature.
-2. **Whether the line-break rule reads the text before or after trimming.** S-9 assumes after,
-   from `Q-11`'s word "inside" together with `R-2` clause 1. `R-2` does not say it.
-3. **Which refusal wins when one text breaks two rules.** A text over 200 code points with a line
+1. **Which refusal wins when one text breaks two rules.** A text over 200 code points with a line
    break inside it could be refused as "too long" or as "more than one line". No seed asserts it.
-4. **A largest number of tasks.** 101 is the only size any seed uses, and it proves "no pages"
+2. **A largest number of tasks.** 101 is the only size any seed uses, and it proves "no pages"
    rather than a ceiling. How many tasks the list holds or shows before one read stops being
    acceptable is unstated (`requirements.md` § Self-check 8).
-5. **At least one example task not done.** `Q-12` says at least one is done. That at least one
+3. **At least one example task not done.** `Q-12` says at least one is done. That at least one
    stays not done is what "one of the example tasks" suggests, and no floor is stated. The seed
    file shows four not done, which is inside anything the answer could mean, and S-49 does not
    assert the not-done half.
-6. **A second press of "add" while the first is still unanswered** (`E-23`), **what the field holds
+4. **A second press of "add" while the first is still unanswered** (`E-23`), **what the field holds
    after an add succeeds or fails** (`E-28`), **what the screen shows while a write waits 30 s**
    (`E-27`), and **whether the list drops a task at once after "no longer exists"**: no seed
    asserts any of them. S-37, S-38 and S-48 assert only what a reload shows and what the screen
    says.
-7. **The words of every message.** "No text", "too long", "more than one line", "no longer
+5. **The words of every message.** "No text", "too long", "more than one line", "no longer
    exists", "not made" and "failed to load" name reasons, not copy. The copy is the mock-up's.
-8. **Which change is "applied later" when two overlap.** `R-9` defines "the same moment" and leaves
+6. **Which change is "applied later" when two overlap.** `R-9` defines "the same moment" and leaves
    "applied later" to the store's order (`requirements.md` § Self-check 18). S-41 and S-43 name
    the later one, and only a test that controls the store's order can make that true.
-9. **The corpus rules that collide with a task.** None of these is a value to pick, and each blocks
+7. **The corpus rules that collide with a task.** None of these is a value to pick, and each blocks
    the fixtures above until the implementation stage decides it:
    - `tests/fitness/test_golden_set.py::test_the_corpus_exercises_a_message_with_line_breaks`
      demands a line break in every sequence file. `Q-11` refuses a line break inside a task, so
@@ -1043,8 +1026,8 @@ Each item is a gap reported here, not a value chosen to fill it.
      (`golden-set/README.md` § When you add a file). A task is neither, and a task file under
      `entries` would be held to `test_every_entry_carries_the_keys_an_entry_has`.
    - `text-measurement.json` has a closed set of verdicts, and `Q-11` adds one.
-10. **Who reads the task cases in the browser.** `text-measurement.json` may be read by exactly one
-    frontend module, and that module sits in the guestbook's folder
-    (`test_the_frontend_reads_no_corpus_file`). If the to-do screen's text rule lives in a context
-    of its own, either the shared rule moves out of the guestbook's folder or the exception names
-    a second reader. That choice belongs to `design-architecture` and `design-testing`.
+8. **Who reads the task cases in the browser.** `text-measurement.json` may be read by exactly one
+   frontend module, and that module sits in the guestbook's folder
+   (`test_the_frontend_reads_no_corpus_file`). If the to-do screen's text rule lives in a context
+   of its own, either the shared rule moves out of the guestbook's folder or the exception names
+   a second reader. That choice belongs to `design-architecture` and `design-testing`.
