@@ -4,10 +4,10 @@
     "session-7ec2cbab": "sessions/7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6/summary.md"
   },
   "attempt": {
-    "heartbeat_at": null,
-    "n": 0,
+    "heartbeat_at": "2026-09-24T11:48:48Z",
+    "n": 1,
     "session_id": "",
-    "started_at": null
+    "started_at": "2026-09-24T11:48:48Z"
   },
   "base_branch": "main",
   "base_commit": "6ccb49af3828fb250fb2d188ddbd87758004c403",
@@ -50,7 +50,13 @@
   "deferred_findings": [],
   "docs_touched": [],
   "expected_red": [],
-  "fanout": {},
+  "fanout": {
+    "cr-impact": {
+      "assumptions": "The request is a to-do list: anybody adds a task, marks it done, and possibly edits or deletes it. It is persisted on the server, because system-states.md says the browser stores nothing. cr-requirements and cr-scenarios will take impact.md as today's state and will turn its \"could not determine\" list into questions. That list covers: keep or replace the guestbook; whether \"odznaczenie\" means a done task can be unticked; whether \"ew.\" makes edit/delete optional; what fields a task has; seed data; the route and the `/` redirect; and simultaneous toggles.",
+      "at": "2026-09-24T11:53:33Z",
+      "state": "returned"
+    }
+  },
   "faults": [
     {
       "at": "2026-09-24T11:42:41Z",
@@ -113,6 +119,32 @@
       "stage": "requirements",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/291"
+    },
+    {
+      "at": "2026-09-24T11:53:33Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T11:53:33Z",
+          "note": "The signal definitions for contract_touched, schema_touched and screen_touched say \"a named surface appears in api.md / data-model.md / ui/\". Applied literally to a brand-new concept they find nothing, and would switch off design-api, design-data, design-ui and build-migration for a new feature. The worker had to read them as \"the spec surfaces the change reaches\" (the route register, \"The only table\", PageFrame navigation) before it could measure.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-3",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "cr-impact",
+      "seen": 1,
+      "signal": "The signal definitions for contract_touched, schema_touched and screen_touched say \"a named surface appears in api.md / data-model.md / ui/\". Applied literally to a brand-new concept they find nothing, and would switch off design-api, design-data, design-ui and build-migration for a new feature. The worker had to read them as \"the spec surfaces the change reaches\" (the route register, \"The only table\", PageFrame navigation) before it could measure.",
+      "signature": "The signal definitions for contract_touched, schema_touched and screen_touched say ·. Applied literally to a brand-new c",
+      "stage": "requirements",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -151,26 +183,56 @@
   "reconciliations": [],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
   "requirements": [],
-  "revision": 9,
+  "revision": 13,
   "schema_version": 3,
-  "signals": null,
+  "signals": {
+    "absent": [
+      "infra_touched",
+      "tooling_touched"
+    ],
+    "measured_at": "2026-09-24T11:51:52Z",
+    "present": [
+      "backend_touched",
+      "ci_touched",
+      "contexts_touched_gt_1",
+      "contract_touched",
+      "frontend_touched",
+      "new_context",
+      "rule_touched",
+      "schema_touched",
+      "screen_touched"
+    ],
+    "unmeasured": []
+  },
   "slug": "todo-list-add-tasks-and-mark-them-done",
   "stage": "requirements",
   "stage_entered_at": "2026-09-24T11:45:58Z",
   "stage_entries": {
     "requirements": 1
   },
-  "stage_status": "not_started",
+  "stage_status": "in_progress",
   "status": "draft",
   "supersedes": [],
   "tasks": [],
   "tier": "p3",
   "title": "Todo list - add tasks and mark them done",
   "todo": [],
-  "toolchain": [],
+  "toolchain": [
+    {
+      "at": "2026-09-24T11:48:48Z",
+      "plugins": [
+        {
+          "name": "forge",
+          "source": "manifest",
+          "version": "0.1.126"
+        }
+      ],
+      "stage": "requirements"
+    }
+  ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T11:47:36Z",
+  "updated_at": "2026-09-24T11:53:33Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {

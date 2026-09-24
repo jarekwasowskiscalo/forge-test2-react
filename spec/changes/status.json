@@ -27,11 +27,11 @@
       "parent_cr_id": null,
       "slug": "todo-list-add-tasks-and-mark-them-done",
       "stage": "requirements",
-      "stage_status": "not_started",
+      "stage_status": "in_progress",
       "status": "draft",
       "title": "Todo list - add tasks and mark them done",
       "tracker": "",
-      "updated_at": "2026-09-24T11:45:58Z"
+      "updated_at": "2026-09-24T11:53:33Z"
     },
     "CR-2609-8ef9": {
       "base_branch": "audit/2026-09-08",
