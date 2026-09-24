@@ -6,7 +6,7 @@
       "branch": "sdd/CR-2609-823a-todo-list-add-tasks-and-mark-them-done",
       "counts": {
         "adrs": 0,
-        "coherence_open": 6,
+        "coherence_open": 0,
         "docs_touched": 0,
         "expected_red": 0,
         "files_changed": 0,
@@ -31,7 +31,7 @@
       "status": "draft",
       "title": "Todo list - add tasks and mark them done",
       "tracker": "",
-      "updated_at": "2026-09-24T19:38:11Z"
+      "updated_at": "2026-09-24T19:45:48Z"
     },
     "CR-2609-8ef9": {
       "base_branch": "audit/2026-09-08",

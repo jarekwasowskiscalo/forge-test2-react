@@ -62,8 +62,9 @@ shows its shape — and so that it can be deleted when the first real feature re
 
 Deleting the example deletes with it: `contexts/guestbook.md`, `design/ui/guestbook.md`, the
 entries in `design/api.md` and `design/data-model.md`, the contracts
-`contracts/openapi/guestbook.yaml` and `contracts/invariants/guestbook.md`, both halves
-of the corpus `golden-set/`, the mock-up `rationale/mockup-guestbook/`, the black box
+`contracts/openapi/guestbook.yaml` and `contracts/invariants/guestbook.md`, the guestbook's
+files in both halves of the corpus `golden-set/` (never the to-do list's `todo-task-text.json`
+and `todo-tasks-*.json`), the mock-up `rationale/mockup-guestbook/`, the black box
 `e2e/suite/features/guestbook.feature` with the steps that bind it, the user guide
 `docs/user-guide.md` and the request file `http/guestbook-entries.http`. The rest of this
 tree describes the process and stays.

@@ -127,7 +127,8 @@ screen, a full set of tests in four suites plus Gherkin scenarios.
 Deleting it deletes with it: `spec/contexts/guestbook.md`, `spec/design/ui/guestbook.md`, the
 entries in `api.md` and `data-model.md`, `e2e/suite/features/guestbook.feature` and the steps
 that bind it, the contracts `contracts/openapi/guestbook.yaml` and
-`contracts/invariants/guestbook.md`, both halves of the corpus `golden-set/`, the mockup
+`contracts/invariants/guestbook.md`, the guestbook's files in both halves of the corpus
+`golden-set/` (never the to-do list's `todo-task-text.json` and `todo-tasks-*.json`), the mockup
 `spec/rationale/mockup-guestbook/`, the user guide `docs/user-guide.md` and the request file
 `http/guestbook-entries.http`.
 

@@ -627,6 +627,7 @@ Paths in the second column are relative to the tree in the first.
 | | `contexts/todo_list/lib/todoTask.ts` | the `TodoTask` type, the browser copies of the bound and of `LINE_BREAKS`, the verdict in the order `BR-07` then `BR-06`, and its sentences | build-frontend |
 | | `lib/text.ts` | the shared text rule's browser half, moved up out of the guestbook's `lib/` (where it was `entryText.ts`) because a second context needs it — the move `conventions.md` § Frontend prescribes for that day | build-frontend |
 | | `contexts/guestbook/lib/guestbookEntry.ts`, `contexts/guestbook/components/EntryComposer.tsx`, `contexts/guestbook/hooks/useEntryQueryParams.ts` | the same three imports of the text rule, from its new home; nothing else about the guestbook moves | build-frontend |
+| | `contexts/guestbook/pages/GuestbookPage.tsx` | the one exception to "nothing else moves", and prose alone: the line of its module docstring that called `S-01` the only screen names it one of two ([`ui/system-states.md`](ui/system-states.md) § One column); nothing the screen does moves | build-frontend |
 | | `components/ui/Checkbox.tsx` | the done control: a design-system primitive, with its first caller | build-frontend |
 | | `components/shell/PageFrame.tsx` | the way between the two screens, and the frame's words for two of them | build-frontend |
 | | `pages/StatusPages.tsx` | a not-found page that no longer says there is one screen | build-frontend |
@@ -673,6 +674,19 @@ build-tests-frontend's vitest cases for the to-do list's own address, the main a
 unknown address (`CR-2609-823a/R-5`). It sits beside the composition root it proves, outside
 every context folder, so no row that names a folder holds it. The user decided it in
 `CR-2609-823a` (`Q-18`) in these words: "Add the file to the change's list."
+
+**`golden-set/README.md`, the corpus's rules document, is in no member's set.** The corpus is
+handed out by directory — `golden-set/seed/` to build-backend, `golden-set/fixtures/` to the
+integration test author — and `.specconf/stack.json` § `skills` gives the document beside those
+directories to nobody
+([template issue #92](https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/92)).
+So a change whose corpus files make a sentence of it false does not edit it: the change's pull
+request names each sentence that went out of date, and a documentation-only pull request corrects
+them after it. For the to-do list those are five: of `fixtures/`, "Four files, each with one
+story"; of `text-measurement.json`, "the one file both languages read"; "Three hold entries; the
+fourth holds cases."; of `seed/`, "One file: `entries-welcome.json`"; and "The frontend reads
+neither half, with one named exception." The user decided it in `CR-2609-823a` (`Q-26`) in these
+words: "Fix it in a follow-up."
 
 **Disjoint is not independent.** Three edges cross the sets, and none of them is a shared file:
 

@@ -642,9 +642,12 @@
       "id": "COH-implement-1",
       "kind": "contradiction",
       "raised_at": "2026-09-24T19:38:11Z",
+      "resolution": "Q-25 = A, in the user's words: \"Always fetch the latest.\" The to-do list reads its list every time it is opened, the header link included; the guestbook's behaviour is unchanged.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T19:45:48Z",
       "severity": "minor",
       "stage": "implement",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/architecture.md § Who writes what, and where the sets meet",
@@ -659,9 +662,12 @@
       "id": "COH-implement-2",
       "kind": "contradiction",
       "raised_at": "2026-09-24T19:38:11Z",
+      "resolution": "Q-26 = A, in the user's words: \"Fix it in a follow-up.\" golden-set/README.md is corrected by a documentation-only follow-up pull request, because no member of this change may write it (template issue #92); this change's pull request names its five out-of-date sentences.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T19:45:48Z",
       "severity": "minor",
       "stage": "implement",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/README.md § This directory describes a template",
@@ -677,9 +683,12 @@
       "id": "COH-implement-3",
       "kind": "contradiction",
       "raised_at": "2026-09-24T19:38:11Z",
+      "resolution": "AUTO from spec/constitution.md § Article IV: both deletion lists name the guestbook's files in the corpus and say the to-do list's files stay.",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-24T19:45:48Z",
       "severity": "minor",
       "stage": "implement",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/testing.md § Four file sets, disjoint",
@@ -698,9 +707,12 @@
       "id": "COH-implement-4",
       "kind": "contradiction",
       "raised_at": "2026-09-24T19:38:11Z",
+      "resolution": "AUTO from spec/constitution.md § Article I: the structural tests' docstrings say what testing.md says, text only, each edited by the author whose tree holds it (build-tests-unit for tests/fitness/, build-tests-integration for tests/integration/test_migrations.py).",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-24T19:45:48Z",
       "severity": "minor",
       "stage": "implement",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/architecture.md § The files",
@@ -715,9 +727,12 @@
       "id": "COH-implement-5",
       "kind": "contradiction",
       "raised_at": "2026-09-24T19:38:11Z",
+      "resolution": "AUTO from spec/constitution.md § Article I: GuestbookPage.tsx:30 stops calling S-01 the only screen, taken as a behaviour-neutral exception to the guestbook's freeze, written by build-frontend.",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-24T19:45:48Z",
       "severity": "minor",
       "stage": "implement",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/testing.md § CR-2609-823a, the to-do list",
@@ -733,9 +748,12 @@
       "id": "COH-implement-6",
       "kind": "contradiction",
       "raised_at": "2026-09-24T19:38:11Z",
+      "resolution": "Q-27 = A, in the user's words: \"Yes, record what happened.\" testing.md and todo_list.md record that the reds standing at the design close were accepted by name at that boundary (Q-24) and carried as baseline reds, and the rest were declared on the task that turned them red.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T19:45:48Z",
       "severity": "minor",
       "stage": "implement",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "coherence_passes": [
@@ -864,6 +882,11 @@
     "review-coherence": {
       "assumptions": "none -- this skill reads, it does not produce an artefact others depend on. Compared the whole implement diff (3c74dfd..72ff77e) against the live design and the requirements: 13 pairs, 6 contradictions (3 resolvable by citation), 0 gaps; items already routed in tasks.md (the 19/20 case count, conventions.md § Frontend, the task-text invariant) not raised again.",
       "at": "2026-09-24T19:38:11Z",
+      "state": "returned"
+    },
+    "review-converge": {
+      "assumptions": "The implement stage has no fragment directory of its own, so the entries go in design/delta/converge.md, as the requirements stage's did (reconcile/delta/ would have superseded every design entry for testing.md and architecture.md). RISK: frontend/src/contexts/guestbook/pages/GuestbookPage.tsx is not in design/delta/architecture.md § This change owns, which the boundary is recorded from; unless the boundary is extended, build-frontend's COH-implement-5 edit may be refused. The COH-implement-4 docstring files are covered by the tests/fitness/ and tests/integration/ rows. Deliberately not edited: code, tests, uat.md, todo-list.md, and the design fragment's \"three import paths and nothing else\" prose.",
+      "at": "2026-09-24T19:45:48Z",
       "state": "returned"
     }
   },
@@ -2397,6 +2420,11 @@
           "at": "2026-09-24T19:38:11Z",
           "note": "review-coherence preflight --stage implement lists only uat.md under \"ARTEFACTS OF THIS STAGE\" and names no diff base. The skill's Stage 2 says the implement artefacts are the wave's git diff plus requirements.md, so I read the base (3c74dfd, the commit before the first test wave) off git log by hand.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T19:38:30Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/372",
+          "state": "filed"
         }
       ],
       "id": "PROC-50",
@@ -2406,6 +2434,32 @@
       "seen": 1,
       "signal": "review-coherence preflight --stage implement lists only uat.md under \"ARTEFACTS OF THIS STAGE\" and names no diff base. The skill's Stage 2 says the implement artefacts are the wave's git diff plus requirements.md, so I read the base (3c74dfd, the commit before the first test wave) off git log by hand.",
       "signature": "review-coherence preflight --stage implement lists only uat.md under · and names no diff base. The skill·s git diff plus",
+      "stage": "implement",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/372"
+    },
+    {
+      "at": "2026-09-24T19:45:48Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T19:45:48Z",
+          "note": "The preflight printed `[--edited EDITED ...]`, which reads as a flag taking several values, but it has to be repeated once per document (one call failed with exit 2). The skill also names no delta fragment directory for a convergence round in the implement stage.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-51",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-converge",
+      "seen": 1,
+      "signal": "The preflight printed `[--edited EDITED ...]`, which reads as a flag taking several values, but it has to be repeated once per document (one call failed with exit 2). The skill also names no delta fragment directory for a convergence round in the implement stage.",
+      "signature": "The preflight printed `[--edited EDITED ...]`, which reads as a flag taking several values, but it has to be repeated on",
       "stage": "implement",
       "state": "reported",
       "url": null
@@ -3541,6 +3595,117 @@
       "stage": "design",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T19:40:21Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T19:39:55Z",
+      "blocking": false,
+      "blocks": [
+        "COH-implement-1"
+      ],
+      "options": [
+        {
+          "consequence": "The to-do list asks for the current list every time it is opened; the guestbook is left as it is, and the acceptance script reloads the page before its step 14.",
+          "key": "A",
+          "label": "Always fetch the latest",
+          "recommended": true
+        },
+        {
+          "consequence": "The screen documents say that opening by the link may show the list as it was up to 30 seconds ago; the acceptance script reloads the page before its step 14.",
+          "key": "B",
+          "label": "Up to 30 seconds old is fine",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-25",
+      "question": "When someone opens the to-do list with the link at the top of the page, should it always fetch the latest list, or may it show the copy it fetched up to 30 seconds earlier? (Today it may, so changes other people made in the last 30 seconds can be missing until a reload; your own changes always show.)",
+      "stage": "implement",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T19:40:21Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T19:39:55Z",
+      "blocking": false,
+      "blocks": [
+        "COH-implement-2"
+      ],
+      "options": [
+        {
+          "consequence": "This change's pull request names the five sentences, and a small documentation-only pull request right after it corrects them with the wording already prepared; the page is out of date only between the two merges.",
+          "key": "A",
+          "label": "Fix it in a follow-up",
+          "recommended": true
+        },
+        {
+          "consequence": "The five sentences are named in the pull request and left to the template's issue #92; the page stays out of date until someone picks that up.",
+          "key": "B",
+          "label": "Only note it in the pull request",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-26",
+      "question": "The rules page for the project's sample data (golden-set/README.md) now has five out-of-date sentences: it still describes only the guestbook's sample files, not the to-do list's. No step of this change is allowed to edit that page -- it has no owner in the project's setup, already reported to the template as issue #92. What should happen?",
+      "stage": "implement",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T19:40:21Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T19:39:55Z",
+      "blocking": false,
+      "blocks": [
+        "COH-implement-6"
+      ],
+      "options": [
+        {
+          "consequence": "The specification step rewrites those sentences in the test design and the to-do list description to say the two failures were signed off at the design close (Q-24) and fixed in this stage; nothing in the product changes.",
+          "key": "A",
+          "label": "Yes, record what happened",
+          "recommended": true
+        },
+        {
+          "consequence": "The documents keep describing a declaration that never happened, so the merged specification and the change's record disagree.",
+          "key": "B",
+          "label": "No, leave the documents",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-27",
+      "question": "At the end of the design stage you approved closing it with known failing checks (your answer to Q-24). Two of those failures were then carried into this stage and fixed by the new code, instead of being declared against a specific task as the test design document describes. Should the design documents be corrected to record what actually happened?",
+      "stage": "implement",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -3903,6 +4068,74 @@
       "id": "REC-29",
       "rule_added": null,
       "source": "auto"
+    },
+    {
+      "at": "2026-09-24T19:44:26Z",
+      "decision": "Q-25 = A, in the user's words: \"Always fetch the latest.\" The to-do list reads its list every time it is opened, the header link included; the guestbook's behaviour is unchanged.",
+      "edited": [
+        "spec/design/ui/system-states.md § Interactions"
+      ],
+      "from_finding": "COH-implement-1",
+      "id": "REC-30",
+      "rule_added": "Opening the to-do list reads its list, every time — the header link included; the guestbook, opened by a link within 30 seconds of its last read, shows that read (frontend/src/main.tsx).",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T19:44:37Z",
+      "decision": "Q-26 = A, in the user's words: \"Fix it in a follow-up.\" golden-set/README.md is corrected by a documentation-only follow-up pull request, because no member of this change may write it (template issue #92); this change's pull request names its five out-of-date sentences.",
+      "edited": [
+        "spec/design/architecture.md § Who writes what, and where the sets meet"
+      ],
+      "from_finding": "COH-implement-2",
+      "id": "REC-31",
+      "rule_added": "golden-set/README.md, the corpus's rules document, is in no member's set: a change whose corpus files make a sentence of it false names each such sentence in its pull request, and a documentation-only pull request corrects them after it.",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T19:44:50Z",
+      "decision": "AUTO from spec/constitution.md § Article IV: both deletion lists name the guestbook's files in the corpus and say the to-do list's files stay.",
+      "edited": [
+        "spec/README.md § This directory describes a template",
+        "CLAUDE.md § What is an example, and what is the template"
+      ],
+      "from_finding": "COH-implement-3",
+      "id": "REC-32",
+      "rule_added": "Deleting the example deletes the guestbook's files in both halves of the corpus golden-set/ (never the to-do list's todo-task-text.json and todo-tasks-*.json).",
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T19:44:50Z",
+      "decision": "AUTO from spec/constitution.md § Article I: the structural tests' docstrings say what testing.md says, text only, each edited by the author whose tree holds it (build-tests-unit for tests/fitness/, build-tests-integration for tests/integration/test_migrations.py).",
+      "edited": [
+        "spec/design/testing.md § Four file sets, disjoint"
+      ],
+      "from_finding": "COH-implement-4",
+      "id": "REC-33",
+      "rule_added": "An existing test whose prose the change makes false stands in a test author's set too, even when no assertion moves: text only, no assertion changed, no case renamed.",
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T19:44:50Z",
+      "decision": "AUTO from spec/constitution.md § Article I: GuestbookPage.tsx:30 stops calling S-01 the only screen, taken as a behaviour-neutral exception to the guestbook's freeze, written by build-frontend.",
+      "edited": [
+        "spec/design/architecture.md § The files"
+      ],
+      "from_finding": "COH-implement-5",
+      "id": "REC-34",
+      "rule_added": "Row for contexts/guestbook/pages/GuestbookPage.tsx: the one exception to 'nothing else moves', and prose alone; nothing the screen does moves.",
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T19:44:51Z",
+      "decision": "Q-27 = A, in the user's words: \"Yes, record what happened.\" testing.md and todo_list.md record that the reds standing at the design close were accepted by name at that boundary (Q-24) and carried as baseline reds, and the rest were declared on the task that turned them red.",
+      "edited": [
+        "spec/design/testing.md § CR-2609-823a, the to-do list, Existing detectors that go red on the way",
+        "spec/contexts/todo_list.md, the paragraph on when the header claims a screen and a black-box file"
+      ],
+      "from_finding": "COH-implement-6",
+      "id": "REC-35",
+      "rule_added": "Each red was declared on the task that turned it red or, when it already stood at the design close, accepted by name at that boundary (Q-24) and carried as a baseline red; the task whose product closes it names it under Turns green: in tasks.md.",
+      "source": "hitl"
     }
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
@@ -3919,7 +4152,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 770,
+  "revision": 789,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -3996,7 +4229,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T19:38:11Z",
+  "updated_at": "2026-09-24T19:45:48Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

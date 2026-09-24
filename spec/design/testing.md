@@ -957,7 +957,10 @@ application answers.
 
 **Existing detectors that go red on the way, and what turns each green.** The specification and
 the corpus locator run ahead of the code on purpose, and these structural cases show the gap
-until the code arrives; each is declared on the task whose product closes it:
+until the code arrives; each was declared red on the task that turned it red or, when it
+already stood at the design close, accepted by name at that boundary (`CR-2609-823a`, `Q-24`) and
+carried as a baseline red; the task whose product closes it names it under **Turns green:** in
+the change's `tasks.md`:
 
 - `tests/fitness/test_context_boundaries.py::test_every_context_document_has_code_and_every_context_directory_has_a_document`
   — red since `spec/contexts/todo_list.md` exists (measured on 2026-09-24 with
@@ -978,8 +981,9 @@ until the code arrives; each is declared on the task whose product closes it:
   edit the locator.
 - `tests/fitness/test_context_declarations.py::test_every_screen_and_feature_a_context_names_is_on_disk`
   — red since the design stage's convergence round claimed **e2e/suite/features/todo_list.feature**
-  in `spec/contexts/todo_list.md` before the file exists (`CR-2609-823a`, `Q-19`), and declared on
-  build-tests-e2e's task, whose product is the file, in the first implementation wave.
+  in `spec/contexts/todo_list.md` before the file exists (`CR-2609-823a`, `Q-19`), accepted by
+  name at the design close (`Q-24`), and turned green by build-tests-e2e's feature file in the
+  first implementation wave.
   `test_every_feature_file_is_claimed_by_exactly_one_context` and
   `test_every_registered_screen_is_claimed_by_exactly_one_context` stay green throughout, because
   the header claims both files.
@@ -1047,6 +1051,13 @@ directory, it makes no difference; standing in none, it will be written by nobod
 omission then looks exactly like a decision. A path may be left here without a test **only** with
 a sentence saying why — silence is not allowed.
 
+**An existing test whose prose the change makes false stands here too, even when no assertion
+moves.** A module or case docstring that states a count the change alters — one context, one
+table, one revision, one screen — is an edit to that test, made by the author whose tree holds
+it: text only, with no assertion changed and no case renamed. A check's intent is kept in its
+docstring (constitution, Article IX), and a sweep whose docstring still calls it vacuous has its
+first real red read as a synthetic one.
+
 Rejected (decision of 2026-09-23, `cr: historical` — the test authors stopped being one wave,
 because `tests/_golden_set.py` is imported across their boundaries, and `test_wave_dependencies.py`
 holds the order; taken on the trunk from issue #63 of the 2026-09-20 audit, and framework changes
@@ -1103,8 +1114,8 @@ files without a test of their own are named there, each with its reason.
 
 | Author | Writes |
 |---|---|
-| `build-tests-unit` | **tests/unit/test_todo_task_text_rules.py**, **tests/unit/test_todo_task_model.py** (new) · edits to `tests/unit/test_guestbook_entry_model.py` (the schema holds two tables), `tests/fitness/test_golden_set.py` (the to-do files' rules, the line-break rule scoped to entries, and a second browser reader allowed its own context's file alone) and `tests/fitness/test_length_constants.py` (the 200 and the seven line breaks against their browser copies) |
-| `build-tests-integration` | **tests/integration/test_todo_tasks_service.py**, **tests/integration/test_todo_tasks_concurrency.py**, **tests/integration/test_todo_tasks_router.py**, **tests/integration/test_todo_tasks_corpus.py**, **tests/integration/test_todo_tasks_contract.py** (new) · edits to `tests/integration/test_migrations.py` (the second table and its index) and `tests/tooling/test_seed_golden_set.py` (each list filled on its own) · **the corpus's fixture half**: the four to-do files under `golden-set/fixtures/`, and their names, with the example-task file's, in `tests/_golden_set.py` |
+| `build-tests-unit` | **tests/unit/test_todo_task_text_rules.py**, **tests/unit/test_todo_task_model.py** (new) · edits to `tests/unit/test_guestbook_entry_model.py` (the schema holds two tables), `tests/fitness/test_golden_set.py` (the to-do files' rules, the line-break rule scoped to entries, and a second browser reader allowed its own context's file alone), `tests/fitness/test_length_constants.py` (the 200 and the seven line breaks against their browser copies) and, text only, the docstrings of `tests/fitness/test_context_declarations.py`, `tests/fitness/test_context_boundaries.py`, `tests/fitness/test_data_invariants.py` and `tests/fitness/test_migration_safety.py` (two contexts, two tables, two revisions, where they counted one) |
+| `build-tests-integration` | **tests/integration/test_todo_tasks_service.py**, **tests/integration/test_todo_tasks_concurrency.py**, **tests/integration/test_todo_tasks_router.py**, **tests/integration/test_todo_tasks_corpus.py**, **tests/integration/test_todo_tasks_contract.py** (new) · edits to `tests/integration/test_migrations.py` (the second table and its index, and a docstring that called the guestbook's screen the only one) and `tests/tooling/test_seed_golden_set.py` (each list filled on its own) · **the corpus's fixture half**: the four to-do files under `golden-set/fixtures/`, and their names, with the example-task file's, in `tests/_golden_set.py` |
 | `build-tests-frontend` | **frontend/src/contexts/todo_list/lib/todoTask.test.ts**, **frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx**, **frontend/src/contexts/todo_list/components/TodoTaskRow.test.tsx**, **frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx**, **frontend/src/contexts/todo_list/pages/TodoListPage.test.tsx**, **frontend/src/router.test.tsx**, **frontend/src/components/shell/PageFrame.test.tsx**, **frontend/src/pages/StatusPages.test.tsx** (new) · edits to `frontend/src/contexts/guestbook/lib/entryText.test.ts` (one import line, to **frontend/src/lib/text.ts**, where the shared rule moves; its place and its cases stay) |
 | `build-tests-e2e` | **e2e/suite/features/todo_list.feature**, **e2e/suite/steps/todo_list_steps.py** (new) · edits to `e2e/suite/test_scenarios.py` (binds the feature and imports the steps) and `e2e/ui/test_smoke.py` (the to-do screen's smoke, and the locators `A-4` lets follow the approved names) |
 
