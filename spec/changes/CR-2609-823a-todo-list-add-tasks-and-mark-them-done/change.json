@@ -264,6 +264,11 @@
   "docs_touched": [],
   "expected_red": [],
   "fanout": {
+    "design-adr": {
+      "assumptions": "- Decisions were taken from design/delta/{domain,api,architecture,data-model,spec,testing,ui,converge}.md and the live spec/design documents; only domain and api marked `**ADR:** required`. Two drafts: todo-list-is-its-own-bounded-context.md and task-text-refusals-are-coded-not-schema-constraints.md (status Proposed, id ADR-NNNN, supersedes []).\n- review/coherence.md holds requirements-stage passes only; there is no design-stage pass yet, so ADR 2 records what api.md decided (text refusals are coded Refusal bodies decided outside Pydantic, codes in the router) while architecture.md § The layer per rule and its Decision 2 say the reverse (the schema's text type refuses before the route), and testing.md's test_the_create_and_update_shapes_give_every_case_the_same_verdict sits between the two. If coherence rules for architecture, ADR 2 must be rewritten.\n- Second finding for coherence: testing.md says the corpus test cannot move to frontend/src/lib/text.test.ts, against architecture Decision 4.\n- reconcile-design allocates the ADR numbers.\n- Gaps written down, not fixed: nothing refuses a foreign key from todo_tasks to guestbook_entries; no test reads CODEOWNERS; nothing compares the refusal sentences in api.md with the router's; api.md does not record the PATCH-versus-sub-resources alternative (only design/delta/api.md does).\n- Candidates not drafted, each recorded at its home: classification (todo_list.md), todo_task identifier (glossary), PATCH/{items,total}/created_at/no single read/self-contained yaml (api.md), BR-10 mechanism/String(200)/boolean done/no unique constraint (data-model.md), architecture D1,D3,D5,D6,D7 (conventions.md, architecture.md), todo-task-text.json (testing.md), navigation/lockup/404/footer/toast//todo-list (system-states.md, todo-list.md), BR-07 over BR-06 (todo_list.md).",
+      "at": "2026-09-24T14:47:10Z",
+      "state": "returned"
+    },
     "design-api": {
       "assumptions": "- design-data declares todo_tasks(id Uuid, text String(200), done Boolean, created_at timestamptz) and no updated_at; its \"correction/marking\" statements also cover a PATCH that carries both fields: one UPDATE naming exactly the columns the body carries, with values from the request.\n- The request schema must NOT put max_length or min_length on text (that returns FastAPI's list with no code, and \"too long\" would then win over \"one line\"); importing TODO_TASK_TEXT_MAX_LENGTH is fine.\n- design-architecture places the text rule (normalize, then empty, then multiline, then too long) in the service; the router translates it into the 5 coded refusals, and the codes are literals in the to-do router; the body is validated before the lookup.\n- design-ui binds only to id, text, done and the 5 codes; created_at is not shown; the 5 sentences are product text and follow the approved mock-up if it words them differently.\n- design-testing gives each of the 5 codes a test, plus the refusal order and the overlapping edit+mark case.\n- Marking and correcting are one PATCH with optional fields (absent fields never written); no GET for one task; the list is {items,total} in one total order with no parameters.\n- ADR required: all three text refusals are coded Refusal bodies decided outside Pydantic constraints, departing from the guestbook's Pydantic 422; todo_list.yaml repeats Refusal and ValidationError instead of pointing at guestbook.yaml, because the guestbook is deleted as a unit.\n- Left for another author: contracts/README.md (outside design-api's allowlist) still says \"three paths, six operations\"; the contracts now hold 5 paths and 10 operations.",
       "at": "2026-09-24T13:24:23Z",
@@ -1018,6 +1023,32 @@
       "stage": "design",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/333"
+    },
+    {
+      "at": "2026-09-24T14:47:10Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T14:47:10Z",
+          "note": "The design-adr SKILL.md says it runs \"after the design fan-out converges\" and reads findings under {change_dir}/coherence/. In fact process.json p3 runs it as the last member of the design fan-out, before any design coherence pass, and the findings are in review/coherence.md. So it drafts an ADR over an unresolved contradiction (api.md against architecture.md) on the very decision it records.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-24",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "design-adr",
+      "seen": 1,
+      "signal": "The design-adr SKILL.md says it runs \"after the design fan-out converges\" and reads findings under {change_dir}/coherence/. In fact process.json p3 runs it as the last member of the design fan-out, before any design coherence pass, and the findings are in review/coherence.md. So it drafts an ADR over an unresolved contradiction (api.md against architecture.md) on the very decision it records.",
+      "signature": "The design-adr SKILL.md says it runs · and reads findings under {change_dir}· In fact process.json p3 runs it as the las",
+      "stage": "design",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -1877,7 +1908,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 124,
+  "revision": 126,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1927,7 +1958,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T14:43:42Z",
+  "updated_at": "2026-09-24T14:47:10Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {

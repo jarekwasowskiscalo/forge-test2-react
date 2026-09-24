@@ -37,3 +37,5 @@
 - [16:42] process_fault_resolved: PROC-22 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/332
 - [16:42] process_fault_resolved: PROC-23 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/333
 - [16:43] fanout_recorded: returned: design-ui
+- [16:43] fanout_recorded: dispatched: design-adr
+- [16:47] fanout_recorded: returned: design-adr; 1 process fault(s): PROC-24

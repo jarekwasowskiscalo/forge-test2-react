@@ -127,3 +127,5 @@
 {"timestamp": "2026-09-24T14:42:04Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-22 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/332", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
 {"timestamp": "2026-09-24T14:42:06Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-23 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/333", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
 {"timestamp": "2026-09-24T14:43:42Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: design-ui", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T14:43:47Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: design-adr", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T14:47:10Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: design-adr; 1 process fault(s): PROC-24", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
