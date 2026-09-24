@@ -285,8 +285,8 @@
       "state": "returned"
     },
     "review-converge": {
-      "assumptions": "The edits sit inside the change record, so they get no delta fragment entry. design/delta/converge.md from pass 1 states this rule, and verify accepted it. I recorded all three with --source auto. No human answered them: COH-7 follows from R-2 clauses 5 and 6. COH-8 and COH-9 are assumptions awaiting the user. The claim in E-9 rests on jsdom's HTML sanitization, not on a Chromium measurement, and the finding says so too. If the user overrules A-1, E-9 goes back to its old premise.",
-      "at": "2026-09-24T12:39:15Z",
+      "assumptions": "The gate record's note field is empty. The only record that the user confirmed A-2 is the approval itself (approved true, digest matches), read together with requirements.md § Named assumptions, which says \"The user confirms or overrules each one at the approval of this document\". The words the dispatch quotes (\"as written, including the four assumptions A-1 to A-4\") are not in the record. The approval of the unchanged document is the evidence I cited.",
+      "at": "2026-09-24T12:56:08Z",
       "state": "returned"
     }
   },
@@ -636,6 +636,32 @@
       "stage": "requirements",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/311"
+    },
+    {
+      "at": "2026-09-24T12:56:08Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T12:56:08Z",
+          "note": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]` (reads as nargs=+); the CLI accepts only a repeated `--edited` flag, so the call as the usage line suggests was refused with exit 2 -- seen again on REC-11, same fault as issue #311.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-12",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-converge",
+      "seen": 1,
+      "signal": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]` (reads as nargs=+); the CLI accepts only a repeated `--edited` flag, so the call as the usage line suggests was refused with exit 2 -- seen again on REC-11, same fault as issue #311.",
+      "signature": "The review-converge preflight prints the add-reconciliation usage as `[--edited EDITED ...]` (reads as nargs=+); the CLI",
+      "stage": "requirements",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -647,6 +673,14 @@
       "approved_by": "user",
       "artifact": "request.md",
       "artifact_sha256": "b458b7acfbdb21f83e976a814fecc242e61aaf6b2f61fdb8666b385fc48119cd",
+      "note": ""
+    },
+    "requirements": {
+      "approved": true,
+      "approved_at": "2026-09-24T12:50:16Z",
+      "approved_by": "user",
+      "artifact": "requirements.md",
+      "artifact_sha256": "2ae18b07e80b6bfb0b3cd7f26210edb50601c1d7140c1a2cf14164c8aee14f29",
       "note": ""
     }
   },
@@ -1292,11 +1326,35 @@
       "id": "REC-10",
       "rule_added": "A-4: SC-5 measures the guestbook's tests by what they assert, not by their exact text; the smoke's lockup and navigation locators may follow the mock-up's approved names",
       "source": "auto"
+    },
+    {
+      "at": "2026-09-24T12:55:43Z",
+      "decision": "The retention half, now a human decision: the user approved requirements.md at the requirements stage gate on 2026-09-24 (gates.requirements, approved_by user, artifact_sha256 2ae18b07...), and that document says of its named assumptions that the user confirms or overrules each one at its approval; none was overruled, so A-2 stands in its own words: nothing removes a task except a person deleting it, with no expiry and no retention policy, as for a guestbook entry. The finding's ready retention patch is applied, which completes what REC-6 deferred.",
+      "edited": [
+        "spec/invariants.md § Deliberate non-goals (A data retention policy)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/converge.md (the MODIFIED spec/invariants.md entry, both halves; ADR line in the dash form)"
+      ],
+      "from_finding": "COH-requirements-5",
+      "id": "REC-11",
+      "rule_added": "spec/invariants.md § Deliberate non-goals, A data retention policy: An entry, like a to-do task, lives until somebody deletes it.",
+      "source": "hitl"
     }
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
-  "requirements": [],
-  "revision": 82,
+  "requirements": [
+    "CR-2609-823a/R-1",
+    "CR-2609-823a/R-2",
+    "CR-2609-823a/R-3",
+    "CR-2609-823a/R-4",
+    "CR-2609-823a/R-5",
+    "CR-2609-823a/R-6",
+    "CR-2609-823a/R-7",
+    "CR-2609-823a/R-8",
+    "CR-2609-823a/R-9",
+    "CR-2609-823a/R-10",
+    "CR-2609-823a/R-11"
+  ],
+  "revision": 87,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1345,7 +1403,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T12:47:35Z",
+  "updated_at": "2026-09-24T12:56:08Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {

@@ -159,7 +159,7 @@ is edited from the trunk, where no `delta.md` exists in which to call the edit e
   window, but it is **not designed for a phone**: a mobile view is a separate decision with its
   own requirements, not a scaling of what is there. (Wording corrected 2026-08-31: it spoke of
   a 1440×900 frame, which has not existed since the screen was replaced with the mock-up.)
-- **A data retention policy.** An entry lives until somebody deletes it. A product storing
+- **A data retention policy.** An entry, like a to-do task, lives until somebody deletes it. A product storing
   personal data needs a policy here before it can be specified in code.
 - **A second database engine.** The application runs on PostgreSQL and only on PostgreSQL
   ([`design/architecture.md`](design/architecture.md) § One engine). This is not a lack of
