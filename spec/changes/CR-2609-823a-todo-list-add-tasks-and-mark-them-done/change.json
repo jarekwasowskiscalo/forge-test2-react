@@ -697,13 +697,7 @@
   "deferred_findings": [],
   "docs_touched": [],
   "expected_red": [],
-  "fanout": {
-    "design-plan": {
-      "assumptions": "T-2 names the three text exceptions, and T-9 and T-15 use those names. The plan fixes the locator constants (TODO_TASKS_*, tasks_of), the 19 case names in todo-task-text.json and the 13 contract-test ids. Declared vitest cases sit at the top level of their file. If build-frontend returns before T-16, implement row 33's generate.sh produces schema.d.ts (T-23). GuestbookPage.tsx stays untouched, so T-22 must deliver the guestbook's footer from the frame or report that it cannot. Gaps reported, not resolved: testing.md says nineteen corpus cases but the sources give 18+1; entryText.test.ts goes red after T-5 with no declaration in the design, so it is declared on T-5 and closed by T-18; testing.md expects test_production_is_refused red but it is green by design.",
-      "at": "2026-09-24T17:22:39Z",
-      "state": "returned"
-    }
-  },
+  "fanout": {},
   "faults": [
     {
       "at": "2026-09-24T11:42:41Z",
@@ -1777,6 +1771,11 @@
           "at": "2026-09-24T17:22:39Z",
           "note": "declare-red matches classname::name[param] exactly, while design-testing's red-first list names bare parametrized functions and nothing asks it for parameter ids, so design-plan had to mint 19 corpus case names and more than 60 bracketed ids.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T17:22:50Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/359",
+          "state": "filed"
         }
       ],
       "id": "PROC-35",
@@ -1787,8 +1786,8 @@
       "signal": "declare-red matches classname::name[param] exactly, while design-testing's red-first list names bare parametrized functions and nothing asks it for parameter ids, so design-plan had to mint 19 corpus case names and more than 60 bracketed ids.",
       "signature": "declare-red matches classname::name[param] exactly, while design-testing's red-first list names bare parametrized functi",
       "stage": "plan",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/359"
     }
   ],
   "files_changed": [],
@@ -1852,6 +1851,11 @@
       "at": "2026-09-24T16:49:17Z",
       "fingerprint": "6ab597e317de5cfe",
       "stage": "plan"
+    },
+    {
+      "at": "2026-09-24T17:43:25Z",
+      "fingerprint": "14e0ca21ff499d7f",
+      "stage": "implement"
     }
   ],
   "legacy_spec": null,
@@ -2849,7 +2853,7 @@
   ],
   "parent_cr_id": null,
   "parent_merge_commit": null,
-  "previous_stage": "design",
+  "previous_stage": "plan",
   "reconciliations": [
     {
       "at": "2026-09-24T12:30:43Z",
@@ -3223,7 +3227,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 226,
+  "revision": 228,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -3245,14 +3249,15 @@
     "unmeasured": []
   },
   "slug": "todo-list-add-tasks-and-mark-them-done",
-  "stage": "plan",
-  "stage_entered_at": "2026-09-24T16:49:17Z",
+  "stage": "implement",
+  "stage_entered_at": "2026-09-24T17:43:25Z",
   "stage_entries": {
     "design": 1,
+    "implement": 1,
     "plan": 1,
     "requirements": 1
   },
-  "stage_status": "in_progress",
+  "stage_status": "not_started",
   "status": "draft",
   "supersedes": [],
   "tasks": [],
@@ -3291,9 +3296,9 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T17:22:39Z",
+  "updated_at": "2026-09-24T17:43:25Z",
   "verification_last": {
-    "content_digest": "1db9c2e03917e023fd003ed70cc96c83a49fc95d0f400aa631f47f9aac1e3cf3",
+    "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {
       "Suite backend": {
         "collected": 748,
@@ -3316,12 +3321,12 @@
         "skipped": 0
       }
     },
-    "duration_s": 155.06,
+    "duration_s": 158.79,
     "gaps": [],
-    "git_head": "c94d1ccbaab0bee9b3bcaa3fbcabda939d8e1a3e",
-    "git_tree": "c6423b3458802888b5de3e06867b40399c297945",
+    "git_head": "15e25bd6fbd81df189439def7c1a4888d76098d0",
+    "git_tree": "eeb0ff40c7ba3087c645e9a4bdf80542e421a637",
     "profile": "boundary",
-    "started_at": "2026-09-24T16:46:28Z",
+    "started_at": "2026-09-24T17:22:54Z",
     "verdict": "RED",
     "worktree_dirty": true
   }
