@@ -24,11 +24,11 @@ certainty does):
     transaction and queueing every query behind itself.
 
 Rules 2 and 3 are **vacuous on the template**, and that is stated rather than
-hidden: the one revision here creates a table and its index together, so there is
-no pre-existing table for either rule to judge. They are a guard placed before the
-situation arises, not a check reporting on one that has -- and they bite the first
-time somebody alters a live table, which is exactly the revision nobody wants to
-review by eye.
+hidden: each of the two revisions here creates its table and its index together,
+so there is no pre-existing table for either rule to judge. They are a guard
+placed before the situation arises, not a check reporting on one that has -- and
+they bite the first time somebody alters a live table, which is exactly the
+revision nobody wants to review by eye.
 """
 
 import ast

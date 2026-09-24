@@ -841,9 +841,8 @@
       "state": "returned"
     },
     "build-frontend": {
-      "assumptions": "Contract fields consumed. GET /api/todo-tasks: items[].id, items[].text, items[].done, total. POST /api/todo-tasks with {text}: the answer's id marks the arriving row. PATCH /api/todo-tasks/{todo_task_id} with {done} alone or {text} alone. DELETE answers 204. Refusals are read as detail.code and detail.message through api/problem.ts. created_at is not consumed. Module paths created, as the tests import them: lib/text.ts (normalizeText, textLength, TRIMMED). contexts/todo_list/lib/todoTask.ts (TodoTask, TODO_TASK_TEXT_MAX_LENGTH, LINE_BREAKS, todoTaskTextVerdict, TODO_TASK_TEXT_REFUSALS, todoTaskFailure, RefusedText, todoTaskCountLabel, TODO_TASK_DONE_NOTICES). hooks/useTodoTasks.ts (todoTaskKeys, useTodoTasks, useAddTodoTask, useMarkTodoTask, useTodoTasksBeingMarked, useCorrectTodoTask, useDeleteTodoTask). components/TodoTaskComposer.tsx, TodoTaskRow.tsx, DeleteTodoTaskDialog.tsx; pages/TodoListPage.tsx; components/ui/Checkbox.tsx; TODO_LIST_ROUTE. router.tsx still exports `router`. schema.d.ts was regenerated against the backend as it stood at 21:10; if build-backend changes a schema or a router docstring after that, ./scripts/generate.sh must run again (implement row 33). Reported, not taken: GuestbookPage.tsx is frozen for this change, so PageFrame's new `footer` prop defaults to the guestbook's sentence, and NotFoundPage passes `footer={null}`; a follow-up should move that sentence into GuestbookPage. Where the mock-up and the Markdown differ (Save hover 1.15 vs brightness-112; P10 draws Edit locked during a tick), the Markdown was built. Status returned: TEST_DISPUTED -- frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx lines 185, 252, 259, 272, 280: `await act(() => result.current.<mutation>.mutate(...))` awaits the void TanStack's mutate returns; @typescript-eslint/await-thenable fails ./scripts/lint.sh (--max-warnings 0) and so check.sh; the cases pass in vitest and their behaviour is right; the fix belongs to build-tests-frontend (`await act(async () => { ... })`, or drop the `await`).",
-      "at": "2026-09-24T19:16:56Z",
-      "state": "returned"
+      "at": "2026-09-24T19:51:39Z",
+      "state": "dispatched"
     },
     "build-migration": {
       "assumptions": "TodoTask matches this exactly (checked in app/contexts/todo_list/models/todo_task.py): Uuid PK with an app-side default. String(200) from TODO_TASK_TEXT_MAX_LENGTH. Boolean with default=False on the model only. DateTime(timezone=True). No server default anywhere. Index ix_todo_tasks_created_at_id(created_at, id) in __table_args__. The PK is unnamed, so Postgres names it todo_tasks_pkey. The data model gives no uniqueness rule, so no concurrency test is owed. The revision writes the literal 200 so a released revision never moves with the constant; the index build is plain (the table is created in the same revision); no lock_timeout, backfill or data. Environment: its first plain `./scripts/db.sh migrate` reached another project's database on localhost:5432 (forge-test1-pythin-react-db-1 held 0.0.0.0:5432); the orchestrator reverted that with the user's approval and moved this repository's dev Postgres back to 127.0.0.1:5432 after stopping the other container.",
@@ -876,8 +875,9 @@
       "state": "returned"
     },
     "build-tests-unit": {
-      "at": "2026-09-24T19:49:24Z",
-      "state": "dispatched"
+      "assumptions": "TD-5 only: the nine sentences of the COH-implement-4 ready patch applied word for word in tests/fitness/test_context_declarations.py, test_context_boundaries.py, test_data_invariants.py and test_migration_safety.py, reflowed to paragraph width; an AST diff against HEAD with docstrings stripped showed the code identical. Three sentences the patch does not name are still stale in test_context_declarations.py: :303-304 \"carries the weight until a second context exists\"; :334-336 \"`neighbours: []` everywhere means the sweep above proves nothing\" (both context docs now declare peer:shared-kernel); :35 \"over a single table\". test_data_invariants.py:113 and test_migration_safety.py:94 are still true or dated history.",
+      "at": "2026-09-24T19:53:09Z",
+      "state": "returned"
     },
     "review-coherence": {
       "assumptions": "none -- this skill reads, it does not produce an artefact others depend on. Compared the whole implement diff (3c74dfd..72ff77e) against the live design and the requirements: 13 pairs, 6 contradictions (3 resolvable by citation), 0 gaps; items already routed in tasks.md (the 19/20 case count, conventions.md § Frontend, the task-text invariant) not raised again.",
@@ -2513,6 +2513,11 @@
           "at": "2026-09-24T19:51:23Z",
           "note": "When design-architecture's owns table is the only one, the boundary has no route to grow by a path that a later-stage convergence edit to spec/design/architecture.md § The files adds. COH-implement-5 added a GuestbookPage.tsx row there, but the boundary is read from the design delta fragments alone, so the gap only showed as a refused write (TD-4) and needed a hand-made owns section in converge.md.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T19:52:20Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/377",
+          "state": "filed"
         }
       ],
       "id": "PROC-53",
@@ -2522,6 +2527,32 @@
       "seen": 1,
       "signal": "When design-architecture's owns table is the only one, the boundary has no route to grow by a path that a later-stage convergence edit to spec/design/architecture.md § The files adds. COH-implement-5 added a GuestbookPage.tsx row there, but the boundary is read from the design delta fragments alone, so the gap only showed as a refused write (TD-4) and needed a hand-made owns section in converge.md.",
       "signature": "When design-architecture's owns table is the only one, the boundary has no route to grow by a path that a later-stage co",
+      "stage": "implement",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/377"
+    },
+    {
+      "at": "2026-09-24T19:53:09Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T19:53:09Z",
+          "note": "No skill verb or script-contract name proves that an edit is docstring-only, so I improvised a scratchpad python3 AST-diff script to show no code changed.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-54",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "build-tests-unit",
+      "seen": 1,
+      "signal": "No skill verb or script-contract name proves that an edit is docstring-only, so I improvised a scratchpad python3 AST-diff script to show no code changed.",
+      "signature": "No skill verb or script-contract name proves that an edit is docstring-only, so I improvised a scratchpad python3 AST-di",
       "stage": "implement",
       "state": "reported",
       "url": null
@@ -4214,7 +4245,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 800,
+  "revision": 805,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4294,8 +4325,16 @@
       "id": "TD-6",
       "kind": "agent",
       "raised_at": "2026-09-24T19:49:18Z",
+      "resolved_at": "2026-09-24T19:51:38Z",
       "skill": "build-tests-integration",
       "what": "COH-implement-4 (resolved by constitution Art. I): in tests/integration/test_migrations.py:128 replace \"read on every load of the only screen\" with \"read on every load of the guestbook's screen\", as the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-4 gives it. Prose only: no assertion, case name or behaviour changes, nothing else in the file; prove ./scripts/test.sh integration -k test_migrations and ./scripts/lint.sh green."
+    },
+    {
+      "id": "TD-7",
+      "kind": "agent",
+      "raised_at": "2026-09-24T19:51:38Z",
+      "skill": "build-frontend",
+      "what": "Two resolved coherence findings, prose-exact edits in two files: (1) COH-implement-1 = Q-25 A: in frontend/src/contexts/todo_list/hooks/useTodoTasks.ts add `staleTime: 0` to the useTodoTasks useQuery options, with a comment citing CR-2609-823a/R-3 clause 5 (the list is shown exactly as stored whenever it is opened, the header link included, as spec/design/ui/system-states.md § Interactions now says); the guestbook's hook stays untouched. (2) COH-implement-5 (constitution Art. I): in frontend/src/contexts/guestbook/pages/GuestbookPage.tsx:30 replace \"`S-01` -- the only screen in this application.\" with \"`S-01` -- the guestbook's screen, one of this application's two (`spec/design/ui/system-states.md` § One column).\" -- that one line only (the boundary now lists the file for exactly this); nothing the screen does moves, and the footer stays where it is. Change nothing else; prove ./scripts/test.sh frontend and ./scripts/lint.sh green."
     }
   ],
   "toolchain": [
@@ -4313,7 +4352,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T19:51:38Z",
+  "updated_at": "2026-09-24T19:53:09Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

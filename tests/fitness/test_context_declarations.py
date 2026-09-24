@@ -28,8 +28,9 @@ Four rules, each of which exists because the alternative is silent:
   that adopts it whole, and those produce different code and different blast radii
   when `b` changes (`spec/design/architecture.md` § Rules between contexts).
 
-Most of these are **vacuously true today** -- there is one context, and it borders
-on nothing. Each therefore carries a known positive over synthetic input, exactly
+Most of these were **vacuously true** while there was one context bordering on
+nothing; since `CR-2609-823a` two contexts declare each other, and the sweeps read
+real headers. Each therefore carries a known positive over synthetic input, exactly
 as `tests/fitness/test_data_invariants.py` does for the data invariants it sweeps
 over a single table: a check that has never seen a violation is a check nobody has
 reason to believe.
@@ -296,7 +297,8 @@ def test_the_claim_sweep_detects_an_orphan_and_a_double_claim() -> None:
 
 
 def test_every_neighbour_names_a_context_and_a_pairing_the_rules_allow() -> None:
-    """Vacuously true while there is one context, and it says so.
+    """Vacuously true while there was one context; since `CR-2609-823a` it reads
+    two real neighbours.
 
     `test_the_neighbour_reader_refuses_every_illegal_pairing` is the half that
     carries the weight until a second context exists.

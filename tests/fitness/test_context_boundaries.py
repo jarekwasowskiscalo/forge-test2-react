@@ -25,8 +25,9 @@ Four rules:
 - **The frontend mirrors it**, with `frontend/src/router.tsx` as its composition
   root.
 
-**Every rule here is vacuously true today**: there is one context, so no import
-can cross a boundary that does not exist. That is exactly why each carries a
+**Every rule here was vacuously true** while there was one context, since no
+import could cross a boundary that did not exist; since `CR-2609-823a` there are
+two. That is exactly why each carries a
 known positive over synthetic input -- a check that cannot be shown to fail is a
 check nobody has reason to believe, and this one has to still work on the day a
 second context arrives, which is the day nobody will re-read it.
@@ -142,7 +143,8 @@ def _reaches_past_the_api(module: str, *, mine: str | None) -> str | None:
 
 
 def test_no_context_imports_another_contexts_internals() -> None:
-    """The rule. Vacuously true with one context; the detector is proved below."""
+    """The rule. Real since `CR-2609-823a` brought a second context; the detector
+    is proved below."""
     offenders: dict[str, list[str]] = {}
     for name in _context_names():
         for path in _python_modules(CONTEXTS / name):
@@ -210,8 +212,9 @@ def test_the_boundary_reader_tells_a_crossing_from_a_contract(
 ) -> None:
     """The known positives, one per way the reader could be wrong.
 
-    This is where the rule lives today. With one context nothing can cross, so
-    the sweeps above would pass over a reader that always answered None.
+    This is where the rule lived while there was one context: nothing could
+    cross, so the sweeps above would have passed over a reader that always
+    answered None.
     """
     assert _reaches_past_the_api(module, mine=mine) == expected
 

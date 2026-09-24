@@ -13,10 +13,11 @@ test in the suite -- worse than no test, because it stops anyone from checking.
 `tests/unit/test_data_invariant_properties.py` with a generator behind it. The
 rule is written down in `spec/design/testing.md`.
 
-**Two of these are vacuously true today and that is said out loud**, the way
-`spec/design/testing.md` says it about the rule an index holds: the guest book is
-one table, so nothing can mirror it and nothing can copy from it. The value of a
-sweep is the NEXT table, not this one -- which is exactly why each test here
+**Two of these were vacuously true while the guest book was the only table, and
+that was said out loud**, the way `spec/design/testing.md` says it about the rule
+an index holds: the guest book was one table, so nothing could mirror it and
+nothing could copy from it; `todo_tasks` made them real. The value of a sweep is
+the NEXT table, not this one -- which is exactly why each test here
 carries a known positive built out of a synthetic `MetaData`. A detector that has
 stopped detecting passes everything, and it does so most quietly on the day the
 rule starts being broken.
@@ -89,8 +90,8 @@ def _non_uuid_primary_keys(metadata: sa.MetaData) -> list[str]:
 def test_no_table_is_shaped_like_an_archive() -> None:
     """`D-01` -- an entity has one row from creation to end, never a copy elsewhere.
 
-    Vacuously true while the guest book is the only table, and that is fine: this
-    sweep is written for the table somebody adds next, not for the one that is here.
+    Vacuously true while the guest book was the only table: this sweep is written
+    for the table somebody adds next, not for the one that is here.
     """
     assert _archive_shaped(Base.metadata) == []
 
