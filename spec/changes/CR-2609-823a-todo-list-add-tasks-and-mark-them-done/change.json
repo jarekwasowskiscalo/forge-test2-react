@@ -1,7 +1,8 @@
 {
   "adrs": [],
   "artifacts": {
-    "session-7ec2cbab": "sessions/7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6/summary.md"
+    "session-7ec2cbab": "sessions/7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6/summary.md",
+    "session-870fece5": "sessions/870fece5-b8f9-4a47-84da-b3456aa1de97/summary.md"
   },
   "attempt": {
     "heartbeat_at": "2026-09-24T11:48:48Z",
@@ -1337,7 +1338,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 89,
+  "revision": 90,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1387,7 +1388,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T12:58:40Z",
+  "updated_at": "2026-09-24T13:00:25Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {
