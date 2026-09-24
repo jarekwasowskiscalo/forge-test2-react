@@ -69,6 +69,12 @@ export function useTodoTasks(): UseQueryResult<TodoTaskList> {
   return useQuery({
     queryKey: todoTaskKeys.list(),
     queryFn: () => unwrap(client.GET('/api/todo-tasks')),
+    // Never the 30-second copy `main.tsx` allows by default: whenever the list is
+    // opened -- by its address, a reload or the header link "To-do list" -- it
+    // shows the tasks exactly as stored at that moment (`CR-2609-823a/R-3`
+    // clause 5; `spec/design/ui/system-states.md` § Interactions, `Q-25`). The
+    // guestbook keeps the default.
+    staleTime: 0,
   })
 }
 

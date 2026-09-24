@@ -841,8 +841,9 @@
       "state": "returned"
     },
     "build-frontend": {
-      "at": "2026-09-24T19:51:39Z",
-      "state": "dispatched"
+      "assumptions": "TD-7 only: staleTime: 0 plus a comment citing CR-2609-823a/R-3 clause 5, system-states.md § Interactions and Q-25, in the useTodoTasks useQuery options only; GuestbookPage.tsx:30 changed to the dispatch's prose word for word. main.tsx keeps refetchOnWindowFocus: false globally, so staleTime: 0 means a fresh read each time the to-do screen mounts (header link, address, reload) and no refetch on focus. No vitest case asserts the header-link read; R-3 clause 5 is proved in the suites only by the reload scenarios.",
+      "at": "2026-09-24T19:56:08Z",
+      "state": "returned"
     },
     "build-migration": {
       "assumptions": "TodoTask matches this exactly (checked in app/contexts/todo_list/models/todo_task.py): Uuid PK with an app-side default. String(200) from TODO_TASK_TEXT_MAX_LENGTH. Boolean with default=False on the model only. DateTime(timezone=True). No server default anywhere. Index ix_todo_tasks_created_at_id(created_at, id) in __table_args__. The PK is unnamed, so Postgres names it todo_tasks_pkey. The data model gives no uniqueness rule, so no concurrency test is owed. The revision writes the literal 200 so a released revision never moves with the constant; the index build is plain (the table is created in the same revision); no lock_timeout, backfill or data. Environment: its first plain `./scripts/db.sh migrate` reached another project's database on localhost:5432 (forge-test1-pythin-react-db-1 held 0.0.0.0:5432); the orchestrator reverted that with the user's approval and moved this repository's dev Postgres back to 127.0.0.1:5432 after stopping the other container.",
@@ -2561,6 +2562,32 @@
       "stage": "implement",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5821177089"
+    },
+    {
+      "at": "2026-09-24T19:56:08Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T19:56:08Z",
+          "note": "The skill's iron rules cite `${CLAUDE_PLUGIN_ROOT}/skills/_shared/worker-contract.md`, but the preflight brief prints no expanded local path for it, so the worker has to search the plugin cache (`~/.claude/plugins/cache/scalo/forge/0.1.76/...`) to read the contract it is bound by. Cost: one discovery call.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-55",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "build-frontend",
+      "seen": 1,
+      "signal": "The skill's iron rules cite `${CLAUDE_PLUGIN_ROOT}/skills/_shared/worker-contract.md`, but the preflight brief prints no expanded local path for it, so the worker has to search the plugin cache (`~/.claude/plugins/cache/scalo/forge/0.1.76/...`) to read the contract it is bound by. Cost: one discovery call.",
+      "signature": "The skill's iron rules cite `${CLAUDE_PLUGIN_ROOT}· but the preflight brief prints no expanded local path for it, so the",
+      "stage": "implement",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -4250,7 +4277,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 810,
+  "revision": 812,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4346,6 +4373,7 @@
       "id": "TD-8",
       "kind": "agent",
       "raised_at": "2026-09-24T19:53:09Z",
+      "resolved_at": "2026-09-24T19:55:27Z",
       "skill": "build-tests-unit",
       "what": "COH-implement-4 (resolved by constitution Art. I: the structural tests stop saying one context, one table or one revision), the three sentences its ready patch did not name, all in tests/fitness/test_context_declarations.py: :35 \"over a single table\", :303-304 \"carries the weight until a second context exists\", and :334-336 \"`neighbours: []` everywhere means the sweep above proves nothing\" (both context documents now declare peer:shared-kernel). Rewrite each so it states what is true since CR-2609-823a, in the past tense for what used to hold, as the ready patch did for its nine. Prose only: no assertion, case name, import or behaviour changes, nothing else in the file; prove ./scripts/test.sh fitness and ./scripts/lint.sh green."
     }
@@ -4365,7 +4393,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T19:55:26Z",
+  "updated_at": "2026-09-24T19:56:08Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

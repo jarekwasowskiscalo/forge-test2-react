@@ -27,7 +27,7 @@ import {
 import type { GuestbookEntry } from '@/contexts/guestbook/lib/guestbookEntry'
 
 /**
- * `S-01` -- the only screen in this application.
+ * `S-01` -- the guestbook's screen, one of this application's two (`spec/design/ui/system-states.md` § One column).
  *
  * One column: write at the top, narrow in the middle, read below. Four
  * operations and no second address for any of them -- a guest book is one thing
