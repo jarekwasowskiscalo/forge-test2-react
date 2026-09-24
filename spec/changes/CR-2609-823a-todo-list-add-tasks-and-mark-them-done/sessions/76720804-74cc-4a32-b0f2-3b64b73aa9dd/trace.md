@@ -590,3 +590,5 @@
 - [21:56] fanout_recorded: convergence round: cleared build-tests-uat, review-coherence
 - [21:56] fanout_recorded: dispatched: build-tests-uat
 - [21:58] fanout_recorded: returned: build-tests-uat
+- [21:58] fanout_recorded: dispatched: review-coherence
+- [22:15] fanout_recorded: returned: review-coherence; coherence pass 8 GO_WITH_QUESTIONS, 4 new finding(s)

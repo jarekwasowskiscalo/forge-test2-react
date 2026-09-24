@@ -825,3 +825,5 @@
 {"timestamp": "2026-09-24T19:56:57Z", "agent": "sdd", "action": "fanout_recorded", "details": "convergence round: cleared build-tests-uat, review-coherence", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T19:56:57Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: build-tests-uat", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T19:58:16Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: build-tests-uat", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T19:58:24Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-coherence", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T20:15:12Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-coherence; coherence pass 8 GO_WITH_QUESTIONS, 4 new finding(s)", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}

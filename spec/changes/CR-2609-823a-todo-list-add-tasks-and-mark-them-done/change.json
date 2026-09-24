@@ -755,6 +755,77 @@
       "severity": "minor",
       "stage": "implement",
       "status": "resolved"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-3",
+      "artifacts": [
+        "spec/design/ui/system-states.md",
+        "frontend/src/contexts/todo_list/hooks/useTodoTasks.ts"
+      ],
+      "auto_basis": null,
+      "contradiction": "Does the to-do list, opened by its header link, show the copy it read earlier until the new read answers?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-implement-7",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T20:15:12Z",
+      "severity": "minor",
+      "stage": "implement",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/testing.md § CR-2609-823a, the to-do list",
+      "artifacts": [
+        "uat.md",
+        "spec/design/testing.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "What proves that the header link reads the to-do list again?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-implement-8",
+      "kind": "gap",
+      "raised_at": "2026-09-24T20:15:12Z",
+      "severity": "minor",
+      "stage": "implement",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/testing.md § Four file sets, disjoint",
+      "artifacts": [
+        "spec/design/testing.md",
+        "tests/unit/test_guestbook_entry_model.py",
+        "tests/integration/test_e2e_reset.py",
+        "e2e/suite/steps/guestbook_steps.py"
+      ],
+      "auto_basis": "spec/constitution.md § Article I — The specification is the source of truth",
+      "contradiction": "Do three more test comments still count one table or one resource?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-implement-9",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T20:15:12Z",
+      "severity": "minor",
+      "stage": "implement",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md § What this change does not move",
+      "artifacts": [
+        "design/delta/architecture.md",
+        "tasks.md",
+        "frontend/src/contexts/guestbook/pages/GuestbookPage.tsx"
+      ],
+      "auto_basis": "spec/design/architecture.md § The files",
+      "contradiction": "Is `GuestbookPage.tsx` inside this change, or outside it?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-implement-10",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T20:15:12Z",
+      "severity": "minor",
+      "stage": "implement",
+      "status": "open"
     }
   ],
   "coherence_passes": [
@@ -811,6 +882,14 @@
       "epoch": 1,
       "inputs": "8a1242059659250eb6251b90307ab976df9fe831b7a78618d658cdc25dcd971c",
       "pass": 7,
+      "stage": "implement",
+      "verdict": "GO_WITH_QUESTIONS"
+    },
+    {
+      "at": "2026-09-24T20:15:12Z",
+      "epoch": 1,
+      "inputs": "c37cd70dcee24e3eaf6471bab69c304598737bd2a6a1cf63cbe57f976ca02456",
+      "pass": 8,
       "stage": "implement",
       "verdict": "GO_WITH_QUESTIONS"
     }
@@ -883,6 +962,11 @@
     "build-tests-unit": {
       "assumptions": "TD-8 only: three docstring passages of tests/fitness/test_context_declarations.py (:33-37, :304-307, :337-342) now say what is true since CR-2609-823a, past tense for what held with one context; the COH-implement-4 ready patch was already in place in the other three fitness files; no assertion, case name, import or code line changed; both context headers declare peer:shared-kernel on disk.",
       "at": "2026-09-24T19:55:26Z",
+      "state": "returned"
+    },
+    "review-coherence": {
+      "assumptions": "none -- this skill reads. Pass 8: Phase 1b found all 6 recorded resolutions landed (file:line cited, no verification finding); a hunt over git diff d5d5832..643976a compared 12 pairs and found 3 contradictions and 1 gap, all minor, 2 resolvable by citation. A released Alembic revision's docstring left unraised (revisions are never edited); the plan-close acceptance and the text-measurement.json deletion item are incomplete rather than false.",
+      "at": "2026-09-24T20:15:12Z",
       "state": "returned"
     },
     "review-converge": {
@@ -4289,7 +4373,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 818,
+  "revision": 820,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4406,7 +4490,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T19:58:16Z",
+  "updated_at": "2026-09-24T20:15:12Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {
