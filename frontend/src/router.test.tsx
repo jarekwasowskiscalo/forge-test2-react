@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { RouterProvider } from 'react-router-dom'
 import { beforeEach, expect, it, vi } from 'vitest'
 
@@ -26,6 +27,17 @@ import { ToastProvider } from '@/components/ui/Toast'
  * system to `R-5` clause 3 (`spec/design/testing.md` § CR-2609-823a, "Green by
  * design").
  *
+ * One case belongs to `R-3` rather than `R-5`, and it sits here because only the
+ * composition root can leave one screen and come back to the other: the to-do
+ * list opened a second time by its header link reads its list again and shows
+ * what is stored then (`Q-25`, `spec/design/ui/system-states.md` § Interactions;
+ * the proof the user chose in `Q-29`). It runs under `main.tsx`'s query defaults,
+ * because under the other cases' client -- TanStack's `staleTime` of 0 -- every
+ * screen reads again on every visit, so the case could not tell the hook's
+ * `staleTime: 0` from the 30 seconds it overrides. It is green on its first run,
+ * on purpose: the hook already overrides them, and until this case nothing failed
+ * if that one line went.
+ *
  * This file sits beside the composition root, outside every context folder, so it
  * imports no context module (`tests/fitness/test_context_boundaries.py`): the
  * task is aliased from the generated contract, and the screens are reached
@@ -33,6 +45,7 @@ import { ToastProvider } from '@/components/ui/Toast'
  */
 
 type TodoTask = components['schemas']['TodoTaskRead']
+type TodoTaskList = components['schemas']['TodoTaskList']
 
 const stubs = vi.hoisted(() => {
   const RealRequest = globalThis.Request
@@ -89,13 +102,31 @@ beforeEach(() => {
   })
 })
 
+/**
+ * A query client with the defaults `main.tsx` gives the application, above all
+ * its `staleTime` of 30 seconds. Copied rather than imported: `main.tsx` exports
+ * nothing and mounts the application the moment it is imported. `retry` is off
+ * rather than `main.tsx`'s function, which only acts on a failed read, and no
+ * read fails in the case that uses this.
+ */
+function applicationQueryClient(): QueryClient {
+  return new QueryClient({
+    defaultOptions: {
+      queries: { retry: false, refetchOnWindowFocus: false, staleTime: 30_000 },
+      mutations: { retry: false },
+    },
+  })
+}
+
 /** The application's router, at `address`, rendered as `main.tsx` renders it. */
-async function open(address: string) {
+async function open(
+  address: string,
+  queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  }),
+) {
   const { router } = await reach<typeof import('@/router')>('@/router')
   await router.navigate(address)
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  })
   render(
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
@@ -140,4 +171,60 @@ it('answers an unknown address with the page that says nothing is there [req:CR-
   expect(screen.getByText('There is nothing at this address.')).toBeInTheDocument()
   // Not moved somewhere else: the address the person typed stays in the bar.
   expect(router.state.location.pathname).toBe('/no-such-page')
+})
+
+it('reads the to-do list again when its header link opens it a second time [req:CR-2609-823a/R-3]', async () => {
+  // What the service stores, as a variable: somebody else changes it between the
+  // two visits. Every other address keeps the answers `beforeEach` gives it.
+  let stored: TodoTaskList = { items: [WATER], total: 1 }
+  const otherAnswers = stubs.fetchStub.getMockImplementation()
+  stubs.fetchStub.mockImplementation((request: Request) =>
+    new URL(request.url).pathname === '/api/todo-tasks'
+      ? Promise.resolve(json(stored))
+      : (otherAnswers?.(request) ?? Promise.reject(new Error('no answer configured'))),
+  )
+  const listReads = () =>
+    stubs.fetchStub.mock.calls.filter(
+      ([request]) =>
+        request.method === 'GET' && new URL(request.url).pathname === '/api/todo-tasks',
+    ).length
+
+  const user = userEvent.setup()
+  await open('/todo-list', applicationQueryClient())
+  const firstVisit = Date.now()
+
+  // The first visit reads the list as it stands: one task, not done.
+  expect(await screen.findByRole('checkbox', { name: 'Water the plants' })).not.toBeChecked()
+  expect(listReads()).toBe(1)
+
+  // Somebody else, in another tab: ticks it and adds a task. Nothing on this
+  // screen changed, so no change of its own reads the list again.
+  const bread: TodoTask = {
+    id: '00000000-0000-4000-8000-000000000002',
+    text: 'Buy bread',
+    done: false,
+    created_at: '2026-09-24T09:05:00Z',
+  }
+  stored = { items: [bread, { ...WATER, done: true }], total: 2 }
+
+  // Away to the guestbook by the header link, and back by the other one.
+  await user.click(
+    within(screen.getByRole('navigation', { name: 'Screens' })).getByRole('link', {
+      name: 'Guestbook',
+    }),
+  )
+  expect(await screen.findByRole('heading', { name: 'Leave a note' })).toBeInTheDocument()
+  await user.click(
+    within(screen.getByRole('navigation', { name: 'Screens' })).getByRole('link', {
+      name: 'To-do list',
+    }),
+  )
+
+  // Read again, and what is stored now is shown: the new task, and the tick.
+  expect(await screen.findByRole('checkbox', { name: 'Buy bread' })).not.toBeChecked()
+  expect(screen.getByRole('checkbox', { name: 'Water the plants' })).toBeChecked()
+  expect(listReads()).toBe(2)
+  // Well inside the 30 seconds `main.tsx` allows, or the default alone would
+  // have read again and the case would pass without the hook's `staleTime: 0`.
+  expect(Date.now() - firstVisit).toBeLessThan(30_000)
 })

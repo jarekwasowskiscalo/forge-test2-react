@@ -618,3 +618,5 @@
 - [22:27] fanout_recorded: returned: build-tests-unit
 - [22:27] todo_resolved: TD-10
 - [22:27] fanout_recorded: returned: build-tests-integration
+- [22:27] todo_resolved: TD-11
+- [22:29] fanout_recorded: returned: build-tests-frontend; 1 process fault(s): PROC-58

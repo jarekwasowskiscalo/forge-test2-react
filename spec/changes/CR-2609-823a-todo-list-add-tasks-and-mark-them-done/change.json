@@ -958,8 +958,9 @@
       "state": "returned"
     },
     "build-tests-frontend": {
-      "at": "2026-09-24T20:25:14Z",
-      "state": "dispatched"
+      "assumptions": "TD-9 only: new top-level case src/router.test.tsx::reads the to-do list again when its header link opens it a second time [req:CR-2609-823a/R-3], under a query client copying main.tsx's defaults (staleTime 30_000, refetchOnWindowFocus false): opens /todo-list, the stub changes, leaves by \"Guestbook\" in the Screens nav, returns by \"To-do list\", asserts the new task and the tick are shown, two reads, under 30 s. Green by design: useTodoTasks sets staleTime: 0 (TD-7). A temporary mutation probe removing staleTime made this case alone fail (router.test.tsx:224); the probe was deleted. open() gained an optional queryClient parameter defaulting to the client the three existing cases used.",
+      "at": "2026-09-24T20:29:10Z",
+      "state": "returned"
     },
     "build-tests-integration": {
       "assumptions": "TD-11 only: tests/integration/test_e2e_reset.py:43 replaced word for word by the COH-implement-9 ready patch (wrapped over :43-45); REQUIRED = frozenset({\"guestbook_entries\"}) and the comment's last two lines unchanged; test_e2e_reset 5 passed.",
@@ -2751,6 +2752,32 @@
       "stage": "implement",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/369#issuecomment-5821713050"
+    },
+    {
+      "at": "2026-09-24T20:29:10Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T20:29:10Z",
+          "note": "build-tests-frontend has no step for proving that a green-by-design case can fail (its Phase 4 assumes red), so I added my own: a temporary mutation-probe `*.test.tsx`, run once and deleted, which cost one extra vitest run.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-58",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "build-tests-frontend",
+      "seen": 1,
+      "signal": "build-tests-frontend has no step for proving that a green-by-design case can fail (its Phase 4 assumes red), so I added my own: a temporary mutation-probe `*.test.tsx`, run once and deleted, which cost one extra vitest run.",
+      "signature": "build-tests-frontend has no step for proving that a green-by-design case can fail (its Phase · assumes red), so I added ",
+      "stage": "implement",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -4569,7 +4596,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 846,
+  "revision": 848,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4689,6 +4716,7 @@
       "id": "TD-11",
       "kind": "agent",
       "raised_at": "2026-09-24T20:25:13Z",
+      "resolved_at": "2026-09-24T20:27:56Z",
       "skill": "build-tests-integration",
       "what": "COH-implement-9 (constitution Art. I): apply the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-9 to tests/integration/test_e2e_reset.py:43 (the comment on REQUIRED that says it is the one table holding a scenario's state). Prose only: no assertion, case name or behaviour changes, nothing else in the file; prove ./scripts/test.sh integration -k test_e2e_reset and ./scripts/lint.sh green."
     },
@@ -4716,7 +4744,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T20:27:56Z",
+  "updated_at": "2026-09-24T20:29:10Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

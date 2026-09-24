@@ -853,3 +853,5 @@
 {"timestamp": "2026-09-24T20:27:48Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: build-tests-unit", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T20:27:48Z", "agent": "sdd", "action": "todo_resolved", "details": "TD-10", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
 {"timestamp": "2026-09-24T20:27:56Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: build-tests-integration", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T20:27:56Z", "agent": "sdd", "action": "todo_resolved", "details": "TD-11", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
+{"timestamp": "2026-09-24T20:29:10Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: build-tests-frontend; 1 process fault(s): PROC-58", "session_id": "76720804-74cc-4a32-b0f2-3b64b73aa9dd"}
