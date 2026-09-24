@@ -187,8 +187,12 @@ half (`tests/fitness/test_golden_set.py`).
 
 - **The guestbook's backend, whole** — `app/contexts/guestbook/` in every layer, its revision
   `alembic/versions/a1b2c3d4e5f6_create_guestbook_entries_table.py`, its contract, its welcome
-  entries, `e2e/suite/features/guestbook.feature` and its steps (`SC-5`). Its frontend changes by
-  three import paths and nothing else.
+  entries, `e2e/suite/features/guestbook.feature` and its steps (`SC-5`), save one comment in
+  `e2e/suite/steps/guestbook_steps.py`, on `ENTRIES`, that counted one resource
+  (`spec/design/testing.md` § Four file sets, disjoint, COH-implement-9): prose alone, and no step
+  text or binding moves. Its frontend changes by three import paths and one line of
+  `GuestbookPage.tsx`'s module docstring (`spec/design/architecture.md` § The files,
+  COH-implement-5), and nothing else.
 - **`app/platform/schemas/text.py`** — the kernel's server half is imported by the to-do service's
   judgement as it stands; `app/platform/schemas/refusals.py` is reused as the envelope.
 - **`app/main.py`, `app/core/`, `app/db/`, `alembic/env.py`** — the aggregate and the context

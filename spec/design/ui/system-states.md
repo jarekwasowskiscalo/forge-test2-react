@@ -192,12 +192,15 @@ to-do list's number of tasks. The navigation is two fixed addresses and reads no
 | entering an unknown route | the 404 page **inside** the frame — the way back stays on screen |
 
 **Opening the to-do list reads its list, every time — the header link included.** Opened by its
-address, by a reload or by the link "To-do list", the screen shows the tasks as they are stored at
-that moment, other people's changes of the last few seconds included, and never a copy it read
-earlier (`CR-2609-823a/R-3`). The user decided it in `CR-2609-823a` (`Q-25`) in these words:
-"Always fetch the latest." The guestbook is unchanged by that decision: opened by a link within
-30 seconds of its last read, it shows that read without asking the service again
-(`frontend/src/main.tsx`, `staleTime`), and a reload, or a change made on it, reads it afresh.
+address, by a reload or by the link "To-do list", the screen reads its list afresh and shows the
+tasks as they are stored at that moment, other people's changes of the last few seconds included
+(`CR-2609-823a/R-3`). The user decided it in `CR-2609-823a` (`Q-25`) in these words:
+"Always fetch the latest." A list it read earlier in the same tab stays on screen only until that
+read answers, and is then replaced; it is not swapped for the loading outline meanwhile. The user
+decided that in `CR-2609-823a` (`Q-28`) in these words: "Briefly showing it is fine." A reload and
+an entered address have no earlier list to show. The guestbook is unchanged by either decision:
+opened by a link within 30 seconds of its last read, it shows that read without asking the service
+again (`frontend/src/main.tsx`, `staleTime`), and a reload, or a change made on it, reads it afresh.
 
 **The browser stores nothing.** There is no `localStorage`, no cookie, no state that survives a
 tab — after the theme was withdrawn nothing was left that belonged there.

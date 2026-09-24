@@ -199,8 +199,40 @@ not declared here as made.*
   **ADR:** none. It records how one red was carried.
   **Requirements:** CR-2609-823a/R-1, CR-2609-823a/R-2, CR-2609-823a/R-3, CR-2609-823a/R-4, CR-2609-823a/R-5, CR-2609-823a/R-6, CR-2609-823a/R-7, CR-2609-823a/R-8, CR-2609-823a/R-9, CR-2609-823a/R-10
 
+*Written by the convergence round of coherence pass 8, `implement` stage, for the four findings
+`COH-implement-7` to `COH-implement-10`, each with the ready patch under it. `COH-implement-7`
+names `requirements.md` § R-3 clause 5 as its `ambiguity_source`; its patch and the user's
+decision (`Q-28`) land in `spec/design/ui/system-states.md` § Interactions, which ranks above the
+change's requirements (constitution, Article VIII) and now decides what is shown while the read is
+under way, so the approved requirements are left as they are. `COH-implement-10`'s edits
+(`design/delta/architecture.md` § What this change does not move, `tasks.md` T-22 and § Outside
+every task, item 6), `COH-implement-9`'s exception in that same fragment bullet, and the
+`guestbook_steps.py` row of § This change owns below are inside the change record and need no
+entry. The three comment edits of `COH-implement-9` and the `frontend/src/router.test.tsx` case of
+`COH-implement-8` belong to their authors afterwards, and they are not declared here as made.*
+
+- `MODIFIED` `spec/design/ui/system-states.md` § Interactions: the paragraph on opening the to-do list, its second sentence reworded and three sentences added
+  **Was:** "the screen shows the tasks as they are stored at that moment, other people's changes of the last few seconds included, and never a copy it read earlier". Nothing said what is drawn while the read made on opening is under way.
+  **Now:** "the screen reads its list afresh and shows the tasks as they are stored at that moment, other people's changes of the last few seconds included." Then: "A list it read earlier in the same tab stays on screen only until that read answers, and is then replaced; it is not swapped for the loading outline meanwhile." The user's words follow, and a reload and an entered address are named as having no earlier list to show.
+  **Why:** COH-implement-7. The paragraph promised "never a copy it read earlier". The code written for it (`useTodoTasks.ts`, `staleTime: 0` alone) keeps a cached list for TanStack Query's default five minutes and draws it, as a success, until the fresh read answers. So a to-do list left and reopened by its header link first shows the list it read before. `requirements.md` § R-3 clause 5, "SHALL show the tasks exactly as they are stored at that moment", said what is shown once the list is read, not while the read is under way: the convergence round of pass 7 read it as "nothing else is ever shown", build-frontend as "a read is always made". The user decided `Q-28` = A: "Briefly showing it is fine." The code stays as it is.
+  **ADR:** none. It states what one screen draws for the length of one read; reversing it is one query option (`gcTime: 0`) and this paragraph.
+  **Requirements:** CR-2609-823a/R-3
+- `MODIFIED` `spec/design/testing.md` § CR-2609-823a, the to-do list: the `CR-2609-823a/R-3` row, one proof added after the `TodoListPage.test.tsx` entry
+  **Was:** the row proved clause 5 only through "A task somebody else added appears after a reload", and named no case for the header link that `Q-25` made read the list again.
+  **Now:** "**frontend/src/router.test.tsx** (the to-do list opened a second time by its header link is read again and shows what is stored then, under a query client with `frontend/src/main.tsx`'s defaults, so that the case fails if the list inherits their 30 seconds …)", closed by the user's words.
+  **Why:** COH-implement-8. The convergence round of pass 7 wrote `Q-25` into `system-states.md` and sent the code to build-frontend and the UAT line to build-tests-uat, and sent nothing to a test author. Every query client the tests build takes TanStack's default `staleTime` of 0, the UI smoke asserts headings and addresses, and UAT step 15 shows the same task whether or not the list is read again. So the one line that carries `Q-25` could be deleted with every suite green, while `uat.md` says the suites prove all of `R-1` to `R-10`. The user decided `Q-29` = A: "Add an automated test". The case is build-tests-frontend's to write afterwards, in a file already in its cell.
+  **ADR:** none. Which suite proves a decision is testing.md's to hold (constitution, Article IX).
+  **Requirements:** CR-2609-823a/R-3
+- `MODIFIED` `spec/design/testing.md` § Four file sets, disjoint: three cells of the to-do list's table
+  **Was:** the cells named the five files of COH-implement-4 whose docstrings counted one. build-tests-unit's cell gave `tests/unit/test_guestbook_entry_model.py` for its assertion alone ("the schema holds two tables"), and `tests/integration/test_e2e_reset.py` and `e2e/suite/steps/guestbook_steps.py` stood in no cell.
+  **Now:** build-tests-unit's cell reads "(the schema holds two tables, in an assertion and in the docstring that counted one)". build-tests-integration's cell adds "`tests/integration/test_e2e_reset.py` (text only: the comment on `REQUIRED` that counted one table)". build-tests-e2e's cell adds "text only, `e2e/suite/steps/guestbook_steps.py` (the comment on `ENTRIES` that counted one resource)". Two joins became commas, so that each list keeps a single "and".
+  **Why:** COH-implement-9. The rule this section gained in pass 7 names a class of prose, a docstring that states a count the change alters, while its cells named a closed list drawn from COH-implement-4's grep over `tests/fitness/` and `tests/integration/test_migrations.py` alone. Three more comments still counted one: "The template's schema is one table and no edges", "The one table in this application's schema that holds a scenario's state" and "The one resource this suite drives". `spec/design/data-model.md` and `spec/design/api.md` say two tables and two resources. Settled automatically by the constitution, Article I: code contradicting `spec/` is a defect in the code. `guestbook_steps.py` lies outside the recorded boundary and under the architecture fragment's freeze of the guestbook's steps, so this round also adds its row to § This change owns below and states the one-comment exception where that freeze lives. The three edits are their authors' to make afterwards.
+  **ADR:** none. Which author edits which test is testing.md's to hold (constitution, Article IX).
+  **Requirements:** CR-2609-823a/R-1
+
 ## This change owns
 
 | Path | Why |
 |---|---|
 | `frontend/src/contexts/guestbook/pages/GuestbookPage.tsx` | one line of its module docstring, which called the guestbook the only screen; now one of two (COH-implement-5); nothing the screen does moves (build-frontend) |
+| `e2e/suite/steps/guestbook_steps.py` | one comment, on `ENTRIES`, that counted one resource (COH-implement-9); no step text or binding moves (build-tests-e2e) |

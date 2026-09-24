@@ -769,9 +769,12 @@
       "id": "COH-implement-7",
       "kind": "contradiction",
       "raised_at": "2026-09-24T20:15:12Z",
+      "resolution": "Q-28 = A, in the user's words: \"Briefly showing it is fine.\" Opened by the header link, the to-do list reads its list afresh; a list read earlier in the same tab stays on screen only until that read answers, then is replaced. The code stays as it is.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T20:25:01Z",
       "severity": "minor",
       "stage": "implement",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/testing.md § CR-2609-823a, the to-do list",
@@ -786,9 +789,12 @@
       "id": "COH-implement-8",
       "kind": "gap",
       "raised_at": "2026-09-24T20:15:12Z",
+      "resolution": "Q-29 = A, in the user's words: \"Add an automated test\". testing.md's R-3 row names a frontend/src/router.test.tsx case, under main.tsx's query defaults, that fails if the to-do list loses staleTime: 0; build-tests-frontend writes it afterwards.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-24T20:25:01Z",
       "severity": "minor",
       "stage": "implement",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/testing.md § Four file sets, disjoint",
@@ -805,9 +811,12 @@
       "id": "COH-implement-9",
       "kind": "contradiction",
       "raised_at": "2026-09-24T20:15:12Z",
+      "resolution": "AUTO (constitution Art. I): testing.md's cells name all three comments that still counted one; guestbook_steps.py gains a row in This change owns and a one-comment prose exception to the freeze of the guestbook's steps. The comment edits are their authors' afterwards.",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-24T20:25:01Z",
       "severity": "minor",
       "stage": "implement",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md § What this change does not move",
@@ -823,9 +832,12 @@
       "id": "COH-implement-10",
       "kind": "contradiction",
       "raised_at": "2026-09-24T20:15:12Z",
+      "resolution": "AUTO (spec/design/architecture.md § The files): the architecture fragment and tasks.md name the GuestbookPage.tsx docstring exception instead of calling the file untouched.",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-24T20:25:01Z",
       "severity": "minor",
       "stage": "implement",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "coherence_passes": [
@@ -970,8 +982,8 @@
       "state": "returned"
     },
     "review-converge": {
-      "assumptions": "TD-4 only: added one \"## This change owns\" section with one row (frontend/src/contexts/guestbook/pages/GuestbookPage.tsx, build-frontend, COH-implement-5) at the end of design/delta/converge.md; no prose, no delta entry, no reconciliation; set-boundary --from-design is the orchestrator's to run before build-frontend goes out.",
-      "at": "2026-09-24T19:51:23Z",
+      "assumptions": "Pass 8 reconciled: REC-36 COH-implement-7 (system-states.md § Interactions, with Q-28's words), REC-37 COH-implement-8 (testing.md R-3 row names the router.test.tsx header-link case, Q-29), REC-38 COH-implement-9 (three testing.md cells; the guestbook_steps.py row in design/delta/converge.md § This change owns; the freeze exception), REC-39 COH-implement-10 (design/delta/architecture.md bullet names both exceptions; tasks.md :724-727 and :950). The router.test.tsx case and the three comment edits are their authors', afterwards. delta-history.md:273 still carries the old sentence (an assembled record). requirements.md § R-3 clause 5 left unedited: system-states.md ranks above the change's requirements, and editing the approved requirements would void their approval.",
+      "at": "2026-09-24T20:25:01Z",
       "state": "returned"
     }
   },
@@ -2677,6 +2689,32 @@
       "stage": "implement",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/378"
+    },
+    {
+      "at": "2026-09-24T20:25:01Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T20:25:01Z",
+          "note": "COH-implement-7 names requirements.md § R-3 as its ambiguity_source, but its ready patch and the dispatch target spec/design/ui/system-states.md. review-converge iron rule 1 and constraint 1 say to edit the ambiguity_source, so I had to argue that rule away in order to follow the dispatch.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-56",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-converge",
+      "seen": 1,
+      "signal": "COH-implement-7 names requirements.md § R-3 as its ambiguity_source, but its ready patch and the dispatch target spec/design/ui/system-states.md. review-converge iron rule 1 and constraint 1 say to edit the ambiguity_source, so I had to argue that rule away in order to follow the dispatch.",
+      "signature": "COH-implement-· names requirements.md § R-· as its ambiguity_source, but its ready patch and the dispatch target spec· r",
+      "stage": "implement",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -3927,6 +3965,80 @@
       "stage": "implement",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T20:21:02Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T20:15:49Z",
+      "blocking": false,
+      "blocks": [
+        "COH-implement-7"
+      ],
+      "options": [
+        {
+          "consequence": "The screen description is corrected to say the earlier list stays on screen only until the fresh read answers; the code stays as it is.",
+          "key": "A",
+          "label": "Briefly showing it is fine",
+          "recommended": true
+        },
+        {
+          "consequence": "The screen forgets its list when you leave it (one setting in the code), so every opening shows the loading outline first and then the list as stored.",
+          "key": "B",
+          "label": "Show 'loading' instead",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-28",
+      "question": "When someone comes back to the to-do list with the link at the top, it now always asks for the latest list (your answer to Q-25). While that answer is on its way -- usually a moment, on a slow connection a few seconds -- the screen shows the list it had before, then replaces it. Is that fine, or should it show the 'loading' outline instead of the earlier list?",
+      "stage": "implement",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T20:21:02Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T20:15:49Z",
+      "blocking": false,
+      "blocks": [
+        "COH-implement-8"
+      ],
+      "options": [
+        {
+          "consequence": "The test design names one new screen test, written by the test author, that fails if the list ever goes back to showing a copy up to 30 seconds old.",
+          "key": "A",
+          "label": "Add an automated test",
+          "recommended": true
+        },
+        {
+          "consequence": "The acceptance script gets one more step, with two browser windows, that a person walks through after delivery.",
+          "key": "B",
+          "label": "Add a manual check",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-29",
+      "question": "Nothing checks automatically that the to-do list fetches the latest list when it is opened by its link (your choice in Q-25): the line of code that does it could be deleted and every test would still pass. How should that be proved?",
+      "stage": "implement",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -4357,6 +4469,54 @@
       "id": "REC-35",
       "rule_added": "Each red was declared on the task that turned it red or, when it already stood at the design close, accepted by name at that boundary (Q-24) and carried as a baseline red; the task whose product closes it names it under Turns green: in tasks.md.",
       "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T20:24:18Z",
+      "decision": "Q-28 = A, in the user's words: \"Briefly showing it is fine.\" Opened by the header link, the to-do list reads its list afresh; a list read earlier in the same tab stays on screen only until that read answers, then is replaced. The code stays as it is.",
+      "edited": [
+        "spec/design/ui/system-states.md § Interactions"
+      ],
+      "from_finding": "COH-implement-7",
+      "id": "REC-36",
+      "rule_added": "A list it read earlier in the same tab stays on screen only until that read answers, and is then replaced; it is not swapped for the loading outline meanwhile.",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T20:24:18Z",
+      "decision": "Q-29 = A, in the user's words: \"Add an automated test\". testing.md's R-3 row names a frontend/src/router.test.tsx case, under main.tsx's query defaults, that fails if the to-do list loses staleTime: 0; build-tests-frontend writes it afterwards.",
+      "edited": [
+        "spec/design/testing.md § CR-2609-823a, the to-do list (the R-3 row)"
+      ],
+      "from_finding": "COH-implement-8",
+      "id": "REC-37",
+      "rule_added": "R-3 row: frontend/src/router.test.tsx proves the header link reads the to-do list again (Q-25), under main.tsx's defaults",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-24T20:24:18Z",
+      "decision": "AUTO (constitution Art. I): testing.md's cells name all three comments that still counted one; guestbook_steps.py gains a row in This change owns and a one-comment prose exception to the freeze of the guestbook's steps. The comment edits are their authors' afterwards.",
+      "edited": [
+        "spec/design/testing.md § Four file sets, disjoint",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/converge.md § This change owns",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md § What this change does not move"
+      ],
+      "from_finding": "COH-implement-9",
+      "id": "REC-38",
+      "rule_added": null,
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-24T20:24:18Z",
+      "decision": "AUTO (spec/design/architecture.md § The files): the architecture fragment and tasks.md name the GuestbookPage.tsx docstring exception instead of calling the file untouched.",
+      "edited": [
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md § What this change does not move",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/tasks.md § T-22",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/tasks.md § Outside every task, item 6"
+      ],
+      "from_finding": "COH-implement-10",
+      "id": "REC-39",
+      "rule_added": null,
+      "source": "auto"
     }
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
@@ -4373,7 +4533,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 820,
+  "revision": 833,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4490,7 +4650,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T20:15:12Z",
+  "updated_at": "2026-09-24T20:25:01Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

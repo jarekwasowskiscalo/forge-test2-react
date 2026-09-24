@@ -722,8 +722,9 @@ accessibility gives it (`Q-16`), and its own footer sentence.
 navigation group `Screens` with `Guestbook` and `To-do list`, the current one marked, as
 `spec/design/ui/system-states.md` § The navigation between the screens gives it. Each screen gets its
 own footer, and the not-found page none. `frontend/src/contexts/guestbook/pages/GuestbookPage.tsx` is
-outside this change, because the guestbook's frontend changes by three import paths and nothing else
-(`design/delta/architecture.md` § What this change does not move). So the guestbook's own sentence
+outside this task. The guestbook's frontend changes by three import paths, and later by one line of
+that file's docstring, which the implement stage's convergence round gave build-frontend
+(`spec/design/architecture.md` § The files, COH-implement-5). So the guestbook's own sentence
 reaches its screen without an edit there, and a way the frame cannot provide is reported rather than
 taken by editing that file. The not-found page's sentence becomes `There is nothing at this address.`.
 `TODO_LIST_ROUTE = '/todo-list'` is added, with one route binding it to `TodoListPage`. `/` still
@@ -947,8 +948,8 @@ builder turns green was written, and seen red, in wave 1.
 5. **The task-text data invariant** under `contracts/invariants/` is written by the `spec_sync`
    stage's convergence round, once T-2's and T-9's witnesses exist (`Q-21`, item 6).
 6. **The guestbook's footer.** `spec/design/ui/system-states.md` makes the footer each screen's own,
-   while the architecture keeps `GuestbookPage.tsx` untouched. T-22 is told to satisfy both, and to
-   report rather than edit that file if the frame cannot.
+   while the architecture keeps what `GuestbookPage.tsx` does untouched. T-22 is told to satisfy
+   both, and to report rather than edit that file if the frame cannot.
 7. **Production and the seeder.** `spec/design/testing.md` lists "production refused for tasks too"
    as red until the seeder changes. It is green by design (T-4), because the seeder refuses production
    before it reads either list.
