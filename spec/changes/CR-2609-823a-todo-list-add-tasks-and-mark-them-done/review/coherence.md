@@ -2692,3 +2692,112 @@ frontend/src/contexts/guestbook/pages/GuestbookPage.tsx` changes one docstring l
   not contradict the 30 seconds in `system-states.md`.
 - **Glossary and invariants.** No identifier this round added uses a bare `task`. `D-01`…`D-03`
   hold.
+
+## Pass 9 — verification
+
+The preflight printed `CONVERGENCE ROUND: 2 of 3 -- MODE: VERIFYING`, so only Phases 1, 1b and 4
+ran. There was no hunt. The question was whether each of the ten recorded resolutions of the
+`implement` stage landed in the document its reconciliation named. Pass 8 found the first six
+landed, and they were checked again here, because a later round can move text.
+
+Read for it:
+- this file whole;
+- `uat.md`, the stage's one listed artefact;
+- the diff of the last convergence round and its re-dispatches, `git diff 6009ac2 c24ac49`
+  (review-converge `fa1c951`, then TD-9…TD-12);
+- the passages each resolution names, in the working tree;
+- the ten `ASSUMPTIONS` blocks from the preflight.
+
+The ranked documents read above them: `spec/constitution.md` (Article VIII in full),
+`spec/invariants.md`, `spec/glossary.md`, `contracts/README.md`.
+
+Line numbers were taken from the working tree with `grep -n` and `sed -n` over each resolution's
+own wording. `git status --short` shows no uncommitted edit outside the process's own state
+files, so every line cited below is committed at `c24ac49`.
+
+### Recorded resolutions
+
+- COH-implement-1: landed (`spec/design/ui/system-states.md`:194-198). § Interactions opens with
+  "Opening the to-do list reads its list, every time — the header link included", and carries the
+  user's `Q-25` words at :196-198. The artefact-level patches still stand. They are
+  `frontend/src/contexts/todo_list/hooks/useTodoTasks.ts`:72-77 (`staleTime: 0` at :77, the
+  comment citing `R-3` clause 5 and `Q-25`) and `uat.md`:80 (step 14, "reload window A, then open
+  the guestbook with the header link").
+- COH-implement-2: landed (`spec/design/architecture.md`:678-689, under § Who writes what, and
+  where the sets meet, :644). The README "is in no member's set", with template issue #92, the
+  five sentences and the user's `Q-26` words at :688-689. As intended, the five sentences stand
+  unchanged at `golden-set/README.md`:23, :30, :32, :48 and :98.
+- COH-implement-3: landed (`spec/README.md`:65-67, `CLAUDE.md`:130-131). Both read "the
+  guestbook's files in both halves of the corpus `golden-set/` (never the to-do list's
+  `todo-task-text.json` and `todo-tasks-*.json`)". The two names cover all five to-do files that
+  `ls golden-set/fixtures golden-set/seed` lists.
+- COH-implement-4: landed (`spec/design/testing.md`:1054-1059 for the rule; :1117 and :1118 for
+  the cells). The docstrings:
+  - `tests/fitness/test_context_declarations.py`:31-33, :301 and :340;
+  - `tests/fitness/test_context_boundaries.py`:28-30, :146 and :215-217;
+  - `tests/fitness/test_data_invariants.py`:16-19 and :93;
+  - `tests/fitness/test_migration_safety.py`:27;
+  - `tests/integration/test_migrations.py`:128.
+- COH-implement-5: landed (`spec/design/architecture.md`:630, the `GuestbookPage.tsx` row). The
+  file itself, `frontend/src/contexts/guestbook/pages/GuestbookPage.tsx`:30, reads "the
+  guestbook's screen, one of this application's two". Its row in § This change owns is at
+  `design/delta/converge.md`:237.
+- COH-implement-6: landed (`spec/design/testing.md`:958-963 for the lead sentence, :982-986 for the
+  third bullet; `spec/contexts/todo_list.md`:30-32). Each now says a red was declared on the task
+  that turned it red, or accepted by name at the design close (`Q-24`) and carried as a baseline
+  red. Neither document quotes the user's `Q-27` words, and the resolution does not ask for them.
+- COH-implement-7: landed (`spec/design/ui/system-states.md`:195-201).
+  - :195 reads "the screen reads its list afresh and shows the tasks as they are stored at that
+    moment".
+  - :198-199 reads "A list it read earlier in the same tab stays on screen only until that read
+    answers, and is then replaced".
+  - The user's `Q-28` words are at :199-200.
+  - `grep -c "never a copy it read earlier"` over the file printed `0`.
+
+  The resolution's "the code stays as it is" also holds: `git diff --stat 6009ac2 c24ac49 --
+  frontend/src/contexts/todo_list frontend/src/main.tsx` printed nothing, and `grep -rn gcTime
+  frontend/src` found nothing.
+- COH-implement-8: landed (`spec/design/testing.md`:760, the `R-3` row). It names
+  **frontend/src/router.test.tsx**, under `main.tsx`'s defaults, with the user's `Q-29` words. The
+  case exists at `frontend/src/router.test.tsx`:176. Its query client at :112-119 copies
+  `frontend/src/main.tsx`:34-35 (`refetchOnWindowFocus: false`, `staleTime: 30_000`).
+  `./scripts/test.sh frontend` printed `✓ |dom| src/router.test.tsx (4 tests)` and
+  `Tests  243 passed (243)`.
+- COH-implement-9: landed. The cells are `spec/design/testing.md`:1117 ("in an assertion and in
+  the docstring that counted one"), :1118 (`tests/integration/test_e2e_reset.py`, text only) and
+  :1120 (`e2e/suite/steps/guestbook_steps.py`, text only). The new row in § This change owns is
+  `design/delta/converge.md`:238. The freeze exception is `design/delta/architecture.md`:190-193,
+  "save one comment in `e2e/suite/steps/guestbook_steps.py` … prose alone". The three comment
+  edits are:
+  - `tests/unit/test_guestbook_entry_model.py`:163-165;
+  - `tests/integration/test_e2e_reset.py`:43-45, with `REQUIRED` unchanged at :48;
+  - `e2e/suite/steps/guestbook_steps.py`:25.
+- COH-implement-10: landed. `design/delta/architecture.md`:193-195 reads "three import paths and
+  one line of `GuestbookPage.tsx`'s module docstring … COH-implement-5". `tasks.md`:724-727, in
+  T-22, reads "outside this task … and later by one line of that file's docstring". `tasks.md`:950-952
+  (§ Outside every task, item 6) reads "keeps what `GuestbookPage.tsx` does untouched".
+
+A grep of each named document for the wording its resolution replaced found nothing, and every
+exit code was 1. The strings searched were:
+- "vacuously true today", "Vacuously true with one context", "With one context nothing", "one
+  revision here creates", "every load of the only screen" and "the only screen in this
+  application", over `tests/fitness/*.py`, `tests/integration/test_migrations.py` and
+  `GuestbookPage.tsx`;
+- "The template's schema is one table", "The one table in this application's schema" and "The one
+  resource this suite drives", over `tests` and `e2e`;
+- "three import paths and nothing else", over the architecture fragment and `tasks.md`;
+- "keeps `GuestbookPage.tsx` untouched", over `tasks.md`.
+
+The only copy of the old COH-implement-10 sentence left is `delta-history.md`:273. That file is
+assembled from the fragments, as its own header says, and the resolution did not name it.
+review-converge's assumption says the same.
+
+The authors' assumptions that speak of these edits match the text:
+- review-converge left `requirements.md` § R-3 clause 5 unedited. COH-implement-7's resolution
+  names `system-states.md` alone.
+- build-frontend's `staleTime: 0` sits in `useTodoTasks.ts` only, and `main.tsx` keeps 30 seconds.
+- build-tests-frontend's case is green with its one extra `open()` parameter.
+- build-tests-integration, build-tests-unit and build-tests-e2e each changed one comment, word for
+  word from the ready patch.
+
+No `verification` finding. All ten resolutions landed.

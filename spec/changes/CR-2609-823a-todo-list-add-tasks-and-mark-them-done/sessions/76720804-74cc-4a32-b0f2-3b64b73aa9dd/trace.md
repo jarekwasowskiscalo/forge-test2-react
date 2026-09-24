@@ -620,3 +620,12 @@
 - [22:27] fanout_recorded: returned: build-tests-integration
 - [22:27] todo_resolved: TD-11
 - [22:29] fanout_recorded: returned: build-tests-frontend; 1 process fault(s): PROC-58
+- [22:29] todo_resolved: TD-9
+- [22:29] green_by_design_recorded: src/router.test.tsx::reads the to-do list again when its header link opens it a second time [req:CR-2609-823a/R-3]: COH-implement-8 = Q-29 A: written after TD-7 set staleTime
+- [22:29] process_fault_resolved: PROC-58 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5821735814
+- [22:29] question_raised: oferta eskalacji ESC-implement-r2 (convergence_round)
+- [22:31] question_answered: ESC-implement-r2 -> B
+- [22:31] critique_round: ladder implement_critique untouched (a verifying round -- no rung of the ladder): 4 findings, all resolved -- a verifying round
+- [22:31] fanout_recorded: convergence round: cleared review-coherence
+- [22:31] fanout_recorded: dispatched: review-coherence
+- [22:34] fanout_recorded: returned: review-coherence; coherence pass 9 GO, 0 new finding(s)

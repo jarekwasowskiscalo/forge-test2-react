@@ -905,6 +905,14 @@
       "pass": 8,
       "stage": "implement",
       "verdict": "GO_WITH_QUESTIONS"
+    },
+    {
+      "at": "2026-09-24T20:34:40Z",
+      "epoch": 1,
+      "inputs": "604dd336c561301e2f4ebf7936befab02e25de660f8ea43a8fd4f1561345837e",
+      "pass": 9,
+      "stage": "implement",
+      "verdict": "GO"
     }
   ],
   "contention_events": 0,
@@ -917,9 +925,9 @@
       "rounds": 2
     },
     "implement_critique": {
-      "at": "2026-09-24T19:56:57Z",
-      "findings_at_round": 6,
-      "rounds": 1
+      "at": "2026-09-24T20:31:25Z",
+      "findings_at_round": 10,
+      "rounds": 2
     },
     "requirements_critique": {
       "at": "2026-09-24T12:46:20Z",
@@ -978,8 +986,8 @@
       "state": "returned"
     },
     "review-coherence": {
-      "assumptions": "none -- this skill reads. Pass 8: Phase 1b found all 6 recorded resolutions landed (file:line cited, no verification finding); a hunt over git diff d5d5832..643976a compared 12 pairs and found 3 contradictions and 1 gap, all minor, 2 resolvable by citation. A released Alembic revision's docstring left unraised (revisions are never edited); the plan-close acceptance and the text-measurement.json deletion item are incomplete rather than false.",
-      "at": "2026-09-24T20:15:12Z",
+      "assumptions": "none -- this skill reads. Pass 9 (verify, round 2 of 3): all 10 recorded resolutions landed, checked against the working tree at c24ac49 with file and line; the router.test.tsx case COH-implement-8 names exists and passes (243 frontend tests); no verification finding opened; the old COH-implement-10 sentence survives only in the assembled delta-history.md:273, which the resolution did not name.",
+      "at": "2026-09-24T20:34:40Z",
       "state": "returned"
     },
     "review-converge": {
@@ -2766,6 +2774,11 @@
           "at": "2026-09-24T20:29:10Z",
           "note": "build-tests-frontend has no step for proving that a green-by-design case can fail (its Phase 4 assumes red), so I added my own: a temporary mutation-probe `*.test.tsx`, run once and deleted, which cost one extra vitest run.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T20:29:18Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5821735814",
+          "state": "filed"
         }
       ],
       "id": "PROC-58",
@@ -2776,8 +2789,8 @@
       "signal": "build-tests-frontend has no step for proving that a green-by-design case can fail (its Phase 4 assumes red), so I added my own: a temporary mutation-probe `*.test.tsx`, run once and deleted, which cost one extra vitest run.",
       "signature": "build-tests-frontend has no step for proving that a green-by-design case can fail (its Phase · assumes red), so I added ",
       "stage": "implement",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5821735814"
     }
   ],
   "files_changed": [],
@@ -2878,6 +2891,11 @@
       "case_id": "tests.fitness.test_length_constants::test_the_line_break_reader_would_see_a_drift",
       "reason": "T-10: a known-positive check of the line-break reader over synthetic sources; it reads no product code, so it is green before T-14 and T-19",
       "recorded_at": "2026-09-24T19:01:24Z"
+    },
+    {
+      "case_id": "src/router.test.tsx::reads the to-do list again when its header link opens it a second time [req:CR-2609-823a/R-3]",
+      "reason": "COH-implement-8 = Q-29 A: written after TD-7 set staleTime: 0 on useTodoTasks, which keeps the rule (Q-25, system-states.md § Interactions); the case fails if the list inherits main.tsx's 30 s, shown by a deleted mutation probe",
+      "recorded_at": "2026-09-24T20:29:11Z"
     }
   ],
   "kind": "feature",
@@ -4102,6 +4120,48 @@
       "stage": "implement",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T20:31:20Z",
+        "choice": "B",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T20:29:24Z",
+      "blocks": [],
+      "esc": {
+        "consumed": [],
+        "row": "27a1",
+        "skills": [
+          "review-coherence"
+        ],
+        "trigger": "convergence_round"
+      },
+      "options": [
+        {
+          "consequence": "No extra cost; this offer will not come back for round 2, the next round gets its own.",
+          "key": "B",
+          "label": "No -- the round goes on opus",
+          "recommended": true
+        },
+        {
+          "consequence": "cost: the fable rates per .specconf/pricing.json -- the buckets differ in their multiplier, check the table before consenting; a smarter author applies changes better, a smarter judge verifies more sharply -- it covers the round's members and its coherence pass.",
+          "key": "A",
+          "label": "Yes -- the whole round on fable",
+          "recommended": false
+        }
+      ],
+      "qid": "ESC-implement-r2",
+      "question": "Convergence round no. 2 z 3 of the implement stage is about to start: the previous one brought 4 findings and all of them are resolved. Going out: review-coherence. Send this round on fable? (cost: the fable rates per .specconf/pricing.json -- the buckets differ in their multiplier, check the table before consenting)",
+      "stage": "implement",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -4596,7 +4656,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 848,
+  "revision": 857,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4701,6 +4761,7 @@
       "id": "TD-9",
       "kind": "agent",
       "raised_at": "2026-09-24T20:25:13Z",
+      "resolved_at": "2026-09-24T20:29:10Z",
       "skill": "build-tests-frontend",
       "what": "COH-implement-8 = Q-29 A: write the one new vitest case spec/design/testing.md's R-3 row now names in frontend/src/router.test.tsx -- the to-do list opened a second time by its header link is read again and shows what is stored then, under a query client with frontend/src/main.tsx's defaults (staleTime 30 s), so the case fails if the list inherits those 30 seconds (Q-25, spec/design/ui/system-states.md § Interactions). Its title carries [req:CR-2609-823a/R-3], at the top level of the file. It will be green on arrival because the hook already sets staleTime: 0 (TD-7): say so, and give the exact case id for green-by-design. Change nothing else; prove ./scripts/test.sh frontend and ./scripts/lint.sh green."
     },
@@ -4744,7 +4805,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T20:29:10Z",
+  "updated_at": "2026-09-24T20:34:40Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {
