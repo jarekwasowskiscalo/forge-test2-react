@@ -39,7 +39,50 @@
     "profile": "boundary",
     "worktree_clean": false
   },
-  "boundary": [],
+  "boundary": [
+    ".github/CODEOWNERS",
+    "CLAUDE.md",
+    "README.md",
+    "alembic/versions/",
+    "app/api.py",
+    "app/contexts/__init__.py",
+    "app/contexts/todo_list/",
+    "docs/",
+    "e2e/suite/features/todo_list.feature",
+    "e2e/suite/steps/todo_list_steps.py",
+    "e2e/suite/test_scenarios.py",
+    "e2e/ui/",
+    "frontend/src/api/schema.d.ts",
+    "frontend/src/components/shell/PageFrame.test.tsx",
+    "frontend/src/components/shell/PageFrame.tsx",
+    "frontend/src/components/ui/Checkbox.tsx",
+    "frontend/src/contexts/guestbook/components/EntryComposer.tsx",
+    "frontend/src/contexts/guestbook/hooks/useEntryQueryParams.ts",
+    "frontend/src/contexts/guestbook/lib/entryText.test.ts",
+    "frontend/src/contexts/guestbook/lib/entryText.ts",
+    "frontend/src/contexts/guestbook/lib/guestbookEntry.ts",
+    "frontend/src/contexts/todo_list/",
+    "frontend/src/lib/text.ts",
+    "frontend/src/pages/StatusPages.test.tsx",
+    "frontend/src/pages/StatusPages.tsx",
+    "frontend/src/router.test.tsx",
+    "frontend/src/router.tsx",
+    "frontend/src/routes.ts",
+    "golden-set/fixtures/",
+    "golden-set/seed/todo-tasks-example.json",
+    "scripts/seed.sh",
+    "scripts/seed_golden_set.py",
+    "spec/ADR/",
+    "spec/contexts/",
+    "spec/design/",
+    "spec/glossary.md",
+    "spec/rationale/",
+    "tests/_golden_set.py",
+    "tests/fitness/",
+    "tests/integration/",
+    "tests/tooling/",
+    "tests/unit/"
+  ],
   "branch": "sdd/CR-2609-823a-todo-list-add-tasks-and-mark-them-done",
   "ci_receipt": null,
   "coherence": [
@@ -653,58 +696,7 @@
   "deferred_findings": [],
   "docs_touched": [],
   "expected_red": [],
-  "fanout": {
-    "design-adr": {
-      "assumptions": "- Decisions were taken from design/delta/{domain,api,architecture,data-model,spec,testing,ui,converge}.md and the live spec/design documents; only domain and api marked `**ADR:** required`. Two drafts: todo-list-is-its-own-bounded-context.md and task-text-refusals-are-coded-not-schema-constraints.md (status Proposed, id ADR-NNNN, supersedes []).\n- review/coherence.md holds requirements-stage passes only; there is no design-stage pass yet, so ADR 2 records what api.md decided (text refusals are coded Refusal bodies decided outside Pydantic, codes in the router) while architecture.md § The layer per rule and its Decision 2 say the reverse (the schema's text type refuses before the route), and testing.md's test_the_create_and_update_shapes_give_every_case_the_same_verdict sits between the two. If coherence rules for architecture, ADR 2 must be rewritten.\n- Second finding for coherence: testing.md says the corpus test cannot move to frontend/src/lib/text.test.ts, against architecture Decision 4.\n- reconcile-design allocates the ADR numbers.\n- Gaps written down, not fixed: nothing refuses a foreign key from todo_tasks to guestbook_entries; no test reads CODEOWNERS; nothing compares the refusal sentences in api.md with the router's; api.md does not record the PATCH-versus-sub-resources alternative (only design/delta/api.md does).\n- Candidates not drafted, each recorded at its home: classification (todo_list.md), todo_task identifier (glossary), PATCH/{items,total}/created_at/no single read/self-contained yaml (api.md), BR-10 mechanism/String(200)/boolean done/no unique constraint (data-model.md), architecture D1,D3,D5,D6,D7 (conventions.md, architecture.md), todo-task-text.json (testing.md), navigation/lockup/404/footer/toast//todo-list (system-states.md, todo-list.md), BR-07 over BR-06 (todo_list.md).",
-      "at": "2026-09-24T14:47:10Z",
-      "state": "returned"
-    },
-    "design-api": {
-      "assumptions": "- design-data declares todo_tasks(id Uuid, text String(200), done Boolean, created_at timestamptz) and no updated_at; its \"correction/marking\" statements also cover a PATCH that carries both fields: one UPDATE naming exactly the columns the body carries, with values from the request.\n- The request schema must NOT put max_length or min_length on text (that returns FastAPI's list with no code, and \"too long\" would then win over \"one line\"); importing TODO_TASK_TEXT_MAX_LENGTH is fine.\n- design-architecture places the text rule (normalize, then empty, then multiline, then too long) in the service; the router translates it into the 5 coded refusals, and the codes are literals in the to-do router; the body is validated before the lookup.\n- design-ui binds only to id, text, done and the 5 codes; created_at is not shown; the 5 sentences are product text and follow the approved mock-up if it words them differently.\n- design-testing gives each of the 5 codes a test, plus the refusal order and the overlapping edit+mark case.\n- Marking and correcting are one PATCH with optional fields (absent fields never written); no GET for one task; the list is {items,total} in one total order with no parameters.\n- ADR required: all three text refusals are coded Refusal bodies decided outside Pydantic constraints, departing from the guestbook's Pydantic 422; todo_list.yaml repeats Refusal and ValidationError instead of pointing at guestbook.yaml, because the guestbook is deleted as a unit.\n- Left for another author: contracts/README.md (outside design-api's allowlist) still says \"three paths, six operations\"; the contracts now hold 5 paths and 10 operations.",
-      "at": "2026-09-24T13:24:23Z",
-      "state": "returned"
-    },
-    "design-architecture": {
-      "assumptions": "- Applied COH-design-3 to the fragment (Decision 4: entryText.test.ts stays put; the text.test.ts row removed; the entryText.test.ts row reads \"one import line\"; Found-outside items 1 and 3 trimmed; the \"moved frontend reader\" clause dropped from the tests/fitness/ row).\n- Applied COH-design-4: router.test.tsx added to build-tests-frontend's set and to § This change owns after router.tsx; the \"if testing.md puts...\" guesses on PageFrame/StatusPages deleted; build-frontend ∩ build-tests-frontend is still ∅ (modules against *.test.*).\n- Also applied COH-design-1 (Q-17 = A) although the preflight did not list it: its artifacts name spec/design/architecture.md and conventions.md § Layers now says the text is judged in services/. BR-06/07/10/13 rows, the router paragraph, the schemas/services file rows, fragment Decision 2 and rows R-1/R-2/R-6 changed. No exception class is named beyond TodoTaskNotFoundError, because api.md names none.\n- Nothing added to § Who writes what: review-converge already wrote the router.test.tsx paragraph there.",
-      "at": "2026-09-24T16:12:47Z",
-      "state": "returned"
-    },
-    "design-data": {
-      "assumptions": "- design-api takes its wire fields from these columns: `id`, `text`, `done`, `created_at`.\n- The list read returns every row, with no pages, ordered `created_at DESC, id DESC`.\n- An add carries only the text and every new task starts not done.\n- A mark carries the state the person chose, never a toggle.\n- An edit carries only the text; no request sends the whole task back.\n- A mark, edit or delete on a missing id is one \"no longer exists\" refusal (the single UPDATE/DELETE ... RETURNING statement returns no row).\n- design-architecture places `TodoTask` in app/contexts/todo_list/models/todo_task.py with TODO_TASK_TEXT_MAX_LENGTH = 200 beside it, and registers the context in app/contexts/__init__.py so Alembic sees the table.\n- design-testing proves the write-shape rule with two writers interleaved on one row, and proves R-3.2 by storing two tasks with the same created_at through the service's clock seam.\n- build-migration writes the ordered operations as listed.\n- A task's text gets its own data invariant of the D-04 kind; writing it belongs to the convergence round (contracts/ is outside design-data's allowlist), so the fragment reports it instead.",
-      "at": "2026-09-24T13:24:23Z",
-      "state": "returned"
-    },
-    "design-domain": {
-      "assumptions": "- design-data declares the table as `## `todo_tasks``. The glossary now fixes the name: TodoTask, table todo_tasks.\n- design-architecture uses `todo_list` as the context's name in every tree (app/, frontend/src/contexts/, CODEOWNERS). The implement stage creates app/contexts/todo_list/, and that is what clears red test (1) (test_every_context_document_has_code_and_every_context_directory_has_a_document).\n- design-spec does not restate BR-06…BR-13 in guestbook.md. It does three things there: adds todo_list:peer:shared-kernel to guestbook's neighbours; rewrites the \"only bounded context\" sentence (line 13) and § Boundaries (lines 172-176); keeps the text-rule half of BR-01 as the one place that rule is written.\n- screens: [] and features: [] stay empty until those files exist. design-ui creates the screen doc and build-tests-e2e creates the .feature file. The convergence round or reconcile-spec then adds both paths to the header; until then the claim tests go red.\n- Handed to other members: R-5 to design-ui (the frame / system-states.md), R-3 clause 6 and R-10 to design-ui (the screen spec), R-11 to design-architecture (§ What a new environment starts with).\n- design-adr turns the decision marked `**ADR:** required` in the fragment into a draft.",
-      "at": "2026-09-24T13:07:07Z",
-      "state": "returned"
-    },
-    "design-spec": {
-      "assumptions": "- design-api makes the one-line refusal win over too-long for the same text (BR-07), and a refused correction leaves the stored text alone (BR-10).\n- design-data declares `todo_tasks` and decides whether a task's text needs a data invariant like D-04.\n- design-testing finds a suite for the amended BR-07 and BR-10.\n- Four documents design-spec cannot write still say there is one context: architecture (opening line and § Rules between contexts), testing.md (the fitness rows that say \"vacuously true with one context\"), spec/README.md (lines 25 and 58) and CLAUDE.md (its deletion list). They belong to design-architecture, design-testing, converge and reconcile-docs.\n- BR-07 now says which refusal wins when a text is both too long and more than one line (taken from BR-07's own words \"never too long\" and from R-2.7), rather than raising it as an open question; the coherence gate may question this choice.",
-      "at": "2026-09-24T13:11:49Z",
-      "state": "returned"
-    },
-    "design-testing": {
-      "assumptions": "TD-2 only: COH-design-2 (Q-17 = A) applied word for word -- testing.md :759 now reads \"through the rule, while every case builds a valid create and update shape, so only the rule can refuse a text\", and :859-861 names test_the_create_and_update_shapes_carry_no_bound (the wire codes stay proved by the integration corpus and router tests); the case stays in the red-first list because the shapes do not exist before implementation; the fragment needed no edit; design/delta/converge.md:42 still describes the rejected case historically.",
-      "at": "2026-09-24T16:14:57Z",
-      "state": "returned"
-    },
-    "design-ui": {
-      "assumptions": "- Every binding is to the live spec/design/api.md: GET /api/todo-tasks via useTodoTasks() -> total (header count, not items.length), items[].id/.text/.done (rows, shown in arrival order), items empty (empty state); POST /api/todo-tasks sends text and gets a TodoTaskRead; PATCH /api/todo-tasks/{todo_task_id} sends done alone (the chosen state) for a tick, or text alone for a correction; DELETE -> 204. A refused write has detail.code (decides where it shows) and detail.message (the words). Refusals shown: todo_task_text_empty/multiline/too_long (under the field), todo_task_not_found (notice). created_at is not shown. The mutation names inside useTodoTasks.ts are left to build-frontend.\n- The Q-15 rule (\"...the service answered with an error.\") depends on design-api keeping every coded to-do refusal in {detail:{code,message}}, and on a server error carrying no detail.message; \"no sentence of its own\" is read as an answer with no refusal message, not a 5xx status code.\n- The Q-16 rule (focus back where the person was) applies only when focus was on the control that was locked or closed; a person who tabbed elsewhere keeps focus where they put it. It lives once, in § Keyboard and accessibility.\n- The navigation, the lockup (\"Product name\"/\"P\", mock-up C-1 approved in Q-14) and the 404 page live in system-states.md (the frame), not in the to-do document, because no context owns them; guestbook.md's opening sentence, region 1 and footer copy row changed with them.\n- The screen is in the live tree with info_ref S-02. No scenario ids (S-nn) appear in spec/design/ui/ (frozen-ids would read them as screen ids; PROC-23).\n- A failed correction keeps the editor open with what was typed and the stored text unchanged; build-tests-e2e: after a failed correction, the old text stays as the box's accessible name and comes back on Cancel.\n- Handed to the orchestrator (fragment § Found outside): spec/contexts/todo_list.md `screens: []` must claim spec/design/ui/todo-list.md, or test_every_registered_screen_is_claimed_by_exactly_one_context goes red; and the UI smoke's comment about \"the only navigation\" is now false.",
-      "at": "2026-09-24T14:43:42Z",
-      "state": "returned"
-    },
-    "review-coherence": {
-      "assumptions": "none -- this skill reads and produces no artefact another author builds on; requirements.md:85/:88 and the SC-5 cell were left alone on purpose, noted and not raised",
-      "at": "2026-09-24T16:33:38Z",
-      "state": "returned"
-    },
-    "review-converge": {
-      "assumptions": "- Reconciled all ten design pass-5 findings (REC-20..REC-29), each in its ambiguity source: testing.md's detectors (COH-9 on-disk case; COH-10 the contract-gate bullet accepted by name at each boundary until build-backend's wave); ui/guestbook.md § Data \"What is posted and amended is the text the screen judged, not the text as typed.\" (COH-11); conventions.md § Layers \"A rule about a field's value whose refusal carries a code ...\" and \"Holding no part of the rule means importing none of it\" (COH-12, COH-13); requirements.md preamble, A-1/A-3/A-4 Status lines, :519 and Self-check 4 say the approval confirmed the assumptions (COH-14); scenarios.md § Coverage \"'Observed through' says where a seed can be seen, not which suite binds it.\" (COH-15); invariants.md § Data invariants \"Which stage's convergence round writes a new data invariant is settled by its witnesses\" (COH-16); testing.md:211 \"each of the two revisions\" (COH-17); contracts/README.md \"five paths, ten operations and twelve schemas\" (COH-18).\n- Also applied, at the orchestrator's instruction, the artefact-level ready patches (testing.md bullets, ui/todo-list.md add row, the architecture.md router sentence, data-model.md's invariant call and bound clause, the architecture fragment's item 4 and does-not-move line, the ADR draft's § Context, the api fragment's Why).\n- Q-21 (2) decided adding only; the correction row's payload was not generalized.\n- requirements.md lines 85 and 88 (\"assumed: A-1/A-3\") and the SC-5 cell were left as they are (no ready patch names them).\n- requirements.md and scenarios.md changed, so the requirements approval needs to be given again.",
-      "at": "2026-09-24T16:30:29Z",
-      "state": "returned"
-    }
-  },
+  "fanout": {},
   "faults": [
     {
       "at": "2026-09-24T11:42:41Z",
@@ -1707,6 +1699,14 @@
   "files_changed": [],
   "follow_up": null,
   "gates": {
+    "design": {
+      "approved": true,
+      "approved_at": "2026-09-24T16:36:11Z",
+      "approved_by": "user",
+      "artifact": "delta.md",
+      "artifact_sha256": "951f4d58fcb39d7b79dcebd0d496f3b601cff8cac4ba044527510832ec6daf68",
+      "note": ""
+    },
     "intake": {
       "approved": true,
       "approved_at": "2026-09-24T11:34:01Z",
@@ -1752,6 +1752,11 @@
       "at": "2026-09-24T12:58:40Z",
       "fingerprint": "fb99f5bb309245be",
       "stage": "design"
+    },
+    {
+      "at": "2026-09-24T16:49:17Z",
+      "fingerprint": "6ab597e317de5cfe",
+      "stage": "plan"
     }
   ],
   "legacy_spec": null,
@@ -2675,11 +2680,81 @@
       "stage": "design",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T16:36:11Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T16:34:21Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "The design gate is closed, the list of files the change may touch is recorded from it, and the stage can close into the work plan.",
+          "key": "A",
+          "label": "Approve the design",
+          "recommended": true
+        },
+        {
+          "consequence": "Tell me what; it goes back to the step that owns it, and the design is checked again before you are asked again.",
+          "key": "B",
+          "label": "Not yet: something needs changing",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-23",
+      "question": "The design is consistent (the last check found all 18 fixes in place and nothing new). It adds a separate 'To-do list' area beside the guestbook; stores each task's text (1 to 200 characters, one line, cleaned up), a done flag and when it was added, newest first; offers list / add / mark done or not done / edit / delete, each refusal with its own message; and a /todo-list screen built from your approved mock-up, with your Q-15 and Q-16 answers. The documents to read are the design notes in the change's design/delta folder and the mock-up in design/ui. Do you approve the design?",
+      "stage": "design",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T16:46:06Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T16:41:14Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "The design stage closes with the reason recorded beside it, and the change moves to the work plan; the same three are expected again at the end of the work plan.",
+          "key": "A",
+          "label": "Yes, close design on these three",
+          "recommended": true
+        },
+        {
+          "consequence": "The stage stays open; none of the three can turn green before the code exists, so the change waits until the process gains a way to declare them (issue #314).",
+          "key": "B",
+          "label": "No, keep design open",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-24",
+      "question": "The end-of-design check ran: the backend, frontend and browser tests all pass, and the specification checks pass. Three checks fail, exactly the three expected because the design is written before the code: (1) 'every area has code' (the to-do list's code folder is created in implementation; issue #314), (2) 'every listed file exists' (the scenario file you chose to list now, Q-19), and (3) 'the API contract matches the app' (the contract written ahead of the backend, Q-21). All three are declared in the test plan and clear during implementation. The process closes a stage on failing checks only with a signed-off reason, written into the change's history. Close the design stage on these three?",
+      "stage": "design",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
   "parent_merge_commit": null,
-  "previous_stage": "requirements",
+  "previous_stage": "design",
   "reconciliations": [
     {
       "at": "2026-09-24T12:30:43Z",
@@ -3053,7 +3128,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 211,
+  "revision": 218,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -3075,13 +3150,14 @@
     "unmeasured": []
   },
   "slug": "todo-list-add-tasks-and-mark-them-done",
-  "stage": "design",
-  "stage_entered_at": "2026-09-24T12:58:40Z",
+  "stage": "plan",
+  "stage_entered_at": "2026-09-24T16:49:17Z",
   "stage_entries": {
     "design": 1,
+    "plan": 1,
     "requirements": 1
   },
-  "stage_status": "in_progress",
+  "stage_status": "not_started",
   "status": "draft",
   "supersedes": [],
   "tasks": [],
@@ -3120,9 +3196,9 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T16:33:38Z",
+  "updated_at": "2026-09-24T16:49:17Z",
   "verification_last": {
-    "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
+    "content_digest": "1db9c2e03917e023fd003ed70cc96c83a49fc95d0f400aa631f47f9aac1e3cf3",
     "counts": {
       "Suite backend": {
         "collected": 748,
@@ -3145,13 +3221,13 @@
         "skipped": 0
       }
     },
-    "duration_s": 142.69,
+    "duration_s": 155.06,
     "gaps": [],
-    "git_head": "1c51b889573d629b9cb433ae1c9389359a62a262",
-    "git_tree": "e71ce8cb2898550b8b8bec66cc57cfc6225878b7",
+    "git_head": "c94d1ccbaab0bee9b3bcaa3fbcabda939d8e1a3e",
+    "git_tree": "c6423b3458802888b5de3e06867b40399c297945",
     "profile": "boundary",
-    "started_at": "2026-09-24T12:56:17Z",
-    "verdict": "GREEN",
+    "started_at": "2026-09-24T16:46:28Z",
+    "verdict": "RED",
     "worktree_dirty": true
   }
 }

@@ -26,12 +26,12 @@
       "open": true,
       "parent_cr_id": null,
       "slug": "todo-list-add-tasks-and-mark-them-done",
-      "stage": "design",
-      "stage_status": "in_progress",
+      "stage": "plan",
+      "stage_status": "not_started",
       "status": "draft",
       "title": "Todo list - add tasks and mark them done",
       "tracker": "",
-      "updated_at": "2026-09-24T16:33:38Z"
+      "updated_at": "2026-09-24T16:49:17Z"
     },
     "CR-2609-8ef9": {
       "base_branch": "audit/2026-09-08",
