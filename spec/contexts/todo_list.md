@@ -123,6 +123,13 @@ A text that, once trimmed, still carries a line break (§ Language) is refused, 
 stored, and the person is told that a task is one line — a reason of its own, never "empty" or
 "too long", so the person knows what to change.
 
+**A text that is also too long is refused as more than one line.** A text over 200 code points
+with a line break inside it breaks `BR-06` and this rule at once, and the person is told one
+reason for it — that a task is one line — on the screen and by the application alike. A pasted
+line break such as U+2028 is often invisible in a one-line field, while a text's length is there
+to be seen, so the reason the person cannot find for themselves is the one they are given;
+`BR-06`'s "too long" is the reason for a text of one line.
+
 The rule reads the text after the trim. Every one of the seven characters is also in the trim
 set, so a line break at either end is removed like a space and is not refused; only a line break
 left inside the text is. A character that shows nothing but is not in the trim set, such as a
@@ -154,6 +161,10 @@ on the screen — the floor it clears is the screen specification's.
 
 Correcting a task changes its text and nothing else: never its state, never its moment of
 adding. A done task can be corrected exactly as a not-done one can.
+
+**A correction is held to `BR-06` and `BR-07` exactly as an addition is.** A corrected text
+either of them refuses changes nothing — the task keeps the text it had — and the person is told
+why, with the reason an addition of that text would get.
 
 When two changes to one task meet — both sent before either is answered — **the later change to
 the same thing wins, and a change to one thing never undoes the other**. Two corrections: the

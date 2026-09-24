@@ -95,3 +95,6 @@
 {"timestamp": "2026-09-24T13:00:57Z", "agent": "session-capture", "action": "session_captured_auto", "details": "26 files, 17375777 bytes, marked partial, trigger prompt_input_exit", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
 {"timestamp": "2026-09-24T13:01:36Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: design-domain", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
 {"timestamp": "2026-09-24T13:07:07Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: design-domain; 1 process fault(s): PROC-13", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T13:07:15Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: design-spec", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T13:08:47Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-13 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/314", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T13:11:49Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: design-spec; 1 process fault(s): PROC-14", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}

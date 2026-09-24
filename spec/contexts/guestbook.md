@@ -2,7 +2,7 @@
 context: guestbook
 classification: core
 owns: [guestbook_entries]
-neighbours: []
+neighbours: [todo_list:peer:shared-kernel]
 processes: [P-01]
 screens: [spec/design/ui/guestbook.md]
 features: [e2e/suite/features/guestbook.feature]
@@ -10,9 +10,9 @@ features: [e2e/suite/features/guestbook.feature]
 
 # Guestbook
 
-The only bounded context of this system and the only feature it has. A guest leaves an entry
-signed with a name; entries are visible to anybody who opens the screen; an entry can be
-amended and it can be deleted.
+A bounded context of this system, sharing one rule with the to-do list and nothing else
+(§ Boundaries). A guest leaves an entry signed with a name; entries are visible to anybody who
+opens the screen; an entry can be amended and it can be deleted.
 
 This is an **example for the template**, not a product. It is here so that every step of the
 SDD process has something to show a change travelling through all the layers on — and so that
@@ -78,6 +78,12 @@ was written before it was true — the numbers matched and the units did not —
 true now is one corpus both sides read rather than two literals a test compares. The message's
 bound is not in a column — that one is `Text` by decision — so its two homes are the model's
 constant and the browser's copy of it.
+
+**The to-do list is held to this rule too.** A task's text is normalized, trimmed of the same
+thirty code points and counted in the same unit as a signature and a message; only the bounds
+differ, and each context sets its own. The words of the rule have this one home for both
+contexts, so a change to the normalization, the trim set or the unit changes the to-do list as
+well, and is made with both sets of rules in view ([`todo_list.md`](todo_list.md) § Neighbours).
 
 Rows written before 2026-09-17 were stored as they arrived. Nothing rewrote them, so an old
 entry may hold a decomposed letter that a phrase typed the composed way will not find; the
@@ -169,13 +175,14 @@ them.
 
 ## Boundaries
 
-This context writes to nothing but its own table, and nobody writes to it — `neighbours: []`
-in the front matter, and the emptiness is stated here rather than left to be inferred. That is
-the simplest possible boundary and the template deliberately has one: the first real context
-you add will have a boundary to draw, and this one shows what the document looks like when
-there is nothing to draw.
+This context stores nothing but its own entries, and nothing outside it writes to them. It
+borders on one context, as a peer joined by a shared kernel:
 
-**What the second context will have to write.** A neighbour is declared as
+| Neighbour | Role | Pattern | What crosses, and what happens when they change it |
+|---|---|---|---|
+| **To-do list** | `peer` | `shared-kernel` | **The text rule of `BR-01`, and nothing else.** Its words are in this document; what each side keeps, what happens when the rule changes, and where its words go if this context is deleted are written once, in [`todo_list.md`](todo_list.md) § Neighbours, and are not restated here. |
+
+**How a neighbour is declared.** A neighbour is declared as
 `<context>:<role>:<pattern>`, and the pattern is the load-bearing half: an arrow says who
 calls whom, while the pattern says what happens when the other side changes. The legal
 pairings, and why they are the legal ones, are in

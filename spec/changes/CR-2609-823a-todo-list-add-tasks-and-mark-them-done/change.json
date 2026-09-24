@@ -268,6 +268,11 @@
       "assumptions": "- design-data declares the table as `## `todo_tasks``. The glossary now fixes the name: TodoTask, table todo_tasks.\n- design-architecture uses `todo_list` as the context's name in every tree (app/, frontend/src/contexts/, CODEOWNERS). The implement stage creates app/contexts/todo_list/, and that is what clears red test (1) (test_every_context_document_has_code_and_every_context_directory_has_a_document).\n- design-spec does not restate BR-06…BR-13 in guestbook.md. It does three things there: adds todo_list:peer:shared-kernel to guestbook's neighbours; rewrites the \"only bounded context\" sentence (line 13) and § Boundaries (lines 172-176); keeps the text-rule half of BR-01 as the one place that rule is written.\n- screens: [] and features: [] stay empty until those files exist. design-ui creates the screen doc and build-tests-e2e creates the .feature file. The convergence round or reconcile-spec then adds both paths to the header; until then the claim tests go red.\n- Handed to other members: R-5 to design-ui (the frame / system-states.md), R-3 clause 6 and R-10 to design-ui (the screen spec), R-11 to design-architecture (§ What a new environment starts with).\n- design-adr turns the decision marked `**ADR:** required` in the fragment into a draft.",
       "at": "2026-09-24T13:07:07Z",
       "state": "returned"
+    },
+    "design-spec": {
+      "assumptions": "- design-api makes the one-line refusal win over too-long for the same text (BR-07), and a refused correction leaves the stored text alone (BR-10).\n- design-data declares `todo_tasks` and decides whether a task's text needs a data invariant like D-04.\n- design-testing finds a suite for the amended BR-07 and BR-10.\n- Four documents design-spec cannot write still say there is one context: architecture (opening line and § Rules between contexts), testing.md (the fitness rows that say \"vacuously true with one context\"), spec/README.md (lines 25 and 58) and CLAUDE.md (its deletion list). They belong to design-architecture, design-testing, converge and reconcile-docs.\n- BR-07 now says which refusal wins when a text is both too long and more than one line (taken from BR-07's own words \"never too long\" and from R-2.7), rather than raising it as an open question; the coherence gate may question this choice.",
+      "at": "2026-09-24T13:11:49Z",
+      "state": "returned"
     }
   },
   "faults": [
@@ -661,6 +666,11 @@
           "at": "2026-09-24T13:07:07Z",
           "note": "The skill tells design-domain to run the context-declaration fitness test before closing. That test cannot pass at the design stage: a new spec/contexts/<new>.md turns test_every_context_document_has_code_and_every_context_directory_has_a_document red until the implement stage, and `owns` stays red until design-data runs. Article X has no mechanism to declare a design-stage failure as expected-red.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T13:08:47Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/314",
+          "state": "filed"
         }
       ],
       "id": "PROC-13",
@@ -670,6 +680,32 @@
       "seen": 1,
       "signal": "The skill tells design-domain to run the context-declaration fitness test before closing. That test cannot pass at the design stage: a new spec/contexts/<new>.md turns test_every_context_document_has_code_and_every_context_directory_has_a_document red until the implement stage, and `owns` stays red until design-data runs. Article X has no mechanism to declare a design-stage failure as expected-red.",
       "signature": "The skill tells design-domain to run the context-declaration fitness test before closing. That test cannot pass at the d",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/314"
+    },
+    {
+      "at": "2026-09-24T13:11:49Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T13:11:49Z",
+          "note": "With the template's own entry shape (- `MODIFIED` `path`), delta_grammar.entry_paths reads the backticked kind as the entry's path: entry_paths returns (MODIFIED, spec/contexts/guestbook.md). delta.split therefore supersedes entries by kind, not by file, so one reconcile MODIFIED entry would push every design MODIFIED entry into delta-history.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-14",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "design-spec",
+      "seen": 1,
+      "signal": "With the template's own entry shape (- `MODIFIED` `path`), delta_grammar.entry_paths reads the backticked kind as the entry's path: entry_paths returns (MODIFIED, spec/contexts/guestbook.md). delta.split therefore supersedes entries by kind, not by file, so one reconcile MODIFIED entry would push every design MODIFIED entry into delta-history.",
+      "signature": "With the template·s path: entry_paths returns (MODIFIED, spec· delta.split therefore supersedes entries by kind, not by ",
       "stage": "design",
       "state": "reported",
       "url": null
@@ -1370,7 +1406,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 92,
+  "revision": 95,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1420,7 +1456,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T13:07:07Z",
+  "updated_at": "2026-09-24T13:11:49Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {
