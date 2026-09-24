@@ -1692,3 +1692,106 @@ of all three") and is true.
   ADR draft 1 report them.
 - **Glossary and invariants.** *Task* and *Task (process)* stay apart, and no identifier uses a bare
   `task`. `D-01`…`D-03` hold, and the non-goals name tasks.
+
+## Pass 6 — verification
+
+The preflight printed `CONVERGENCE ROUND: 2 of 3 -- MODE: VERIFYING`, so only Phases 1, 1b and 4
+ran. There was no hunt. The question was whether each of the eighteen recorded resolutions of the
+`design` stage landed in the document its reconciliation named. Read for it: this file whole, the
+diff of the last convergence round (`git diff 33d8b66 bc3dc15` over `contracts/README.md`,
+`spec/design/`, `spec/invariants.md`, both ADR drafts, the api and architecture fragments,
+`requirements.md` and `scenarios.md`), the passages each resolution names in the working tree, and
+the ten `ASSUMPTIONS` blocks from the preflight. The ranked documents read above them:
+`spec/constitution.md` (Article VIII in full), `spec/invariants.md`, `spec/glossary.md`,
+`contracts/README.md`.
+
+Line numbers were taken from the working tree with `grep -n` over each resolution's own wording.
+`git status --short` shows no uncommitted edit to any artefact or to any file under `spec/`
+outside the process's own state files, so every line cited below is committed at `bc3dc15`.
+
+### Recorded resolutions
+
+- COH-design-1: landed. `spec/design/conventions.md`:42-59 (§ Layers, the service judges a coded
+  field rule, with the user's `Q-17` words at :56). The artefact-level patches stand:
+  `spec/design/architecture.md`:588-589 (`BR-06`, `BR-07` held in the service), :595 (`BR-13`),
+  :600-603 (the router translates each domain exception), :615-616 (the schema holds no text
+  rule; the service holds the judgement and its three exceptions);
+  `design/delta/architecture.md`:45-54 (Decision 2) and :87 (row `R-2`).
+- COH-design-2: landed. `spec/design/conventions.md`:48-50 (a shape built from a refused value is
+  still valid); `spec/design/testing.md`:759 ("through the rule, while every case builds a valid
+  create and update shape, so only the rule can refuse a text") and :861-863
+  (`test_the_create_and_update_shapes_carry_no_bound`, the code proved on the wire by
+  **tests/integration/test_todo_tasks_corpus.py**).
+- COH-design-3: landed. `spec/design/conventions.md`:191-194 (§ Frontend, "Only the rule moves
+  up"); `design/delta/architecture.md`:60-68 (Decision 4), :142 (the write set, "one import
+  line"), :243 (§ This change owns). No `text.test.ts` row is left.
+- COH-design-4: landed. `spec/design/architecture.md`:666-674 (§ Who writes what, with the user's
+  `Q-18` words); `design/delta/architecture.md`:142 and :254.
+- COH-design-5: landed. `spec/contexts/todo_list.md`:7 (`screens: [spec/design/ui/todo-list.md]`)
+  and :23-32.
+- COH-design-6: landed. `spec/contexts/todo_list.md`:8
+  (`features: [e2e/suite/features/todo_list.feature]`) and :23-32, which names the on-disk case as
+  the declared red and its expiry.
+- COH-design-7: landed. `requirements.md`:525-527 (§ Impact analysis, "the retention item names
+  tasks too"), :673-675 (§ Non-Goals), :738-739 (`A-2`, "confirmed at this document's approval;
+  `spec/invariants.md` § Deliberate non-goals names tasks since"), :835-838 (Self-check 23).
+- COH-design-8: landed. `spec/design/conventions.md`:96-98 (§ Backend, "a second domain context
+  and is not an example"); `spec/README.md`:58-60.
+- COH-design-9: landed. `spec/design/testing.md`:979-985 (the third detector names
+  `test_every_screen_and_feature_a_context_names_is_on_disk`, declared on build-tests-e2e's task,
+  and says both claim cases stay green; "Unresolved" is gone);
+  `design/delta/architecture.md`:228-230 (item 4, "the on-disk case is red until build-tests-e2e
+  writes the feature file").
+- COH-design-10: landed. `spec/design/testing.md`:986-993 (the `./scripts/contracts.sh` bullet,
+  11 findings, accepted by name at each boundary before build-backend's wave, with the user's
+  `Q-21` words).
+- COH-design-11: landed. `spec/design/ui/guestbook.md`:400-403 (§ Data, "What is posted and
+  amended is the text the screen judged"); `spec/design/ui/todo-list.md`:240 (the adding row sends
+  `text` "as the shared rule leaves it"). It now agrees with `spec/design/testing.md`:917-918
+  ("sends the text as the shared rule leaves it").
+- COH-design-12: landed. `spec/design/conventions.md`:42-45 (a rule about a field's value; a
+  `PATCH` that sets no field is decided beside the endpoint) and :57-59 (`Q-21`);
+  `spec/design/architecture.md`:603-605 (the router answers `todo_task_empty_patch` itself).
+- COH-design-13: landed. `spec/design/conventions.md`:50-53 ("Holding no part of the rule means
+  importing none of it"); `spec/design/data-model.md`:256-258 ("the service's judgement of a text
+  imports it; the schemas do not"); `design/delta/architecture.md`:192-193 ("imported by the to-do
+  service's judgement").
+- COH-design-14: landed. `requirements.md`:718-722 (the § Named assumptions preamble, with the
+  user's `Q-21` words), :733 (`A-1`), :752 (`A-3`), :762 (`A-4`), each "confirmed at this
+  document's approval"; :519 (§ Impact analysis, "`A-2`, confirmed at approval"); :777
+  (Self-check 4). The pointers "assumed: `A-1`" at :85 and "assumed: `A-3`" at :88, and the SC-5
+  cell at :27, remain. The resolution did not name them, and they point at the assumption rather
+  than state its status, as pass 5 said of the SC-5 cell.
+- COH-design-15: landed. `scenarios.md`:40-43 (§ Coverage, "'Observed through' says where a seed
+  can be seen, not which suite binds it");
+  `design/adr/task-text-refusals-are-coded-not-schema-constraints.md`:20-22 (§ Context, "the
+  integration corpus test proves each on the wire"); `design/delta/api.md`:12 (the **Why** of the
+  `spec/design/api.md` entry).
+- COH-design-16: landed. `spec/invariants.md`:98-106 (§ Data invariants, the stage is settled by
+  the witnesses, with the user's `Q-21` words); `spec/design/data-model.md`:198-200 (§
+  `todo_tasks`, the call for the invariant); `spec/design/testing.md`:802-806 (the `spec_sync`
+  stage's convergence round writes it).
+- COH-design-17: landed. `spec/design/testing.md`:211 ("each of the two revisions creates its table
+  and its index together").
+- COH-design-18: landed. `contracts/README.md`:45 ("five paths, ten operations and twelve
+  schemas").
+
+A `grep -cF` of each named document for the wording its resolution replaced counted 0 every time.
+The strings searched were "the task's text type in the context's", "schema refuses them before the
+route runs", "test_the_create_and_update_shapes_give_every_case_the_same_verdict", "through the
+rule and through the create and update shapes", "Unresolved, and handed", "the one revision
+creates", "and the convergence round writes it", "`text.test.ts` (moved in)", "moves with it",
+"if testing.md puts", "imported by the to-do schema", "screens: []", "features: []", "awaiting the
+user", "No item below is a human decision", "(assumed: `A-2`)", "for the user to confirm", "stays
+worded for entries while", "**only** domain context", "A rule whose refusal carries a code of its
+own is judged", "The only domain context", "sends `text` as typed", "and the schemas import it",
+"black box has to tell" (both the ADR draft and the api fragment) and "three paths, six
+operations".
+
+The authors' assumptions that speak of these edits match the text. review-converge says it left
+`requirements.md` :85, :88 and the SC-5 cell alone, and they are as it says. design-testing says
+`design/delta/converge.md`:42 still describes the rejected case historically, which is a dated
+record, not a resolution's target. design-architecture's list of applied patches (COH-design-1, 3
+and 4) is the set of fragment lines cited above.
+
+No `verification` finding. All eighteen resolutions landed.

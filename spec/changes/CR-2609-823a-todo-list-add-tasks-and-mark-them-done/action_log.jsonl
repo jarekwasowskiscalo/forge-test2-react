@@ -204,3 +204,13 @@
 {"timestamp": "2026-09-24T16:30:29Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-16", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
 {"timestamp": "2026-09-24T16:30:29Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-17", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
 {"timestamp": "2026-09-24T16:30:30Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-design-18", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:30:44Z", "agent": "sdd", "action": "question_raised", "details": "oferta eskalacji ESC-design-r2 (convergence_round)", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:30:44Z", "agent": "sdd", "action": "question_raised", "details": "1 question(s): Q-22", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:31:15Z", "agent": "sdd", "action": "question_answered", "details": "ESC-design-r2 -> B", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:31:15Z", "agent": "sdd", "action": "question_answered", "details": "Q-22 -> A", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:31:15Z", "agent": "sdd", "action": "gate_approved", "details": "requirements by user", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:31:21Z", "agent": "sdd", "action": "critique_round", "details": "ladder design_critique untouched (a verifying round -- no rung of the ladder): 10 findings, all resolved -- a verifying round", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:31:21Z", "agent": "sdd", "action": "fanout_recorded", "details": "convergence round: cleared review-coherence", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:31:21Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-coherence", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:31:45Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-32 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/352", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:33:38Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-coherence; coherence pass 6 GO, 0 new finding(s)", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}

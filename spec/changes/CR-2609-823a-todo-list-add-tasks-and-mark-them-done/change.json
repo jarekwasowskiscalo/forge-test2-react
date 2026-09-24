@@ -624,6 +624,14 @@
       "pass": 5,
       "stage": "design",
       "verdict": "NO_GO"
+    },
+    {
+      "at": "2026-09-24T16:33:38Z",
+      "epoch": 1,
+      "inputs": "8584e440f31b2e6f19033be27451d9a6804fe2637164fa23c9c8c15126d4e84c",
+      "pass": 6,
+      "stage": "design",
+      "verdict": "GO"
     }
   ],
   "contention_events": 0,
@@ -631,9 +639,9 @@
   "created_at": "2026-09-24T11:26:53Z",
   "critique": {
     "design_critique": {
-      "at": "2026-09-24T16:00:39Z",
-      "findings_at_round": 8,
-      "rounds": 1
+      "at": "2026-09-24T16:31:21Z",
+      "findings_at_round": 18,
+      "rounds": 2
     },
     "requirements_critique": {
       "at": "2026-09-24T12:46:20Z",
@@ -687,8 +695,8 @@
       "state": "returned"
     },
     "review-coherence": {
-      "assumptions": "none -- this skill reads, it does not produce an artefact others depend on",
-      "at": "2026-09-24T16:24:49Z",
+      "assumptions": "none -- this skill reads and produces no artefact another author builds on; requirements.md:85/:88 and the SC-5 cell were left alone on purpose, noted and not raised",
+      "at": "2026-09-24T16:33:38Z",
       "state": "returned"
     },
     "review-converge": {
@@ -1677,6 +1685,11 @@
           "at": "2026-09-24T16:30:29Z",
           "note": "review-converge's SKILL.md says \"Files never written: Any artefact a finding names\" and \"One finding, one edit\", while this dispatch, and the pass-4 precedent recorded in coherence.md, had the convergence round apply the artefact-level ready patches as well. The skill and the orchestrator disagree on who writes artefact patches after a coherence decision.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T16:31:45Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/352",
+          "state": "filed"
         }
       ],
       "id": "PROC-32",
@@ -1687,8 +1700,8 @@
       "signal": "review-converge's SKILL.md says \"Files never written: Any artefact a finding names\" and \"One finding, one edit\", while this dispatch, and the pass-4 precedent recorded in coherence.md, had the convergence round apply the artefact-level ready patches as well. The skill and the orchestrator disagree on who writes artefact patches after a coherence decision.",
       "signature": "review-converge's SKILL.md says · and ·, while this dispatch, and the pass-· precedent recorded in coherence.md, had the",
       "stage": "design",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/352"
     }
   ],
   "files_changed": [],
@@ -1704,10 +1717,10 @@
     },
     "requirements": {
       "approved": true,
-      "approved_at": "2026-09-24T16:12:10Z",
+      "approved_at": "2026-09-24T16:31:15Z",
       "approved_by": "user",
       "artifact": "requirements.md",
-      "artifact_sha256": "9b58df92fd928849eb85ecd8552f73db9a42388ef93c664a83449e5d056b3cd5",
+      "artifact_sha256": "741bc1717d042e3d132b29c8232e928aac53a4c78e8632c91f785ffc3e7942e5",
       "note": ""
     }
   },
@@ -2585,6 +2598,83 @@
       "stage": "design",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T16:31:15Z",
+        "choice": "B",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T16:30:44Z",
+      "blocks": [],
+      "esc": {
+        "consumed": [],
+        "row": "27a1",
+        "skills": [
+          "review-coherence"
+        ],
+        "trigger": "convergence_round"
+      },
+      "options": [
+        {
+          "consequence": "No extra cost; this offer will not come back for round 2, the next round gets its own.",
+          "key": "B",
+          "label": "No -- the round goes on opus",
+          "recommended": true
+        },
+        {
+          "consequence": "cost: the fable rates per .specconf/pricing.json -- the buckets differ in their multiplier, check the table before consenting; a smarter author applies changes better, a smarter judge verifies more sharply -- it covers the round's members and its coherence pass.",
+          "key": "A",
+          "label": "Yes -- the whole round on fable",
+          "recommended": false
+        }
+      ],
+      "qid": "ESC-design-r2",
+      "question": "Convergence round no. 2 z 3 of the design stage is about to start: the previous one brought 10 findings and all of them are resolved. Going out: review-coherence. Send this round on fable? (cost: the fable rates per .specconf/pricing.json -- the buckets differ in their multiplier, check the table before consenting)",
+      "stage": "design",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-24T16:31:15Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T16:30:44Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "The requirements gate is closed again over the current files, with all four assumptions standing confirmed.",
+          "key": "A",
+          "label": "Approve the requirements again",
+          "recommended": true
+        },
+        {
+          "consequence": "Tell me what; the requirements go back for that change before the design can be approved.",
+          "key": "B",
+          "label": "Not yet: something there is wrong",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-22",
+      "question": "Your approval of the requirements no longer covers the files again, because the second reconciliation wrote in what you just decided (Q-21, item 5): requirements.md now records assumptions A-1, A-3 and A-4 as confirmed at your approval (the preamble, their three Status lines and two cross-references), and scenarios.md gained one clarifying sentence ('Observed through' says where a seed can be seen, not which suite binds it). Nothing else changed. Do you approve the requirements again as they now stand?",
+      "stage": "design",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -2963,7 +3053,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 201,
+  "revision": 211,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -3030,7 +3120,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T16:30:30Z",
+  "updated_at": "2026-09-24T16:33:38Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {
