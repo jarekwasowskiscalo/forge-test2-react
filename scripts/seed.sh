@@ -8,9 +8,16 @@
 # the Python behind it, so there is one definition of "seed an environment"
 # instead of three copies that drift (constitution, article XII).
 #
+# Two lists are filled, each on its own condition: the guest book gets its welcome
+# entries when it holds none, and the to-do list gets its example tasks when it
+# holds none -- whatever the other one holds. An example task is added not done
+# and then marked through the marking route when the corpus says it is done, the
+# way a person's task gets there.
+#
 # Safe to run unconditionally, and that is the point: it refuses production, and
-# it skips a guest book that already has entries. "Seed every new environment"
-# and "run on every deploy" are therefore the same instruction.
+# it skips a list that already holds something -- a guest book with entries, a
+# to-do list with a task. "Seed every new environment" and "run on every deploy"
+# are therefore the same instruction.
 set -euo pipefail
 # shellcheck source=scripts/_lib.sh
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
@@ -27,16 +34,26 @@ usage: seed.sh [--base-url URL] [--boundary]
                  limits. For reviewing the SCREEN rather than the flow; no
                  deployment passes it.
 
+It fills two lists from golden-set/seed/, each on its own condition:
+
+  guest book     its welcome entries, when it holds no entry -- whatever the
+                 to-do list holds
+  to-do list     its example tasks, when it holds no task -- whatever the guest
+                 book holds. Each is added not done, and the done one is then
+                 marked, the way a person's task gets there.
+
 Two refusals make this safe to wire into a deployment:
 
   * It will not seed production. It asks /api/health, which reports the
-    environment the deployment was given, and stops there.
-  * It will not seed a guest book that already has entries, so it is idempotent
-    and every run after the first costs one GET.
+    environment the deployment was given, and stops there -- before it reads
+    either list.
+  * It will not seed a list that already holds something -- a guest book with
+    entries, a to-do list with a task -- and it asks each list on its own, so it
+    is idempotent and every run after the first costs one GET per list.
 
-The corpus belongs to the guest book, and so does this: deleting the example
-deletes golden-set/ and this script with it (CLAUDE.md). The two halves and the
-rules each owes: golden-set/README.md.
+The welcome entries belong to the guest book, an example that may be deleted
+(CLAUDE.md); the example tasks belong to the to-do list, which stays. The two
+halves of golden-set/ and the rules each owes: golden-set/README.md.
 TEXT
 }
 

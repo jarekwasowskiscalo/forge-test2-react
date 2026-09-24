@@ -17,6 +17,6 @@ context that exists but was never registered is exactly as loud as a registratio
 with no context behind it.
 """
 
-from app.contexts import guestbook
+from app.contexts import guestbook, todo_list
 
-__all__ = ["guestbook"]
+__all__ = ["guestbook", "todo_list"]

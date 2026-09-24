@@ -1819,77 +1819,487 @@
       "task": "T-10"
     },
     {
-      "case_id": "tests.fitness.test_golden_set::test_every_entry_carries_the_keys_an_entry_has",
-      "declared_at": "2026-09-24T18:25:44Z",
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_at_maximum]",
+      "declared_at": "2026-09-24T18:45:23Z",
       "must_go_green_by": "iteration_end",
-      "observed_at": "2026-09-24T18:32:22Z",
-      "observed_red_in": "gate run 2026-09-24T18:25:52Z",
-      "reason": "T-1 registered the example-task seed file in SEED_FILES, which this entry rule sweeps; T-10 rescopes it to the guestbook's files in wave 1b (named in T-1's closing block)",
+      "observed_at": "2026-09-24T19:01:05Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_one_past_maximum]",
+      "declared_at": "2026-09-24T18:45:24Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:05Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_at_maximum]",
+      "declared_at": "2026-09-24T18:45:24Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:05Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_one_past_maximum]",
+      "declared_at": "2026-09-24T18:45:24Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:05Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_under_the_bound_but_over_it_in_utf16]",
+      "declared_at": "2026-09-24T18:45:24Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:06Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[decomposed_at_maximum]",
+      "declared_at": "2026-09-24T18:45:24Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:06Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[decomposed_one_past_maximum]",
+      "declared_at": "2026-09-24T18:45:24Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:06Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_padded_to_maximum]",
+      "declared_at": "2026-09-24T18:45:25Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:06Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[spaces_past_the_maximum]",
+      "declared_at": "2026-09-24T18:45:25Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:06Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_feed_inside]",
+      "declared_at": "2026-09-24T18:45:25Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:07Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[carriage_return_inside]",
+      "declared_at": "2026-09-24T18:45:25Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:07Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_tabulation_inside]",
+      "declared_at": "2026-09-24T18:45:25Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:07Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[form_feed_inside]",
+      "declared_at": "2026-09-24T18:45:25Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:07Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[next_line_inside]",
+      "declared_at": "2026-09-24T18:45:25Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:07Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_separator_inside]",
+      "declared_at": "2026-09-24T18:45:26Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:07Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[paragraph_separator_inside]",
+      "declared_at": "2026-09-24T18:45:26Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:08Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[tab_inside_is_kept]",
+      "declared_at": "2026-09-24T18:45:26Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:08Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_feed_at_the_end_is_trimmed]",
+      "declared_at": "2026-09-24T18:45:26Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:08Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[too_long_and_on_two_lines_is_multiline]",
+      "declared_at": "2026-09-24T18:45:26Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:08Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[ascii_at_maximum]",
+      "declared_at": "2026-09-24T18:45:26Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:08Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[emoji_at_maximum]",
+      "declared_at": "2026-09-24T18:45:27Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:09Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[emoji_under_the_bound_but_over_it_in_utf16]",
+      "declared_at": "2026-09-24T18:45:27Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:09Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[decomposed_at_maximum]",
+      "declared_at": "2026-09-24T18:45:27Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:09Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[ascii_padded_to_maximum]",
+      "declared_at": "2026-09-24T18:45:27Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:09Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[tab_inside_is_kept]",
+      "declared_at": "2026-09-24T18:45:27Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:09Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[line_feed_at_the_end_is_trimmed]",
+      "declared_at": "2026-09-24T18:45:27Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:09Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_the_create_and_update_shapes_carry_no_bound",
+      "declared_at": "2026-09-24T18:45:28Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:10Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_a_text_too_long_and_on_two_lines_is_refused_as_multiline",
+      "declared_at": "2026-09-24T18:45:28Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:10Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_the_bound_stands_where_the_constant_says",
+      "declared_at": "2026-09-24T18:45:28Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:10Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_the_line_breaks_are_the_seven_written_code_points_and_all_are_trimmed",
+      "declared_at": "2026-09-24T18:45:28Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:10Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_text_rules::test_any_text_is_either_refused_or_kept_normalized_one_line_and_within_the_bound",
+      "declared_at": "2026-09-24T18:45:28Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:10Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_model::test_the_text_column_is_as_long_as_the_bound",
+      "declared_at": "2026-09-24T18:45:28Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:11Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: the TodoTask model does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_model::test_a_new_task_is_not_done_by_the_models_default",
+      "declared_at": "2026-09-24T18:45:29Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:11Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: the TodoTask model does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_model::test_the_moment_of_adding_is_stored_with_its_zone",
+      "declared_at": "2026-09-24T18:45:29Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:11Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: the TodoTask model does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_todo_task_model::test_the_order_has_an_index_the_model_declares",
+      "declared_at": "2026-09-24T18:45:29Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:11Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: the TodoTask model does not exist yet (imported inside the test)",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.unit.test_guestbook_entry_model::test_this_schema_holds_exactly_two_tables",
+      "declared_at": "2026-09-24T18:45:29Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:11Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "TDD red for T-9: the schema holds one table until T-14 registers TodoTask in app.contexts",
+      "requirement": null,
+      "task": "T-9"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_every_boundary_task_sits_exactly_on_the_task_bound",
+      "declared_at": "2026-09-24T18:45:29Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:11Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "T-10: TODO_TASK_TEXT_MAX_LENGTH does not exist until T-14 declares it",
       "requirement": null,
       "task": "T-10"
     },
     {
-      "case_id": "tests.fitness.test_golden_set::test_the_sequence_files_have_no_case_names",
-      "declared_at": "2026-09-24T18:25:45Z",
+      "case_id": "tests.fitness.test_golden_set::test_every_task_refused_as_too_long_is_over_the_bound_by_exactly_one",
+      "declared_at": "2026-09-24T18:45:29Z",
       "must_go_green_by": "iteration_end",
-      "observed_at": "2026-09-24T18:32:22Z",
-      "observed_red_in": "gate run 2026-09-24T18:25:52Z",
-      "reason": "T-1 registered the example-task seed file in SEED_FILES, which this sequence rule sweeps; T-10 rescopes it in wave 1b (named in T-1's closing block)",
+      "observed_at": "2026-09-24T19:01:12Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "T-10: TODO_TASK_TEXT_MAX_LENGTH does not exist until T-14 declares it",
       "requirement": null,
       "task": "T-10"
     },
     {
-      "case_id": "tests.fitness.test_golden_set::test_every_entry_meant_to_pass_really_passes",
-      "declared_at": "2026-09-24T18:25:45Z",
+      "case_id": "tests.fitness.test_golden_set::test_the_example_tasks_show_one_done_and_every_one_is_accepted",
+      "declared_at": "2026-09-24T18:45:30Z",
       "must_go_green_by": "iteration_end",
-      "observed_at": "2026-09-24T18:32:22Z",
-      "observed_red_in": "gate run 2026-09-24T18:25:52Z",
-      "reason": "T-1 registered the example-task seed file in SEED_FILES, which this entry rule sweeps; T-10 rescopes it to the guestbook's files in wave 1b (named in T-1's closing block)",
+      "observed_at": "2026-09-24T19:01:12Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "T-10: the model's constants (T-14) and the example file (T-17) do not exist yet",
       "requirement": null,
       "task": "T-10"
     },
     {
-      "case_id": "tests.fitness.test_golden_set::test_the_corpus_exercises_characters_outside_ascii",
-      "declared_at": "2026-09-24T18:25:45Z",
+      "case_id": "tests.fitness.test_length_constants::test_the_task_bound_equals_its_browser_copy",
+      "declared_at": "2026-09-24T18:45:30Z",
       "must_go_green_by": "iteration_end",
-      "observed_at": "2026-09-24T18:32:22Z",
-      "observed_red_in": "gate run 2026-09-24T18:25:52Z",
-      "reason": "T-1 registered the example-task seed file in SEED_FILES, which this corpus rule sweeps; T-10 rescopes it in wave 1b (named in T-1's closing block)",
+      "observed_at": "2026-09-24T19:01:12Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "T-10: app/contexts/todo_list/models/todo_task.py (T-14) and its browser copy (T-19) do not exist yet",
       "requirement": null,
       "task": "T-10"
     },
     {
-      "case_id": "tests.fitness.test_golden_set::test_the_corpus_exercises_a_message_with_line_breaks",
-      "declared_at": "2026-09-24T18:25:45Z",
+      "case_id": "tests.fitness.test_length_constants::test_the_line_breaks_equal_their_browser_copy",
+      "declared_at": "2026-09-24T18:45:30Z",
       "must_go_green_by": "iteration_end",
-      "observed_at": "2026-09-24T18:32:23Z",
-      "observed_red_in": "gate run 2026-09-24T18:25:52Z",
-      "reason": "T-1 registered the example-task seed file in SEED_FILES, which this sequence rule sweeps; T-10 makes it the guestbook's alone in wave 1b (named in T-1's closing block)",
+      "observed_at": "2026-09-24T19:01:12Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "T-10: app/contexts/todo_list/models/todo_task.py (T-14) and its browser copy (T-19) do not exist yet",
       "requirement": null,
       "task": "T-10"
     },
     {
-      "case_id": "tests.fitness.test_golden_set::test_no_corpus_value_looks_like_a_real_person",
-      "declared_at": "2026-09-24T18:25:45Z",
+      "case_id": "tests.fitness.test_golden_set::test_every_task_in_a_sequence_is_a_text_and_a_done_mark_on_one_line",
+      "declared_at": "2026-09-24T18:45:30Z",
       "must_go_green_by": "iteration_end",
-      "observed_at": "2026-09-24T18:32:23Z",
-      "observed_red_in": "gate run 2026-09-24T18:25:52Z",
-      "reason": "T-1 registered the example-task seed file in SEED_FILES, which this corpus rule sweeps; T-10 rescopes it in wave 1b (named in T-1's closing block)",
+      "observed_at": "2026-09-24T19:01:12Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "T-10 closing block, reason 1: the locator names golden-set/seed/todo-tasks-example.json before T-17 writes it",
       "requirement": null,
       "task": "T-10"
     },
     {
-      "case_id": "tests.fitness.test_golden_set::test_the_frontend_reads_no_corpus_file",
-      "declared_at": "2026-09-24T18:25:45Z",
+      "case_id": "tests.fitness.test_golden_set::test_the_task_sequences_exercise_characters_outside_ascii",
+      "declared_at": "2026-09-24T18:45:30Z",
       "must_go_green_by": "iteration_end",
-      "observed_at": "2026-09-24T18:32:23Z",
-      "observed_red_in": "gate run 2026-09-24T18:25:52Z",
-      "reason": "T-5's todoTask.test.ts reads golden-set/fixtures/todo-task-text.json; T-10 names it as the second allowed reader in wave 1b (named in T-1's closing block)",
+      "observed_at": "2026-09-24T19:01:13Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "T-10 closing block, reason 1: the locator names golden-set/seed/todo-tasks-example.json before T-17 writes it",
+      "requirement": null,
+      "task": "T-10"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_no_task_looks_like_a_real_person",
+      "declared_at": "2026-09-24T18:45:30Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:13Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "T-10 closing block, reason 1: the locator names golden-set/seed/todo-tasks-example.json before T-17 writes it",
+      "requirement": null,
+      "task": "T-10"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_every_ordinary_task_is_one_the_rules_accept",
+      "declared_at": "2026-09-24T18:45:31Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:13Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "T-10 closing block, reason 2: the bound T-14 declares does not exist yet",
+      "requirement": null,
+      "task": "T-10"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_every_refused_task_really_breaks_the_rule_its_code_names",
+      "declared_at": "2026-09-24T18:45:31Z",
+      "must_go_green_by": "iteration_end",
+      "observed_at": "2026-09-24T19:01:13Z",
+      "observed_red_in": "gate run 2026-09-24T18:53:41Z",
+      "reason": "T-10 closing block, reason 2: the bound T-14 declares does not exist yet",
       "requirement": null,
       "task": "T-10"
     }
   ],
   "fanout": {
+    "build-backend": {
+      "assumptions": "No departure from spec/design/api.md (routes, shapes, five codes, sentences verbatim, refusal order, 422 anyOf on POST/PATCH, 404 on PATCH/DELETE, total ge=0). One addition past architecture.md: `change_todo_task(id, *, text=None, done=None)` is the one judgement-then-single-UPDATE that the PATCH calls; `correct_todo_task` and `mark_todo_task` are defined through it. build-migration: the model relies on todo_tasks (id uuid PK, text varchar(200), done boolean, created_at timestamptz, all NOT NULL, no server defaults) and the non-unique ix_todo_tasks_created_at_id(created_at, id); revision 5c58af1f8e8a exists and the model-against-revision tests pass. build-frontend: I did not run generate.sh in write mode, because schema.d.ts is T-23's and outside my allowlist; it now matches this backend (generate --check exits 0). Outside my files, still saying \"guest book\" only: the comments in scripts/help.sh:89, start.sh:113, deploy.sh:621 and preview.sh:199 (for reconcile-ops). Every write is one statement with RETURNING, no read before it; total = len(items) from one read; StrictStr/StrictBool shapes with no bound; the router's match ends in assert_never; exception messages carry ids, never the typed text (art. XI).",
+      "at": "2026-09-24T19:16:56Z",
+      "state": "returned"
+    },
+    "build-frontend": {
+      "assumptions": "Contract fields consumed. GET /api/todo-tasks: items[].id, items[].text, items[].done, total. POST /api/todo-tasks with {text}: the answer's id marks the arriving row. PATCH /api/todo-tasks/{todo_task_id} with {done} alone or {text} alone. DELETE answers 204. Refusals are read as detail.code and detail.message through api/problem.ts. created_at is not consumed. Module paths created, as the tests import them: lib/text.ts (normalizeText, textLength, TRIMMED). contexts/todo_list/lib/todoTask.ts (TodoTask, TODO_TASK_TEXT_MAX_LENGTH, LINE_BREAKS, todoTaskTextVerdict, TODO_TASK_TEXT_REFUSALS, todoTaskFailure, RefusedText, todoTaskCountLabel, TODO_TASK_DONE_NOTICES). hooks/useTodoTasks.ts (todoTaskKeys, useTodoTasks, useAddTodoTask, useMarkTodoTask, useTodoTasksBeingMarked, useCorrectTodoTask, useDeleteTodoTask). components/TodoTaskComposer.tsx, TodoTaskRow.tsx, DeleteTodoTaskDialog.tsx; pages/TodoListPage.tsx; components/ui/Checkbox.tsx; TODO_LIST_ROUTE. router.tsx still exports `router`. schema.d.ts was regenerated against the backend as it stood at 21:10; if build-backend changes a schema or a router docstring after that, ./scripts/generate.sh must run again (implement row 33). Reported, not taken: GuestbookPage.tsx is frozen for this change, so PageFrame's new `footer` prop defaults to the guestbook's sentence, and NotFoundPage passes `footer={null}`; a follow-up should move that sentence into GuestbookPage. Where the mock-up and the Markdown differ (Save hover 1.15 vs brightness-112; P10 draws Edit locked during a tick), the Markdown was built. Status returned: TEST_DISPUTED -- frontend/src/contexts/todo_list/hooks/useTodoTasks.test.tsx lines 185, 252, 259, 272, 280: `await act(() => result.current.<mutation>.mutate(...))` awaits the void TanStack's mutate returns; @typescript-eslint/await-thenable fails ./scripts/lint.sh (--max-warnings 0) and so check.sh; the cases pass in vitest and their behaviour is right; the fix belongs to build-tests-frontend (`await act(async () => { ... })`, or drop the `await`).",
+      "at": "2026-09-24T19:16:56Z",
+      "state": "returned"
+    },
+    "build-migration": {
+      "assumptions": "TodoTask matches this exactly (checked in app/contexts/todo_list/models/todo_task.py): Uuid PK with an app-side default. String(200) from TODO_TASK_TEXT_MAX_LENGTH. Boolean with default=False on the model only. DateTime(timezone=True). No server default anywhere. Index ix_todo_tasks_created_at_id(created_at, id) in __table_args__. The PK is unnamed, so Postgres names it todo_tasks_pkey. The data model gives no uniqueness rule, so no concurrency test is owed. The revision writes the literal 200 so a released revision never moves with the constant; the index build is plain (the table is created in the same revision); no lock_timeout, backfill or data. Environment: its first plain `./scripts/db.sh migrate` reached another project's database on localhost:5432 (forge-test1-pythin-react-db-1 held 0.0.0.0:5432); the orchestrator reverted that with the user's approval and moved this repository's dev Postgres back to 127.0.0.1:5432 after stopping the other container.",
+      "at": "2026-09-24T19:16:56Z",
+      "state": "returned"
+    },
+    "build-platform": {
+      "assumptions": "build-backend creates app/contexts/todo_list/ (T-14..T-16) and the seed file (T-17). build-frontend writes the todo_list modules and regenerates schema.d.ts (T-18..T-23). Those clear every red above, and nothing I own is on their path. A CODEOWNERS path does not need to exist yet: app/contexts/todo_list/ was absent when I wrote the row. The rows go last because GitHub applies the last matching rule; the comment now says so. No rows for the guestbook (the example that gets replaced). Left alone, outside the task: the header's \"a few hundred bytes\" (the file is 7842 bytes).",
+      "at": "2026-09-24T19:16:56Z",
+      "state": "returned"
+    },
     "build-tests-e2e": {
       "assumptions": "- No fixture read (per T-11). Values are inline, plus the \"Task 001…Task 101\" counting rule.\n- Contract bound: api.md § Endpoints / § The to-do list's refusals -- /todo-tasks GET 200 {items,total}, POST 201 (ignores `done`), PATCH /{id} 200 with `done` or `text` alone, DELETE 204, and 404 with detail.code `todo_task_not_found`.\n- Smoke locators: todo-list.md § Copy and § Accessibility labels (\"Things to do\", \"New task\", \"Add task\", the empty sentence, the too-long sentence, a checkbox named by the task's text), and system-states.md links \"Guestbook\" and \"To-do list\" with aria-current.\n- Parallel author: build-tests-unit is writing tests/unit and tests/fitness in parallel. I did not touch them.\n- Seed deviation: \"Then the task should be saved\" added to S-23 and S-24 (a step where \"this person\" acts leaves the answer to the Then). Titles are verbatim.\n- The done-task contrast check (opacity-aware) lives in e2e/ui/test_smoke.py, because T-12's Files list leaves styles.py out.\nStatus returned: CONTENTION -- ./scripts/test.sh e2e refused before anything started (the SPA was not built from these sources: build.sh --if-stale runs tsc --noEmit over all of frontend/src, and wave 1a's vitest files import modules wave 2 writes). The 22 scenarios' collection is proven (ids equal T-11's list); no e2e or smoke case has been observed failing.",
       "at": "2026-09-24T18:44:38Z",
@@ -3167,6 +3577,11 @@
           "at": "2026-09-24T18:44:38Z",
           "note": "Between the test waves `./scripts/test.sh e2e` and `ui` cannot run, so T-11's and T-12's Verification lines and the RED proof for `e2e.*` cannot be met as planned. `build.sh --if-stale` type-checks all of frontend/src, and wave 1a's declared-red vitest files import modules wave 2 writes. Owner: template (the build's tsc scope includes *.test.tsx, and test.sh e2e builds the SPA even for the HTTP half).",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T18:46:35Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/96",
+          "state": "filed"
         }
       ],
       "id": "PROC-41",
@@ -3177,8 +3592,8 @@
       "signal": "Between the test waves `./scripts/test.sh e2e` and `ui` cannot run, so T-11's and T-12's Verification lines and the RED proof for `e2e.*` cannot be met as planned. `build.sh --if-stale` type-checks all of frontend/src, and wave 1a's declared-red vitest files import modules wave 2 writes. Owner: template (the build's tsc scope includes *.test.tsx, and test.sh e2e builds the SPA even for the HTTP half).",
       "signature": "Between the test waves `.· e2e` and `ui` cannot run, so T-··s Verification lines and the RED proof for `e2e.*` cannot be",
       "stage": "implement",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/96"
     },
     {
       "at": "2026-09-24T18:44:38Z",
@@ -3193,6 +3608,11 @@
           "at": "2026-09-24T18:44:38Z",
           "note": "I improvised a step no skill defines: a scratch mutation check that injects fake app modules through `uv run --no-sync python`, written only in the scratchpad. No skill step proves that a new red test can turn green against a correct implementation.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T18:46:35Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5820124686",
+          "state": "filed"
         }
       ],
       "id": "PROC-42",
@@ -3202,6 +3622,115 @@
       "seen": 1,
       "signal": "I improvised a step no skill defines: a scratch mutation check that injects fake app modules through `uv run --no-sync python`, written only in the scratchpad. No skill step proves that a new red test can turn green against a correct implementation.",
       "signature": "I improvised a step no skill defines: a scratch mutation check that injects fake app modules through `uv run --no-sync p",
+      "stage": "implement",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5820124686"
+    },
+    {
+      "at": "2026-09-24T18:45:57Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T18:45:57Z",
+          "note": "This stack derives THREE implement waves (1a test authors, 1b test authors, 2 implementers), but row 31 asks for the RED proof once: after wave 1a it printed \"wave 2 of 3: the test authors have returned and no red is declared -- wave 2 must not go out against tests nobody has seen fail\", and after wave 1b returned it printed row 19 \"wave 3 of 3\" (the implementers) straight away, because a RED proof was already recorded. table/implement.md rows 30-32 assume two waves (wave 1 = the test authors, wave 2 = the implementers). Followed literally, the 46 planned reds of wave 1b (T-9, T-10) would reach the implementers undeclared and unobserved; the plan says the RED proof stands between wave 1 (1a+1b) and wave 2. This session ran Phase 6 a second time on its own initiative before dispatching wave 3.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T18:46:35Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/368",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-43",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "This stack derives THREE implement waves (1a test authors, 1b test authors, 2 implementers), but row 31 asks for the RED proof once: after wave 1a it printed \"wave 2 of 3: the test authors have returned and no red is declared -- wave 2 must not go out against tests nobody has seen fail\", and after wave 1b returned it printed row 19 \"wave 3 of 3\" (the implementers) straight away, because a RED proof was already recorded. table/implement.md rows 30-32 assume two waves (wave 1 = the test authors, wave 2 = the implementers). Followed literally, the 46 planned reds of wave 1b (T-9, T-10) would reach the implementers undeclared and unobserved; the plan says the RED proof stands between wave 1 (1a+1b) and wave 2. This session ran Phase 6 a second time on its own initiative before dispatching wave 3.",
+      "signature": "This stack derives THREE implement waves (1a test authors, 1b test authors, · implementers), but row · asks for the RED ",
+      "stage": "implement",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/368"
+    },
+    {
+      "at": "2026-09-24T19:16:56Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/forge_template_python_react"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T19:16:56Z",
+          "note": "The four wave-2 builders share one worktree, and test.sh's leftover-untracked-files check counts another builder's new files as the suite's own, so `./scripts/test.sh integration` and `tooling` exit 1 with every test passing, for any builder that runs them mid-wave; the check cannot tell the two apart.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-44",
+      "owner": "template",
+      "reason": null,
+      "reporter": "build-backend",
+      "seen": 1,
+      "signal": "The four wave-2 builders share one worktree, and test.sh's leftover-untracked-files check counts another builder's new files as the suite's own, so `./scripts/test.sh integration` and `tooling` exit 1 with every test passing, for any builder that runs them mid-wave; the check cannot tell the two apart.",
+      "signature": "The four wave-· builders share one worktree, and test.sh·s new files as the suite's own, so `.· integration` and `toolin",
+      "stage": "implement",
+      "state": "reported",
+      "url": null
+    },
+    {
+      "at": "2026-09-24T19:16:56Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/forge_template_python_react"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T19:16:56Z",
+          "note": "The typed lint of the wave-1 vitest files cannot see their real types until wave 2 creates the modules they import (the unresolved types are `any`). So a test-file lint error (await-thenable) passes the RED proof and first surfaces in wave 2, where no member may edit tests.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-45",
+      "owner": "template",
+      "reason": null,
+      "reporter": "build-frontend",
+      "seen": 1,
+      "signal": "The typed lint of the wave-1 vitest files cannot see their real types until wave 2 creates the modules they import (the unresolved types are `any`). So a test-file lint error (await-thenable) passes the RED proof and first surfaces in wave 2, where no member may edit tests.",
+      "signature": "The typed lint of the wave-· vitest files cannot see their real types until wave · creates the modules they import (the ",
+      "stage": "implement",
+      "state": "reported",
+      "url": null
+    },
+    {
+      "at": "2026-09-24T19:16:56Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/forge_template_python_react"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T19:16:56Z",
+          "note": "scripts/_lib.sh ensure_db_running only checks that the compose db service is running. forge-test2-react-db-1 was running with bindings 127.0.0.1:5432 but Ports {\"5432/tcp\":[]}, because another project's container, forge-test1-pythin-react-db-1, holds 0.0.0.0:5432 with the same app/app credentials. So every default db.sh or start.sh call here reaches that project's database. My plain `./scripts/db.sh migrate` applied 5c58af1f8e8a to it and created an empty todo_tasks table there.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-46",
+      "owner": "template",
+      "reason": null,
+      "reporter": "build-migration",
+      "seen": 1,
+      "signal": "scripts/_lib.sh ensure_db_running only checks that the compose db service is running. forge-test2-react-db-1 was running with bindings 127.0.0.1:5432 but Ports {\"5432/tcp\":[]}, because another project's container, forge-test1-pythin-react-db-1, holds 0.0.0.0:5432 with the same app/app credentials. So every default db.sh or start.sh call here reaches that project's database. My plain `./scripts/db.sh migrate` applied 5c58af1f8e8a to it and created an empty todo_tasks table there.",
+      "signature": "scripts· ensure_db_running only checks that the compose db service is running. forge-test2-react-db-· was running with b",
       "stage": "implement",
       "state": "reported",
       "url": null
@@ -3245,6 +3774,66 @@
       "case_id": "src/router.test.tsx::opens the guestbook at the main address [req:CR-2609-823a/R-5]",
       "reason": "T-7: the redirect from / to /guestbook already stands in frontend/src/router.tsx; this characterisation case pins spec/design/ui/system-states.md § Interactions, which R-5 clause 3 restates",
       "recorded_at": "2026-09-24T18:32:31Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_the_ordinary_tasks_repeat_a_text_and_end_both_done_and_not_done",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:22Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_every_named_task_carries_the_keys_its_file_gives_it",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:22Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_files_of_named_tasks_name_every_case_and_sentence_once",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:22Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_every_refused_task_names_a_code_the_contract_gives",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:23Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_every_task_text_case_carries_the_keys_a_case_has",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:23Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_every_task_text_case_is_named_and_described_exactly_once",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:23Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_every_task_text_case_states_one_of_the_four_verdicts",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:23Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_a_task_text_length_is_stated_exactly_when_the_case_is_accepted",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:23Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_the_task_text_cases_are_written_in_escapes_rather_than_bytes",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:24Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_the_task_text_cases_carry_every_one_of_the_seven_line_breaks_inside_a_text",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:24Z"
+    },
+    {
+      "case_id": "tests.fitness.test_golden_set::test_the_task_text_cases_hold_a_text_a_utf16_counter_would_refuse",
+      "reason": "T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task ran; its subject is test data, not code",
+      "recorded_at": "2026-09-24T19:01:24Z"
+    },
+    {
+      "case_id": "tests.fitness.test_length_constants::test_the_line_break_reader_would_see_a_drift",
+      "reason": "T-10: a known-positive check of the line-break reader over synthetic sources; it reads no product code, so it is green before T-14 and T-19",
+      "recorded_at": "2026-09-24T19:01:24Z"
     }
   ],
   "kind": "feature",
@@ -4655,7 +5244,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 480,
+  "revision": 597,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4724,7 +5313,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T18:44:38Z",
+  "updated_at": "2026-09-24T19:16:56Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

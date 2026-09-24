@@ -31,6 +31,7 @@ until somebody remembered.
 from fastapi import APIRouter
 
 from app.contexts.guestbook.routers import guestbook_entries
+from app.contexts.todo_list.routers import todo_tasks
 from app.platform.routers import health
 
 api_router = APIRouter()
@@ -40,5 +41,6 @@ api_router.include_router(health.router)
 
 # One line per bounded context, in the order they were added.
 api_router.include_router(guestbook_entries.router)
+api_router.include_router(todo_tasks.router)
 
 __all__ = ["api_router"]

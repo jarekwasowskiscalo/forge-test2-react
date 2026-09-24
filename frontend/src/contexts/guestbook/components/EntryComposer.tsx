@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
-import { textLength } from '@/contexts/guestbook/lib/entryText'
+import { textLength } from '@/lib/text'
 import {
   ENTRY_PROBLEM_MESSAGES,
   MESSAGE_MAX_LENGTH,

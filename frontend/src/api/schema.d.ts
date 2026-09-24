@@ -93,6 +93,72 @@ export interface paths {
         patch: operations["update_guestbook_entry_api_guestbook_entries__entry_id__patch"];
         trace?: never;
     };
+    "/api/todo-tasks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Todo Tasks
+         * @description The whole list, newest first, and how many tasks it holds.
+         *
+         *     No parameters -- nothing to narrow, one direction, no pieces (`BR-11`) -- so a
+         *     query parameter this does not take is ignored and the answer is still every task.
+         *     An empty list is a `200` with an empty `items`, never a `404`.
+         */
+        get: operations["list_todo_tasks_api_todo_tasks_get"];
+        put?: never;
+        /**
+         * Add Todo Task
+         * @description Add a task, not done. A `done` in the body is ignored, never refused (`BR-08`).
+         *
+         *     Raises:
+         *         HTTPException: 422 with `todo_task_text_empty`, `todo_task_text_multiline` or
+         *             `todo_task_text_too_long` when the text is refused.
+         */
+        post: operations["add_todo_task_api_todo_tasks_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/todo-tasks/{todo_task_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Todo Task
+         * @description Delete a task for good.
+         *
+         *     Raises:
+         *         HTTPException: 404 with `todo_task_not_found` when no task has `todo_task_id`
+         *             -- a second deletion of the same task included, so a deletion that did not
+         *             happen is never reported as one.
+         */
+        delete: operations["delete_todo_task_api_todo_tasks__todo_task_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Change Todo Task
+         * @description Mark a task, correct its text, or both -- writing the fields the body carries.
+         *
+         *     Raises:
+         *         HTTPException: 422 with `todo_task_empty_patch` when the body sets neither
+         *             field; 422 with a `todo_task_text_*` code when the text is refused; 404 with
+         *             `todo_task_not_found` when no task has `todo_task_id`.
+         */
+        patch: operations["change_todo_task_api_todo_tasks__todo_task_id__patch"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -232,6 +298,79 @@ export interface components {
             message: string;
             /** Id */
             id?: string | null;
+        };
+        /**
+         * TodoTaskCreate
+         * @description Request contract for `POST /api/todo-tasks`.
+         *
+         *     **There is no `done` here**, and that is `BR-08` rather than an omission: a task
+         *     is born not done. A `done` sent anyway is ignored like every key this shape does
+         *     not have -- Pydantic's default `extra="ignore"` -- and the task is stored not done
+         *     with a `201`, because the request asked for a task and gets one.
+         */
+        TodoTaskCreate: {
+            /** Text */
+            text: string;
+        };
+        /**
+         * TodoTaskList
+         * @description Response contract for `GET /api/todo-tasks`: the whole list and its count.
+         *
+         *     An envelope rather than a bare array although the list has no pieces. A caller
+         *     that needs only to know whether the list is empty -- the filling of a new
+         *     environment is one -- reads `total`; and the day the list is read in pieces,
+         *     `items` shortens and `total` keeps its meaning, which a bare array could only
+         *     achieve by breaking every caller.
+         */
+        TodoTaskList: {
+            /** Items */
+            items: components["schemas"]["TodoTaskRead"][];
+            /** Total */
+            total: number;
+        };
+        /**
+         * TodoTaskRead
+         * @description Response contract for one task: these four fields and nothing else.
+         *
+         *     No `updated_at`, no author, no position (`spec/contexts/todo_list.md`
+         *     § Language). `created_at` is on the wire although no screen shows it, because two
+         *     promises are made about it -- the order, and that it never moves -- and a promise
+         *     about a value nobody can read is a promise nobody can check.
+         */
+        TodoTaskRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Text */
+            text: string;
+            /** Done */
+            done: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * TodoTaskUpdate
+         * @description Request contract for `PATCH /api/todo-tasks/{todo_task_id}`.
+         *
+         *     Both fields optional, and an absent field means "do not touch", never "clear". A
+         *     field sent as `null` reads as absent -- it lands on the same `None` -- so a body of
+         *     two nulls is the same request as `{}`. A body that sets neither is refused by the
+         *     router, not here: "no change given" is a fact about the request as a whole, and it
+         *     is decided beside the endpoint before the service is called (`Q-21`, item 3).
+         *
+         *     A correction carries `text` alone, a marking `done` alone, and a body carrying
+         *     both is one change applied in one statement -- or refused whole, when its text is.
+         */
+        TodoTaskUpdate: {
+            /** Text */
+            text?: string | null;
+            /** Done */
+            done?: boolean | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -456,6 +595,141 @@ export interface operations {
                 };
             };
             /** @description The body sets no field at all, or a field is outside its bounds. Two different shapes under one status code: a coded refusal for the first, FastAPI's validation error for the rest. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Refusal"] | components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_todo_tasks_api_todo_tasks_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodoTaskList"];
+                };
+            };
+        };
+    };
+    add_todo_task_api_todo_tasks_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TodoTaskCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodoTaskRead"];
+                };
+            };
+            /** @description A coded refusal -- a text the rules refuse, or a patch that sets no field -- or FastAPI's validation error for a request of the wrong shape. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Refusal"] | components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_todo_task_api_todo_tasks__todo_task_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                todo_task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No task has that identifier. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Refusal"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_todo_task_api_todo_tasks__todo_task_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                todo_task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TodoTaskUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TodoTaskRead"];
+                };
+            };
+            /** @description No task has that identifier. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Refusal"];
+                };
+            };
+            /** @description A coded refusal -- a text the rules refuse, or a patch that sets no field -- or FastAPI's validation error for a request of the wrong shape. */
             422: {
                 headers: {
                     [name: string]: unknown;

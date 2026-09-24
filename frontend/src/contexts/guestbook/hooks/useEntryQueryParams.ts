@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 import type { GuestbookEntrySort } from '@/contexts/guestbook/hooks/useGuestbookEntries'
-import { normalizeText } from '@/contexts/guestbook/lib/entryText'
+import { normalizeText } from '@/lib/text'
 import { shownFrom } from '@/contexts/guestbook/lib/entryPaging'
 
 /**

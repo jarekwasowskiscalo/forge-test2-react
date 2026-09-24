@@ -252,3 +252,120 @@
 - [20:33] process_fault_resolved: PROC-40 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/366
 - [20:33] fanout_recorded: dispatched: build-tests-unit, build-tests-e2e
 - [20:44] fanout_recorded: returned: build-tests-unit, build-tests-e2e; 2 process fault(s): PROC-41, PROC-42
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_at_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside th
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_one_past_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported ins
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_at_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside th
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_one_past_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported ins
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_under_the_bound_but_over_it_in_utf16]: TDD red for T-9: app.contexts.todo_list does not exi
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[decomposed_at_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported insi
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[decomposed_one_past_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (importe
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_padded_to_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported in
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[spaces_past_the_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported in
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_feed_inside]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside th
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[carriage_return_inside]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported ins
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_tabulation_inside]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported ins
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[form_feed_inside]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside th
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[next_line_inside]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside th
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_separator_inside]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported insi
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[paragraph_separator_inside]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[tab_inside_is_kept]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside 
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_feed_at_the_end_is_trimmed]: TDD red for T-9: app.contexts.todo_list does not exist yet (imp
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[too_long_and_on_two_lines_is_multiline]: TDD red for T-9: app.contexts.todo_list does not exist y
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[ascii_at_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported in
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[emoji_at_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported in
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[emoji_under_the_bound_but_over_it_in_utf16]: TDD red for T-9: app.contexts.todo_list does 
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[decomposed_at_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (import
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[ascii_padded_to_maximum]: TDD red for T-9: app.contexts.todo_list does not exist yet (impo
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[tab_inside_is_kept]: TDD red for T-9: app.contexts.todo_list does not exist yet (imported 
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[line_feed_at_the_end_is_trimmed]: TDD red for T-9: app.contexts.todo_list does not exist y
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_the_create_and_update_shapes_carry_no_bound: TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_a_text_too_long_and_on_two_lines_is_refused_as_multiline: TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_the_bound_stands_where_the_constant_says: TDD red for T-9: app.contexts.todo_list does not exist yet (imported inside the test)
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_the_line_breaks_are_the_seven_written_code_points_and_all_are_trimmed: TDD red for T-9: app.contexts.todo_list does not exist yet (imported ins
+- [20:45] red_declared: tests.unit.test_todo_task_text_rules::test_any_text_is_either_refused_or_kept_normalized_one_line_and_within_the_bound: TDD red for T-9: app.contexts.todo_list does not exist yet (import
+- [20:45] red_declared: tests.unit.test_todo_task_model::test_the_text_column_is_as_long_as_the_bound: TDD red for T-9: the TodoTask model does not exist yet (imported inside the test)
+- [20:45] red_declared: tests.unit.test_todo_task_model::test_a_new_task_is_not_done_by_the_models_default: TDD red for T-9: the TodoTask model does not exist yet (imported inside the test)
+- [20:45] red_declared: tests.unit.test_todo_task_model::test_the_moment_of_adding_is_stored_with_its_zone: TDD red for T-9: the TodoTask model does not exist yet (imported inside the test)
+- [20:45] red_declared: tests.unit.test_todo_task_model::test_the_order_has_an_index_the_model_declares: TDD red for T-9: the TodoTask model does not exist yet (imported inside the test)
+- [20:45] red_declared: tests.unit.test_guestbook_entry_model::test_this_schema_holds_exactly_two_tables: TDD red for T-9: the schema holds one table until T-14 registers TodoTask in app.contexts
+- [20:45] red_declared: tests.fitness.test_golden_set::test_every_boundary_task_sits_exactly_on_the_task_bound: T-10: TODO_TASK_TEXT_MAX_LENGTH does not exist until T-14 declares it
+- [20:45] red_declared: tests.fitness.test_golden_set::test_every_task_refused_as_too_long_is_over_the_bound_by_exactly_one: T-10: TODO_TASK_TEXT_MAX_LENGTH does not exist until T-14 declares it
+- [20:45] red_declared: tests.fitness.test_golden_set::test_the_example_tasks_show_one_done_and_every_one_is_accepted: T-10: the model's constants (T-14) and the example file (T-17) do not exist yet
+- [20:45] red_declared: tests.fitness.test_length_constants::test_the_task_bound_equals_its_browser_copy: T-10: app/contexts/todo_list/models/todo_task.py (T-14) and its browser copy (T-19) do not exist yet
+- [20:45] red_declared: tests.fitness.test_length_constants::test_the_line_breaks_equal_their_browser_copy: T-10: app/contexts/todo_list/models/todo_task.py (T-14) and its browser copy (T-19) do not exist yet
+- [20:45] red_declared: tests.fitness.test_golden_set::test_every_task_in_a_sequence_is_a_text_and_a_done_mark_on_one_line: T-10 closing block, reason 1: the locator names golden-set/seed/todo-tasks-example.jso
+- [20:45] red_declared: tests.fitness.test_golden_set::test_the_task_sequences_exercise_characters_outside_ascii: T-10 closing block, reason 1: the locator names golden-set/seed/todo-tasks-example.json before T
+- [20:45] red_declared: tests.fitness.test_golden_set::test_no_task_looks_like_a_real_person: T-10 closing block, reason 1: the locator names golden-set/seed/todo-tasks-example.json before T-17 writes it
+- [20:45] red_declared: tests.fitness.test_golden_set::test_every_ordinary_task_is_one_the_rules_accept: T-10 closing block, reason 2: the bound T-14 declares does not exist yet
+- [20:45] red_declared: tests.fitness.test_golden_set::test_every_refused_task_really_breaks_the_rule_its_code_names: T-10 closing block, reason 2: the bound T-14 declares does not exist yet
+- [20:45] process_fault_reported: PROC-43 (engine): This stack derives THREE implement waves (1a test authors, 1b test authors, 2 implementers), but row
+- [20:46] process_fault_resolved: PROC-42 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/364#issuecomment-5820124686
+- [20:46] process_fault_resolved: PROC-41 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/96
+- [20:46] process_fault_resolved: PROC-43 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/368
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_at_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_one_past_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_at_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_one_past_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[emoji_under_the_bound_but_over_it_in_utf16] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[decomposed_at_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[decomposed_one_past_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[ascii_padded_to_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[spaces_past_the_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_feed_inside] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[carriage_return_inside] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_tabulation_inside] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[form_feed_inside] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[next_line_inside] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_separator_inside] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[paragraph_separator_inside] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[tab_inside_is_kept] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[line_feed_at_the_end_is_trimmed] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_case_gets_the_verdict_the_corpus_states[too_long_and_on_two_lines_is_multiline] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[ascii_at_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[emoji_at_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[emoji_under_the_bound_but_over_it_in_utf16] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[decomposed_at_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[ascii_padded_to_maximum] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[tab_inside_is_kept] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_every_accepted_case_has_the_length_the_corpus_states[line_feed_at_the_end_is_trimmed] in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_the_create_and_update_shapes_carry_no_bound in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_a_text_too_long_and_on_two_lines_is_refused_as_multiline in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_the_bound_stands_where_the_constant_says in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_the_line_breaks_are_the_seven_written_code_points_and_all_are_trimmed in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_text_rules::test_any_text_is_either_refused_or_kept_normalized_one_line_and_within_the_bound in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_model::test_the_text_column_is_as_long_as_the_bound in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_model::test_a_new_task_is_not_done_by_the_models_default in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_model::test_the_moment_of_adding_is_stored_with_its_zone in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_todo_task_model::test_the_order_has_an_index_the_model_declares in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.unit.test_guestbook_entry_model::test_this_schema_holds_exactly_two_tables in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.fitness.test_golden_set::test_every_boundary_task_sits_exactly_on_the_task_bound in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.fitness.test_golden_set::test_every_task_refused_as_too_long_is_over_the_bound_by_exactly_one in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.fitness.test_golden_set::test_the_example_tasks_show_one_done_and_every_one_is_accepted in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.fitness.test_length_constants::test_the_task_bound_equals_its_browser_copy in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.fitness.test_length_constants::test_the_line_breaks_equal_their_browser_copy in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.fitness.test_golden_set::test_every_task_in_a_sequence_is_a_text_and_a_done_mark_on_one_line in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.fitness.test_golden_set::test_the_task_sequences_exercise_characters_outside_ascii in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.fitness.test_golden_set::test_no_task_looks_like_a_real_person in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.fitness.test_golden_set::test_every_ordinary_task_is_one_the_rules_accept in gate run 2026-09-24T18:53:41Z
+- [21:01] red_observed: tests.fitness.test_golden_set::test_every_refused_task_really_breaks_the_rule_its_code_names in gate run 2026-09-24T18:53:41Z
+- [21:01] red_resolved: tests.fitness.test_golden_set::test_every_entry_carries_the_keys_an_entry_has
+- [21:01] red_resolved: tests.fitness.test_golden_set::test_the_sequence_files_have_no_case_names
+- [21:01] red_resolved: tests.fitness.test_golden_set::test_every_entry_meant_to_pass_really_passes
+- [21:01] red_resolved: tests.fitness.test_golden_set::test_the_corpus_exercises_characters_outside_ascii
+- [21:01] red_resolved: tests.fitness.test_golden_set::test_the_corpus_exercises_a_message_with_line_breaks
+- [21:01] red_resolved: tests.fitness.test_golden_set::test_no_corpus_value_looks_like_a_real_person
+- [21:01] red_resolved: tests.fitness.test_golden_set::test_the_frontend_reads_no_corpus_file
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_the_ordinary_tasks_repeat_a_text_and_end_both_done_and_not_done: T-10: a new rule that reads only the four to-do fixture files T-1 wrote b
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_every_named_task_carries_the_keys_its_file_gives_it: T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this t
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_files_of_named_tasks_name_every_case_and_sentence_once: T-10: a new rule that reads only the four to-do fixture files T-1 wrote before thi
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_every_refused_task_names_a_code_the_contract_gives: T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this ta
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_every_task_text_case_carries_the_keys_a_case_has: T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this task
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_every_task_text_case_is_named_and_described_exactly_once: T-10: a new rule that reads only the four to-do fixture files T-1 wrote before t
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_every_task_text_case_states_one_of_the_four_verdicts: T-10: a new rule that reads only the four to-do fixture files T-1 wrote before this 
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_a_task_text_length_is_stated_exactly_when_the_case_is_accepted: T-10: a new rule that reads only the four to-do fixture files T-1 wrote be
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_the_task_text_cases_are_written_in_escapes_rather_than_bytes: T-10: a new rule that reads only the four to-do fixture files T-1 wrote befo
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_the_task_text_cases_carry_every_one_of_the_seven_line_breaks_inside_a_text: T-10: a new rule that reads only the four to-do fixture files 
+- [21:01] green_by_design_recorded: tests.fitness.test_golden_set::test_the_task_text_cases_hold_a_text_a_utf16_counter_would_refuse: T-10: a new rule that reads only the four to-do fixture files T-1 wrote befo
+- [21:01] green_by_design_recorded: tests.fitness.test_length_constants::test_the_line_break_reader_would_see_a_drift: T-10: a known-positive check of the line-break reader over synthetic sources; it reads no p
+- [21:01] fanout_recorded: dispatched: build-backend, build-frontend, build-migration, build-platform
+- [21:16] fanout_recorded: returned: build-backend, build-frontend, build-migration, build-platform; 3 process fault(s): PROC-44, PROC-45, PROC-46

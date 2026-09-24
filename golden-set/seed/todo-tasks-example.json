@@ -1,0 +1,26 @@
+{
+  "story": "todo-tasks-example",
+  "demonstrates": "What a freshly created environment's to-do list opens with -- a preview, a fresh clone, a stage nobody has written in yet. Tasks chosen to be LOOKED AT rather than asserted about: both states side by side, the newest-first order visible, and characters outside ASCII surviving to the screen. Listed in ADDING order; the seeder adds all five, each not done, and only then marks the done one through the marking route, because a task is never born done. Every text is one line and well under the bound, because a task padded to two hundred characters is a list nobody can read.",
+  "tasks": [
+    {
+      "text": "Characters outside ASCII: café · naïve · Ærø · 日本語 · Ωμέγα. If you can read them, they survived the whole stack.",
+      "done": false
+    },
+    {
+      "text": "Delete this one when you have seen enough. It asks first, and a deleted task is gone for good.",
+      "done": false
+    },
+    {
+      "text": "This one is already done. Ticking a task never moves it, and ticking it again brings it back.",
+      "done": true
+    },
+    {
+      "text": "Correct the words of any task; editing never changes whether it is done.",
+      "done": false
+    },
+    {
+      "text": "These example tasks were put here when the environment was created. Newest first, so this one is at the top.",
+      "done": false
+    }
+  ]
+}

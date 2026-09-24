@@ -1,6 +1,6 @@
 import type { components } from '@/api/schema'
 
-import { normalizeText, textLength } from './entryText'
+import { normalizeText, textLength } from '@/lib/text'
 
 export type GuestbookEntry = components['schemas']['GuestbookEntryRead']
 
@@ -70,7 +70,7 @@ export const ENTRY_PROBLEM_MESSAGES: Record<EntryProblem, string> = {
  * 25 code points where Python's `str.strip()` removes 29 -- and which leaves the
  * BOM that Python keeps. Six code points were whitespace on one side and content
  * on the other, in both directions. The rule is now written down once, in
- * `entryText.ts` and in `app/platform/schemas/text.py`, and proved against one
+ * `@/lib/text` and in `app/platform/schemas/text.py`, and proved against one
  * corpus both languages read.
  *
  * The server normalizes before it measures (`NormalizedText` is a

@@ -3,11 +3,21 @@
  *
  * The other half of `app/platform/schemas/text.py`, and a **copy** for the same
  * reason the bounds beside it are copies: the browser cannot import Python. What
- * makes the copy legal is not care -- it is the shared text-measurement corpus
- * that both sides read, asserting the same verdicts and the same lengths against
- * the same bytes. `entryText.test.ts` is the module that reads it and the only one
- * in this tree allowed to; this file names no corpus path, because a rule has no
- * business knowing where it is proved.
+ * makes the copy legal is not care -- it is the corpora both sides read,
+ * asserting the same verdicts and the same lengths against the same bytes. Each
+ * context proves the rule through its own bounds, beside its own modules: the
+ * guestbook's `contexts/guestbook/lib/entryText.test.ts` and the to-do list's
+ * `contexts/todo_list/lib/todoTask.test.ts`, the only two readers of a corpus in
+ * this tree. This file names no corpus path, because a rule has no business
+ * knowing where it is proved.
+ *
+ * **It lives here, above the contexts, because a second context needs it**
+ * (`CR-2609-823a`). It was the guestbook's `lib/entryText.ts` while the browser
+ * had one caller; the to-do list judges a task's text by the same rule -- the
+ * shared kernel between the two contexts (`spec/design/architecture.md` § Rules
+ * between contexts) -- so the rule moved up unchanged, which is the move
+ * `spec/design/conventions.md` § Frontend prescribes for that day. Only the rule
+ * moved: the bounds stay with the context whose rule they are.
  *
  * **The unit is code points, after NFC normalization.** Before this module the
  * browser measured `value.length`, which is UTF-16 code units, while the server

@@ -16,3 +16,9 @@
  * (`spec/design/conventions.md` § Language).
  */
 export const GUESTBOOK_ROUTE = '/guestbook'
+
+/**
+ * The to-do list's own address (`spec/design/ui/todo-list.md`, `route: /todo-list`).
+ * The main address `/` still leads to the guestbook (`CR-2609-823a`, `Q-5`).
+ */
+export const TODO_LIST_ROUTE = '/todo-list'

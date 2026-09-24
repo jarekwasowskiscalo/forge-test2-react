@@ -77,9 +77,14 @@
 #   /frontend/src/contexts/<name>/        the screen, whole
 #   /e2e/suite/features/<name>.feature    what proves it
 #
-# With one context, per-context rows would be noise: each would name the same
-# person the catch-all rules above already name, and a file of rows that all say
-# the same thing is a file people stop reading. The pattern, for the second:
+# There are two contexts now: the guestbook and the to-do list (CR-2609-823a).
+# The to-do list's five rows stand at the END of this file. They name @jarekwas,
+# the same person the rules above name, because no other owner is recorded
+# anywhere -- the rows exist so that handing the context to a team is an edit of
+# five owners rather than a design of five paths. The guestbook carries none: it
+# is the example the first real feature replaces, and until somebody owns it
+# apart from the rest, a row for it would only repeat the rules above. The
+# pattern, for every context after these:
 #
 #   /spec/contexts/billing.md            @Scalo-Sales-Engineering-Consulting/billing
 #   /contracts/openapi/billing.yaml      @Scalo-Sales-Engineering-Consulting/billing
@@ -87,8 +92,10 @@
 #   /frontend/src/contexts/billing/      @Scalo-Sales-Engineering-Consulting/billing
 #   /e2e/suite/features/billing.feature  @Scalo-Sales-Engineering-Consulting/billing
 #
-# Five lines, no overlap with any other context, and nothing above them to
-# override -- which is the whole reason the trees were cut this way.
+# Five lines, no overlap with any other context -- which is the whole reason the
+# trees were cut this way. They go BELOW the broad rules, never above them:
+# GitHub applies the last matching rule, so a context row placed above `/spec/`
+# or `/contracts/` is overridden by that rule and does nothing, silently.
 
 # The specification: what the system is supposed to do. Every change is judged
 # against these documents, so a change TO them is a change to the yardstick.
@@ -114,3 +121,12 @@
 /infra/                         @jarekwas
 /scripts/deploy.sh              @jarekwas
 /scripts/release.sh             @jarekwas
+
+# The to-do list, whole, in every tree that holds one context and nothing else.
+# Last in the file on purpose: the last matching rule wins, and these narrow
+# `/spec/` and `/contracts/` above them.
+/spec/contexts/todo_list.md             @jarekwas
+/contracts/openapi/todo_list.yaml       @jarekwas
+/app/contexts/todo_list/                @jarekwas
+/frontend/src/contexts/todo_list/       @jarekwas
+/e2e/suite/features/todo_list.feature   @jarekwas
