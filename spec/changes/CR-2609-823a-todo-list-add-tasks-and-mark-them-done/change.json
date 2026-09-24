@@ -6,10 +6,10 @@
     "session-fb772134": "sessions/fb772134-4626-4cf4-a734-3930e8cb1dbd/summary.md"
   },
   "attempt": {
-    "heartbeat_at": "2026-09-24T13:01:36Z",
-    "n": 2,
+    "heartbeat_at": "2026-09-24T17:08:54Z",
+    "n": 3,
     "session_id": "",
-    "started_at": "2026-09-24T13:01:36Z"
+    "started_at": "2026-09-24T17:08:54Z"
   },
   "base_branch": "main",
   "base_commit": "6ccb49af3828fb250fb2d188ddbd87758004c403",
@@ -697,7 +697,13 @@
   "deferred_findings": [],
   "docs_touched": [],
   "expected_red": [],
-  "fanout": {},
+  "fanout": {
+    "design-plan": {
+      "assumptions": "T-2 names the three text exceptions, and T-9 and T-15 use those names. The plan fixes the locator constants (TODO_TASKS_*, tasks_of), the 19 case names in todo-task-text.json and the 13 contract-test ids. Declared vitest cases sit at the top level of their file. If build-frontend returns before T-16, implement row 33's generate.sh produces schema.d.ts (T-23). GuestbookPage.tsx stays untouched, so T-22 must deliver the guestbook's footer from the frame or report that it cannot. Gaps reported, not resolved: testing.md says nineteen corpus cases but the sources give 18+1; entryText.test.ts goes red after T-5 with no declaration in the design, so it is declared on T-5 and closed by T-18; testing.md expects test_production_is_refused red but it is green by design.",
+      "at": "2026-09-24T17:22:39Z",
+      "state": "returned"
+    }
+  },
   "faults": [
     {
       "at": "2026-09-24T11:42:41Z",
@@ -1726,6 +1732,63 @@
       "stage": "plan",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/355"
+    },
+    {
+      "at": "2026-09-24T17:08:44Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T17:08:44Z",
+          "note": "The design gate is approved against delta.md, but `loop close --next plan` assembles delta.md from design/delta/*.md AFTER the approval (commit b355f04, +320 lines), so the approval it just recorded goes stale immediately and the plan stage opens with the design gate re-opened (row 15) -- the user is asked to approve the same stage twice, and the first approval covered a file that was not the one the gate names.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T17:09:21Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/357",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-34",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "The design gate is approved against delta.md, but `loop close --next plan` assembles delta.md from design/delta/*.md AFTER the approval (commit b355f04, +320 lines), so the approval it just recorded goes stale immediately and the plan stage opens with the design gate re-opened (row 15) -- the user is asked to approve the same stage twice, and the first approval covered a file that was not the one the gate names.",
+      "signature": "The design gate is approved against delta.md, but `loop close --next plan` assembles delta.md from design· AFTER the app",
+      "stage": "plan",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/357"
+    },
+    {
+      "at": "2026-09-24T17:22:39Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T17:22:39Z",
+          "note": "declare-red matches classname::name[param] exactly, while design-testing's red-first list names bare parametrized functions and nothing asks it for parameter ids, so design-plan had to mint 19 corpus case names and more than 60 bracketed ids.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-35",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "design-plan",
+      "seen": 1,
+      "signal": "declare-red matches classname::name[param] exactly, while design-testing's red-first list names bare parametrized functions and nothing asks it for parameter ids, so design-plan had to mint 19 corpus case names and more than 60 bracketed ids.",
+      "signature": "declare-red matches classname::name[param] exactly, while design-testing's red-first list names bare parametrized functi",
+      "stage": "plan",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -1733,10 +1796,10 @@
   "gates": {
     "design": {
       "approved": true,
-      "approved_at": "2026-09-24T16:36:11Z",
+      "approved_at": "2026-09-24T17:08:51Z",
       "approved_by": "user",
       "artifact": "delta.md",
-      "artifact_sha256": "951f4d58fcb39d7b79dcebd0d496f3b601cff8cac4ba044527510832ec6daf68",
+      "artifact_sha256": "068b54362c4713a2d260534b10395ed1596c6946a22b97403d091beb1283be64",
       "note": ""
     },
     "intake": {
@@ -3160,7 +3223,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 221,
+  "revision": 226,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -3189,7 +3252,7 @@
     "plan": 1,
     "requirements": 1
   },
-  "stage_status": "not_started",
+  "stage_status": "in_progress",
   "status": "draft",
   "supersedes": [],
   "tasks": [],
@@ -3228,7 +3291,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T16:59:13Z",
+  "updated_at": "2026-09-24T17:22:39Z",
   "verification_last": {
     "content_digest": "1db9c2e03917e023fd003ed70cc96c83a49fc95d0f400aa631f47f9aac1e3cf3",
     "counts": {
