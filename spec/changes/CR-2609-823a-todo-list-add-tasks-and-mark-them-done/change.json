@@ -850,6 +850,132 @@
       "severity": "minor",
       "stage": "implement",
       "status": "resolved"
+    },
+    {
+      "ambiguity_source": "spec/invariants.md § Data invariants",
+      "artifacts": [
+        "spec/design/data-model.md",
+        "spec/design/testing.md",
+        "contracts/invariants/README.md"
+      ],
+      "auto_basis": "spec/invariants.md § Data invariants",
+      "contradiction": "Is the task-text data invariant written under `contracts/invariants/`?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-1",
+      "kind": "gap",
+      "raised_at": "2026-09-24T21:25:10Z",
+      "severity": "major",
+      "stage": "spec_sync",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/glossary.md § Identifiers and their spaces",
+      "artifacts": [
+        "spec/glossary.md",
+        "spec/README.md",
+        "spec/design/conventions.md"
+      ],
+      "auto_basis": "spec/constitution.md § Article IV — The specification changes on the same branch as the code",
+      "contradiction": "Is `spec/ADR/` empty, or does it hold two decisions?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-2",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T21:25:10Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md § Consequences",
+      "artifacts": [
+        "spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md",
+        "CLAUDE.md"
+      ],
+      "auto_basis": "spec/constitution.md § Article IV — The specification changes on the same branch as the code",
+      "contradiction": "Does ADR-0001 still say that no write set of this change holds the `CLAUDE.md` edit?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-3",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T21:25:10Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/architecture.md § What a new environment starts with",
+      "artifacts": [
+        "spec/design/architecture.md",
+        "reconcile/delta/docs.md",
+        "scripts/seed_golden_set.py"
+      ],
+      "auto_basis": "spec/constitution.md § Article IV — The specification changes on the same branch as the code",
+      "contradiction": "Is a new environment filled when \"nobody has written in it yet\", or list by list?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-4",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T21:25:10Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/architecture.md § The files",
+      "artifacts": [
+        "scripts/start.sh",
+        "scripts/help.sh",
+        "scripts/deploy.sh",
+        "scripts/preview.sh",
+        "spec/design/architecture.md"
+      ],
+      "auto_basis": "spec/constitution.md § Article I — The specification is the source of truth",
+      "contradiction": "Do the scripts' help and comments still describe one list?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-5",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T21:25:10Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "docs/runbooks/restore-the-database.md § When to use this",
+      "artifacts": [
+        "reconcile/user-guide-todo-list.md",
+        "docs/runbooks/restore-the-database.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Does a restore from backup bring back the to-do list alone, or the whole application?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-6",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T21:25:10Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/conventions.md § Documentation — where a document goes",
+      "artifacts": [
+        "reconcile/delta/docs.md",
+        "reconcile/delta/ops.md",
+        "reconcile/user-guide-todo-list.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Where does the to-do list's user guide live, and who puts it there?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-7",
+      "kind": "gap",
+      "raised_at": "2026-09-24T21:25:10Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
     }
   ],
   "coherence_passes": [
@@ -924,6 +1050,14 @@
       "pass": 9,
       "stage": "implement",
       "verdict": "GO"
+    },
+    {
+      "at": "2026-09-24T21:25:10Z",
+      "epoch": 1,
+      "inputs": "0fad248836dc74490c1ebb8af9ab0c5e830385120ab29dd1557b7db0fc4c24bb",
+      "pass": 10,
+      "stage": "spec_sync",
+      "verdict": "GO_WITH_QUESTIONS"
     }
   ],
   "contention_events": 0,
@@ -987,6 +1121,11 @@
     "reconcile-spec": {
       "assumptions": "reconcile-design owns the technical request-shape behaviours (a PATCH setting both text and done, the empty-patch refusal, the standard 422); api.md already describes them and the screen never sends them, so they stay out of the context documents and are named in the fragment. reconcile-docs writes for the back-office reader and does not restate BR-13. The converge-written header paragraph of todo_list.md (feature-claim history) was not audited as a design claim. Gap found: BR-13 vs refused corrected text -- the text refusal wins (judge before lookup, api.md 'the lookup last', R-8 test); one paragraph added under BR-13.",
       "at": "2026-09-24T21:15:58Z",
+      "state": "returned"
+    },
+    "review-coherence": {
+      "assumptions": "none -- reads only; all four authors assumption blocks were captured and checked against their neighbours",
+      "at": "2026-09-24T21:25:10Z",
       "state": "returned"
     }
   },
@@ -2799,6 +2938,11 @@
           "at": "2026-09-24T21:15:58Z",
           "note": "check.sh --fast inside the parallel reconcile wave cannot pass because the backend untracked-file hygiene check flags sibling workers' mid-run files; and the mandated gen_indexes step writes spec/changes/status.json which the preflight lists under NEVER WRITE",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T21:17:10Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/397",
+          "state": "filed"
         }
       ],
       "id": "PROC-59",
@@ -2809,8 +2953,8 @@
       "signal": "check.sh --fast inside the parallel reconcile wave cannot pass because the backend untracked-file hygiene check flags sibling workers' mid-run files; and the mandated gen_indexes step writes spec/changes/status.json which the preflight lists under NEVER WRITE",
       "signature": "check.sh --fast inside the parallel reconcile wave cannot pass because the backend untracked-file hygiene check flags si",
       "stage": "spec_sync",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/397"
     },
     {
       "at": "2026-09-24T21:15:58Z",
@@ -2825,6 +2969,11 @@
           "at": "2026-09-24T21:15:58Z",
           "note": "dispatch carried none of the implementers' INTENT paragraphs the skill says the orchestrator supplies, and the history tools truncate hand-backs; and the skill places user docs 'where the subject lives' but docs/ is outside reconcile-docs' write set, so the user guide was parked in the change record",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T21:17:10Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/398",
+          "state": "filed"
         }
       ],
       "id": "PROC-60",
@@ -2835,8 +2984,8 @@
       "signal": "dispatch carried none of the implementers' INTENT paragraphs the skill says the orchestrator supplies, and the history tools truncate hand-backs; and the skill places user docs 'where the subject lives' but docs/ is outside reconcile-docs' write set, so the user guide was parked in the change record",
       "signature": "dispatch carried none of the implementers·where the subject lives· write set, so the user guide was parked in the change",
       "stage": "spec_sync",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/398"
     },
     {
       "at": "2026-09-24T21:15:58Z",
@@ -2851,6 +3000,11 @@
           "at": "2026-09-24T21:15:58Z",
           "note": "reconcile-spec QUICK REFERENCE hardcodes 'git diff --stat origin/develop...HEAD'; this trunk is main with no develop branch, so the worker improvised the base",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T21:17:10Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/399",
+          "state": "filed"
         }
       ],
       "id": "PROC-61",
@@ -2860,6 +3014,32 @@
       "seen": 1,
       "signal": "reconcile-spec QUICK REFERENCE hardcodes 'git diff --stat origin/develop...HEAD'; this trunk is main with no develop branch, so the worker improvised the base",
       "signature": "reconcile-spec QUICK REFERENCE hardcodes ·; this trunk is main with no develop branch, so the worker improvised the base",
+      "stage": "spec_sync",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/399"
+    },
+    {
+      "at": "2026-09-24T21:25:10Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T21:25:10Z",
+          "note": "spec/invariants.md names the spec_sync convergence round as the only writer of a data invariant decided in design, but none of the four spec_sync write sets holds contracts/; the round exists only if a coherence pass happens to record a finding for it, so a clean pass would close the stage with the invariant unwritten and data-model.md citing a contract that does not exist",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-62",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-coherence",
+      "seen": 1,
+      "signal": "spec/invariants.md names the spec_sync convergence round as the only writer of a data invariant decided in design, but none of the four spec_sync write sets holds contracts/; the round exists only if a coherence pass happens to record a finding for it, so a clean pass would close the stage with the invariant unwritten and data-model.md citing a contract that does not exist",
+      "signature": "spec· names the spec_sync convergence round as the only writer of a data invariant decided in design, but none of the fo",
       "stage": "spec_sync",
       "state": "reported",
       "url": null
@@ -4738,7 +4918,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 883,
+  "revision": 888,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4889,7 +5069,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T21:15:58Z",
+  "updated_at": "2026-09-24T21:25:10Z",
   "verification_last": {
     "content_digest": "dd8c251ff7634c10453cf80cd92896b20e4d941582648ab0d0d2ff3fe5345ae3",
     "counts": {
