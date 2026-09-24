@@ -2892,6 +2892,11 @@
       "at": "2026-09-24T20:37:20Z",
       "fingerprint": "089994095f40d977",
       "stage": "clean_room"
+    },
+    {
+      "at": "2026-09-24T20:59:17Z",
+      "fingerprint": "49a5a6fd6d97df58",
+      "stage": "spec_sync"
     }
   ],
   "legacy_spec": null,
@@ -4116,7 +4121,7 @@
   ],
   "parent_cr_id": null,
   "parent_merge_commit": null,
-  "previous_stage": "implement",
+  "previous_stage": "clean_room",
   "reconciliations": [
     {
       "at": "2026-09-24T12:30:43Z",
@@ -4606,7 +4611,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 859,
+  "revision": 861,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4628,14 +4633,15 @@
     "unmeasured": []
   },
   "slug": "todo-list-add-tasks-and-mark-them-done",
-  "stage": "clean_room",
-  "stage_entered_at": "2026-09-24T20:37:20Z",
+  "stage": "spec_sync",
+  "stage_entered_at": "2026-09-24T20:59:17Z",
   "stage_entries": {
     "clean_room": 1,
     "design": 1,
     "implement": 1,
     "plan": 1,
-    "requirements": 1
+    "requirements": 1,
+    "spec_sync": 1
   },
   "stage_status": "not_started",
   "status": "draft",
@@ -4756,9 +4762,9 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T20:40:06Z",
+  "updated_at": "2026-09-24T20:59:17Z",
   "verification_last": {
-    "content_digest": "f7cf53add41463c656f6f9d3a8b8747a37fb69ca62f1ec969c9e920ba6dfb62f",
+    "content_digest": "dd8c251ff7634c10453cf80cd92896b20e4d941582648ab0d0d2ff3fe5345ae3",
     "counts": {
       "Suite backend": {
         "collected": 856,
@@ -4781,12 +4787,12 @@
         "skipped": 0
       }
     },
-    "duration_s": 153.23,
+    "duration_s": 143.87,
     "gaps": [],
-    "git_head": "3812cf728046cf54d104d3d462144e2e17732032",
-    "git_tree": "f8687af226e50492c8a9825af5db13d7d177123e",
+    "git_head": "44615bb43ce7f572f3d1c5427838d7e8d263ae17",
+    "git_tree": "f60e811cb345041b3fa5abd17859faa557bc0894",
     "profile": "boundary",
-    "started_at": "2026-09-24T20:34:47Z",
+    "started_at": "2026-09-24T20:56:53Z",
     "verdict": "GREEN",
     "worktree_dirty": true
   }
