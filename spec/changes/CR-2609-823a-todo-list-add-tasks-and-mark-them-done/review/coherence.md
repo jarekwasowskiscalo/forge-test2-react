@@ -1153,3 +1153,542 @@ true.
   Every other stated assumption matches what the neighbour wrote. That includes `todo_tasks` and
   `TodoTask`, the route `/todo-list`, the seed file `todo-tasks-example.json`, `Checkbox.tsx`, the
   answer-only cache, the five codes and the seven line breaks.
+
+## Pass 5 — the `design` stage
+
+The preflight printed `CONVERGENCE ROUND: 1 of 3 -- MODE: DEEP`, so Phase 1b ran first over the
+eight recorded resolutions, and a full hunt followed it. Artefacts read whole: the eight
+fragments under `design/delta/` (`converge.md` included), both ADR drafts, `design/ui/index.html`
+(searched), `spec/contexts/todo_list.md`, `spec/design/ui/todo-list.md`,
+`contracts/openapi/todo_list.yaml`, the diffs against `main` of `spec/design/api.md`,
+`architecture.md`, `data-model.md`, `conventions.md`, `ui/system-states.md`, `ui/guestbook.md`,
+`spec/contexts/guestbook.md`, `spec/glossary.md`, `spec/README.md` and
+`contracts/openapi/README.md`, `spec/design/testing.md` § Fitness functions and
+§ CR-2609-823a whole, `requirements.md` whole, `scenarios.md` § Coverage and its preamble, and
+the nine `ASSUMPTIONS` blocks from the preflight. The ranked documents read above them:
+`spec/constitution.md`, `spec/invariants.md`, `spec/glossary.md`, `contracts/README.md`. The
+material this round changed was read against `git diff 6cde44b HEAD`.
+
+### Recorded resolutions
+
+- COH-design-1: landed. `spec/design/conventions.md`:42-52 (§ Layers, the paragraph with the
+  user's words). Its artefact-level patches: `spec/design/architecture.md`:588-589 (`BR-06`,
+  `BR-07` held in the service), :600-603 (the router translates each domain exception), :613-614
+  (the schema holds no text rule; the service holds the judgement and its three exceptions);
+  `design/delta/architecture.md`:45-54 (Decision 2) and :87 (row `R-2`).
+- COH-design-2: landed. `spec/design/conventions.md`:42-52; `spec/design/testing.md`:759 ("through
+  the rule, while every case builds a valid create and update shape") and :859-861
+  (`test_the_create_and_update_shapes_carry_no_bound`).
+- COH-design-3: landed. `spec/design/conventions.md`:184-187 ("Only the rule moves up");
+  `design/delta/architecture.md`:60-68 (Decision 4), :142 (the write set), :245 (§ This change
+  owns); no `text.test.ts` row is left.
+- COH-design-4: landed. `spec/design/architecture.md`:664-673; `design/delta/architecture.md`:142
+  and :256.
+- COH-design-5: landed. `spec/contexts/todo_list.md`:7 and :23-32.
+- COH-design-6: landed. `spec/contexts/todo_list.md`:8 and :23-32.
+- COH-design-7: landed. `requirements.md`:525-527, :673-675, :737-738, :836-837.
+- COH-design-8: landed. `spec/design/conventions.md`:89-91; `spec/README.md`:58-61.
+
+No `verification` finding. What the landed resolutions left standing beside them is below, as
+new contradictions (COH-design-9, COH-design-13, COH-design-14).
+
+Pairs compared: `data-model.md` ↔ `api.md`; `api.md` ↔ `todo_list.yaml`; `api.md` ↔
+`ui/todo-list.md`; `api.md` ↔ `architecture.md` (live and fragment); `conventions.md` § Layers ↔
+`architecture.md` ↔ `data-model.md` ↔ the guestbook's worked example; `testing.md` ↔
+`todo_list.md` (the header's claims) ↔ the fitness run; `testing.md` ↔ the api fragment (the
+contract gate); `testing.md` ↔ `ui/todo-list.md`; `testing.md` ↔ `data-model.md`; `testing.md` ↔
+both ADR drafts; `requirements.md` ↔ itself and ↔ `converge.md`; `contracts/README.md` ↔
+`todo_list.yaml`; `requirements.md` `R-1`…`R-11` ↔ each design artefact; every artefact ↔ the
+glossary and the invariants; each author's assumptions ↔ what its neighbour wrote.
+
+### COH-design-9 — Which fitness case is red until the black-box file exists: the claim case, or the on-disk case?
+
+- **kind:** contradiction
+- **severity:** major
+- **decision_mode:** AUTO
+- **auto_basis:** spec/constitution.md § Article X — Between two steps the application works
+- **ambiguity_source:** spec/design/testing.md § CR-2609-823a, the to-do list
+- **artifacts:** spec/design/testing.md, spec/contexts/todo_list.md
+
+**What each says.** `spec/design/testing.md` § CR-2609-823a, "Existing detectors that go red on
+the way", third bullet (:977-984): `test_every_feature_file_is_claimed_by_exactly_one_context` is
+"red from the test wave, when **e2e/suite/features/todo_list.feature** appears, until
+`spec/contexts/todo_list.md` claims it", then "**Unresolved, and handed to the coherence gate.**"
+The list says of itself that "each is declared on the task whose product closes it", and it does
+not name `test_every_screen_and_feature_a_context_names_is_on_disk`. `spec/contexts/todo_list.md`
+:8 claims `features: [e2e/suite/features/todo_list.feature]` since the convergence round, and
+:23-32 says "the plan declares `test_every_screen_and_feature_a_context_names_is_on_disk` red on
+the task that writes the file" (`Q-19`). review-converge's assumption says the same.
+`design/delta/architecture.md` § Found outside every write set, item 4, still describes the
+timing from before the claim.
+
+**Why they cannot both be true.** Command: `./scripts/test.sh fitness`. Output: `FAILED
+tests/fitness/test_context_declarations.py::test_every_screen_and_feature_a_context_names_is_on_disk`,
+the context-document case, and `2 failed, 337 passed`. The claim case iterates the feature files
+on disk (`tests/fitness/test_context_declarations.py`:273-284, `present = {... FEATURES.glob("*.feature")}`)
+and finds each claimed once, so it cannot go red when the file appears. So `testing.md` names a
+declared red that will never occur and omits the one that is red now. design-plan turns this list
+into `**Must be red:**` lines. If it follows `testing.md`, the gate refuses the declaration (a
+declared red with no run where it failed) and finds the real red undeclared. Graded major: the
+list the plan is built from would close the stage red.
+
+**What settles it.** `spec/constitution.md` § Article X: a deliberate red "is declared *before*
+the run that shows it, must be proved to have actually occurred". Only the on-disk case meets
+both halves. It is declared before any implement run and its failure is observed above. The claim
+case can meet neither.
+
+**Resolution.** `testing.md`'s third detector names the on-disk case, declared on build-tests-e2e's
+task, and drops "Unresolved".
+
+Ready patch, `spec/design/testing.md` § CR-2609-823a, the third bullet of "Existing detectors that
+go red on the way". Replace the whole bullet with: "`tests/fitness/test_context_declarations.py::test_every_screen_and_feature_a_context_names_is_on_disk`
+— red since the design stage's convergence round claimed **e2e/suite/features/todo_list.feature**
+in `spec/contexts/todo_list.md` before the file exists (`CR-2609-823a`, `Q-19`), and declared on
+build-tests-e2e's task, whose product is the file, in the first implementation wave.
+`test_every_feature_file_is_claimed_by_exactly_one_context` and
+`test_every_registered_screen_is_claimed_by_exactly_one_context` stay green throughout, because
+the header claims both files." In `design/delta/architecture.md` § Found outside every write set,
+item 4, replace the two sentences on the screen and feature claim cases with "Both claims are in
+`spec/contexts/todo_list.md` since the convergence round (COH-design-5, COH-design-6); the
+on-disk case is red until build-tests-e2e writes the feature file."
+
+**What was ambiguous.** The bullet handed the timing to the coherence gate and named no route for
+the answer to come back. COH-design-6's resolution landed in the context header. The
+re-dispatched design-testing was scoped to COH-design-2 alone (TD-2), so the bullet was never
+revisited.
+
+**What was not found.** The first bullet (the context-document case) is still true. Its measured
+count, "1 failed, 338 passed", is dated 2026-09-24 and was true on that run.
+
+### COH-design-10 — Who declares that `./scripts/check.sh` is red on the contract gate from design close until the backend exists?
+
+- **kind:** gap
+- **severity:** major
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/design/testing.md § CR-2609-823a, the to-do list
+- **artifacts:** design/delta/api.md, spec/design/testing.md
+
+**What each says.** `design/delta/api.md` § What the contract gate says today: `./scripts/contracts.sh`
+"exits 1 on this tree with 11 findings … they close when the backend's routers and schemas exist.
+Until then `./scripts/check.sh`, which runs this gate, is red on it." `spec/design/testing.md`
+§ CR-2609-823a, "Existing detectors that go red on the way", lists "the structural cases" the
+specification runs ahead with, "each … declared on the task whose product closes it". It lists
+fitness and corpus cases only, and says nothing of the contract gate.
+
+**Why it is a gap.** Commands and outputs. `./scripts/contracts.sh` printed `11 problem(s)
+against 3 contracts, 5 paths, 10 operations` and `API contract is frozen: FAILED`.
+`grep -n contracts scripts/check.sh` printed `120:gate "API contract is frozen"
+"$REPO_ROOT/scripts/contracts.sh"`. The engine's `gate.py`:233 runs a stage boundary as
+`"boundary": (check, specs_boundary)`, with `check` as one opaque gate. `plan_grammar.py`:62 and
+:102-108 accept a declared red only as `classname::name` out of a junit, and no junit carries a
+contract finding. So the design boundary, and every implement boundary before build-backend's
+wave, meets a red in `check` that no `**Must be red:**` line can name. `close_stage` then demands
+an `--accept-red` whose reason names the gate. No artefact writes that reason before the run,
+while Article X requires the declaration before the run. Graded major. The fact is known and
+recorded only in a change fragment, and the list that plans the reds leaves it out.
+
+**What settles it.** Nothing ranked above both. `spec/constitution.md` § Article X excuses "a
+test written before its implementation", and a contract written before its implementation
+reddens a gate, not a test. Whether such a red may cross a stage boundary under a named
+acceptance is a process decision for a person.
+
+**Resolution.** Recommended (A): `testing.md` names the contract gate among the reds the
+specification runs ahead with, closing with build-backend's schemas and routers. Each boundary
+until then accepts the gate by that name and reason. The per-case gap is filed as a process fault.
+(B): `contracts/openapi/todo_list.yaml` lands with build-backend's wave, and `spec/design/api.md`
+alone is frozen at design close. That undoes design-api's ADDED entry and the frozen machine
+contract the two implementers were to build against.
+
+Ready patch for A, `spec/design/testing.md` § CR-2609-823a, "Existing detectors that go red on the
+way", a new last bullet: "`./scripts/contracts.sh`, a gate of `./scripts/check.sh` — red since
+`contracts/openapi/todo_list.yaml` exists, with 11 findings (four schemas and two paths the dump
+does not have yet, five refusal codes no router module holds yet), green when build-backend's
+schemas and routers exist. It is a gate, not a test case, so no `**Must be red:**` line can name
+it. The design boundary, and each implementation boundary before build-backend's wave, accepts
+`check` red on this gate alone, with this sentence as the reason."
+
+**What was ambiguous.** The detectors paragraph scopes itself to "structural cases", so the one
+red the specification runs ahead with on purpose and no case carries fell outside its list. The
+api author reported it in the fragment, which nothing reads when planning reds.
+
+**What was not found.** No other gate of `check` is red for this change: the fitness run above
+shows the two cases already discussed, and `contracts.sh` raises nothing against `guestbook.yaml`
+or `health.yaml`.
+
+### COH-design-11 — Does the to-do screen send a new task's text as typed, or as the shared rule leaves it?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/design/ui/guestbook.md § Data
+- **artifacts:** spec/design/ui/todo-list.md, spec/design/testing.md
+
+**What each says.** `spec/design/ui/todo-list.md` § Data (:240): adding "sends `text` as typed".
+`spec/design/testing.md` § CR-2609-823a, red-first list (:913-916), gives
+**frontend/src/contexts/todo_list/components/TodoTaskComposer.test.tsx** the case "sends the text
+as the shared rule leaves it" (`[req:CR-2609-823a/R-1]`).
+
+**Why they cannot both be true.** For "  Buy bread  " the first sends the padding and the second
+sends "Buy bread". build-frontend works from the screen document, and build-tests-frontend writes
+the case first, from `testing.md`. A composer built to the screen document fails a test its
+builder may not edit. The guestbook does the second.
+`sed -n 53,58p frontend/src/contexts/guestbook/components/EntryComposer.tsx` prints the comment
+"what is sent should be what the browser measured" above `author: normalizeEntryField(author)`.
+Graded minor. The service normalizes either way, so nothing stored differs. The cost is one
+disputed test in the implement wave.
+
+**What settles it.** Nothing ranked above both. `requirements.md` § R-2 clause 5 fixes the verdict
+on both sides and says nothing of the payload.
+
+**Resolution.** Recommended: the screen sends the text as the shared rule leaves it, as the
+guestbook does.
+
+Ready patch, `spec/design/ui/todo-list.md` § Data, the adding row. Replace "sends `text` as typed"
+with "sends `text` as the shared rule leaves it — normalized and trimmed, the text the screen
+judged". The alternative edits `testing.md`:915-916 to "sends the text as typed".
+
+**What was ambiguous.** `spec/design/ui/guestbook.md` § Data names the posting hook
+(`useCreateGuestbookEntry()`) and not what it sends. The worked example's payload rule lives only
+in its code, so design-ui derived one reading and design-testing copied the other.
+
+**What was not found.** The correction row ("sends `text` alone") takes no side, and no other
+payload differs between the two documents.
+
+### COH-design-12 — Where is `todo_task_empty_patch` decided: beside the endpoint, or in the service?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/design/conventions.md § Layers
+- **artifacts:** spec/design/conventions.md, spec/design/architecture.md
+
+**What each says.** `spec/design/conventions.md` § Layers (:42): "**A rule whose refusal carries a
+code of its own is judged in `services/`**". `spec/design/architecture.md` § The layer per rule
+(:600-603): the router "turns each of the service's domain exceptions into its coded refusal,
+explicitly: the not-found refusal and the three about a task's text". § The files (:614) gives the
+service `TodoTaskNotFoundError` and "the text's judgement with its three domain exceptions". Neither
+places `todo_task_empty_patch`, a coded refusal (`spec/design/api.md`:374). `spec/design/api.md`
+§ Shapes, `GuestbookEntryUpdate` (:120-121), says of the same refusal on the guestbook: "the
+refusal is about the request, and that is why it lives beside the endpoint rather than in the
+schema". design-api assumed "the router translates it into the 5 coded refusals".
+
+**Why they cannot both be true.** The guestbook's router decides its empty patch itself:
+`sed -n 184-188p app/contexts/guestbook/routers/guestbook_entries.py` prints `if data.author is
+None and data.message is None:` then `raise HTTPException(` … `"code":
+"guestbook_entry_empty_patch"`. Read literally, the new sentence in § Layers forbids that for
+every coded refusal. `architecture.md` names four service exceptions, which leaves the to-do
+list's empty patch to the router. So build-backend meets a rule that pulls the check into the
+service, and a placement that leaves it outside. Graded minor. The contract's order
+(`spec/design/api.md` § The to-do list's refusals, items 2-4) holds either way, so the cost is
+one edit.
+
+**What settles it.** Nothing ranked above both. `spec/constitution.md` § Article XIII forbids
+"Business logic in routers" and does not say whether a body that sets no field is business
+logic.
+
+**Resolution.** Recommended: the sentence in § Layers speaks of a rule about a field's value. A
+refusal about the request as a whole is decided beside the endpoint, as `api.md` says, and
+`architecture.md` names it.
+
+Ready patch. In `spec/design/conventions.md` § Layers, replace "**A rule whose refusal carries a
+code of its own is judged in `services/`, and `schemas/` holds no part of it.**" with "**A rule
+about a field's value whose refusal carries a code of its own is judged in `services/`, and
+`schemas/` holds no part of it.** A refusal about the request as a whole, a `PATCH` that sets no
+field, is decided beside the endpoint before the service is called (`spec/design/api.md`
+§ Shapes, `GuestbookEntryUpdate`)." In `spec/design/architecture.md` § The layer per rule, append
+to the router paragraph: "It answers `todo_task_empty_patch` itself, before it calls the service,
+as the guestbook's router answers its empty patch."
+
+**What was ambiguous.** The paragraph was written to settle schemas against services
+(COH-design-1). Its subject, "a rule whose refusal carries a code", also covers a refusal the
+router already decides.
+
+**What was not found.** No test fixes the layer: `test_a_patch_setting_neither_field_is_refused`
+(`spec/design/testing.md`:777) goes through the router and holds under either placement.
+
+### COH-design-13 — Does the to-do list's schema import any part of the text rule?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/design/conventions.md § Layers
+- **artifacts:** spec/design/data-model.md, design/delta/architecture.md
+
+**What each says.** `spec/design/data-model.md` § `todo_tasks`, "The bound, beside the model"
+(:252-253): "the column is declared from it and the schemas import it".
+`design/delta/architecture.md` § What this change does not move (:192-193):
+"`app/platform/schemas/text.py` — the kernel's server half is imported by the to-do schema as it
+stands". Against both: `spec/design/conventions.md` § Layers (:42-52), "`schemas/` holds no part
+of it", with the rule spelled "normalize, then empty, then one line, then measure", and
+`spec/design/architecture.md` § The files (:613), `todo_list/schemas/todo_tasks.py` holds "no text
+rule, only the read and write shapes". The fragment's own Decision 2 and row `R-2` put the kernel
+under the service's judgement.
+
+**Why they cannot both be true.** The kernel's `normalize` and `length`
+(`app/platform/schemas/text.py`:96, :115) and the bound are the rule's parts. An import is only
+kept if it is used: `pyproject.toml` § `[tool.ruff.lint]` selects `"F"`, commented "unused
+imports". The guestbook's schema uses its bounds as `Field(min_length=1,
+max_length=AUTHOR_MAX_LENGTH)` (`app/contexts/guestbook/schemas/guestbook_entries.py`:50), which
+is the form Q-17 rejected. So the two sentences can come true only through a use the design
+forbids, or a use nothing needs. Pass 4 read the import as harmless, "an import is not a
+constraint". That was before § Layers said the schema holds no part of the rule. Graded minor.
+Every other document names the service, and the router tests would catch a bound in the schema.
+
+**What settles it.** Nothing ranked above `data-model.md`. For the fragment alone,
+`spec/design/architecture.md` § The files ranks above it and says the schema holds no text rule.
+
+**Resolution.** The service's judgement imports the kernel and the bound, and the to-do schema
+imports neither.
+
+Ready patch. `spec/design/data-model.md` § `todo_tasks`: replace "the column is declared from it
+and the schemas import it" with "the column is declared from it and the service's judgement of a
+text imports it; the schemas do not (`spec/design/conventions.md` § Layers)".
+`design/delta/architecture.md` § What this change does not move: replace "imported by the to-do
+schema as it stands" with "imported by the to-do service's judgement as it stands".
+
+**What was ambiguous.** "`schemas/` holds no part of it" does not say whether importing the
+bound or the kernel counts as holding it. Both sentences copy the guestbook's pattern
+(`spec/design/data-model.md` § `guestbook_entries`, "imported by the schemas"), and COH-design-1's
+patch list named neither line.
+
+**What was not found.** `spec/design/architecture.md` § Rules between contexts ("live the same
+way, beside `TodoTask`") says where the constants live and not who imports them. It is true under
+the resolution.
+
+### COH-design-14 — Were `A-1`, `A-3` and `A-4` confirmed at the approval that confirmed `A-2`?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Named assumptions
+- **artifacts:** requirements.md, design/delta/converge.md
+
+**What each says.** `requirements.md` § Named assumptions: the preamble (:720-721), "No item below
+is a human decision yet. The user confirms or overrules each one at the approval of this
+document"; `A-1` (:732), `A-3` (:751) and `A-4` (:761), "**Status:** assumed, awaiting the user";
+§ Impact analysis (:519), "(assumed: `A-2`)". Against these: `A-2` (:737-738), "confirmed at this
+document's approval"; § Impact analysis (:526), in the same bullet as :519; § Non-Goals
+(:674-675); Self-check 23 (:837). `design/delta/converge.md` says the user approved the document
+and that "none was overruled, so `A-2` is a human decision".
+
+**Why they cannot both be true.** One approval confirmed the document. The file now says it
+confirmed one assumption and left the other three awaiting, and its own preamble says it
+confirmed none. The design treats all four as settled. `spec/contexts/todo_list.md` § Language
+states `A-1`'s seven characters and § `BR-07` states `A-3`'s trim reading as rules.
+`spec/design/ui/system-states.md` § Copy renames the lockup, which is `A-4`'s premise. Graded
+minor, because no behaviour differs. COH-design-7 wrote back `A-2` alone, and review-converge
+flagged the other three as needing "the same write-back later", with no owner.
+
+**What settles it.** Nothing ranked above `requirements.md` records the approval's outcome. It is
+recorded only in the change record and in `converge.md`, which rank below. The human step is to
+confirm that the approval covered all four. It is not a new question.
+
+**Resolution.** The preamble and the three Status lines say what the approval did.
+
+Ready patch, `requirements.md`. The § Named assumptions preamble: replace "No item below is a
+human decision yet. The user confirms or overrules each one at the approval of this document,
+which ends the stage." with "The user confirmed or overruled each one at the approval of this
+document, which ended the stage; none was overruled." `A-1`, `A-3`, `A-4`: replace "**Status:**
+assumed, awaiting the user." with "**Status:** confirmed at this document's approval." § Impact
+analysis :519: replace "(assumed: `A-2`)" with "(`A-2`, confirmed at approval)". Self-check 4
+(:775-776): replace "for the user to confirm at this document's approval" with "confirmed at this
+document's approval".
+
+**What was ambiguous.** The preamble says the approval confirms or overrules each assumption. It
+names no step that writes the outcome back, which is COH-design-7's ambiguity again, now
+resolved for one item of four.
+
+**What was not found.** The SC-5 cell (:27, "assumed: `A-4`") describes the measurement, not a
+status, and needs no edit beyond the `A-4` line it cites.
+
+### COH-design-15 — Does the black box tell the three text refusals apart?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** AUTO
+- **auto_basis:** spec/design/testing.md § CR-2609-823a, the to-do list
+- **ambiguity_source:** spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/scenarios.md § Coverage
+- **artifacts:** design/adr/task-text-refusals-are-coded-not-schema-constraints.md, design/delta/testing.md
+
+**What each says.** The ADR draft, § Context (:20-21): "The black box has to tell the three
+reasons apart (`S-6`, `S-8`, `S-33`)." The api fragment's **Why** (:12) says the same. The testing
+fragment, § Where this departs from `scenarios.md`, item 3: "The black box does not bind S-5, S-6,
+S-8, S-13 or S-33."
+
+**Why they cannot both be true.** The draft's premise is a claim about a suite, and the design has
+decided the opposite. Once reconcile-design numbers the ADR it is never rewritten, so the false
+premise would stand in the one record that "cannot be edited out" (constitution, Article IX). The
+decision itself survives, because `R-2` clause 6 and the screen's placement by `detail.code` each
+still need the three codes. Graded minor.
+
+**What settles it.** `spec/design/testing.md` § CR-2609-823a, the to-do list, "What the black box
+binds": the seeds that look a text up in a fixture file, "the refused outline, the one-line
+refusal … and the refused corrections", are proved by **tests/integration/test_todo_tasks_corpus.py**
+"and not bound in the black box". It is the home for the choice of a suite (Article IX) and ranks
+above both change documents.
+
+**Resolution.** The draft and the api fragment name the suite that tells the three apart.
+
+Ready patch. In the ADR draft's § Context, replace "The black box has to tell the three reasons
+apart (`S-6`, `S-8`, `S-33`)." with "The scenarios tell the three reasons apart (`S-6`, `S-8`,
+`S-33`), and the integration corpus test proves each on the wire (`spec/design/testing.md`
+§ CR-2609-823a)." In `design/delta/api.md`'s **Why**, replace "and the black box has to tell "no
+text", "too long" and "more than one line" apart (`S-6`, `S-8`, `S-33`)" with "and the scenarios
+tell "no text", "too long" and "more than one line" apart (`S-6`, `S-8`, `S-33`), which the
+integration corpus test proves on the wire".
+
+**What was ambiguous.** `scenarios.md` marks those seeds "application" and says of that kind "The
+black box can bind it". Both design authors read "can" as "does", and the choice was
+design-testing's.
+
+**What was not found.** No other sentence in either draft leans on a suite `testing.md` does not
+assign. The draft's "Enforced by" names router, corpus and contract tests that `testing.md` lists.
+
+### COH-design-16 — Which document calls for the task-text invariant, and which round writes it?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/invariants.md § Data invariants
+- **artifacts:** spec/design/testing.md, spec/design/data-model.md
+
+**What each says.** `spec/design/testing.md` § CR-2609-823a, "The witness for a task's text"
+(:802-804): "`data-model.md` calls for a data invariant of the to-do list's own, the counterpart of
+`D-04` … and the convergence round writes it". It then names three witnesses. `spec/design/data-model.md`
+contains no such call: `grep -n -i invariant spec/design/data-model.md` prints lines 72, 74, 127,
+136 and 215, all about `D-03`, `D-04` and the non-goals. The call is only in
+`design/delta/data-model.md` § Found outside this write set. design-data assumed that the
+convergence round would write it. That round has run (`design/delta/converge.md`, REC-12…REC-19)
+and neither wrote it nor mentions it. `ls contracts/invariants/` prints `README.md guestbook.md`.
+
+**Why they cannot both be true.** `testing.md` cites a normative home that does not carry the
+call, and a writer that did not write it. The witnesses are test files the implement stage
+creates, and `tests/fitness/test_invariant_witnesses.py::test_every_invariant_names_a_witness_that_exists`
+refuses a witness that does not exist. So no design-stage round could have written the invariant
+green, and no implement author writes `contracts/`. Graded minor. The proofs are in the red-first
+list either way. What can go missing is the invariant itself, the counterpart of `D-04` that the
+design decided a task's text has.
+
+**What settles it.** Nothing ranked above both on the timing. `spec/invariants.md` § Data
+invariants gives `contracts/invariants/` edits to the convergence round, and does not say which
+stage's.
+
+**Resolution.** Recommended: `data-model.md` § `todo_tasks` states the call. `testing.md` names
+the `spec_sync` stage's convergence round as the writer, because it is the first round after the
+witnesses exist.
+
+Ready patch. `spec/design/testing.md` :802-804: replace "`data-model.md` calls for a data invariant
+of the to-do list's own, the counterpart of `D-04` for a task's text — NFC, trimmed at both ends, 1
+to 200 code points, no line break inside — and the convergence round writes it." with
+"`data-model.md` § `todo_tasks` calls for a data invariant of the to-do list's own, the counterpart
+of `D-04` for a task's text — NFC, trimmed at both ends, 1 to 200 code points, no line break
+inside. The convergence round of the `spec_sync` stage writes it, the first round after its
+witnesses exist, since `tests/fitness/test_invariant_witnesses.py` refuses a witness that does not."
+`spec/design/data-model.md` § `todo_tasks`, after the column table, add: "Every `text` in this table
+is NFC, trimmed at both ends, 1 to 200 code points and one line: a data invariant of the to-do
+list's own under `contracts/invariants/`, whose witnesses `spec/design/testing.md` names."
+
+**What was ambiguous.** `spec/invariants.md` § Data invariants names who edits `contracts/` within a
+change and not when. An invariant whose witnesses are written in implementation cannot be written
+by the stage that decides it.
+
+**What was not found.** `D-01`…`D-03` need no new witness, as `testing.md` says. The sweeps reach
+`todo_tasks` through `Base.metadata`.
+
+### COH-design-17 — How many revisions does the migration-safety row describe?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** AUTO
+- **auto_basis:** spec/constitution.md § Article IV — The specification changes on the same branch as the code
+- **ambiguity_source:** spec/design/testing.md § Fitness functions
+- **artifacts:** spec/design/testing.md, spec/design/data-model.md
+
+**What each says.** `spec/design/testing.md` § Fitness functions, row `test_migration_safety.py`
+(:211): the last two rules "are **vacuously true** today — the one revision creates its table and
+its index together". `spec/design/data-model.md` § Migrations: "Two revisions, and the second is the
+head", and § The revision that creates `todo_tasks` builds its index in the same revision.
+
+**Why they cannot both be true.** After this change there are two revisions. The rules stay
+vacuous, because each revision creates its own table and index, but the count is false. design-testing
+corrected the other fitness rows' counts (:200, :201, :217) and not this one. Graded minor.
+
+**What settles it.** `spec/constitution.md` § Article IV: the specification edit lands in the same
+pull request as the change it describes. The count is a fact this change creates.
+
+**Resolution.** Replace "the one revision creates its table and its index together" in
+`spec/design/testing.md` :211 with "each of the two revisions creates its table and its index
+together".
+
+**What was ambiguous.** The row states a count inside a claim about vacuity, so a second revision
+makes the count false and leaves the claim true.
+
+**What was not found.** No other row of § Fitness functions counts contexts, tables or revisions as
+one.
+
+### COH-design-18 — How many paths and operations do the hand-written contracts hold?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** AUTO
+- **auto_basis:** spec/constitution.md § Article IV — The specification changes on the same branch as the code
+- **ambiguity_source:** contracts/README.md § Why a contract is written rather than generated
+- **artifacts:** contracts/README.md, contracts/openapi/todo_list.yaml
+
+**What each says.** `contracts/README.md` § Why a contract is written rather than generated (:44-45):
+"for this template that is three paths, six operations and eight schemas". With
+`contracts/openapi/todo_list.yaml` the gate's own scale line reads otherwise:
+`./scripts/contracts.sh` printed `against 3 contracts, 5 paths, 10 operations`.
+
+**Why they cannot both be true.** Two paths and four operations were added. The schema count, on
+the old figure's own convention (FastAPI's two validation shapes not counted, a schema defined in
+two files counted once), goes from eight to twelve: `TodoTaskCreate`, `TodoTaskUpdate`,
+`TodoTaskRead`, `TodoTaskList`. Command: the per-file schema listing over
+`contracts/openapi/*.yaml`. design-api reported the sentence as outside its allowlist. Pass 4 did
+not raise it. Graded minor.
+
+**What settles it.** `spec/constitution.md` § Article IV, as for COH-design-8. The count is a fact
+this change creates. `contracts/` is the convergence round's to edit (`spec/invariants.md` § Data
+invariants).
+
+**Resolution.** Replace "three paths, six operations and eight schemas" in `contracts/README.md`
+with "five paths, ten operations and twelve schemas".
+
+**What was ambiguous.** The README states the template's contract size inside its argument for
+writing contracts by hand, so the next contract makes the argument's figure false.
+
+**What was not found.** `contracts/openapi/README.md` was updated by design-api ("Compatibility mode
+of all three") and is true.
+
+### What was checked and agrees
+
+- **`data-model.md` ↔ `api.md` ↔ `todo_list.yaml`.** They agree as pass 4 found. The combined
+  `PATCH` writes the columns it carries. A `null` field reads as absent, and a body of two `null`s
+  is the empty patch (`api.md`:180, `testing.md`:777). On `POST` a `null` text is the standard
+  validation `422`.
+- **The verdict order.** `architecture.md`:625's "`BR-07` then `BR-06`" for the browser gives the
+  same verdict as "empty, then one line, then measure", because an empty text holds no line break
+  (`api.md` § The to-do list's refusals, item 3). It is not a contradiction.
+- **design-ui's `Q-15` assumption.** A server error carries no `detail.message`:
+  `app/core/errors.py`:55 is `{"detail": "internal server error"}`. So "the service answered with
+  an error" is the sentence it gets.
+- **The authors' assumptions.** design-api's "5 coded refusals" translated by the router is
+  COH-design-12. design-api's "importing `TODO_TASK_TEXT_MAX_LENGTH` is fine" is COH-design-13.
+  design-data's "writing it belongs to the convergence round" is COH-design-16. review-converge's
+  "`A-1`, `A-3` and `A-4` … need the same write-back later" is COH-design-14. design-domain's
+  "screens: [] and features: [] stay empty" is superseded by `Q-19` and landed as COH-design-5 and
+  COH-design-6. Every other stated assumption matches what the neighbour wrote.
+- **Known and routed, not raised again.** `spec/design/conventions.md` § Frontend :188-190 ("the
+  browser has exactly one") now sits right after the new "Only the rule moves up". It stays false
+  and is routed to reconcile-design (`design/delta/architecture.md` item 3; review-converge). The
+  deletion lists in `CLAUDE.md` and `spec/README.md`:63-69 do not say that `BR-01`'s words move into
+  `spec/contexts/todo_list.md` first. They are incomplete rather than false, and design-spec and
+  ADR draft 1 report them.
+- **Glossary and invariants.** *Task* and *Task (process)* stay apart, and no identifier uses a bare
+  `task`. `D-01`…`D-03` hold, and the non-goals name tasks.

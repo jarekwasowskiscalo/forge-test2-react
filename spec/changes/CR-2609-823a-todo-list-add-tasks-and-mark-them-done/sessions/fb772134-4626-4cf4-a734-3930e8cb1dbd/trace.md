@@ -86,3 +86,6 @@
 - [18:13] todo_resolved: TD-1
 - [18:13] fanout_recorded: dispatched: design-testing
 - [18:14] fanout_recorded: returned: design-testing
+- [18:14] todo_resolved: TD-2
+- [18:15] fanout_recorded: dispatched: review-coherence
+- [18:24] fanout_recorded: returned: review-coherence; coherence pass 5 NO_GO, 10 new finding(s); 1 process fault(s): PROC-31

@@ -382,6 +382,176 @@
       "severity": "minor",
       "stage": "design",
       "status": "resolved"
+    },
+    {
+      "ambiguity_source": "spec/design/testing.md § CR-2609-823a, the to-do list",
+      "artifacts": [
+        "spec/design/testing.md",
+        "spec/contexts/todo_list.md"
+      ],
+      "auto_basis": "spec/constitution.md § Article X — Between two steps the application works",
+      "contradiction": "Which fitness case is red until the black-box file exists: the claim case, or the on-disk case?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-design-9",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T16:24:49Z",
+      "severity": "major",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/testing.md § CR-2609-823a, the to-do list",
+      "artifacts": [
+        "design/delta/api.md",
+        "spec/design/testing.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Who declares that `./scripts/check.sh` is red on the contract gate from design close until the backend exists?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-design-10",
+      "kind": "gap",
+      "raised_at": "2026-09-24T16:24:49Z",
+      "severity": "major",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/ui/guestbook.md § Data",
+      "artifacts": [
+        "spec/design/ui/todo-list.md",
+        "spec/design/testing.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Does the to-do screen send a new task's text as typed, or as the shared rule leaves it?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-design-11",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T16:24:49Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/conventions.md § Layers",
+      "artifacts": [
+        "spec/design/conventions.md",
+        "spec/design/architecture.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Where is `todo_task_empty_patch` decided: beside the endpoint, or in the service?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-design-12",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T16:24:49Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/conventions.md § Layers",
+      "artifacts": [
+        "spec/design/data-model.md",
+        "design/delta/architecture.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Does the to-do list's schema import any part of the text rule?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-design-13",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T16:24:49Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Named assumptions",
+      "artifacts": [
+        "requirements.md",
+        "design/delta/converge.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Were `A-1`, `A-3` and `A-4` confirmed at the approval that confirmed `A-2`?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-design-14",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T16:24:49Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/scenarios.md § Coverage",
+      "artifacts": [
+        "design/adr/task-text-refusals-are-coded-not-schema-constraints.md",
+        "design/delta/testing.md"
+      ],
+      "auto_basis": "spec/design/testing.md § CR-2609-823a, the to-do list",
+      "contradiction": "Does the black box tell the three text refusals apart?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-design-15",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T16:24:49Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/invariants.md § Data invariants",
+      "artifacts": [
+        "spec/design/testing.md",
+        "spec/design/data-model.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Which document calls for the task-text invariant, and which round writes it?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-design-16",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T16:24:49Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/design/testing.md § Fitness functions",
+      "artifacts": [
+        "spec/design/testing.md",
+        "spec/design/data-model.md"
+      ],
+      "auto_basis": "spec/constitution.md § Article IV — The specification changes on the same branch as the code",
+      "contradiction": "How many revisions does the migration-safety row describe?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-design-17",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T16:24:49Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "contracts/README.md § Why a contract is written rather than generated",
+      "artifacts": [
+        "contracts/README.md",
+        "contracts/openapi/todo_list.yaml"
+      ],
+      "auto_basis": "spec/constitution.md § Article IV — The specification changes on the same branch as the code",
+      "contradiction": "How many paths and operations do the hand-written contracts hold?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-design-18",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T16:24:49Z",
+      "severity": "minor",
+      "stage": "design",
+      "status": "open"
     }
   ],
   "coherence_passes": [
@@ -414,6 +584,14 @@
       "epoch": 1,
       "inputs": "f7ea5dd1085a95fb342b8a528d3e8519e0309e31c06e3b8e0de5ab1372723843",
       "pass": 4,
+      "stage": "design",
+      "verdict": "NO_GO"
+    },
+    {
+      "at": "2026-09-24T16:24:49Z",
+      "epoch": 1,
+      "inputs": "c4e11cff7c963a6e6ca3bac4ea86a23f56d67a954ccb75c1fbdee3e2537df5b1",
+      "pass": 5,
       "stage": "design",
       "verdict": "NO_GO"
     }
@@ -476,6 +654,11 @@
     "design-ui": {
       "assumptions": "- Every binding is to the live spec/design/api.md: GET /api/todo-tasks via useTodoTasks() -> total (header count, not items.length), items[].id/.text/.done (rows, shown in arrival order), items empty (empty state); POST /api/todo-tasks sends text and gets a TodoTaskRead; PATCH /api/todo-tasks/{todo_task_id} sends done alone (the chosen state) for a tick, or text alone for a correction; DELETE -> 204. A refused write has detail.code (decides where it shows) and detail.message (the words). Refusals shown: todo_task_text_empty/multiline/too_long (under the field), todo_task_not_found (notice). created_at is not shown. The mutation names inside useTodoTasks.ts are left to build-frontend.\n- The Q-15 rule (\"...the service answered with an error.\") depends on design-api keeping every coded to-do refusal in {detail:{code,message}}, and on a server error carrying no detail.message; \"no sentence of its own\" is read as an answer with no refusal message, not a 5xx status code.\n- The Q-16 rule (focus back where the person was) applies only when focus was on the control that was locked or closed; a person who tabbed elsewhere keeps focus where they put it. It lives once, in § Keyboard and accessibility.\n- The navigation, the lockup (\"Product name\"/\"P\", mock-up C-1 approved in Q-14) and the 404 page live in system-states.md (the frame), not in the to-do document, because no context owns them; guestbook.md's opening sentence, region 1 and footer copy row changed with them.\n- The screen is in the live tree with info_ref S-02. No scenario ids (S-nn) appear in spec/design/ui/ (frozen-ids would read them as screen ids; PROC-23).\n- A failed correction keeps the editor open with what was typed and the stored text unchanged; build-tests-e2e: after a failed correction, the old text stays as the box's accessible name and comes back on Cancel.\n- Handed to the orchestrator (fragment § Found outside): spec/contexts/todo_list.md `screens: []` must claim spec/design/ui/todo-list.md, or test_every_registered_screen_is_claimed_by_exactly_one_context goes red; and the UI smoke's comment about \"the only navigation\" is now false.",
       "at": "2026-09-24T14:43:42Z",
+      "state": "returned"
+    },
+    "review-coherence": {
+      "assumptions": "none -- this skill reads, it does not produce an artefact others depend on",
+      "at": "2026-09-24T16:24:49Z",
       "state": "returned"
     },
     "review-converge": {
@@ -1419,6 +1602,32 @@
       "stage": "design",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/350"
+    },
+    {
+      "at": "2026-09-24T16:24:49Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T16:24:49Z",
+          "note": "A contract frozen at design close (contracts/openapi/*.yaml, as design-api requires) makes check red through the contracts gate until build-backend's wave. expected_red accepts only junit classname::name ids (plan_grammar.py:62, :102-108). So every change that adds an endpoint can close design only through an --accept-red written after the failing run, which Article X forbids.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-31",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-coherence",
+      "seen": 1,
+      "signal": "A contract frozen at design close (contracts/openapi/*.yaml, as design-api requires) makes check red through the contracts gate until build-backend's wave. expected_red accepts only junit classname::name ids (plan_grammar.py:62, :102-108). So every change that adds an endpoint can close design only through an --accept-red written after the failing run, which Article X forbids.",
+      "signature": "A contract frozen at design close (contracts· as design-api requires) makes check red through the contracts gate until b",
+      "stage": "design",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -2530,7 +2739,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 173,
+  "revision": 176,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -2577,6 +2786,7 @@
       "id": "TD-2",
       "kind": "agent",
       "raised_at": "2026-09-24T16:13:24Z",
+      "resolved_at": "2026-09-24T16:14:58Z",
       "skill": "design-testing",
       "what": "Apply the recorded resolution of COH-design-2 (Q-17 = A), which the convergence brief left out: spec/design/testing.md :759 and :859-860 still test that the create and update shapes refuse a text with its code. Apply the ready patch written under COH-design-2 in review/coherence.md § Pass 4 -- :759 \"through the rule, while every case builds a valid create and update shape, so only the rule can refuse a text\" and :859-860 test_the_create_and_update_shapes_carry_no_bound -- with the smallest edit, and change nothing else."
     }
@@ -2596,7 +2806,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T16:14:57Z",
+  "updated_at": "2026-09-24T16:24:49Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {

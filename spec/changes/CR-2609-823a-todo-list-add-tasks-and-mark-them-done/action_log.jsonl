@@ -176,3 +176,6 @@
 {"timestamp": "2026-09-24T16:13:55Z", "agent": "sdd", "action": "todo_resolved", "details": "TD-1", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
 {"timestamp": "2026-09-24T16:13:59Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: design-testing", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
 {"timestamp": "2026-09-24T16:14:57Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: design-testing", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:14:58Z", "agent": "sdd", "action": "todo_resolved", "details": "TD-2", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:15:02Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-coherence", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T16:24:49Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-coherence; coherence pass 5 NO_GO, 10 new finding(s); 1 process fault(s): PROC-31", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
