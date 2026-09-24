@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
   "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97",
-  "captured_at": "2026-09-24T13:00:25Z",
-  "total_bytes": 17335127,
-  "source_bytes": 17335127,
+  "captured_at": "2026-09-24T13:00:57Z",
+  "total_bytes": 17375777,
+  "source_bytes": 17375777,
   "file_count": 26,
   "personal_data_shapes": {
     "email": 98,
@@ -21,14 +21,19 @@
       "seq": 2,
       "captured_at": "2026-09-24T13:00:25Z",
       "total_bytes": 17335127
+    },
+    {
+      "seq": 3,
+      "captured_at": "2026-09-24T13:00:57Z",
+      "total_bytes": 17375777
     }
   ],
   "files": [
     {
       "path": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/sessions/870fece5-b8f9-4a47-84da-b3456aa1de97/transcript.jsonl",
       "source": "/Users/jaroslawwasowski/.claude/projects/-Users-jaroslawwasowski-Projects-Forge-forge-test2-react/870fece5-b8f9-4a47-84da-b3456aa1de97.jsonl",
-      "bytes": 3974905,
-      "sha256": "c0bae4aa1d47de0c6e9753f5b355654a56a6467700a79104e53bec1cc9c24b87"
+      "bytes": 4015555,
+      "sha256": "cfcef841bb90a7b9a849a5e2c07e58b11e2a3863e9aaa5763adeec460671515c"
     },
     {
       "path": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/sessions/870fece5-b8f9-4a47-84da-b3456aa1de97/sidecar/subagents/agent-a00fe7c3cddf94023.jsonl",
@@ -182,10 +187,9 @@
     }
   ],
   "capture": {
-    "mode": "retro",
-    "trigger": "sdd-retro",
-    "partial": false
+    "mode": "auto",
+    "trigger": "prompt_input_exit",
+    "partial": true
   },
-  "cr_dir": "CR-2609-823a-todo-list-add-tasks-and-mark-them-done",
-  "branch": "sdd/CR-2609-823a-todo-list-add-tasks-and-mark-them-done"
+  "cr_dir": "CR-2609-823a-todo-list-add-tasks-and-mark-them-done"
 }

@@ -92,3 +92,6 @@
 {"timestamp": "2026-09-24T12:58:40Z", "agent": "sdd", "action": "stage_closed", "details": "closed requirements, opened design (boundary -> GREEN; delta.md from 1 fragments (1 current, 0 superseded))", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
 {"timestamp": "2026-09-24T12:59:02Z", "agent": "sdd-retro", "action": "session_captured", "details": "26 files, 17087514 bytes, session 870fece5-b8f9-4a47-84da-b3456aa1de97", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
 {"timestamp": "2026-09-24T13:00:25Z", "agent": "sdd-retro", "action": "session_archive_committed", "details": "archive committed for session 870fece5-b8f9-4a47-84da-b3456aa1de97", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T13:00:57Z", "agent": "session-capture", "action": "session_captured_auto", "details": "26 files, 17375777 bytes, marked partial, trigger prompt_input_exit", "session_id": "870fece5-b8f9-4a47-84da-b3456aa1de97"}
+{"timestamp": "2026-09-24T13:01:36Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: design-domain", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}
+{"timestamp": "2026-09-24T13:07:07Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: design-domain; 1 process fault(s): PROC-13", "session_id": "fb772134-4626-4cf4-a734-3930e8cb1dbd"}

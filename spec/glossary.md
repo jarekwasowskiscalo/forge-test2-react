@@ -2,8 +2,11 @@
 
 Domain words used across the repository, with the source form that is the identifier in the
 code. A term that means something **only inside one context** lives in that context's
-document, not here — today there is one context, so the split is an exercise for the future,
-but the rule holds from the first day.
+document, not here. With two contexts the split is no longer an exercise: a word earns a row
+here when it names a context, or when it means one thing on one side of a boundary and another
+thing on the other, or in the process (`Session` and `Task`, below). The guestbook's rows were
+written while it was the only context, and they stay until a change moves them into its
+document.
 
 The language rule behind this: the whole repository is written in English, and a **domain term
 keeps its source form inside an identifier** — so that a field can be grepped from a sentence
@@ -11,7 +14,9 @@ in the specification to a column in the database (`spec/design/conventions.md` �
 
 | Term | Meaning |
 |---|---|
-| **Guestbook** | The only bounded context of this system. The set of entries left by guests. |
+| **Guestbook** | A bounded context: the set of entries left by guests. It shares one rule with the to-do list, how a text is trimmed and measured, and nothing else ([`contexts/todo_list.md`](contexts/todo_list.md) § Neighbours). |
+| **To-do list** | A bounded context: the one list of tasks every visitor shares, each task one line of text that is done or not done. Its words (task, done, the moment of adding) are defined in [`contexts/todo_list.md`](contexts/todo_list.md) § Language. Source form `todo_list`. |
+| **Task** | One line of text on the to-do list, done or not done; defined in [`contexts/todo_list.md`](contexts/todo_list.md) § Language. Source form `TodoTask`, table `todo_tasks`: the identifier is qualified because *task* is also a process word (below), and an unqualified `task` would be found by every search for the other one. |
 | **Entry** | One utterance by a guest: a signature, a message, the moment it was written and the moment it was last amended. The smallest thing this system stores. Table `guestbook_entries`. |
 | **Author** | What the guest signed with. **It is not an identity** — the system authenticates nobody, so a signature is a claim rather than a statement of fact. Column `author`. |
 | **Message** | What the guest wrote. Column `message`. |
@@ -34,6 +39,7 @@ confused with domain words.
 | **Fitness function** | A test that reads **this repository's source as text**, to hold a structural rule no compiler enforces. `tests/fitness/`. |
 | **sdd107** | An external text on ownership-first architecture the author drew on when cutting the tree by bounded context; cited in `design/conventions.md` § Backend, `design/architecture.md` and `.github/CODEOWNERS`. **It is not in this repository and cannot be checked from it** (found by the 2026-09-08 audit): the reasoning written beside each citation is this repository's own and is meant to stand without it, so the name is an attribution, not an authority. |
 | **Session** | In this repository **always** a SQLAlchemy unit of work (`SessionLocal`). There is no user session, because there is no authentication — and when the product adds one, this is exactly the trap to name: two different concepts, one word. |
+| **Task (process)** | A unit of planned work in a change's `tasks.md` (`T-n`), and the job one script under `scripts/` does. **Never the domain's task**, which is a line on the to-do list (above). The same trap as `Session`: two concepts, one word — which is why the domain's identifiers say `todo_task` and never a bare `task`. |
 
 ## Identifiers and their spaces
 

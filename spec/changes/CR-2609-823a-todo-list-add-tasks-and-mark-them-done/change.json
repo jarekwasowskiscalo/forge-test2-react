@@ -5,10 +5,10 @@
     "session-870fece5": "sessions/870fece5-b8f9-4a47-84da-b3456aa1de97/summary.md"
   },
   "attempt": {
-    "heartbeat_at": "2026-09-24T11:48:48Z",
-    "n": 1,
+    "heartbeat_at": "2026-09-24T13:01:36Z",
+    "n": 2,
     "session_id": "",
-    "started_at": "2026-09-24T11:48:48Z"
+    "started_at": "2026-09-24T13:01:36Z"
   },
   "base_branch": "main",
   "base_commit": "6ccb49af3828fb250fb2d188ddbd87758004c403",
@@ -263,7 +263,13 @@
   "deferred_findings": [],
   "docs_touched": [],
   "expected_red": [],
-  "fanout": {},
+  "fanout": {
+    "design-domain": {
+      "assumptions": "- design-data declares the table as `## `todo_tasks``. The glossary now fixes the name: TodoTask, table todo_tasks.\n- design-architecture uses `todo_list` as the context's name in every tree (app/, frontend/src/contexts/, CODEOWNERS). The implement stage creates app/contexts/todo_list/, and that is what clears red test (1) (test_every_context_document_has_code_and_every_context_directory_has_a_document).\n- design-spec does not restate BR-06…BR-13 in guestbook.md. It does three things there: adds todo_list:peer:shared-kernel to guestbook's neighbours; rewrites the \"only bounded context\" sentence (line 13) and § Boundaries (lines 172-176); keeps the text-rule half of BR-01 as the one place that rule is written.\n- screens: [] and features: [] stay empty until those files exist. design-ui creates the screen doc and build-tests-e2e creates the .feature file. The convergence round or reconcile-spec then adds both paths to the header; until then the claim tests go red.\n- Handed to other members: R-5 to design-ui (the frame / system-states.md), R-3 clause 6 and R-10 to design-ui (the screen spec), R-11 to design-architecture (§ What a new environment starts with).\n- design-adr turns the decision marked `**ADR:** required` in the fragment into a draft.",
+      "at": "2026-09-24T13:07:07Z",
+      "state": "returned"
+    }
+  },
   "faults": [
     {
       "at": "2026-09-24T11:42:41Z",
@@ -641,6 +647,32 @@
       "stage": "requirements",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/311"
+    },
+    {
+      "at": "2026-09-24T13:07:07Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T13:07:07Z",
+          "note": "The skill tells design-domain to run the context-declaration fitness test before closing. That test cannot pass at the design stage: a new spec/contexts/<new>.md turns test_every_context_document_has_code_and_every_context_directory_has_a_document red until the implement stage, and `owns` stays red until design-data runs. Article X has no mechanism to declare a design-stage failure as expected-red.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-13",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "design-domain",
+      "seen": 1,
+      "signal": "The skill tells design-domain to run the context-declaration fitness test before closing. That test cannot pass at the design stage: a new spec/contexts/<new>.md turns test_every_context_document_has_code_and_every_context_directory_has_a_document red until the implement stage, and `owns` stays red until design-data runs. Article X has no mechanism to declare a design-stage failure as expected-red.",
+      "signature": "The skill tells design-domain to run the context-declaration fitness test before closing. That test cannot pass at the d",
+      "stage": "design",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -1338,7 +1370,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 90,
+  "revision": 92,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1366,7 +1398,7 @@
     "design": 1,
     "requirements": 1
   },
-  "stage_status": "not_started",
+  "stage_status": "in_progress",
   "status": "draft",
   "supersedes": [],
   "tasks": [],
@@ -1388,7 +1420,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T13:00:25Z",
+  "updated_at": "2026-09-24T13:07:07Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {
