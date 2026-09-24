@@ -40,7 +40,9 @@ from e2e.harness.database import (
 )
 from tests._database import create_migrated_database
 
-#: The one table in this application's schema that holds a scenario's state.
+#: The table that marks this application's schema. Since `CR-2609-823a`,
+#: `todo_tasks` holds a scenario's state too. Discovery finds it because it
+#: exists, as `e2e/suite/conftest.py` says of `REQUIRED_TABLES`.
 #: Named rather than discovered, because this file is asserting that discovery
 #: found it.
 REQUIRED: frozenset[str] = frozenset({"guestbook_entries"})

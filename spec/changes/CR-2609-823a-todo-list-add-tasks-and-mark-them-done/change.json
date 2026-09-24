@@ -962,8 +962,9 @@
       "state": "dispatched"
     },
     "build-tests-integration": {
-      "at": "2026-09-24T20:25:14Z",
-      "state": "dispatched"
+      "assumptions": "TD-11 only: tests/integration/test_e2e_reset.py:43 replaced word for word by the COH-implement-9 ready patch (wrapped over :43-45); REQUIRED = frozenset({\"guestbook_entries\"}) and the comment's last two lines unchanged; test_e2e_reset 5 passed.",
+      "at": "2026-09-24T20:27:56Z",
+      "state": "returned"
     },
     "build-tests-uat": {
       "assumptions": "Convergence round 1: uat.md step 14 now reads \"When the prompt returns, reload window A, then open the guestbook with the header link \"Guestbook\".\" (the COH-implement-1 ready patch, word for word; 1 insertion, 1 deletion). build-frontend's staleTime: 0 in useTodoTasks.ts is the delivered behaviour; the guestbook's hook and main.tsx stay frozen (staleTime 30_000), so step 14 still needs the reload; step 15 now reads the to-do list fresh by header link; steps 16, 17, 19, 20 already reload or enter the address. R-11 is still the only manual requirement, covered by steps 3 and 14-20.",
@@ -4568,7 +4569,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 844,
+  "revision": 846,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -4680,6 +4681,7 @@
       "id": "TD-10",
       "kind": "agent",
       "raised_at": "2026-09-24T20:25:13Z",
+      "resolved_at": "2026-09-24T20:27:48Z",
       "skill": "build-tests-unit",
       "what": "COH-implement-9 (constitution Art. I): apply the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-9 to tests/unit/test_guestbook_entry_model.py:163-164 (the docstring of test_the_entity_carries_no_relationship that says the schema is one table). Prose only: no assertion, case name or behaviour changes, nothing else in the file; prove ./scripts/test.sh unit and ./scripts/lint.sh green."
     },
@@ -4714,7 +4716,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T20:27:48Z",
+  "updated_at": "2026-09-24T20:27:56Z",
   "verification_last": {
     "content_digest": "bb9de886ef879780f9dd2c486af045d57b39d38fd3be784cb139c790e719219a",
     "counts": {

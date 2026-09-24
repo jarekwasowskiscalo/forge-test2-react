@@ -616,3 +616,5 @@
 - [22:27] todo_resolved: TD-12
 - [22:27] process_fault_resolved: PROC-57 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/369#issuecomment-5821713050
 - [22:27] fanout_recorded: returned: build-tests-unit
+- [22:27] todo_resolved: TD-10
+- [22:27] fanout_recorded: returned: build-tests-integration
