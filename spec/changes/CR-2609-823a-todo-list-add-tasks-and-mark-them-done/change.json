@@ -161,6 +161,56 @@
       "severity": "minor",
       "stage": "requirements",
       "status": "resolved"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Attacks",
+      "artifacts": [
+        "requirements.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Can a line break reach the one-line field, or only the API?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-requirements-7",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T12:37:30Z",
+      "severity": "minor",
+      "stage": "requirements",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-2",
+      "artifacts": [
+        "requirements.md",
+        "scenarios.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Is a line break next to an invisible character \"inside\" the text?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-requirements-8",
+      "kind": "quality",
+      "raised_at": "2026-09-24T12:37:30Z",
+      "severity": "minor",
+      "stage": "requirements",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Success criteria",
+      "artifacts": [
+        "requirements.md",
+        "brainstorm.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Does the UI smoke run unchanged when the mock-up may rename the lockup?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-requirements-9",
+      "kind": "contradiction",
+      "raised_at": "2026-09-24T12:37:30Z",
+      "severity": "minor",
+      "stage": "requirements",
+      "status": "open"
     }
   ],
   "coherence_passes": [
@@ -171,6 +221,14 @@
       "pass": 1,
       "stage": "requirements",
       "verdict": "NO_GO"
+    },
+    {
+      "at": "2026-09-24T12:37:30Z",
+      "epoch": 1,
+      "inputs": "6f2be8a7902e10e3d1fbf819b35d78db6edf734c93909b4f2e86a596a2406b2e",
+      "pass": 2,
+      "stage": "requirements",
+      "verdict": "GO_WITH_QUESTIONS"
     }
   ],
   "contention_events": 0,
@@ -202,6 +260,11 @@
     "cr-scenarios": {
       "assumptions": "requirements.md as reconciled is the authority: R-2 clause 6 with R-2.7, R-6 clause 4 with R-6.3, R-11 clauses 1, 5 and 6 with R-11.5, R-11.6 and R-11.7, and A-1 still assumed and waiting for the user. If the user overrules A-1 with U+000A and U+000D only, five of the new rows flip to accepted, and the paragraph says so. The rest of cr-requirements' boundaries are unchanged since pass 1, so the remaining unstated bounds still stand: which refusal wins when a text breaks two rules, the largest number of tasks, and the floor on not-done examples.",
       "at": "2026-09-24T12:33:33Z",
+      "state": "returned"
+    },
+    "review-coherence": {
+      "assumptions": "none -- this skill reads; it does not produce an artefact others depend on. The four authors assumptions were checked against their neighbours; the cr-requirements claim that the line-break data uses U+000A only is narrower than the file, but its conclusion holds.",
+      "at": "2026-09-24T12:37:30Z",
       "state": "returned"
     },
     "review-converge": {
@@ -508,6 +571,11 @@
           "at": "2026-09-24T12:33:33Z",
           "note": "seen again: A convergence round re-dispatches the authors to APPLY resolutions that review-converge already wrote into their own artefacts (commit a014ab4: impact.md, requirements.md), because for a requirements-stage finding the earliest ambiguous document is the author artefact itself; each dispatch was a re-verification billed as an application (cr-impact produced a zero-byte diff).",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T12:34:02Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/310",
+          "state": "filed"
         }
       ],
       "id": "PROC-10",
@@ -518,8 +586,8 @@
       "signal": "A convergence round re-dispatches the authors to APPLY resolutions that review-converge already wrote into their own artefacts (commit a014ab4: impact.md, requirements.md), because for a requirements-stage finding the earliest ambiguous document is the author artefact itself; each dispatch was a re-verification billed as an application (cr-impact produced a zero-byte diff).",
       "signature": "A convergence round re-dispatches the authors to APPLY resolutions that review-converge already wrote into their own art",
       "stage": "requirements",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/310"
     }
   ],
   "files_changed": [],
@@ -1101,7 +1169,7 @@
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
   "requirements": [],
-  "revision": 64,
+  "revision": 67,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1150,7 +1218,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T12:33:33Z",
+  "updated_at": "2026-09-24T12:37:30Z",
   "verification_last": {
     "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
     "counts": {

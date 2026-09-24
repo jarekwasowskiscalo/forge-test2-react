@@ -342,3 +342,256 @@ cell.
   data" name one thing.
 - **Invariants.** A done task stays one record in place (`D-01`, `R-3.4`). The task text follows
   `D-04`'s normalization and unit (`R-2` clause 1).
+
+## Pass 2 — the `requirements` stage
+
+The preflight printed convergence round 1 of 3, mode DEEP. Phase 1b ran first, over the six
+recorded resolutions. A full hunt over the reconciled text came after it. Artefacts read:
+`brainstorm.md`, `impact.md`, `requirements.md` (with Edge cases, Impact analysis, Bounds and
+Named assumptions), `scenarios.md` (with Test data), `input/request.md`,
+`design/delta/converge.md`, and the four `ASSUMPTIONS` blocks from the preflight. The ranked
+documents read above them: `spec/constitution.md`, `spec/invariants.md`, `spec/glossary.md`,
+`contracts/README.md`.
+
+### Recorded resolutions
+
+- COH-requirements-1: landed. `requirements.md`:77 (clause 4 without the `D2` note), :81-87
+  (clause 6), :106-109 (`R-2.7`), :219-221 (`R-6` clause 4), :228-230 (`R-6.3`), :400-402 (E-9),
+  :603-605 (Impact analysis), :699 (`D2` answered), :746-748 (Self-check 4). § With no defined
+  behaviour, :495-505, has no `D2` bullet left.
+- COH-requirements-2: landed. `requirements.md`:4-5 (Source), :328-330 (clause 1), :337-339
+  (clause 5), :353-357 (`R-11.5`, `R-11.6`), :553-558 (Decisions), :609-613 (Tests that would
+  fail), :698 (`D1` answered), :798-801 (Self-check 21).
+- COH-requirements-3: landed. `requirements.md`:340-342 (clause 6), :358-359 (`R-11.7`), :688
+  (Bounds), :700 (`D3` answered).
+- COH-requirements-4: landed. `requirements.md`:83-87 (the set in clause 6), :681 (Bounds),
+  :718-727 (`A-1`).
+- COH-requirements-5: landed, exactly as its resolution describes. `spec/invariants.md`:123-124 now
+  names "any to-do task". Line 162, the retention line, is deliberately unchanged, and that half is
+  carried as `A-2` at `requirements.md`:728-733. The rest: `requirements.md`:520-522 (Impact
+  analysis), :806-809 (Self-check 23). `design/delta/converge.md` declares the edit. Its Was and
+  Now match `git diff main -- spec/invariants.md` word for word.
+- COH-requirements-6: landed. `impact.md`:381-385.
+
+I grepped `requirements.md` for the wording from before the resolutions ("open question, `D2`",
+"under `D1` option", "blocks the design of"). It printed nothing.
+
+Pairs compared: `Q-10`…`Q-12` (as the preflight quotes them) ↔ `requirements.md`;
+`requirements.md` § Requirements ↔ `scenarios.md` (every converged clause and criterion against
+its seed); § Requirements ↔ § Edge cases and § Non-Goals; § Requirements ↔ § Named assumptions
+and § Bounds; § Success criteria ↔ § Open questions and `brainstorm.md` § Open; `scenarios.md`
+§ Test data ↔ the written trim set and the corpus; `impact.md` ↔ the branch's
+`spec/invariants.md`; every artefact ↔ the glossary and the invariants; each author's
+assumptions ↔ what its neighbour wrote.
+
+### COH-requirements-7 — Can a line break reach the one-line field, or only the API?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Attacks
+- **artifacts:** requirements.md
+
+**What each says.** § Attacks E-9 calls a line break inside a task "malformed, rarely (only
+through the API; the field is one line)". It gives the cost as "a stored value nobody can type
+into the field". After convergence, § R-2 clause 6 makes "a line break" any of seven characters:
+U+000A, U+000B, U+000C, U+000D, U+0085, U+2028 and U+2029 (assumption `A-1`). Clause 5 requires
+the screen to refuse exactly what the service refuses. `scenarios.md` S-8 says what E-9 says, but
+only about its own data, a line feed. It sends the other six to "the rule, on both sides", through
+the additions to `text-measurement.json`.
+
+**Why they cannot both be true.** A one-line field removes only a line feed and a carriage return
+from its value. It keeps the other five characters of the set. Command, run in `frontend/` with
+jsdom, which implements the HTML value-sanitization algorithm: `node -e`. It sets an
+`<input type=text>` to "Buy bread", then each character, then "and milk", and compares the value
+it reads back. Output:
+`one-line field, a break between two words: {"LF":"stripped","CR":"stripped","VT":"kept","FF":"kept","NEL":"kept","LS":"kept","PS":"kept"}`.
+The helper it calls is `node_modules/jsdom/lib/jsdom/living/helpers/strings.js:39`,
+`return s.replace(/[\n\r]+/g, "");`.
+
+So under `A-1`, a pasted U+2028 or U+0085 reaches the screen, and clause 5 obliges the screen to
+refuse it with the one-line reason. E-9 says the screen never meets one. A `design-ui` author who
+reads E-9 draws no one-line refusal state and no copy for it, in the field or in the editor. A
+`design-testing` author who reads clause 5 and the text-measurement rows in the scenarios asserts
+one.
+
+Graded minor. The shared cases that `scenarios.md` specifies already hold the verdict on both
+sides. What can go missing is a screen state and its words, and that costs a later edit. This was
+not measured in Chromium. jsdom follows the standard's algorithm, and the UI smoke is where a real
+browser would confirm it.
+
+**What settles it.** Nothing ranked above both. The correction follows from `R-2` clauses 5 and 6
+of `requirements.md` itself, which stand on the same rung as E-9.
+
+**Resolution.** `review-converge` corrects E-9's route and cost, so the design stage knows that the
+screen meets five of the seven characters.
+
+Ready patch, `requirements.md` § Attacks, E-9. Replace "**E-9: malformed, rarely (only through the
+API; the field is one line).** A text with a line break inside it. It costs a task that renders on
+several lines, or a stored value nobody can type into the field." with "**E-9: malformed,
+rarely.** A text with a line break inside it. A line feed or a carriage return arrives only
+through the API, because a one-line field strips those two. The other five characters of `R-2`
+clause 6's set (`A-1`) paste into the field, so the screen meets them and refuses them for the
+same reason the service does (`R-2` clause 5). It costs a task that renders on several lines, or a
+text the screen lets through and the service refuses."
+
+**What was ambiguous.** E-9 was written when "a line break" meant a line feed. The pass 1
+convergence round rewrote E-9's closing sentence for `Q-11`, and `A-1` then widened the set to
+seven characters. Nothing went back to the premise in E-9's parenthesis.
+
+**What was not found.** S-8's own note in `scenarios.md` ("Only a caller that goes around the
+screen can send it") is true of its data, a line feed, and is not part of this finding. Suppose
+the user overrules `A-1` with U+000A and U+000D alone. Then E-9 as written is true again, and the
+patch is dropped.
+
+### COH-requirements-8 — Is a line break next to an invisible character "inside" the text?
+
+- **kind:** quality
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § R-2
+- **artifacts:** requirements.md, scenarios.md
+
+**What each says.** `requirements.md` § R-2 clause 6 refuses a line break "between its first and
+last visible character". The clause closes: "Every one of them is in clause 1's trim set, so a
+line break at either end is removed by clause 1 and is not refused." Clause 4 and § R-6 clause 4
+use the same phrase. No document defines "visible". I grepped for `visible` across
+`requirements.md`, `scenarios.md`, `spec/contexts/guestbook.md`, `spec/design/conventions.md`,
+`spec/design/api.md` and `contracts/invariants/guestbook.md`. In this sense it occurs only at
+`requirements.md`:76, :81 and :220.
+
+`scenarios.md` S-9 reads the rule the other way. It fails if "the line break rule runs before
+trimming", so any line break that trimming leaves in the text is refused.
+`spec/contexts/guestbook.md` § `BR-01`, whose set clause 1 borrows, says: "Whitespace *inside* a
+value is content and is kept; only the ends go". That defines "inside" by the trim.
+
+**Why they cannot both be true.** Some content characters are invisible. `text-measurement.json`
+holds `zero_width_space_is_content` (U+200B) and `mongolian_vowel_separator_is_content` (U+180E).
+Command: `python3`, trimming with the fixture's own `only_every_trimmed_code_point` input as the
+set. Output: `trim set size: 30`, then
+`ZWSP after the break: after clause 1 = 'Buy bread\n​'; line feed still inside = True`. The
+same run with U+200D before the break printed `line feed still inside = True`.
+
+Under the literal clause 6, that line feed comes after the last visible character, so clause 6
+does not refuse it. Clause 1 does not remove it either, so it is stored, and the closing sentence
+of clause 6 is false for this text. Under S-9's reading the text is refused. If a backend author
+and a frontend author each implement a different reading, they disagree about this text. That is
+the clause 5 failure `R-2` exists to prevent. Graded minor: such texts are rare, and the fix is
+only a change of wording.
+
+**What settles it.** Nothing ranked above both. `BR-01` defines "inside" by the trim, but it is the
+guestbook's rule and binds entries, not tasks. `R-2` clause 1 borrows its set, not its wording.
+
+**Resolution.** Word the three clauses by the trim, which is the reading S-9 and `BR-01` already
+use.
+
+Ready patch, `requirements.md`:
+- § R-2 clause 4. Replace "WHERE a text carries whitespace other than a line break between its
+  first and last visible character, the system SHALL keep that whitespace unchanged." with "WHERE
+  a text, once clause 1 has trimmed it, still carries whitespace other than a line break, the
+  system SHALL keep that whitespace unchanged."
+- § R-2 clause 6. Replace "IF a task's text carries a line break between its first and last
+  visible character, THEN" with "IF a task's text, once clause 1 has trimmed it, still carries a
+  line break, THEN". Append to the clause: "A character that shows nothing but is not in the trim
+  set, such as U+200B, is content, so a line break beside it is inside the text."
+- § R-6 clause 4. Replace "or carries a line break between its first and last visible character"
+  with "or, once trimmed, still carries a line break".
+
+**What was ambiguous.** The phrase "first and last visible character" came into `R-2` clause 4 in
+the first draft, as a gloss on "inside". When clause 6 began to refuse by it, the gloss became the
+rule. "Visible" and "not trimmed" are not the same set of characters.
+
+**What was not found.** No scenario and no fixture puts an invisible character beside a line
+break, so no seed asserts either reading. The disagreement is between the clause's wording and the
+defect S-9 names, not between two seeds.
+
+### COH-requirements-9 — Does the UI smoke run unchanged when the mock-up may rename the lockup?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/requirements.md § Success criteria
+- **artifacts:** requirements.md, brainstorm.md
+
+**What each says.** `requirements.md` § Success criteria, SC-5, measures success as follows: "The
+existing guestbook suites run unchanged on every CI run of this branch (the same 22 scenarios plus
+the UI smoke)". `brainstorm.md` § Open gives "the lockup's product name 'Guestbook'" to the
+mock-up, "for the user to approve there". `requirements.md` § Open questions leaves it there.
+`requirements.md` Self-check 14 allows that "the smoke's locator changes in the same change" if a
+navigation link is named exactly "Guestbook".
+
+**Why they cannot both be true.** The smoke finds the lockup by that exact name. Commands:
+`grep -n "_LOCKUP, exact=True" e2e/ui/test_smoke.py` and
+`grep -n PRODUCT_NAME frontend/src/components/shell/PageFrame.tsx`. Output: lines `93:` and `373:`
+read `expect(page.get_by_role("link", name=_LOCKUP, exact=True)).to_be_visible()`, beside
+`40:_LOCKUP: Final[str] = "Guestbook"` and `24:const PRODUCT_NAME = 'Guestbook'`.
+
+Suppose the approved mock-up renames the lockup, or adds a navigation link named "Guestbook". Then
+`test_the_built_spa_boots_and_a_deep_link_resolves` and `test_an_unknown_address_says_so` fail
+unless they are edited, so the smoke cannot run unchanged. Read strictly, SC-5 decides in advance a
+copy question the brainstorm left to the user. Read loosely, it contradicts nothing. The design
+fan-out cannot tell which reading is meant, so its authors diverge: a `design-testing` author holds
+the smoke fixed because of SC-5, while a `design-ui` author proposes a new lockup name. Graded
+minor: the smoke goes red at implement, and the cost is an edit.
+
+**What settles it.** Nothing ranked above both. Whether the guestbook's smoke may be edited is a
+test-strategy call that this change has to make.
+
+**Resolution.** Let SC-5 promise what the guestbook's tests assert, not their exact text.
+Recommended: the 22 scenarios run unchanged, and the smoke's guestbook tests keep asserting what
+they assert today. A locator may follow a name the user approves in the mock-up. The alternative
+keeps SC-5 strict and writes into § Open questions that the lockup stays "Guestbook" and no
+navigation link takes that exact name.
+
+Ready patch, `requirements.md` § Success criteria, the "How measured" cell of SC-5. Replace "The
+existing guestbook suites run unchanged on every CI run of this branch (the same 22 scenarios plus
+the UI smoke), and the requester checks at UAT." with "The 22 scenarios of
+`e2e/suite/features/guestbook.feature` run unchanged on every CI run of this branch. The UI smoke's
+guestbook tests keep asserting what they assert today; a locator that names the lockup or a
+navigation link may follow the names the user approves in the mock-up (§ Open questions;
+Self-check 14). The requester checks at UAT."
+
+**What was ambiguous.** In SC-5, "unchanged" can mean "still passing, with the same meaning" or
+"not edited". Only the first reading survives the decision that `brainstorm.md` § Open leaves open.
+
+**What was not found.** The smoke asserts no copy that `R-5` clause 4 removes.
+`test_an_unknown_address_says_so` (`e2e/ui/test_smoke.py`:367-373) checks the heading "Nothing
+here" and the lockup link, not the sentence "There is one screen in this application". So `R-5`
+on its own forces no edit to the smoke. Only a change of name does.
+
+### What was checked and agrees
+
+- **`Q-10`…`Q-12` ↔ `requirements.md`.** The quoted answers in `R-2` clause 6, `R-11` clause 1
+  and `R-11` clause 6 match the user's words that the preflight prints for COH-requirements-1…3.
+- **Requirements ↔ scenarios after convergence.** S-8 and S-9 match `R-2` clause 6 and `R-2.7`.
+  The third row of S-33 matches `R-6` clause 4 and `R-6.3`. S-49 matches `R-11.1` and `R-11.7`,
+  S-52 matches `R-11.5`, and S-53 matches `R-11.6` and clauses 4 and 5. The seed file's "then
+  marks number 3 done" matches clause 6's "added not done and then marked". Every `R-1`…`R-11`
+  still has a seed and acceptance criteria.
+- **The trim-set claim in `R-2` clause 6.** All seven characters are in the written set. They
+  appear in `app/platform/schemas/text.py` at :47 (0x000B), :51 (0x0085) and :65-66 (0x2028,
+  0x2029), and in the fixture's `only_every_trimmed_code_point` input, which holds U+0009 to
+  U+000D. The set's size is 30.
+- **`A-1` ↔ scenarios.** The seven line-break rows among the text-measurement additions are
+  `A-1`'s set. The five rows that flip under the other reading are `A-1`'s "the other five".
+- **`A-2` ↔ the rest.** § Non-Goals, § Impact analysis, E-14 and the unchanged
+  `spec/invariants.md`:162 all say the same thing.
+- **The authors' assumptions.** cr-impact: `impact.md`:58-59 still quotes "any entry". That is
+  the trunk's wording (`git diff main -- spec/invariants.md` shows it as the removed line), and
+  `impact.md` describes the trunk, so both documents are true. cr-requirements: it says the
+  scenarios' line-break data "uses U+000A only", which is narrower than the file, because the
+  text-measurement additions carry all seven characters. Its conclusion, that the data fits within
+  `A-1`, still holds. cr-scenarios: every clause and criterion it names exists as it says.
+  review-converge: the retention line is unchanged, as it says.
+- **The new half of E-21.** It records a failure-mode exposure of `R-11` clause 6 in the same way
+  its first half records one for clause 1, which pass 1 read as agreeing. `R-11` is
+  `**Verified-by:** manual`. E-21 contradicts no non-goal.
+- **`delta.md`.** It still reads "No author wrote a delta fragment". It is an assembled file, as
+  its own marker says, and not an artefact of this stage, so it is not judged here. Its one
+  fragment matches the diff.
+- **Glossary and invariants.** "To-do task" in `spec/invariants.md`:124 and "task" in
+  `requirements.md` name one thing, and no word is used for two. The new text leaves
+  `D-01`…`D-03` unaffected.
