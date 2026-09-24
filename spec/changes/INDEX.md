@@ -20,5 +20,6 @@ keeps its reasoning, because a dead end is expensive knowledge.
 
 | Change | Status | Kind | Tracker | Title | Documents touched | ADRs |
 |---|---|---|---|---|---|---|
+| [CR-2609-823a](CR-2609-823a-todo-list-add-tasks-and-mark-them-done/) | draft | feature | — | Todo list - add tasks and mark them done | — | — |
 | [CR-2609-8ef9](CR-2609-8ef9-move-the-frontend-suite-census-into-scripts-test-sh-frontend/) | draft | chore | — | Move the frontend suite census into scripts/test.sh frontend | — | — |
 | [CR-2609-9b1e](CR-2609-9b1e-guestbook/) | merged | feature | — | The guestbook — the template's worked example | spec/contexts/guestbook.md, spec/design/ui/guestbook.md, spec/design/api.md, spec/design/data-model.md, contracts/openapi/guestbook.yaml, contracts/invariants/guestbook.md, golden-set/fixtures/entries-ordinary.json, golden-set/fixtures/entries-boundary.json, golden-set/fixtures/entries-refused.json, golden-set/seed/entries-welcome.json, e2e/suite/features/guestbook.feature, spec/rationale/mockup-guestbook/README.md | — |

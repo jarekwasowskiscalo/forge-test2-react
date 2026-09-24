@@ -1,0 +1,174 @@
+{
+  "adrs": [],
+  "artifacts": {},
+  "attempt": {
+    "heartbeat_at": null,
+    "n": 0,
+    "session_id": "",
+    "started_at": null
+  },
+  "base_branch": "main",
+  "base_commit": "6ccb49af3828fb250fb2d188ddbd87758004c403",
+  "baseline": {
+    "captured_at": "2026-09-24T11:40:15Z",
+    "command": "sdd-engine gate run --profile boundary",
+    "content_digest": "1d6d5044605951ceb18173c34b54417f35b282e92c6a934f6b6e563fd62ebb3f",
+    "counts": {
+      "Suite backend": 748,
+      "Suite e2e": 52,
+      "Suite fitness": 339,
+      "Suite frontend": 213
+    },
+    "duration_s": 131.28,
+    "exit_code": 0,
+    "failing_cases": [],
+    "failing_gates": [],
+    "gates": {
+      "Application check": "pass",
+      "Specification gates": "pass",
+      "Suite backend": "pass",
+      "Suite e2e": "pass",
+      "Suite fitness": "pass",
+      "Suite frontend": "pass"
+    },
+    "git_head": "6ccb49af3828fb250fb2d188ddbd87758004c403",
+    "git_tree": "2211d01f4ca65d7da7b3034de3393d8bab22fbb9",
+    "profile": "boundary",
+    "worktree_clean": false
+  },
+  "boundary": [],
+  "branch": "sdd/CR-2609-823a-todo-list-add-tasks-and-mark-them-done",
+  "ci_receipt": null,
+  "coherence": [],
+  "coherence_passes": [],
+  "contention_events": 0,
+  "cr_id": "CR-2609-823a",
+  "created_at": "2026-09-24T11:26:53Z",
+  "deferred": false,
+  "deferred_findings": [],
+  "docs_touched": [],
+  "expected_red": [],
+  "fanout": {},
+  "faults": [
+    {
+      "at": "2026-09-24T11:42:41Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T11:42:41Z",
+          "note": "cr-request Phase 5 takes the boundary baseline straight after `cr new`, but `cr new` leaves spec/changes/status.json stale, so the baseline is RED by construction on gate:Specification gates (\"status.json is stale\" -> generated-indexes + one-change-at-a-time); recorded as the skill says, that gate would ride as pre-existing red for the whole change. Worked around by running `sdd-engine gen_indexes` before re-taking the baseline, a step no skill names; cost two extra boundary runs (~5 min).",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T11:43:29Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/290",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-1",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "cr-request Phase 5 takes the boundary baseline straight after `cr new`, but `cr new` leaves spec/changes/status.json stale, so the baseline is RED by construction on gate:Specification gates (\"status.json is stale\" -> generated-indexes + one-change-at-a-time); recorded as the skill says, that gate would ride as pre-existing red for the whole change. Worked around by running `sdd-engine gen_indexes` before re-taking the baseline, a step no skill names; cost two extra boundary runs (~5 min).",
+      "signature": "cr-request Phase · takes the boundary baseline straight after `cr new`, but `cr new` leaves spec· stale, so the baseline",
+      "stage": "intake",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/290"
+    }
+  ],
+  "files_changed": [],
+  "follow_up": null,
+  "gates": {
+    "intake": {
+      "approved": true,
+      "approved_at": "2026-09-24T11:34:01Z",
+      "approved_by": "user",
+      "artifact": "request.md",
+      "artifact_sha256": "b458b7acfbdb21f83e976a814fecc242e61aaf6b2f61fdb8666b385fc48119cd",
+      "note": ""
+    }
+  },
+  "green_by_design": [],
+  "kind": "feature",
+  "ladders": {},
+  "laps": [
+    {
+      "at": "2026-09-24T11:45:58Z",
+      "fingerprint": "6c9cf93f7899251a",
+      "stage": "requirements"
+    }
+  ],
+  "legacy_spec": null,
+  "links": {
+    "merge_commit": null,
+    "pr_url": null,
+    "review_rounds": 0,
+    "review_state": "none"
+  },
+  "open_questions": [],
+  "parent_cr_id": null,
+  "parent_merge_commit": null,
+  "previous_stage": "intake",
+  "reconciliations": [],
+  "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
+  "requirements": [],
+  "revision": 6,
+  "schema_version": 3,
+  "signals": null,
+  "slug": "todo-list-add-tasks-and-mark-them-done",
+  "stage": "requirements",
+  "stage_entered_at": "2026-09-24T11:45:58Z",
+  "stage_entries": {
+    "requirements": 1
+  },
+  "stage_status": "not_started",
+  "status": "draft",
+  "supersedes": [],
+  "tasks": [],
+  "tier": "p3",
+  "title": "Todo list - add tasks and mark them done",
+  "todo": [],
+  "toolchain": [],
+  "touches_ui": true,
+  "tracker": "",
+  "updated_at": "2026-09-24T11:45:58Z",
+  "verification_last": {
+    "content_digest": "b1c5ddf24416034fa3f942354fc641bb15bb25f0df77232f06c9badce695a64f",
+    "counts": {
+      "Suite backend": {
+        "collected": 748,
+        "executed": 724,
+        "skipped": 24
+      },
+      "Suite e2e": {
+        "collected": 52,
+        "executed": 52,
+        "skipped": 0
+      },
+      "Suite fitness": {
+        "collected": 339,
+        "executed": 339,
+        "skipped": 0
+      },
+      "Suite frontend": {
+        "collected": 213,
+        "executed": 213,
+        "skipped": 0
+      }
+    },
+    "duration_s": 130.68,
+    "gaps": [],
+    "git_head": "6ccb49af3828fb250fb2d188ddbd87758004c403",
+    "git_tree": "2211d01f4ca65d7da7b3034de3393d8bab22fbb9",
+    "profile": "boundary",
+    "started_at": "2026-09-24T11:43:47Z",
+    "verdict": "GREEN",
+    "worktree_dirty": true
+  }
+}

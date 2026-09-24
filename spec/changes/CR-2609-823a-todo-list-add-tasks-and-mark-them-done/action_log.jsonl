@@ -1,0 +1,7 @@
+{"timestamp": "2026-09-24T11:26:53Z", "agent": "cr-request", "action": "change_opened", "details": "CR-2609-823a on sdd/CR-2609-823a-todo-list-add-tasks-and-mark-them-done from main@6ccb49af", "session_id": "7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6"}
+{"timestamp": "2026-09-24T11:32:25Z", "agent": "cr-request", "action": "baseline_captured", "details": "sdd-engine gate run --profile boundary at 6ccb49af", "session_id": "7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6"}
+{"timestamp": "2026-09-24T11:34:01Z", "agent": "sdd", "action": "gate_approved", "details": "intake by user", "session_id": "7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6"}
+{"timestamp": "2026-09-24T11:42:29Z", "agent": "cr-request", "action": "baseline_captured", "details": "sdd-engine gate run --profile boundary at 6ccb49af", "session_id": "7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6"}
+{"timestamp": "2026-09-24T11:42:41Z", "agent": "sdd", "action": "process_fault_reported", "details": "PROC-1 (engine): cr-request Phase 5 takes the boundary baseline straight after `cr new`, but `cr new` leaves spec/cha", "session_id": "7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6"}
+{"timestamp": "2026-09-24T11:43:29Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-1 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/290", "session_id": "7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6"}
+{"timestamp": "2026-09-24T11:45:58Z", "agent": "sdd", "action": "stage_closed", "details": "closed intake, opened requirements (boundary -> GREEN)", "session_id": "7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6"}
