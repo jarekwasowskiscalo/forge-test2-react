@@ -1,7 +1,8 @@
 # API contract
 
-The shapes on the wire. The rules behind them are in
-[`spec/contexts/guestbook.md`](../contexts/guestbook.md); the columns in
+The shapes on the wire. The rules behind them are in the document of the context that answers
+each route — [`spec/contexts/guestbook.md`](../contexts/guestbook.md) and
+[`spec/contexts/todo_list.md`](../contexts/todo_list.md); the columns in
 [`data-model.md`](data-model.md). This document never explains a rule — it states a field, a
 code and a sentence.
 
@@ -53,6 +54,8 @@ exists. A route answered by no context is the Platform slice
 | `/api/health` | `GET` | — | no |
 | `/api/guestbook-entries` | `GET` (with `q`, `sort`, `limit`, `offset`), `POST` | `guestbook` | no |
 | `/api/guestbook-entries/{entry_id}` | `GET`, `PATCH`, `DELETE` | `guestbook` | no |
+| `/api/todo-tasks` | `GET`, `POST` | `todo_list` | no |
+| `/api/todo-tasks/{todo_task_id}` | `PATCH`, `DELETE` | `todo_list` | no |
 
 Rejected (decision of 2026-09-07, `cr: historical` — the column and its heading were renamed
 from "Module" to "Context", and a register naming a thing is a rule about that thing's name;
@@ -116,6 +119,76 @@ refusal: "clear the message" is not an operation an entry supports (`BR-01`).
 
 A body that sets **no** field is rejected — see § Refusals. The shape is valid, the refusal is
 about the request, and that is why it lives beside the endpoint rather than in the schema.
+
+### `TodoTaskRead` — the response
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | `uuid` | issued by the application at write time |
+| `text` | `string` | the task's one line as stored: normalized and trimmed, 1–200 code points, no line break inside (`BR-06`, `BR-07`) |
+| `done` | `boolean` | `true` is done, `false` is not done; `false` on every new task (`BR-08`), and changed only by a `PATCH` that carries `done` (`BR-09`) |
+| `created_at` | `date-time` | the moment of adding; set once and never changed — not by a marking, not by a correction (`BR-08`). The list is ordered by it (`BR-11`) |
+
+A task has these four and nothing else: no `updated_at`, no author, no position
+([`../contexts/todo_list.md`](../contexts/todo_list.md) § Language). `created_at` is on the wire
+although no screen shows it, because two promises are made about it — the order, and that it
+never moves — and a promise about a value nobody can read is a promise nobody can check.
+
+### `TodoTaskList` — the collection `GET` response
+
+| Field | Type | Notes |
+|---|---|---|
+| `items` | `TodoTaskRead[]` | every stored task, done and not done alike, in the list's order (§ Endpoints) |
+| `total` | `integer` | how many tasks the list holds; equal to the length of `items`, because the list is read whole (`BR-11`) |
+
+An envelope rather than a bare array although the list has no pieces. A caller that needs only
+to know whether the list is empty — the filling of a new environment is one — reads `total`;
+and the day the list is read in pieces, `items` shortens and `total` keeps its meaning, which a
+bare array could only achieve by breaking every caller.
+
+### `TodoTaskCreate` — the `POST` body
+
+| Field | Type | Required | Bounds |
+|---|---|---|---|
+| `text` | `string` | yes | 1–200 **code points** and one line, after normalizing and trimming (`BR-06`, `BR-07`) |
+
+**There is no `done` in this shape.** A task is born not done (`BR-08`). A `done` sent anyway is
+ignored like every key the shape does not have — keys it does not have are ignored, never
+refused — and the task is stored not done, with a `201`: the request asked for a task and it
+gets one.
+
+**The bounds are refusals with a code, not schema constraints.** A text outside them is refused
+with one of the three `todo_task_text_*` codes of § Refusals, never with FastAPI's list of
+`{loc, msg, type}`. The person has to be told which of three reasons applies, and when a text
+breaks two rules the one-line reason is the one given (`BR-07`) — a length constraint in the
+schema answers before anything else can look at the text, so it would call "too long" a text
+whose trouble is a line break, and it would name the reason with a type string this contract
+does not own. The published schema therefore carries `text` as a required `string` with no
+`minLength` or `maxLength`; the bounds are stated here, in § Refusals and under `x-refusals` in
+`contracts/openapi/todo_list.yaml`.
+
+A body without `text`, or with a `text` that is not a string (`null`, a number), is a malformed
+request rather than a text anybody typed, and gets the standing validation `422` (§ Refusals).
+
+### `TodoTaskUpdate` — the `PATCH` body
+
+| Field | Type | Required | Bounds |
+|---|---|---|---|
+| `text` | `string` | no | as in `TodoTaskCreate`, with the same three refusals (`BR-10`) |
+| `done` | `boolean` | no | `true` marks the task done, `false` marks it not done — the state chosen, whatever is stored (`BR-09`). A JSON `true` or `false` and nothing that merely reads as one: `"true"` or `1` gets the standing validation `422` |
+
+**An absent field means "do not touch".** A field sent as `null` reads as absent. A correction
+sends `text` alone and a marking sends `done` alone; a body carrying both applies both in one
+write, and a refused `text` writes nothing, `done` included. A body that sets neither is
+refused — see § Refusals.
+
+**A `PATCH` writes the fields it carries and no other.** A field absent from the body is never
+written — not even back with the value the server read — so a correction and a marking of one
+task sent at the same moment are both kept, and of two changes to the same field the one
+applied later wins (`BR-10`). There is no version, no `ETag` and no `If-Match`, and no change is
+refused for resting on an older reading: the later change wins, and nobody is told
+([`../contexts/todo_list.md`](../contexts/todo_list.md) § Deliberate non-goals). How the store
+holds this is [`data-model.md`](data-model.md)'s.
 
 ## Collection read parameters
 
@@ -183,12 +256,40 @@ cost one marker and one explanation in the service code.
 | `GET` | `/api/guestbook-entries/{entry_id}` | `200` | `GuestbookEntryRead` | exactly 1 |
 | `PATCH` | `/api/guestbook-entries/{entry_id}` | `200` | `GuestbookEntryRead` | exactly 1 |
 | `DELETE` | `/api/guestbook-entries/{entry_id}` | `204` | no body | — |
+| `GET` | `/api/todo-tasks` | `200` | `TodoTaskList` | every stored task, 0..n, with no ceiling and no pieces (`BR-11`) |
+| `POST` | `/api/todo-tasks` | `201` | `TodoTaskRead` | exactly 1, not done (`BR-08`) |
+| `PATCH` | `/api/todo-tasks/{todo_task_id}` | `200` | `TodoTaskRead` | exactly 1, as stored once this change is applied |
+| `DELETE` | `/api/todo-tasks/{todo_task_id}` | `204` | no body | — |
 
 **An empty guestbook is a `200` with an empty `items`, never a `404`.** "There are no entries"
 is a successful answer to "list the entries"; a `404` would make an empty guestbook
 indistinguishable from a broken route. A search that found nothing has the same form — and then
 `total` is zero while `total_all` is not, which is the only way the screen tells those two
 sentences apart.
+
+### The to-do list's endpoints
+
+**The collection `GET` takes no parameters and answers with the whole list.** There is nothing to
+narrow, one direction to read in and no pieces (`BR-11`) — so no `q`, `sort`, `limit` or
+`offset`. A query parameter it does not take is ignored, and the answer is still every task.
+
+**The order is the answer's.** `items` come newest `created_at` first, and a tie on `created_at`
+is settled by `id` in the same direction, so the order is total (`BR-11`). A client shows
+`items` in the order they arrive and sorts nothing again. Marking and correcting never move a
+task, because neither touches `created_at`.
+
+**An empty list is a `200` with an empty `items` and a `total` of zero, never a `404`** — for the
+reason given for the guestbook above.
+
+**There is no read of one task.** No requirement reads a task on its own: the screen reads the
+list, and so does the filling of a new environment, which adds its example tasks with `POST`
+and marks the done one with `PATCH` — no door exists for it that a person does not have.
+
+**The same text twice is two tasks.** `POST` never refuses a text for matching another task's:
+there is no duplicate refusal and never a `409` (`BR-12`).
+
+**`PATCH` and `DELETE` never create a task.** An identifier no task has answers `404` and writes
+nothing — a marking, a correction and a second deletion alike (`BR-13`).
 
 ## Refusals
 
@@ -256,6 +357,51 @@ The body of a refusal with a code has the shape:
 
 ```json
 { "detail": { "code": "guestbook_entry_not_found", "message": "…", "id": "…" } }
+```
+
+### The to-do list's refusals
+
+**Every refusal about a task carries a code and a sentence, the three about its text included**
+— unlike the guestbook, whose empty and over-long fields answer with FastAPI's list (above).
+The reason is in § Shapes, `TodoTaskCreate`. The sentences live beside the to-do list's
+endpoints, in its router module, exactly as written here; a sentence reworded there and not
+here is the divergence this document exists to prevent. `id` is present only on the refusal
+that is about one identified task.
+
+| Code | Status | When | `id` | Sentence |
+|---|---|---|---|---|
+| `todo_task_not_found` | `404` | the identifier is valid and no task has it — on a marking, a correction, and a second deletion of the same task (`BR-13`) | the identifier from the path | "This task no longer exists. Somebody may have deleted it, and nothing was changed." |
+| `todo_task_empty_patch` | `422` | a `PATCH` sets neither `text` nor `done` | absent | "No change was given. The task is unchanged." |
+| `todo_task_text_empty` | `422` | `text` is empty once normalized and trimmed, on `POST` and on `PATCH` (`BR-06`) | absent | "A task needs text. Type what there is to do." |
+| `todo_task_text_multiline` | `422` | `text`, once trimmed, still holds a line break — also when it is longer than 200 code points (`BR-07`) | absent | "A task is one line, and this text has a line break inside it, which may not be visible. Remove the line break and try again." |
+| `todo_task_text_too_long` | `422` | `text` is one line and longer than 200 code points once normalized and trimmed (`BR-06`) | absent | "A task can be at most 200 characters. Shorten it and try again." |
+
+The last sentence says "characters" because that is the word a person uses; the rule counts code
+points, and so does every bound in this document (§ Collection read parameters).
+
+**One refusal per request, decided in this order:**
+
+1. An identifier that is not a UUID, or a body of the wrong shape — no `text` on a `POST`, a
+   `text` that is not a string, a `done` that is not a boolean — gets the standing validation
+   `422`, FastAPI's list, before anything below is asked.
+2. `todo_task_empty_patch`.
+3. `todo_task_text_empty`, then `todo_task_text_multiline`, then `todo_task_text_too_long`. An
+   empty text cannot hold a line break, since every line break is trimmed from the ends, and a
+   text with a line break inside is never refused as too long (`BR-07`) — so a text earns
+   exactly one of the three.
+4. Only then is the task looked up, and `todo_task_not_found` is the last answer: a request
+   that could never succeed is refused for what it is, whatever its identifier names.
+
+**A refusal stores nothing, and only a `2xx` answer reports a change as made.** Every operation
+touches one task, so a refused request leaves the list exactly as it found it.
+
+**`422` has two shapes on `POST` and on `PATCH`, and both are published** — an `anyOf` over
+`Refusal` and `HTTPValidationError`, the rule this section set for the guestbook's `PATCH`.
+`DELETE` has no coded `422`; its only one is FastAPI's own for an unreadable identifier, and it
+is not declared.
+
+```json
+{ "detail": { "code": "todo_task_text_multiline", "message": "A task is one line, and …" } }
 ```
 
 ## After a contract change

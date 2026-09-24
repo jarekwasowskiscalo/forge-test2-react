@@ -1,7 +1,8 @@
 # Data model
 
-Tables, columns and constraints. The rules behind them are in
-[`spec/contexts/guestbook.md`](../contexts/guestbook.md); the shapes on the wire are in
+Tables, columns and constraints. The rules behind them are in the document of the context that
+owns each table — [`spec/contexts/guestbook.md`](../contexts/guestbook.md) and
+[`spec/contexts/todo_list.md`](../contexts/todo_list.md); the shapes on the wire are in
 [`api.md`](api.md). This document never argues a rule — it states a column and a type. Two
 cross-cutting decisions that bind it are recorded below together with their rejected
 alternatives, because they have no other home.
@@ -92,7 +93,8 @@ reference a person can say over the phone adds a separate column for it.
 
 ## `guestbook_entries`
 
-The only table. No relations, no foreign keys, no lookup tables.
+One of two tables, and unrelated to the other (§ `todo_tasks`). No relations, no foreign keys,
+no lookup tables.
 
 | Column | Type | Null | Notes |
 |---|---|---|---|
@@ -179,14 +181,171 @@ split, so it is recorded here; [`conventions.md`](conventions.md) § When a deci
   schema (§ Owner of the schema); data in a revision rides into every environment that runs
   it, production included, and cannot be declined there.
 
+## `todo_tasks`
+
+One row per task on the to-do list, the one list every visitor shares
+([`spec/contexts/todo_list.md`](../contexts/todo_list.md)). A task is a text, a state and a
+moment of adding; the table holds those three and the identifier, and nothing else. The model is
+`TodoTask`, in `app.contexts.todo_list.models.todo_task`.
+
+| Column | Type | Null | Notes |
+|---|---|---|---|
+| `id` | `Uuid` | no | primary key, `default=uuid.uuid4` — issued by the application, known **before** the write (§ Identifiers) |
+| `text` | `String(200)` | no | the task's one line, stored as the shared text rule leaves it — NFC, trimmed at both ends, 1 to 200 code points, no line break inside (`BR-06`, `BR-07`); the length is `TODO_TASK_TEXT_MAX_LENGTH`, below |
+| `done` | `Boolean` | no | the one state: `true` is done, `false` is not done. Written `false` on every insert whatever the request claims (`BR-08`), and afterwards only by a marking, which writes the state the person chose (`BR-09`). `default=False` on the model; no server default |
+| `created_at` | `DateTime(timezone=True)` | no | the moment of adding: set once, by the service from its clock, when the task is stored, and never assigned again — not by a marking, not by a correction (`BR-08`, `BR-10`). The list is ordered by it (`BR-11`) |
+
+**Relations: none.** The to-do list is not a row. There is exactly one list, so every row of
+`todo_tasks` is on it: a `todo_lists` table would hold one row for ever, and a `list_id` column
+would carry the same value in every row. No foreign key leaves this table and none arrives at it.
+It points at nothing in `guestbook_entries` and copies no value from it (`D-02`) — the two
+contexts share a rule about text, never a record
+([`spec/contexts/todo_list.md`](../contexts/todo_list.md) § Neighbours).
+
+**What is deliberately not a column:**
+
+- **No `updated_at`.** A task has no moment of amendment and no "edited" fact; those are an
+  entry's (`BR-02`). Nothing reads when a task last changed, and the list is never ordered by it:
+  "newest" is the moment of adding (`BR-11`).
+- **No `deleted_at`.** Deletion is a `DELETE` of the row, with no bin and no undo (`BR-13`), and a
+  done task stays the same row in the same place (`D-01`).
+- **No position.** The moment of adding is the only thing that orders the list; nothing reorders
+  it by hand or by state.
+- **Nobody.** No author, owner or "done by": the system records nobody
+  ([`spec/invariants.md`](../invariants.md) § Deliberate non-goals).
+
+**Why `String(200)`, when the message is `Text`.** The task's bound is a product rule like the
+message's, and it could move. The column holds it anyway, for two reasons the message does not
+have. A task is one line on a list, so its bound is nearer the signature's display constraint than
+a message's editorial one. And the column is the last layer's refusal of a value that arrives by
+a route that skipped the rule — a fixture, a script, a service that measured before it
+normalized, where two hundred decomposed letters are four hundred code points. Moving the bound
+is then a revision that widens the column as well as an edit to the constant; because the model
+declares the column from the constant, `tests/integration/test_migrations.py` turns red on the
+day the constant moves without that revision, rather than a write failing in production. A
+Postgres `varchar` counts code points (§ `guestbook_entries`), so the column and the rule measure
+the same thing.
+
+Rejected:
+
+- **`Text`, with the bound in the schemas alone, as the message has it.** Moving the bound would
+  be an edit to one file; the price is a column that stores whatever length a route that skipped
+  the rule sends it, and a table whose longest value nobody can read off the schema.
+- **`CHECK` constraints for the rest of the rule — an empty text, a line break inside.** That is
+  a second copy of the text rule, in SQL, beside the one in `app/platform/schemas/text.py`: the
+  trim set is thirty code points and the line breaks seven, and two hand-written copies of a set
+  agree only until one of them moves. The length is different in kind — one number, which the
+  model already reads from one constant and the model-against-revision comparison already
+  watches.
+
+**Why a boolean rather than a status.** `P-02` gives a task one state with two values, switched
+freely both ways, and no other; `done` says so in its type.
+
+Rejected:
+
+- **A `status` column over a set of values.** It is the shape that invites a third state the
+  rules do not have, and whatever then guarded the values — a `CHECK` or an enum type — would make
+  each new one a migration.
+- **A nullable `done_at` standing for both the state and when it changed.** Nothing asks when a
+  task was ticked, and "not done" would become an absence rather than a value.
+
+**The bound, beside the model.** `TODO_TASK_TEXT_MAX_LENGTH = 200` lives beside `TodoTask`; the
+column is declared from it and the schemas import it — one number, one place, bound on the same
+three routes as the guestbook's (§ `guestbook_entries`). The name is qualified because the number
+is the to-do list's own (`BR-06`): the guestbook's search phrase is also bounded at 200, by
+`QUERY_MAX_LENGTH`, and neither constant is ever read to prove the other. The to-do screen's copy
+is legal on the guestbook's terms exactly: `tests/fitness/test_length_constants.py` holds the two
+literals equal, and a corpus read by both sides checks the unit, because equal literals were not
+enough. The revision declares the literal `200` and never imports the constant: a released
+revision must not change when the constant later moves.
+
+**No row arrives with the schema.** Example tasks reach a new environment through the API, as the
+guestbook's entries do (§ `guestbook_entries`, the rejected seeding from a revision; the filling
+itself is [`architecture.md`](architecture.md) § What a new environment starts with).
+
+### Two writers on one task
+
+`BR-10` asks that a correction and a marking of one task, sent at the same moment, both stick,
+and that two changes to the same thing end with the one applied later. No check made before the
+write can hold that, and no column is added to hold it. **The store holds it, through the shape
+of every write:**
+
+- a **correction** is one statement, `UPDATE todo_tasks SET text = :text WHERE id = :id
+  RETURNING …`, naming `text` alone;
+- a **marking** is one statement, `UPDATE todo_tasks SET done = :chosen WHERE id = :id
+  RETURNING …`, naming `done` alone and carrying the state the person chose — never
+  `SET done = NOT done`, and never a value computed from a state read earlier (`BR-09`);
+- a **deletion** is one statement, `DELETE FROM todo_tasks WHERE id = :id RETURNING id`.
+
+Whatever shape the contract gives the requests, a write names only the columns the person
+changed, each with the value the person sent: a request that carried the whole task back would
+be the write-back below, arriving from the browser instead of from the service. No row is read
+before any of these statements in the same request. Postgres takes the row's lock for each
+`UPDATE` and `DELETE`, and at `READ COMMITTED` — the isolation the session factory leaves in
+force — a statement that waited for the lock re-reads the row as the first writer committed it
+before it applies its own `SET`. So the column a statement does not name keeps what the other
+writer put there, and a column both name ends with the value of the one applied later.
+`RETURNING` hands back the row as the statement left it, both columns current.
+
+The read-then-writes it protects:
+
+- **A correction against a marking** — the write-back. Read the task, replace the text, write
+  back text *and* state; a marking that stored done between the read and the write is undone by
+  the not done the correction read. A correction that names `text` alone carries no state to
+  restore.
+- **Two markings from screens that are out of date** — the flip. Read the state, store its
+  opposite; two people who both chose done end with not done. A marking that writes the chosen
+  state has nothing read to go stale.
+- **A change against a deletion** — the return of the deleted. Read the task (it is there), the
+  deletion removes it, then write. A statement that matches no row changes nothing and creates
+  nothing, and no row returned is the "no longer exists" answer for a correction, a marking and a
+  second deletion alike (`BR-13`). The write that would bring the task back is an upsert —
+  `INSERT … ON CONFLICT`, or the ORM's `merge()`, which inserts on absence — and no path writes
+  one.
+
+**What defeats it, and nothing in the schema can refuse:** a write that names both columns with
+a value it read, a flip computed in SQL or in Python, or an isolation raised to
+`REPEATABLE READ`, where the waiting statement fails with a serialization error instead of
+re-reading. A sequential test passes all three exactly as it passes the shape above; only two
+writers interleaved on one row, the second waiting on the first's lock, tell them apart.
+
+Rejected:
+
+- **A version column checked on every write** (`… WHERE id = :id AND version = :read`). It
+  refuses the second writer instead of keeping both changes — the opposite of `BR-10` — and
+  telling a person their change lost is a named non-goal of the context. It would cost a column,
+  a refusal in the contract and a screen state, to undo what the rule chose.
+- **A locking read** (`SELECT … FOR UPDATE`, then the write). Correct, and one round trip and one
+  held lock longer than a statement that needs no read; it holds only while every path remembers
+  to take the lock, and the single statement has nothing to remember.
+- **The ORM's load, modify and flush.** It writes only the attributes that changed, so it too
+  names one column — but it reads the row first, and a deletion landing between that read and the
+  flush surfaces as a stale-data error ("0 rows matched") rather than as "no longer exists".
+
+**Filling an empty list is the one rule here the store does not hold.** Example tasks are added
+only while the list holds no task ([`architecture.md`](architecture.md) § What a new environment
+starts with says when; once added, the context's rules bind them like any task). That is a read
+and then posts, over HTTP, and "only while the table is empty" is a statement about the absence
+of every row — nothing a key or a unique index can state. The guarantee is the seeder's
+own check, and it is weaker by choice: a person adding a task in the seconds between that read
+and those posts, or two fillings of one environment at once, leaves the examples beside the task
+or twice over. The guestbook's filling has carried the same exposure since it was written.
+
 ## Indexes and uniqueness
 
 | Index | Columns | Unique | What for |
 |---|---|---|---|
 | `ix_guestbook_entries_created_at_id` | `created_at`, `id` | no | the order the contract publishes (`BR-04`) |
+| `ix_todo_tasks_created_at_id` | `created_at`, `id` | no | the to-do list's one order, newest first (`BR-11`) |
 
 There is no uniqueness constraint at all: two guests with the same signature and the same
 message are two entries, not an error.
+
+`todo_tasks` has none either, and on purpose: the same text twice is two tasks (`BR-12`), so a
+unique index on `text` would turn a deliberate duplicate into a refusal. No rule in this schema
+says "at most one", so there is no unique constraint and no partial unique index to declare; the
+first such rule arrives with its constraint, in its revision and in its model, and a concurrent
+insert to prove it ([`testing.md`](testing.md)).
 
 `id` is in the index for the same reason it is in the `ORDER BY` — it is what makes the order
 **total**. Without it two entries sharing an instant come back in whatever order the planner
@@ -194,7 +353,14 @@ chooses: stable in a test and unstable under paged reads, where it shows one ent
 loses another.
 
 An order promised by the contract with no index behind it means a full sort of the table every
-time the only screen is opened — invisible while the table is small.
+time the screen that reads it is opened — invisible while the table is small.
+
+`ix_todo_tasks_created_at_id` serves `ORDER BY created_at DESC, id DESC`: newest first, with
+`id` making the order total for two tasks stored in the same instant (`BR-11`). Both keys run in
+one direction, so one backward scan of the index answers the query; a tie-break on `id` in the
+other direction would be a sort again. The list has no pages, so every read is of the whole
+table — while it is small the planner may sort it and pass the index by, and the index is what
+lets the read stay a scan rather than a sort as the table grows.
 
 The index is declared **twice, deliberately**: in the revision that creates it, and in the
 model (`__table_args__`), because autogeneration compares the database against `Base.metadata`
@@ -214,9 +380,10 @@ becomes a query called more often than the screen is opened; the change is then 
 | Revision | Parent | What it does |
 |---|---|---|
 | `a1b2c3d4e5f6` | — | creates `guestbook_entries` and the ordering index |
+| issued by `./scripts/db.sh revision` | the head at the time of implementation | creates `todo_tasks` and its ordering index |
 
-One revision, and it is the head. Every next one declares as its parent the head **at the time
-of implementation**, never the one the author remembered.
+Two revisions, and the second is the head. Every next one declares as its parent the head **at
+the time of implementation**, never the one the author remembered.
 
 `downgrade` drops the index before the table. The order is not cosmetic: some engines refuse
 `DROP COLUMN` on an indexed column, and a revision with the order reversed passes on the way up
@@ -226,6 +393,31 @@ and breaks only on the way back — at an operator's machine, in the middle of a
 identifier. The prose in it (docstring, comment) may be corrected, because Alembic does not
 execute it and the database never sees it; the DDL never, because a database that has already
 applied that revision will not learn about the correction.
+
+### The revision that creates `todo_tasks`
+
+Its parent is the head at the time of implementation. `upgrade()`, in this order:
+
+1. `op.create_table("todo_tasks", …)` with the four columns of § `todo_tasks` exactly — `id`
+   `sa.Uuid()` as the primary key, `text` `sa.String(length=200)`, `done` `sa.Boolean()`,
+   `created_at` `sa.DateTime(timezone=True)` — every one `nullable=False`, and none with a server
+   default, because the model declares none and the model-against-revision comparison compares
+   server defaults too.
+2. `op.create_index("ix_todo_tasks_created_at_id", "todo_tasks", ["created_at", "id"])` — a plain
+   build: the table was created one step earlier and holds no row, and `CONCURRENTLY` is owed only
+   to a table the revision did not create (`tests/fitness/test_migration_safety.py`).
+
+`downgrade()`, in this order — the index before the table, for the reason above:
+
+1. `op.drop_index("ix_todo_tasks_created_at_id", table_name="todo_tasks")`
+2. `op.drop_table("todo_tasks")`
+
+What it leaves out, each on purpose: no `lock_timeout` and no `batch_alter_table`, because it
+alters no table it did not create and Postgres is the one engine; no backfill, because the table
+is new and no column becomes `NOT NULL` over rows that already exist; no data, because example
+tasks arrive through the API (§ `todo_tasks`). Its `downgrade` destroys every task — the inverse
+of creating the table, and a step no release runs: a rollback moves the alias and leaves the
+schema where it is (`./scripts/deploy.sh --help`).
 
 ### Compatibility mode
 
@@ -248,3 +440,10 @@ code:
 
 **History:** `a1b2c3d4e5f6` — the initial one, creating the schema from nothing. The mode does
 not apply here: there is nothing to break, because there is no previous state.
+
+The revision that creates `todo_tasks` — **`backward compatible`**. A new table and an index on
+it: the code released before it never names `todo_tasks`, so it runs unchanged over the new
+schema, and a rollback that moves the code back while the table stays is safe for the same
+reason. The release migrates before it moves the alias ([`architecture.md`](architecture.md)
+§ Deployment — two artefacts from one source), which is also the order the to-do routes need;
+nothing in it asks for a window or a second revision.

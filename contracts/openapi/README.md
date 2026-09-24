@@ -4,8 +4,9 @@ One `.yaml` file per API area, in OpenAPI 3.x, **written by hand and committed**
 behind the shapes are in [`spec/design/api.md`](../../spec/design/api.md); this directory
 carries the same thing in a form a machine can compare against the running application.
 
-**Contracts:** `guestbook.yaml` (guestbook entries, `/api/guestbook-entries`) and
-`health.yaml` (the `/api/health` probe). Compatibility mode of both: **Backward** (below).
+**Contracts:** `guestbook.yaml` (guestbook entries, `/api/guestbook-entries`),
+`todo_list.yaml` (the to-do list's tasks, `/api/todo-tasks`) and `health.yaml` (the
+`/api/health` probe). Compatibility mode of all three: **Backward** (below).
 
 ## Convention
 

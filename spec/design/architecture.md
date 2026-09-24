@@ -10,6 +10,11 @@ run, tested and developed is stated by [`CLAUDE.md`](../../CLAUDE.md).
 example feature: a guestbook. A guest leaves a signed entry, entries are visible to everybody,
 an entry can be amended and deleted.
 
+Beside it stands a second feature that is **not** an example: a to-do list every visitor
+shares — a task of one line, ticked done and back, corrected and deleted. It shares one rule
+with the guestbook, how a text is trimmed and measured, and nothing else, so deleting the
+example leaves it standing (§ Rules between contexts).
+
 The value of this repository is the **process**, not the product: the SDD framework in
 `.claude/skills/`, four test suites, the specification gates, the scripts and CI. The guestbook
 exists so that every step of that process has something to show a change travelling through all
@@ -24,11 +29,12 @@ nobody noticed.
 
 ## Contexts and their boundaries
 
-One domain context and one supporting technical slice.
+Two domain contexts and one supporting technical slice.
 
 | Context | Owns | Document |
 |---|---|---|
 | **Guestbook** | `guestbook_entries` and the whole `P-01` flow | [`contexts/guestbook.md`](../contexts/guestbook.md) |
+| **To-do list** | `todo_tasks` and the whole `P-02` flow | [`contexts/todo_list.md`](../contexts/todo_list.md) |
 | **Platform** | serving the SPA, error shapes, request identifiers, logging, liveness — no domain rules | § Platform, below (`app/platform/`, over `app/core/` and `app/db/`) |
 
 ```mermaid
@@ -38,21 +44,31 @@ flowchart TB
     subgraph APP["sdd-app-template — one deployment unit, one process on :8080"]
         direction TB
         GB["<b>Guestbook</b><br/>guestbook_entries<br/>guestbook_entries: model · schema · service · router"]
-        PLAT["<b>Platform</b><br/>SPA shell · errors · request-id<br/>logging · health"]
+        TL["<b>To-do list</b><br/>todo_tasks<br/>todo_tasks: model · schema · service · router"]
+        PLAT["<b>Platform</b><br/>SPA shell · errors · request-id<br/>logging · health · the text rule"]
     end
 
     DB[("Postgres 16")]
 
     OP -->|"adds · reads · amends · deletes"| GB
+    OP -->|"adds · reads · marks · corrects · deletes"| TL
     OP -.->|"every request and response"| PLAT
+    GB -.->|"shared kernel: the text rule"| PLAT
+    TL -.->|"shared kernel: the text rule"| PLAT
     GB --> DB
+    TL --> DB
 ```
 
 ## Rules between contexts
 
-One domain context has nothing to border on, so today this section only says where the boundary
-**will** be and what to hold then. The rules are written out because the template hands them
-over together with the second context, not after it:
+Two domain contexts and one boundary between them. The guestbook and the to-do list are peers
+joined by a **shared kernel that is the text rule alone** — normalized, trimmed, then measured
+in code points — declared in both front matters and described in
+[`contexts/todo_list.md`](../contexts/todo_list.md) § Neighbours. **In code the kernel belongs to
+neither context:** its server half is `app/platform/schemas/text.py` and its browser half sits in
+`frontend/src/lib/` beside the other rules that belong to no context (`lib/text.ts`), each
+imported by both contexts. Neither context imports anything of the other, on either side of the
+wire; `tests/fitness/test_context_boundaries.py` refuses it. The rules every boundary here holds:
 
 - **A dependency points one way, is declared, and carries a classified pattern.** A context
   writing into somebody else's table imports that table's model; the context that owns a table
@@ -68,11 +84,13 @@ over together with the second context, not after it:
 - **A domain constant the whole application must agree on has exactly one definition** — beside
   the model it describes. `AUTHOR_MAX_LENGTH` and `MESSAGE_MAX_LENGTH` live in
   `app/contexts/guestbook/models/guestbook_entry.py` and are imported by the schemas; a copy in a second place
-  diverges on the first change.
+  diverges on the first change. The to-do list's bound, `TODO_TASK_TEXT_MAX_LENGTH`, and its
+  set of line breaks, `LINE_BREAKS`, live the same way, beside `TodoTask`.
 - **A rule the database does not hold is not a rule** (constitution, article VI). Business
   uniqueness is a unique index rather than a convention: a rule enforced only in Python falls
   over on two concurrent writes. This schema has none — two guests with the same signature are
-  two entries — and the absence is recorded in [`data-model.md`](data-model.md).
+  two entries, and the same text twice is two tasks — and the absence is recorded in
+  [`data-model.md`](data-model.md).
 
 Rejected (decision of 2026-09-07, `cr: historical` — the boundary between two contexts gained
 a classified pattern, which is a rule about every future context and therefore lives here;
@@ -386,11 +404,13 @@ commit).
 ### What a new environment starts with
 
 **An environment is infrastructure plus an initial state, and the second half used to be
-written down nowhere.** A preview whose guest book is empty is a preview of a screen nobody can
-judge, so every environment that comes up empty is filled from
+written down nowhere.** A preview whose guest book or to-do list is empty is a preview of a
+screen nobody can judge, so every list that comes up empty is filled from
 [`golden-set/seed/`](../../golden-set/seed/) — the half of the reference corpus that exists to
 be looked at, as against `golden-set/fixtures/`, which the suites assert about
-([`testing.md`](testing.md) § The reference corpus).
+([`testing.md`](testing.md) § The reference corpus). **Each list is filled on its own:** the
+guest book gets its welcome entries when it holds none, whatever the to-do list holds, and the
+to-do list gets its example tasks when it holds none, whatever the guest book holds.
 
 `scripts/seed.sh` is the whole interface, and `start.sh`, `preview.sh` and `deploy.sh` all call
 it rather than the Python behind it: one definition of "seed an environment" instead of three
@@ -398,11 +418,14 @@ that drift (constitution, article XII). It applies to a fresh clone exactly as i
 preview, because "an environment nobody has written in yet" is one condition and not two.
 
 **Through the application's own HTTP API, never into the database.** A seeder writing rows
-directly would be a second implementation of `BR-01`, would drift from the service the moment a
-rule changed, and could plant data the application itself would have refused. Posting means the
-corpus arrives the way a guest's entry arrives, or does not arrive at all — and it means the
-seed data is bound by the same limits as everything else that reaches the database
-([`data-model.md`](data-model.md) § `guestbook_entries`).
+directly would be a second implementation of `BR-01` — or of `BR-06`…`BR-08` for a task — would
+drift from the service the moment a rule changed, and could plant data the application itself
+would have refused. Posting means the corpus arrives the way a guest's entry arrives, or does
+not arrive at all — and it means the seed data is bound by the same limits as everything else
+that reaches the database ([`data-model.md`](data-model.md) § `guestbook_entries`). A task
+arrives the way a person's does: added, and therefore not done, then marked through the
+marking route when the corpus says it is done — so an example shown done got there the way any
+task does, never born done (`BR-08`).
 
 **Two refusals, and they are what make it safe to run unconditionally:**
 
@@ -410,8 +433,10 @@ seed data is bound by the same limits as everything else that reaches the databa
   Terraform gave the deployment — the deployment's own answer rather than something inferred
   from a URL. Test data in production cannot be undone by hand once a real visitor has replied
   to it.
-- **It will not seed a guest book that already has entries.** So "seed every new environment"
-  and "run on every deploy" are one instruction, and every run after the first costs one `GET`.
+- **It will not seed a list that already holds something** — a guest book with entries, a
+  to-do list with tasks — and it asks each list on its own, so one list's state never decides
+  the other's. So "seed every new environment" and "run on every deploy" are one instruction,
+  and every run after the first costs one `GET` per list.
 
 Neither refusal depends on a caller passing the right flag, which is what would fail the first
 time somebody added a caller. Failing to seed is a warning and not a failure: the environment
@@ -501,17 +526,22 @@ sameness **is** the link — there is no mapping file to keep current
 | Router | `app/contexts/<context>/routers/<concepts>.py` + one line in `app/api.py` |
 | Public API | `app/contexts/<context>/__init__.py` — what a neighbouring context may import, and the only thing it may |
 | Migration | `alembic/versions/` — the parent is the head at the time of implementation |
-| Screen | `frontend/src/contexts/<context>/pages/<Name>Page.tsx` + a route in `frontend/src/router.tsx` |
+| Screen | `frontend/src/contexts/<context>/pages/<Name>Page.tsx` + a constant in `frontend/src/routes.ts` + a route in `frontend/src/router.tsx` |
 | Specification | `spec/contexts/<context>.md` + entries in `api.md` and `data-model.md` |
 | Contract | `contracts/openapi/<context>.yaml` |
 | Ownership | one line in [`../../.github/CODEOWNERS`](../../.github/CODEOWNERS), which is the point of the whole shape |
 | Proof | a unit test, an integration test and a `.feature` scenario |
 
 A **second** context adds nothing to that list and takes nothing from it. That is the property
-this layout was chosen for: the only files two contexts share are `app/api.py`,
-`app/contexts/__init__.py` and `frontend/src/router.tsx`, and each of those takes exactly one
-appended line per context, so two people working on two contexts meet in three places and git's
-ordinary text merge settles all three.
+this layout was chosen for, and the to-do list is what it looks like in practice: the files two
+contexts share are `app/api.py`, `app/contexts/__init__.py`, `frontend/src/routes.ts` and
+`frontend/src/router.tsx`, and each of those takes exactly one appended line per context, so two
+people working on two contexts meet in four places and git's ordinary text merge settles all
+four. Two more meet a context only when it has what they serve, and neither is a context's file:
+the frame, `frontend/src/components/shell/PageFrame.tsx`, which carries one way to each screen
+(it learned the way between screens with the second one), and the seeder,
+`scripts/seed_golden_set.py` with the corpus locator `tests/_golden_set.py`, which fills each
+list a new environment opens with on its own.
 
 Rejected (decision of 2026-09-07, `cr: historical` — the tree was recut from layers to bounded
 contexts; this is the document that describes what the system is made of, and the placement
@@ -542,6 +572,116 @@ goes. The recut was done on the trunk and carries no `delta.md` in which to decl
   two teams, and that is a fair reading of today. It was rejected because the cost is not
   symmetrical: recutting an empty tree is an afternoon, and recutting a tree with two contexts
   in it means moving somebody else's work while they are writing it.
+
+## The to-do list — where each rule lives
+
+The second context, laid out exactly as § What a new feature adds describes, under the one word
+`todo_list` in every tree. Its rules are [`contexts/todo_list.md`](../contexts/todo_list.md); its
+columns and the shape of every write are [`data-model.md`](data-model.md) § `todo_tasks`; its
+routes, shapes and refusals are [`api.md`](api.md). This section says which layer holds each
+rule, which file holds each layer, and which implementer writes each file.
+
+### The layer per rule
+
+| Rule | Where it is held | Why that layer |
+|---|---|---|
+| `BR-06` — a task needs text, at most 200 code points | the task's text type in the context's `schemas/`; the bound, `TODO_TASK_TEXT_MAX_LENGTH`, beside `TodoTask` in `models/`; the browser's copy in the context's `lib/` | every text bound this API has is a schema-layer fact applied after the shared normalization — `NormalizedText` runs ahead of the bound — with the number beside the model. The guestbook's worked example, applied unchanged |
+| `BR-07` — a task is one line | the same text type, between the normalization and the measurement; `LINE_BREAKS` beside `TodoTask`; the browser's copy beside the browser's bound | its precedence over `BR-06` — a text both too long and on two lines is refused as two lines — is one sequence, and it can be one sequence only where the length is decided. A check in the service would run after the schema had already refused the text as too long |
+| `BR-08` — a new task is not done, and its moment of adding is set once | the service's add, which writes `done` false and `created_at` from its own clock on every insert; the create shape carries the text alone | the service owns the write and the clock, so nothing a caller sends reaches either column |
+| `BR-09` — marking records the chosen state | the service's mark: one statement naming `done` alone, carrying the value the person chose | the store holds it through the statement's shape ([`data-model.md`](data-model.md) § Two writers on one task), and only the service writes |
+| `BR-10` — the text and the state change separately | the service's correction: one statement naming `text` alone; the add and the correction share the one text type in `schemas/` | the same statement shape; one text type for both is what makes "a correction is held to `BR-06` and `BR-07` exactly as an addition is" true by construction rather than by care |
+| `BR-11` — one order, total, with no pages | the service's read: every row, by `created_at` then `id`, both descending; the index in the model and in the revision | the order is a rule, and the service is where a rule meets the store |
+| `BR-12` — the same text twice is two tasks | nowhere, deliberately: no layer holds a uniqueness check | a rule that forbids nothing needs no holder, and a unique index would be the defect |
+| `BR-13` — deletion is permanent; a task that is gone stays gone | the service raises its one domain exception, `TodoTaskNotFoundError`, when a statement returns no row, and never writes on absence; the router turns it into the not-found refusal | a service never names a status code (`conventions.md` § Layers), and the sentence belongs beside the endpoint that produces it |
+| The way between the two screens, the main address, the not-found page | the frame and the composition root: `frontend/src/components/shell/PageFrame.tsx`, `frontend/src/routes.ts`, `frontend/src/router.tsx`, `frontend/src/pages/StatusPages.tsx` | no context owns them ([`contexts/todo_list.md`](../contexts/todo_list.md) § Neighbours); the frame is the one file that learns about a second screen ([`ui/system-states.md`](ui/system-states.md) § One column) |
+| A change not stored is never shown as made; a list that failed to load is not an empty list | the context's query hook, which writes its cache only from the server's answer and never ahead of it; the page tells a failed load from an empty list | the hook is the one place the cache is written (`conventions.md` § Frontend), so it is the one place a change could be shown before it was stored |
+| Example tasks in a new environment | the seeder, `scripts/seed_golden_set.py`, and one file in `golden-set/seed/` | § What a new environment starts with |
+
+The router decides nothing on that list. It binds the routes [`api.md`](api.md) publishes,
+declares every refusal it can answer with, and turns the service's one domain exception into
+the not-found refusal, explicitly; the empty, too-long and more-than-one-line refusals never
+reach it, because the schema refuses them before the route runs.
+
+### The files
+
+Paths in the second column are relative to the tree in the first.
+
+| Tree | File | Holds | Written by |
+|---|---|---|---|
+| `app/contexts/` | `todo_list/__init__.py` | the context's public API — `TodoTask`, the bound, `LINE_BREAKS` — and, by importing the model, `todo_tasks` on the shared `Base` | build-backend |
+| | `todo_list/models/todo_task.py` | `TodoTask`, `TODO_TASK_TEXT_MAX_LENGTH`, `LINE_BREAKS` written as code-point numbers the way the trim set is, and the ordering index | build-backend |
+| | `todo_list/schemas/todo_tasks.py` | the task's text type — normalize, then one line, then measure — and the read and write shapes [`api.md`](api.md) names, read and write kept apart | build-backend |
+| | `todo_list/services/todo_tasks.py` | add, read, correct, mark and delete; the session and the transaction; `TodoTaskNotFoundError` | build-backend |
+| | `todo_list/routers/todo_tasks.py` | the HTTP binding of every to-do route, the declared refusals and their sentences | build-backend |
+| | `todo_list/{models,schemas,services,routers}/__init__.py` | each layer's docstring, as the guestbook's say it | build-backend |
+| | `__init__.py` | one appended line registering `todo_list` | build-backend |
+| `app/` | `api.py` | one appended line mounting the to-do router | build-backend |
+| `alembic/versions/` | the revision that creates `todo_tasks` | its ordered operations are [`data-model.md`](data-model.md) § The revision that creates `todo_tasks` | build-migration |
+| `frontend/src/` | `contexts/todo_list/pages/TodoListPage.tsx` | the screen: the field, the list, and its loading, empty and failed states | build-frontend |
+| | `contexts/todo_list/components/TodoTaskComposer.tsx` | the one field and its verdict before sending, with no attribute that stops input at a bound | build-frontend |
+| | `contexts/todo_list/components/TodoTaskRow.tsx` | one task: its done control, its text drawn done or not done, its correction in place, its delete | build-frontend |
+| | `contexts/todo_list/components/DeleteTodoTaskDialog.tsx` | the one question before a delete, over the `Modal` primitive | build-frontend |
+| | `contexts/todo_list/hooks/useTodoTasks.ts` | the resource's query and its four mutations, `todoTaskKeys`, the cache written only from answers | build-frontend |
+| | `contexts/todo_list/lib/todoTask.ts` | the `TodoTask` type, the browser copies of the bound and of `LINE_BREAKS`, the verdict in the order `BR-07` then `BR-06`, and its sentences | build-frontend |
+| | `lib/text.ts` | the shared text rule's browser half, moved up out of the guestbook's `lib/` (where it was `entryText.ts`) because a second context needs it — the move `conventions.md` § Frontend prescribes for that day | build-frontend |
+| | `contexts/guestbook/lib/guestbookEntry.ts`, `contexts/guestbook/components/EntryComposer.tsx`, `contexts/guestbook/hooks/useEntryQueryParams.ts` | the same three imports of the text rule, from its new home; nothing else about the guestbook moves | build-frontend |
+| | `components/ui/Checkbox.tsx` | the done control: a design-system primitive, with its first caller | build-frontend |
+| | `components/shell/PageFrame.tsx` | the way between the two screens, and the frame's words for two of them | build-frontend |
+| | `pages/StatusPages.tsx` | a not-found page that no longer says there is one screen | build-frontend |
+| | `routes.ts`, `router.tsx` | one constant, one route; the main address still leads to the guestbook | build-frontend |
+| | `api/schema.d.ts` | regenerated by `./scripts/generate.sh`, never edited | build-frontend |
+| `golden-set/seed/` | `todo-tasks-example.json` | the example tasks, each under 150 code points, at least one marked done | build-backend |
+| `scripts/` | `seed_golden_set.py`, `seed.sh` | filling each list on its own, and saying so in `--help` | build-backend |
+| `.github/` | `CODEOWNERS` | the context's rows, in the file's own per-context pattern | build-platform |
+
+No test is in any row above. The tests are written first, by their own authors — `tests/`,
+`e2e/`, and the `*.test.ts` and `*.test.tsx` files beside each frontend module — and which suite
+proves which rule is [`testing.md`](testing.md).
+
+### Who writes what, and where the sets meet
+
+The four builders run beside each other, and their sets are disjoint because the layout makes
+them so (`.specconf/stack.json` § `skills`): build-backend holds `app/`, `scripts/` and
+`golden-set/seed/`; build-migration `alembic/versions/`; build-frontend the modules of
+`frontend/src/`; build-platform `.github/` and the other trees that run the application. For
+the files above, pairwise:
+
+- backend ∩ frontend = ∅ — no file is both under `app/`, `scripts/` or `golden-set/seed/` and
+  under `frontend/src/`;
+- backend ∩ migration = ∅ — the revision is the only file under `alembic/versions/`, and the
+  model it mirrors is under `app/`;
+- backend ∩ platform = ∅, frontend ∩ migration = ∅, frontend ∩ platform = ∅,
+  migration ∩ platform = ∅ — `CODEOWNERS` is the platform's one file.
+
+**The intersection is empty.** One prefix is held by two members — `frontend/src/`, by
+build-frontend and by the frontend test author — and it is cut by the shape of the file rather
+than by directory: every file in build-frontend's rows is a module, and everything the test
+author writes there is `*.test.ts` or `*.test.tsx`. The test authors' sets are disjoint from one
+another and from every builder's in the same way: `tests/unit/` with `tests/fitness/`;
+`tests/integration/`, `tests/tooling/`, `tests/_golden_set.py` and `golden-set/fixtures/`; the
+vitest files; `e2e/`.
+
+**Disjoint is not independent.** Three edges cross the sets, and none of them is a shared file:
+
+1. `schema.d.ts` is generated from build-backend's schemas and routers, so build-frontend
+   regenerates it only once they exist — the one file in the builders' wave that waits on
+   another builder's output.
+2. The seeder imports the corpus locator, and the locator names the seed file build-backend
+   writes. The locator is written first, in the test wave, and reads red until the file exists.
+3. The revision and the model describe one table from two trees. Neither imports the other, and
+   `tests/integration/test_migrations.py` compares them.
+
+### What holds the boundaries
+
+| What may not happen | What refuses it |
+|---|---|
+| a module of either context imports the other context, on either side of the wire | `tests/fitness/test_context_boundaries.py` — `test_no_context_imports_another_contexts_internals` and `test_no_screen_reaches_into_another_contexts_folder` |
+| anything but `app/api.py` reaches the to-do router module | the same file, `test_only_the_composition_root_reaches_a_contexts_wiring` |
+| the context is registered in one aggregate and not the other, or has a document and no code | the same file, `test_every_context_directory_is_registered_and_every_registration_exists` and `test_every_context_document_has_code_and_every_context_directory_has_a_document` |
+| `services/`, `models/` or `schemas/` import `fastapi` or `starlette`; a lower layer imports an upper one; a router reaches for the session | `tests/fitness/test_layering.py` |
+| a browser copy of the bound or of the line-break set drifts from its home | `tests/fitness/test_length_constants.py`, which holds each constant equal to its one browser copy |
+| a second module in `frontend/src/` reads the text-measurement corpus | `tests/fitness/test_golden_set.py`, `test_the_frontend_reads_no_corpus_file` |
+| a suite reads the example tasks | `tests/fitness/test_golden_set.py`, `test_no_suite_reads_the_seed_corpus` |
 
 ## When a context outgrows this shape
 

@@ -1,0 +1,246 @@
+# HTTP contract for the to-do list. WRITTEN BY HAND -- do not dump openapi.json here.
+#
+# Compatibility mode: BACKWARD. A path, an operation, a response code and an
+# optional field may be added. Removing a field, changing a type, narrowing a
+# numeric bound and changing a stable refusal code are breaking and raise the
+# major version.
+#
+# What stands here is frozen and nothing else: ./scripts/contracts.sh checks every
+# sentence of this file against the Pydantic dump, and the dump is allowed to carry
+# more. That is why there is no `operationId`, no `title`, and no `422` where it is
+# only FastAPI's automatic one for a parameter (DELETE) -- nobody asked about them,
+# so they cannot answer.
+#
+# Self-contained on purpose. `Refusal`, `RefusalDetail`, `HTTPValidationError` and
+# `ValidationError` are written out again below rather than referenced out of
+# guestbook.yaml: the guestbook is the template's example and is deleted as a unit,
+# and a `$ref` into its contract would leave this one unreadable on that day. The
+# dump holds one schema of each name, so both files are held to the same definition
+# by the same gate.
+openapi: 3.0.3
+info:
+  title: To-do list
+  version: 1.0.0
+  description: >-
+    The rules behind these shapes are in spec/contexts/todo_list.md and the prose
+    contract, field by field and sentence by sentence, in spec/design/api.md. This
+    document states the field, the code and the cardinality in a form a machine can
+    compare against the running application.
+
+    A task's `text` is measured in CODE POINTS after it is normalized to NFC and
+    trimmed of the written set of 30 code points (app/platform/schemas/text.py): 1 to
+    200 of them, and one line -- none of the seven line breaks named in
+    spec/contexts/todo_list.md § Language left inside. No `minLength` or `maxLength`
+    is frozen on it, and that is deliberate: a text outside the bounds is refused with
+    a stable code (x-refusals, below), not by a schema constraint, because the reason
+    a person is given depends on which rule the text broke, and the one-line rule
+    wins over the length.
+
+paths:
+  /api/todo-tasks:
+    get:
+      summary: List every task, newest first (BR-11)
+      responses:
+        "200":
+          description: >-
+            Always an envelope, never a bare array, and always the whole list: no
+            parameters, no pieces, no filter. Newest `created_at` first, a tie settled
+            by `id` in the same direction. An empty list is a 200 with an empty
+            `items` and a `total` of 0, never a 404.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodoTaskList"
+    post:
+      summary: Add a task, not done (BR-06, BR-07, BR-08, BR-12)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoTaskCreate"
+      responses:
+        "201":
+          description: >-
+            Exactly one task, as stored: its text normalized and trimmed, `done`
+            false whatever the request claimed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodoTaskRead"
+        "422":
+          description: >-
+            Two shapes under one code, both intended: a coded refusal for a text that
+            is empty, more than one line or too long (`todo_task_text_*`), and
+            FastAPI's validation error for a body of the wrong shape.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/Refusal"
+                  - $ref: "#/components/schemas/HTTPValidationError"
+
+  /api/todo-tasks/{todo_task_id}:
+    patch:
+      summary: Mark a task, correct its text, or both (BR-09, BR-10)
+      parameters:
+        - name: todo_task_id
+          in: path
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoTaskUpdate"
+      responses:
+        "200":
+          description: >-
+            Exactly one task, as stored once this change is applied. Only the fields
+            the body carried were written.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodoTaskRead"
+        "404":
+          description: >-
+            The identifier is valid and no task has it. The code `todo_task_not_found`
+            is in the body -- see x-refusals at the bottom of this file. Nothing is
+            written and no task is created (BR-13).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Refusal"
+        "422":
+          description: >-
+            Two shapes under one code, both intended: a coded refusal for a body that
+            sets no field (`todo_task_empty_patch`) or a text the rules refuse
+            (`todo_task_text_*`), and FastAPI's validation error for a body of the
+            wrong shape or an identifier that is not a UUID.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: "#/components/schemas/Refusal"
+                  - $ref: "#/components/schemas/HTTPValidationError"
+    delete:
+      summary: Delete a task for good (BR-13)
+      parameters:
+        - name: todo_task_id
+          in: path
+          required: true
+      responses:
+        "204":
+          description: Deleted. No body.
+        "404":
+          description: >-
+            Also on a second deletion of the same task -- a deletion that was not
+            performed is never reported as one (BR-13).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Refusal"
+
+components:
+  schemas:
+    TodoTaskCreate:
+      type: object
+      required: [text]
+      properties:
+        # A required string and nothing more. The bounds are coded refusals, not
+        # constraints -- see info.description. There is deliberately no `done`: a task
+        # is born not done, and a `done` sent anyway is ignored (BR-08).
+        text:
+          type: string
+
+    TodoTaskUpdate:
+      type: object
+      properties:
+        # No `type`: both fields are optional, so Pydantic renders them as an `anyOf`
+        # with `null`. What is frozen is their EXISTENCE and the fact that they are
+        # optional; writing a type here would freeze a shape the dump does not have.
+        text: {}
+        done: {}
+
+    TodoTaskRead:
+      type: object
+      required: [id, text, done, created_at]
+      properties:
+        id:
+          type: string
+          format: uuid
+        text:
+          type: string
+        done:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    TodoTaskList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+        total:
+          type: integer
+          minimum: 0
+
+    Refusal:
+      type: object
+      required: [detail]
+      properties:
+        detail: {}
+
+    RefusalDetail:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        # No `type`: optional, so Pydantic renders an `anyOf` with `null`. Present only
+        # on `todo_task_not_found`; a refusal about the body has nothing to put in it.
+        id: {}
+
+    # FastAPI's own validation shapes, frozen only because the two 422s above refer
+    # to them: a `$ref` to a schema this document does not define is a document that
+    # cannot be read on its own.
+    HTTPValidationError:
+      type: object
+      properties:
+        detail: {}
+
+    ValidationError:
+      type: object
+      required: [loc, msg, type]
+      properties:
+        loc: {}
+        msg:
+          type: string
+        type:
+          type: string
+
+# Stable refusal codes. They appear in NO OpenAPI document, because FastAPI does
+# not look inside the body of a raised HTTPException -- and spec/design/api.md calls
+# them a contract that never changes. This list is the only place that holds them:
+# ./scripts/contracts.sh looks for each one as a literal in every routers/ directory
+# under app/. The sentences are in spec/design/api.md § Refusals.
+x-refusals:
+  todo_task_not_found:
+    status: 404
+    when: the identifier is valid and no task has it -- a marking, a correction, or a second deletion
+  todo_task_empty_patch:
+    status: 422
+    when: the PATCH sets neither text nor done
+  todo_task_text_empty:
+    status: 422
+    when: the text is empty once normalized and trimmed
+  todo_task_text_multiline:
+    status: 422
+    when: the text, once trimmed, still holds a line break -- also when it is over 200 code points
+  todo_task_text_too_long:
+    status: 422
+    when: the text is one line and longer than 200 code points once normalized and trimmed

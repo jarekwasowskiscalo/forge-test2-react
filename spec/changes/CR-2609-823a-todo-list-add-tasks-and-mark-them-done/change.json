@@ -264,6 +264,21 @@
   "docs_touched": [],
   "expected_red": [],
   "fanout": {
+    "design-api": {
+      "assumptions": "- design-data declares todo_tasks(id Uuid, text String(200), done Boolean, created_at timestamptz) and no updated_at; its \"correction/marking\" statements also cover a PATCH that carries both fields: one UPDATE naming exactly the columns the body carries, with values from the request.\n- The request schema must NOT put max_length or min_length on text (that returns FastAPI's list with no code, and \"too long\" would then win over \"one line\"); importing TODO_TASK_TEXT_MAX_LENGTH is fine.\n- design-architecture places the text rule (normalize, then empty, then multiline, then too long) in the service; the router translates it into the 5 coded refusals, and the codes are literals in the to-do router; the body is validated before the lookup.\n- design-ui binds only to id, text, done and the 5 codes; created_at is not shown; the 5 sentences are product text and follow the approved mock-up if it words them differently.\n- design-testing gives each of the 5 codes a test, plus the refusal order and the overlapping edit+mark case.\n- Marking and correcting are one PATCH with optional fields (absent fields never written); no GET for one task; the list is {items,total} in one total order with no parameters.\n- ADR required: all three text refusals are coded Refusal bodies decided outside Pydantic constraints, departing from the guestbook's Pydantic 422; todo_list.yaml repeats Refusal and ValidationError instead of pointing at guestbook.yaml, because the guestbook is deleted as a unit.\n- Left for another author: contracts/README.md (outside design-api's allowlist) still says \"three paths, six operations\"; the contracts now hold 5 paths and 10 operations.",
+      "at": "2026-09-24T13:24:23Z",
+      "state": "returned"
+    },
+    "design-architecture": {
+      "assumptions": "- design-data: aligned with its in-progress data-model.md (TodoTask in app.contexts.todo_list.models.todo_task, TODO_TASK_TEXT_MAX_LENGTH, id/text/done/created_at, single-statement UPDATE/DELETE…RETURNING, ix_todo_tasks_created_at_id).\n- design-api: one resource router module `routers/todo_tasks.py` for every to-do route; a not-found refusal for R-8; the empty, too-long and not-one-line refusals come from the schema as a 422 (BR-06 and BR-07 are one schema text type: normalize, then one-line, then measure). The wire spelling is api.md's.\n- design-ui: the route value, the nav, lockup and footer copy, and a done control that is a checkbox (ui primitive Checkbox.tsx); the hook writes its cache only from server answers (no optimistic update, R-10).\n- design-testing: picks the suites, and the locator registers `golden-set/seed/todo-tasks-example.json`.\n- design-plan: orders build-frontend's schema.d.ts regeneration after build-backend.\n- The browser text rule moves from frontend/src/contexts/guestbook/lib/entryText.ts to frontend/src/lib/text.ts (conventions § Frontend); golden-set/README.md lines 104 and 156 name the moved entryText.test.ts and no member's writes cover that README (PROC-18, filed on the template).\n- todo_list.md's `screens: []`/`features: []` will turn the two claim tests red during implement once the screen doc and the .feature file exist, and no implement member writes spec/contexts/.",
+      "at": "2026-09-24T13:24:23Z",
+      "state": "returned"
+    },
+    "design-data": {
+      "assumptions": "- design-api takes its wire fields from these columns: `id`, `text`, `done`, `created_at`.\n- The list read returns every row, with no pages, ordered `created_at DESC, id DESC`.\n- An add carries only the text and every new task starts not done.\n- A mark carries the state the person chose, never a toggle.\n- An edit carries only the text; no request sends the whole task back.\n- A mark, edit or delete on a missing id is one \"no longer exists\" refusal (the single UPDATE/DELETE ... RETURNING statement returns no row).\n- design-architecture places `TodoTask` in app/contexts/todo_list/models/todo_task.py with TODO_TASK_TEXT_MAX_LENGTH = 200 beside it, and registers the context in app/contexts/__init__.py so Alembic sees the table.\n- design-testing proves the write-shape rule with two writers interleaved on one row, and proves R-3.2 by storing two tasks with the same created_at through the service's clock seam.\n- build-migration writes the ordered operations as listed.\n- A task's text gets its own data invariant of the D-04 kind; writing it belongs to the convergence round (contracts/ is outside design-data's allowlist), so the fragment reports it instead.",
+      "at": "2026-09-24T13:24:23Z",
+      "state": "returned"
+    },
     "design-domain": {
       "assumptions": "- design-data declares the table as `## `todo_tasks``. The glossary now fixes the name: TodoTask, table todo_tasks.\n- design-architecture uses `todo_list` as the context's name in every tree (app/, frontend/src/contexts/, CODEOWNERS). The implement stage creates app/contexts/todo_list/, and that is what clears red test (1) (test_every_context_document_has_code_and_every_context_directory_has_a_document).\n- design-spec does not restate BR-06…BR-13 in guestbook.md. It does three things there: adds todo_list:peer:shared-kernel to guestbook's neighbours; rewrites the \"only bounded context\" sentence (line 13) and § Boundaries (lines 172-176); keeps the text-rule half of BR-01 as the one place that rule is written.\n- screens: [] and features: [] stay empty until those files exist. design-ui creates the screen doc and build-tests-e2e creates the .feature file. The convergence round or reconcile-spec then adds both paths to the header; until then the claim tests go red.\n- Handed to other members: R-5 to design-ui (the frame / system-states.md), R-3 clause 6 and R-10 to design-ui (the screen spec), R-11 to design-architecture (§ What a new environment starts with).\n- design-adr turns the decision marked `**ADR:** required` in the fragment into a draft.",
       "at": "2026-09-24T13:07:07Z",
@@ -272,6 +287,11 @@
     "design-spec": {
       "assumptions": "- design-api makes the one-line refusal win over too-long for the same text (BR-07), and a refused correction leaves the stored text alone (BR-10).\n- design-data declares `todo_tasks` and decides whether a task's text needs a data invariant like D-04.\n- design-testing finds a suite for the amended BR-07 and BR-10.\n- Four documents design-spec cannot write still say there is one context: architecture (opening line and § Rules between contexts), testing.md (the fitness rows that say \"vacuously true with one context\"), spec/README.md (lines 25 and 58) and CLAUDE.md (its deletion list). They belong to design-architecture, design-testing, converge and reconcile-docs.\n- BR-07 now says which refusal wins when a text is both too long and more than one line (taken from BR-07's own words \"never too long\" and from R-2.7), rather than raising it as an open question; the coherence gate may question this choice.",
       "at": "2026-09-24T13:11:49Z",
+      "state": "returned"
+    },
+    "design-testing": {
+      "assumptions": "- Used design-api's five codes, design-data's statement-shape writes and TODO_TASK_TEXT_MAX_LENGTH.\n- Used design-architecture's module names: TodoListPage, TodoTaskComposer, TodoTaskRow, useTodoTasks, todoTask.ts, lib/text.ts, and todo-tasks-example.json for the seed file.\n- CONTRADICTS architecture Decision 4: the corpus reader cannot move to frontend/src/lib/text.test.ts; it needs the guestbook's bounds, and test_no_screen_reaches_into_another_contexts_folder refuses that import from lib/. So entryText.test.ts stays where it is and changes one import line. For the coherence gate.\n- For coherence: test_every_feature_file_is_claimed_by_exactly_one_context goes red when todo_list.feature is written in implement wave 1, and no implement author can write spec/contexts/; the screen claim has the same timing in design. Options A/B/C are in the fragment.\n- golden-set/README.md has no author, and this change makes two of its sentences false.\n- The task's text cases get their own file, todo-task-text.json, instead of scenarios.md's additions to text-measurement.json (the additions would turn existing guestbook cases red mid-wave, force an import that does not exist yet, and be deleted with the guestbook).\n- The corpus-reading seeds are not bound in e2e, because they need e2e/suite/golden_set.py, which nobody may write.\n- R-11 stays `Verified-by: manual`, with uat.md steps plus tooling and fitness proof that owns no citation.",
+      "at": "2026-09-24T13:24:23Z",
       "state": "returned"
     }
   },
@@ -697,6 +717,11 @@
           "at": "2026-09-24T13:11:49Z",
           "note": "With the template's own entry shape (- `MODIFIED` `path`), delta_grammar.entry_paths reads the backticked kind as the entry's path: entry_paths returns (MODIFIED, spec/contexts/guestbook.md). delta.split therefore supersedes entries by kind, not by file, so one reconcile MODIFIED entry would push every design MODIFIED entry into delta-history.",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-24T13:13:05Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/317",
+          "state": "filed"
         }
       ],
       "id": "PROC-14",
@@ -706,6 +731,156 @@
       "seen": 1,
       "signal": "With the template's own entry shape (- `MODIFIED` `path`), delta_grammar.entry_paths reads the backticked kind as the entry's path: entry_paths returns (MODIFIED, spec/contexts/guestbook.md). delta.split therefore supersedes entries by kind, not by file, so one reconcile MODIFIED entry would push every design MODIFIED entry into delta-history.",
       "signature": "With the template·s path: entry_paths returns (MODIFIED, spec· delta.split therefore supersedes entries by kind, not by ",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/317"
+    },
+    {
+      "at": "2026-09-24T13:11:50Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T13:11:50Z",
+          "note": "design-spec: the text preflight (sdd-skill design-spec preflight) does not print owns_boundary_section, which the skill tells the worker to read, so it had to run preflight --json to get it -- an instruction naming a field the default brief does not carry.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T13:13:05Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/318",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-15",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "design-spec: the text preflight (sdd-skill design-spec preflight) does not print owns_boundary_section, which the skill tells the worker to read, so it had to run preflight --json to get it -- an instruction naming a field the default brief does not carry.",
+      "signature": "design-spec: the text preflight (sdd-skill design-spec preflight) does not print owns_boundary_section, which the skill ",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/318"
+    },
+    {
+      "at": "2026-09-24T13:17:36Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T13:17:36Z",
+          "note": "design-data: SKILL.md (iron rule 2, line 56, and COMMON RATIONALIZATIONS, line 205) cites \"spec/design/data-model.md, section Dictionaries\"; this stack's data-model.md has no such section and no seed carries one, so the no-CHECK rule was applied without the document it points to.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T13:17:49Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/319",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-16",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "design-data: SKILL.md (iron rule 2, line 56, and COMMON RATIONALIZATIONS, line 205) cites \"spec/design/data-model.md, section Dictionaries\"; this stack's data-model.md has no such section and no seed carries one, so the no-CHECK rule was applied without the document it points to.",
+      "signature": "design-data: SKILL.md (iron rule ·, line ·, and COMMON RATIONALIZATIONS, line ·) cites ·; this stack's data-model.md has",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/319"
+    },
+    {
+      "at": "2026-09-24T13:19:13Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T13:19:13Z",
+          "note": "design-api: it must write contracts/openapi/<area>.yaml at design, but scripts/contracts.sh (check.sh gate \"API contract is frozen\", run by the boundary profile) reports every new path, schema and code as missing until implement builds them; ExpectedRed covers test cases, not this check gate, so design cannot close green without --accept-red. Same root as PROC-13.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T13:19:17Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/314#issuecomment-5814903764",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-17",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "design-api: it must write contracts/openapi/<area>.yaml at design, but scripts/contracts.sh (check.sh gate \"API contract is frozen\", run by the boundary profile) reports every new path, schema and code as missing until implement builds them; ExpectedRed covers test cases, not this check gate, so design cannot close green without --accept-red. Same root as PROC-13.",
+      "signature": "design-api: it must write contracts· at design, but scripts· (check.sh gate ·, run by the boundary profile) reports ever",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/314#issuecomment-5814903764"
+    },
+    {
+      "at": "2026-09-24T13:21:35Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/forge_template_python_react"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T13:21:35Z",
+          "note": "design-architecture: golden-set/README.md (lines 104 and 156 name frontend/src/contexts/guestbook/lib/entryText.test.ts, which this design moves; backtick-paths goes red) and e2e/suite/golden_set.py (needed if the to-do scenarios read fixtures) are in no member's writes in .specconf/stack.json § skills, so set-boundary refuses them as rows and the change cannot edit them.",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-24T13:21:52Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/92",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-18",
+      "owner": "template",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "design-architecture: golden-set/README.md (lines 104 and 156 name frontend/src/contexts/guestbook/lib/entryText.test.ts, which this design moves; backtick-paths goes red) and e2e/suite/golden_set.py (needed if the to-do scenarios read fixtures) are in no member's writes in .specconf/stack.json § skills, so set-boundary refuses them as rows and the change cannot edit them.",
+      "signature": "design-architecture: golden-set· (lines · and · name frontend· which this design moves; backtick-paths goes red) and e2e",
+      "stage": "design",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/forge_template_python_react/issues/92"
+    },
+    {
+      "at": "2026-09-24T13:24:23Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/forge_template_python_react"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-24T13:24:23Z",
+          "note": ".specconf/stack.json gives no member e2e/suite/golden_set.py (the black box's only permitted crossing into the corpus) or golden-set/README.md, and the black-box scenarios had to be designed around that gap.",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-19",
+      "owner": "template",
+      "reason": null,
+      "reporter": "design-testing",
+      "seen": 1,
+      "signal": ".specconf/stack.json gives no member e2e/suite/golden_set.py (the black box's only permitted crossing into the corpus) or golden-set/README.md, and the black-box scenarios had to be designed around that gap.",
+      "signature": ".specconf· gives no member e2e· (the black box's only permitted crossing into the corpus) or golden-set· and the black-b",
       "stage": "design",
       "state": "reported",
       "url": null
@@ -1406,7 +1581,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 95,
+  "revision": 106,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -1456,7 +1631,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T13:11:49Z",
+  "updated_at": "2026-09-24T13:24:23Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {
