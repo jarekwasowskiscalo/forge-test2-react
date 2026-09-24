@@ -83,3 +83,6 @@
 - [18:13] process_fault_resolved: PROC-29 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/349
 - [18:13] process_fault_resolved: PROC-30 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/350
 - [18:13] fanout_recorded: returned: design-testing
+- [18:13] todo_resolved: TD-1
+- [18:13] fanout_recorded: dispatched: design-testing
+- [18:14] fanout_recorded: returned: design-testing

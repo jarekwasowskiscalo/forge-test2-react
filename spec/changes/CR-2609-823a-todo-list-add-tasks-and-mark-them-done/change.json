@@ -469,8 +469,8 @@
       "state": "returned"
     },
     "design-testing": {
-      "assumptions": "TD-1 only: spec/design/testing.md:1098 now writes the future path as **frontend/src/lib/text.ts** (bold, the idiom of the four-file-sets table); design/delta/testing.md lines 91 and 101 still name it in backticks, which backtick-paths does not scan; nothing else changed.",
-      "at": "2026-09-24T16:13:51Z",
+      "assumptions": "TD-2 only: COH-design-2 (Q-17 = A) applied word for word -- testing.md :759 now reads \"through the rule, while every case builds a valid create and update shape, so only the rule can refuse a text\", and :859-861 names test_the_create_and_update_shapes_carry_no_bound (the wire codes stay proved by the integration corpus and router tests); the case stays in the red-first list because the shapes do not exist before implementation; the fragment needed no edit; design/delta/converge.md:42 still describes the rejected case historically.",
+      "at": "2026-09-24T16:14:57Z",
       "state": "returned"
     },
     "design-ui": {
@@ -2530,7 +2530,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 170,
+  "revision": 173,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -2569,6 +2569,7 @@
       "id": "TD-1",
       "kind": "agent",
       "raised_at": "2026-09-24T16:12:51Z",
+      "resolved_at": "2026-09-24T16:13:55Z",
       "skill": "design-testing",
       "what": "spec/design/testing.md:1098 names `frontend/src/lib/text.ts` in backticks, a file that does not exist until implement, so the backtick-paths lint (sdd-specs --at-boundary) is red: write that future path the way this repository writes one (in bold, not backticks), with the smallest edit, and change nothing else."
     },
@@ -2595,7 +2596,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T16:13:51Z",
+  "updated_at": "2026-09-24T16:14:57Z",
   "verification_last": {
     "content_digest": "87f44ea55cf754c6bb078c5f091ac8109877e3cb6323a8d7084ea7c278912ca2",
     "counts": {
