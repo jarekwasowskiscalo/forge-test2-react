@@ -278,9 +278,14 @@ for. Three trees, three readers, and the cut is by **subject** rather than by to
 
 | Tree | Subject | Reader |
 |---|---|---|
-| [`docs/`](../../docs/README.md) | the system: how to set it up, run it, configure it, watch it, back it up and repair it | whoever operates or takes delivery of the application |
+| [`docs/`](../../docs/README.md) | the system: how to set it up, run it, configure it, watch it, back it up and repair it, and how each of its screens is used | whoever operates or takes delivery of the application, and the person using one of its screens |
 | [the marketplace's README](https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/blob/main/README.md), and the orchestrator's own document ([`skills/sdd/SKILL.md`](https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/blob/main/plugins/forge/skills/sdd/SKILL.md)) | the change process: how a change travels, and the decision table that drives it | whoever runs, ports or alters the process |
 | [`../rationale/`](../rationale/README.md) | reasoning worth keeping that is not a decision — why a shape was chosen, what was tried, how it broke | whoever changes this in six months |
+
+A screen's user guide is therefore `docs/`'s, one per screen beside `user-guide.md`, the guest
+book's: it describes the running system to the person using it, and binds nothing either. The
+user decided it in `CR-2609-823a` (`Q-31`) in these words: "Move it to docs/ with the other
+guide."
 
 Four rules hold over `docs/`, and each exists because its absence has a named cost:
 

@@ -865,9 +865,12 @@
       "id": "COH-spec_sync-1",
       "kind": "gap",
       "raised_at": "2026-09-24T21:25:10Z",
+      "resolution": "The spec_sync convergence round writes the task-text invariant as D-05 in contracts/invariants/todo_list.md and names it in the README (spec/invariants.md § Data invariants; Q-21 (6)); spec/invariants.md now says the stage's coherence pass is what makes that round run, so an owed invariant is a finding in its own right.",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-25T06:12:10Z",
       "severity": "major",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/glossary.md § Identifiers and their spaces",
@@ -883,9 +886,12 @@
       "id": "COH-spec_sync-2",
       "kind": "contradiction",
       "raised_at": "2026-09-24T21:25:10Z",
+      "resolution": "The glossary row and the spec README stop stating what spec/ADR/ holds and point at conventions § When a decision is an ADR (constitution, Article IV).",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-25T06:12:10Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md § Consequences",
@@ -900,9 +906,12 @@
       "id": "COH-spec_sync-3",
       "kind": "contradiction",
       "raised_at": "2026-09-24T21:25:10Z",
+      "resolution": "ADR-0001, still Proposed, says design-spec reported the CLAUDE.md list silent and reconcile-docs wrote the paragraph in this change's spec_sync stage (constitution, Article IV).",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-25T06:12:10Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/architecture.md § What a new environment starts with",
@@ -918,9 +927,12 @@
       "id": "COH-spec_sync-4",
       "kind": "contradiction",
       "raised_at": "2026-09-24T21:25:10Z",
+      "resolution": "The seeding condition is 'a list that holds nothing yet', asked of each list, whatever kind of environment holds it (constitution, Article IV; Q-10).",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-25T06:12:10Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/architecture.md § The files",
@@ -938,9 +950,12 @@
       "id": "COH-spec_sync-5",
       "kind": "contradiction",
       "raised_at": "2026-09-24T21:25:10Z",
+      "resolution": "The Files table gains a text-only row for start.sh, help.sh, deploy.sh and preview.sh, written by build-backend: their --help and comments describe per-list seeding (constitution, Article I). The script text itself is build-backend's to apply.",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-25T06:12:10Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "docs/runbooks/restore-the-database.md § When to use this",
@@ -955,9 +970,12 @@
       "id": "COH-spec_sync-6",
       "kind": "contradiction",
       "raised_at": "2026-09-24T21:25:10Z",
+      "resolution": "Q-30 = A, in the user's words: 'Keep partial restores; fix the guide.' Option B keeps offering one table or chosen rows; the user guide and the restore runbook's opening lines say one list, or chosen tasks, can be brought back on their own. The ambiguity source is under docs/, outside review-converge's write set; no spec/ or contracts/ document let the two readings in. The runbook lead, incident-f",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-25T06:12:10Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/design/conventions.md § Documentation — where a document goes",
@@ -973,9 +991,12 @@
       "id": "COH-spec_sync-7",
       "kind": "gap",
       "raised_at": "2026-09-24T21:25:10Z",
+      "resolution": "Q-31 = A, in the user's words: 'Move it to docs/ with the other guide.' Conventions § Documentation names how each screen is used and the person using one of its screens in the docs/ row; the move to docs/user-guide-todo-list.md and the docs/README.md row are reconcile-ops's to apply.",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-25T06:12:10Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "coherence_passes": [
@@ -1126,6 +1147,11 @@
     "review-coherence": {
       "assumptions": "none -- reads only; all four authors assumption blocks were captured and checked against their neighbours",
       "at": "2026-09-24T21:25:10Z",
+      "state": "returned"
+    },
+    "review-converge": {
+      "assumptions": "The findings ready patches are decided, so they were applied where they land in spec/ or contracts/. COH-2 edits both glossary and spec/README.md because its one resolution names both. COH-6 has no edit in the converge write set: its ambiguity_source is docs/, and BR-13 and the non-goal were judged not to be the cause. Repairs outside the write set: COH-5 -> build-backend (stack.json gives scripts/ to build-backend, not build-platform): start.sh, help.sh, deploy.sh, preview.sh text; COH-6 -> reconcile-ops (Q-30 A): restore runbook, incident-first-response, runbooks/README say whole DB under A, one list or chosen rows under B, guide says one list or chosen tasks can come back; COH-7 -> reconcile-ops (Q-31 A): create docs/user-guide-todo-list.md (without the wrong-place note, with COH-6 applied) and a docs/README.md row; removing reconcile/user-guide-todo-list.md needs reconcile-docs.",
+      "at": "2026-09-25T06:12:10Z",
       "state": "returned"
     }
   },
@@ -3031,15 +3057,46 @@
           "at": "2026-09-24T21:25:10Z",
           "note": "spec/invariants.md names the spec_sync convergence round as the only writer of a data invariant decided in design, but none of the four spec_sync write sets holds contracts/; the round exists only if a coherence pass happens to record a finding for it, so a clean pass would close the stage with the invariant unwritten and data-model.md citing a contract that does not exist",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-25T06:07:57Z",
+          "note": "misrouted at banking: the duty comes from this repository's own spec/invariants.md (decided in this change, Q-21), not from the engine; the engine already covers contracts/ in review-converge's write set, and COH-spec_sync-1 is repairing it in this stage, so there is nothing to file upstream",
+          "state": "unfiled"
         }
       ],
       "id": "PROC-62",
       "owner": "engine",
-      "reason": null,
+      "reason": "misrouted at banking: the duty comes from this repository's own spec/invariants.md (decided in this change, Q-21), not from the engine; the engine already covers contracts/ in review-converge's write set, and COH-spec_sync-1 is repairing it in this stage, so there is nothing to file upstream",
       "reporter": "review-coherence",
       "seen": 1,
       "signal": "spec/invariants.md names the spec_sync convergence round as the only writer of a data invariant decided in design, but none of the four spec_sync write sets holds contracts/; the round exists only if a coherence pass happens to record a finding for it, so a clean pass would close the stage with the invariant unwritten and data-model.md citing a contract that does not exist",
       "signature": "spec· names the spec_sync convergence round as the only writer of a data invariant decided in design, but none of the fo",
+      "stage": "spec_sync",
+      "state": "unfiled",
+      "url": null
+    },
+    {
+      "at": "2026-09-25T06:12:10Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-25T06:12:10Z",
+          "note": "change_state add-reconciliation --from-file prints 'OK  ids=5' (a count) for an auto batch instead of the allocated REC ids, while the same verb prints 'ids=REC-45,REC-46' for another batch; the caller cannot confirm which ids it was given",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-63",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-converge",
+      "seen": 1,
+      "signal": "change_state add-reconciliation --from-file prints 'OK  ids=5' (a count) for an auto batch instead of the allocated REC ids, while the same verb prints 'ids=REC-45,REC-46' for another batch; the caller cannot confirm which ids it was given",
+      "signature": "change_state add-reconciliation --from-file prints · (a count) for an auto batch instead of the allocated REC ids, while",
       "stage": "spec_sync",
       "state": "reported",
       "url": null
@@ -4424,6 +4481,80 @@
       "stage": "implement",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-25T06:07:29Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T21:25:29Z",
+      "blocking": false,
+      "blocks": [
+        "COH-spec_sync-6"
+      ],
+      "options": [
+        {
+          "consequence": "The guide and the runbook's opening lines say that one list, or chosen tasks, can be brought back on their own",
+          "key": "A",
+          "label": "Keep partial restores; fix the guide",
+          "recommended": true
+        },
+        {
+          "consequence": "The runbook stops offering to copy one table or chosen rows, and restores always rewind everything",
+          "key": "B",
+          "label": "Whole-database restores only",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-30",
+      "question": "The to-do list user guide says restoring the database always rewinds the whole application and never brings back a single task. The restore runbook's default option copies one table, or chosen rows, on its own. Which one is right?",
+      "stage": "spec_sync",
+      "status": "answered",
+      "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-25T06:07:29Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-24T21:25:29Z",
+      "blocking": false,
+      "blocks": [
+        "COH-spec_sync-7"
+      ],
+      "options": [
+        {
+          "consequence": "It becomes docs/user-guide-todo-list.md with a row in docs/README.md, and the conventions name the person using a screen as a docs/ reader",
+          "key": "A",
+          "label": "Move it to docs/ with the other guide",
+          "recommended": true
+        },
+        {
+          "consequence": "The guide stays as history of this change only, and the to-do list screen has no user guide under docs/",
+          "key": "B",
+          "label": "Leave it in the change record",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-31",
+      "question": "The to-do list user guide was written into the change record because the author could not write to docs/, where this project keeps user guides. Where should it live?",
+      "stage": "spec_sync",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -4902,6 +5033,86 @@
       "id": "REC-39",
       "rule_added": null,
       "source": "auto"
+    },
+    {
+      "at": "2026-09-25T06:11:15Z",
+      "decision": "The spec_sync convergence round writes the task-text invariant as D-05 in contracts/invariants/todo_list.md and names it in the README (spec/invariants.md § Data invariants; Q-21 (6)); spec/invariants.md now says the stage's coherence pass is what makes that round run, so an owed invariant is a finding in its own right.",
+      "edited": [
+        "spec/invariants.md § Data invariants",
+        "contracts/invariants/todo_list.md § D-05",
+        "contracts/invariants/README.md § Contracts line"
+      ],
+      "from_finding": "COH-spec_sync-1",
+      "id": "REC-40",
+      "rule_added": null,
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-25T06:11:15Z",
+      "decision": "The glossary row and the spec README stop stating what spec/ADR/ holds and point at conventions § When a decision is an ADR (constitution, Article IV).",
+      "edited": [
+        "spec/glossary.md § Identifiers and their spaces",
+        "spec/README.md § spec/ADR/** bullet"
+      ],
+      "from_finding": "COH-spec_sync-2",
+      "id": "REC-41",
+      "rule_added": null,
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-25T06:11:15Z",
+      "decision": "ADR-0001, still Proposed, says design-spec reported the CLAUDE.md list silent and reconcile-docs wrote the paragraph in this change's spec_sync stage (constitution, Article IV).",
+      "edited": [
+        "spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md § Consequences"
+      ],
+      "from_finding": "COH-spec_sync-3",
+      "id": "REC-42",
+      "rule_added": null,
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-25T06:11:15Z",
+      "decision": "The seeding condition is 'a list that holds nothing yet', asked of each list, whatever kind of environment holds it (constitution, Article IV; Q-10).",
+      "edited": [
+        "spec/design/architecture.md § What a new environment starts with"
+      ],
+      "from_finding": "COH-spec_sync-4",
+      "id": "REC-43",
+      "rule_added": null,
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-25T06:11:15Z",
+      "decision": "The Files table gains a text-only row for start.sh, help.sh, deploy.sh and preview.sh, written by build-backend: their --help and comments describe per-list seeding (constitution, Article I). The script text itself is build-backend's to apply.",
+      "edited": [
+        "spec/design/architecture.md § The files"
+      ],
+      "from_finding": "COH-spec_sync-5",
+      "id": "REC-44",
+      "rule_added": null,
+      "source": "auto"
+    },
+    {
+      "at": "2026-09-25T06:11:15Z",
+      "decision": "Q-30 = A, in the user's words: 'Keep partial restores; fix the guide.' Option B keeps offering one table or chosen rows; the user guide and the restore runbook's opening lines say one list, or chosen tasks, can be brought back on their own. The ambiguity source is under docs/, outside review-converge's write set; no spec/ or contracts/ document let the two readings in. The runbook lead, incident-first-response.md, runbooks/README.md and the guide's sentence are reconcile-ops's to apply.",
+      "edited": [
+        "none in spec/ or contracts/ -- pending reconcile-ops: docs/runbooks/restore-the-database.md § When to use this"
+      ],
+      "from_finding": "COH-spec_sync-6",
+      "id": "REC-45",
+      "rule_added": null,
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-25T06:11:15Z",
+      "decision": "Q-31 = A, in the user's words: 'Move it to docs/ with the other guide.' Conventions § Documentation names how each screen is used and the person using one of its screens in the docs/ row; the move to docs/user-guide-todo-list.md and the docs/README.md row are reconcile-ops's to apply.",
+      "edited": [
+        "spec/design/conventions.md § Documentation — where a document goes"
+      ],
+      "from_finding": "COH-spec_sync-7",
+      "id": "REC-46",
+      "rule_added": null,
+      "source": "hitl"
     }
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
@@ -4918,7 +5129,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 888,
+  "revision": 903,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -5069,7 +5280,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-24T21:25:10Z",
+  "updated_at": "2026-09-25T06:12:10Z",
   "verification_last": {
     "content_digest": "dd8c251ff7634c10453cf80cd92896b20e4d941582648ab0d0d2ff3fe5345ae3",
     "counts": {

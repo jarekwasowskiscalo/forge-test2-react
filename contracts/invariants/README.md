@@ -1,6 +1,7 @@
 # Data invariants
 
-**Contracts:** `guestbook.md` — `D-01`…`D-03`, each with a witness and a kind of evidence.
+**Contracts:** `guestbook.md` — `D-01`…`D-04`; `todo_list.md` — `D-05`; each with a witness and
+a kind of evidence.
 
 An invariant is a sentence true of **all** the data the system will ever see — not of the
 cases somebody thought of. That is what separates it from the reference corpus in

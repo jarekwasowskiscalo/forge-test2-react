@@ -53,6 +53,6 @@ id and a requirement id are held by the change record and `traceability` instead
 | `BR-xx` | a business rule | `spec/contexts/<context>.md` |
 | `S-xx` | a screen | front matter of `spec/design/ui/<screen>.md` |
 | `D-xx` | a data invariant | `contracts/invariants/<domain>.md` |
-| `ADR-xxxx` | a dated decision from a change record | `spec/ADR/` (empty today — [`design/conventions.md`](design/conventions.md) § When a decision is an ADR) |
+| `ADR-xxxx` | a dated decision from a change record | `spec/ADR/` (what it holds: [`design/conventions.md`](design/conventions.md) § When a decision is an ADR) |
 | `CR-YYMM-xxxx` | a change | `spec/changes/` |
 | `CR-YYMM-xxxx/R-n` | a requirement of a change | that change's `requirements.md` |

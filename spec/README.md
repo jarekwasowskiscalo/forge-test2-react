@@ -11,11 +11,11 @@ prevent:
   no history. Edited whenever a rule changes.
 - **`spec/ADR/**` says *why*, once, with a date.** An ADR is never edited after acceptance; a
   later ADR supersedes it — because rewriting a decision in place destroys the reasoning
-  behind it, and then nobody can tell a settled decision from an accident. The directory is
-  empty today: the template's decisions, taken without a change record, stand as "decision of
-  <date>" paragraphs in the normative documents, and the first ADR will come out of the first
-  change through `/forge:sdd` ([`design/conventions.md`](design/conventions.md) § When a decision
-  is an ADR).
+  behind it, and then nobody can tell a settled decision from an accident. The template's
+  decisions taken without a change record stand as "decision of <date>" paragraphs in the
+  normative documents. The ADRs here come out of changes carried out through `/forge:sdd`, the
+  first two from `CR-2609-823a` ([`design/conventions.md`](design/conventions.md) § When a
+  decision is an ADR).
 
 ## Where each question is answered
 

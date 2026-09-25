@@ -29,3 +29,18 @@
 - [23:17] process_fault_resolved: PROC-60 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/398
 - [23:17] process_fault_resolved: PROC-61 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/399
 - [23:25] fanout_recorded: returned: review-coherence; coherence pass 10 GO_WITH_QUESTIONS, 7 new finding(s); 1 process fault(s): PROC-62
+- [23:25] question_raised: 2 question(s): Q-30, Q-31
+- [08:07] question_answered: Q-30 -> A
+- [08:07] question_answered: Q-31 -> A
+- [08:07] fanout_recorded: dispatched: review-converge
+- [08:07] process_fault_resolved: PROC-62 -> unfiled: misrouted at banking: the duty comes from this repository's own spec/invariants.md (decided in this change, Q-21), not from the engine; the 
+- [08:11] reconciliation_added: 5 reconciliation(s): REC-40, REC-41, REC-42, REC-43, REC-44
+- [08:11] reconciliation_added: 2 reconciliation(s): REC-45, REC-46
+- [08:12] fanout_recorded: returned: review-converge; 1 process fault(s): PROC-63
+- [08:12] coherence_resolved: 1 finding(s): COH-spec_sync-1
+- [08:12] coherence_resolved: 1 finding(s): COH-spec_sync-2
+- [08:12] coherence_resolved: 1 finding(s): COH-spec_sync-3
+- [08:12] coherence_resolved: 1 finding(s): COH-spec_sync-4
+- [08:12] coherence_resolved: 1 finding(s): COH-spec_sync-5
+- [08:12] coherence_resolved: 1 finding(s): COH-spec_sync-6
+- [08:12] coherence_resolved: 1 finding(s): COH-spec_sync-7

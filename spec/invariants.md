@@ -104,6 +104,11 @@ and `spec/design/testing.md` names its witnesses and that round. The user decide
 `CR-2609-823a` (`Q-21`): "stated in the data model now and written into the data-rules folder at
 the reconciliation stage, once its tests exist."
 
+**What makes that round run is its stage's coherence pass.** No member of the `spec_sync` stage
+writes `contracts/`, so an invariant a design document calls for, whose witnesses exist and which
+`contracts/invariants/` does not yet hold, is a finding of that pass in its own right. A pass that
+finds nothing else still records it; otherwise the stage closes with the invariant unwritten.
+
 ---
 
 ## Deliberate non-goals
