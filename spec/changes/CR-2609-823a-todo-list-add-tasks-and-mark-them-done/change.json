@@ -1190,6 +1190,14 @@
       "pass": 11,
       "stage": "spec_sync",
       "verdict": "GO_WITH_QUESTIONS"
+    },
+    {
+      "at": "2026-09-25T07:00:15Z",
+      "epoch": 1,
+      "inputs": "245268eba6a94849152d6b8517a382a35b5c13597984b21976b2fb1d05d09cd9",
+      "pass": 12,
+      "stage": "spec_sync",
+      "verdict": "GO"
     }
   ],
   "contention_events": 0,
@@ -1212,9 +1220,9 @@
       "rounds": 2
     },
     "spec_sync_critique": {
-      "at": "2026-09-25T06:12:18Z",
-      "findings_at_round": 7,
-      "rounds": 1
+      "at": "2026-09-25T06:55:02Z",
+      "findings_at_round": 12,
+      "rounds": 2
     }
   },
   "deferred": false,
@@ -1264,8 +1272,8 @@
       "state": "returned"
     },
     "review-coherence": {
-      "assumptions": "none -- reads only; all five author blocks were captured and checked",
-      "at": "2026-09-25T06:39:50Z",
+      "assumptions": "none -- reads only",
+      "at": "2026-09-25T07:00:15Z",
       "state": "returned"
     },
     "review-converge": {
@@ -3348,6 +3356,32 @@
       "stage": "spec_sync",
       "state": "filed",
       "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/401"
+    },
+    {
+      "at": "2026-09-25T07:00:15Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-25T07:00:15Z",
+          "note": "the record's coherence resolution field is cut at about 400 characters mid-word in storage, not only in the preflight: change_state show returns the same cut text for COH-spec_sync-6, 8, 9, 10, 11, 12",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-68",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-coherence",
+      "seen": 1,
+      "signal": "the record's coherence resolution field is cut at about 400 characters mid-word in storage, not only in the preflight: change_state show returns the same cut text for COH-spec_sync-6, 8, 9, 10, 11, 12",
+      "signature": "the record's coherence resolution field is cut at about · characters mid-word in storage, not only in the preflight: cha",
+      "stage": "spec_sync",
+      "state": "reported",
+      "url": null
     }
   ],
   "files_changed": [],
@@ -5560,7 +5594,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 941,
+  "revision": 946,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -5724,6 +5758,7 @@
       "id": "TD-14",
       "kind": "agent",
       "raised_at": "2026-09-25T06:52:45Z",
+      "resolved_at": "2026-09-25T06:54:54Z",
       "skill": "reconcile-ops",
       "what": "Apply the ready patches recorded in review/coherence.md § Pass 11 for the three resolved findings whose repair is in your tree (reconciliations REC-48, REC-49, REC-51): COH-spec_sync-9 (Q-30 A) docs/user-guide-todo-list.md:65-67 says the whole list OR only the tasks you name can come back; COH-spec_sync-10 (Q-30 A) docs/user-guide.md:60-62 the same for the guest book (whole book or chosen entries), and reconcile/delta/ops.md:39-40 and :54-57 stop calling that guide both true and untrue; COH-spec_sync-12 reconcile/delta/ops.md F-1 (:79-83) routes scripts/*.sh to build-backend, not build-platform, notes the Q-32 follow-up pull request, and stops citing the rewritten CLAUDE.md line. Minimal diff; touch nothing else."
     }
@@ -5743,7 +5778,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-25T06:54:54Z",
+  "updated_at": "2026-09-25T07:00:15Z",
   "verification_last": {
     "content_digest": "dd8c251ff7634c10453cf80cd92896b20e4d941582648ab0d0d2ff3fe5345ae3",
     "counts": {

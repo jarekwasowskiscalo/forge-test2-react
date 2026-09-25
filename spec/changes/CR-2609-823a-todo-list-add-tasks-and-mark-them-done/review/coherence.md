@@ -3758,3 +3758,117 @@ this item is the orchestrator's". That is true and names no builder, so it contr
     or chosen tasks" can come back, which is the wording the guide lacks (COH-spec_sync-9).
 - **Glossary and invariants.** The new contract's front matter and file follow the glossary's home
   for `D-xx`, `contracts/invariants/<domain>.md`. `D-05` was free.
+
+## Pass 12 — verification
+
+The preflight printed `CONVERGENCE ROUND: 2 of 3 -- MODE: VERIFYING.` Only Phases 1, 1b and 4
+ran, with no hunt. The question was whether each of the twelve recorded resolutions of the
+`spec_sync` stage landed in the document its reconciliation named.
+
+Read whole:
+- the four fragments under `reconcile/delta/`, and `reconcile/delta/converge.md`;
+- `git show 63c88ef` (the convergence round of pass 11) and `git show 034002d` (reconcile-ops,
+  re-dispatched), over `CLAUDE.md`, `spec/`, `docs/` and `spec/changes/INDEX.md`;
+- this file's passes 10 and 11, and the five `ASSUMPTIONS` blocks from the preflight.
+
+The ranked documents read above them: `spec/constitution.md` (Article VIII in full),
+`spec/invariants.md`, `spec/glossary.md` and `contracts/README.md`. The full resolution texts, the
+answers to `Q-30`…`Q-33` and `TD-13` were read from the record with
+`sdd-engine change_state show --cr CR-2609-823a --field coherence`, `--field open_questions` and
+`--field todo.12`.
+
+Line numbers come from the working tree, found with `grep -n` over each resolution's own
+wording. `git status --short` shows no uncommitted edit outside the record's own state files.
+So every line cited below is committed at `034002d`.
+
+### Recorded resolutions
+
+- COH-spec_sync-1: landed. `spec/invariants.md`:115-118 ("What makes that round run is its
+  stage's coherence pass"). `contracts/invariants/todo_list.md`:15-27 holds `D-05`. Its three
+  witnesses are defined at `tests/integration/test_todo_tasks_service.py`:134 and
+  `tests/unit/test_todo_task_text_rules.py`:165 and :393. `contracts/invariants/README.md`:3-4
+  names `todo_list.md` — `D-05`.
+- COH-spec_sync-2: landed. `spec/glossary.md`:56 ("what it holds: … § When a decision is an ADR")
+  and `spec/README.md`:14-18 ("The ADRs here come out of changes …", pointing at conventions).
+  `grep -n "empty today" spec/README.md` prints nothing.
+- COH-spec_sync-3: landed. `spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md`:113-114
+  ("`design-spec` reported that the list was silent, `reconcile-docs` wrote the paragraph in the
+  `spec_sync` stage of this change"). The ADR is still `status: Proposed` (:4).
+- COH-spec_sync-4: landed. `spec/design/architecture.md`:417-419 ("a list that holds nothing yet"
+  is one condition, asked of each list). `grep -n "nobody has written in yet"` over the file
+  prints nothing.
+- COH-spec_sync-5: landed, with one part superseded. The row stands at
+  `spec/design/architecture.md`:639, and its "Holds" cell still says what the four scripts' help
+  and comments must say. Its "written by build-backend" and "the script text itself is
+  build-backend's to apply" were replaced by COH-spec_sync-8's later resolution, the user's `Q-32`
+  = A. That is the later authority, so this is not a resolution that failed to land.
+- COH-spec_sync-6: landed. The runbook lead is at `docs/runbooks/restore-the-database.md`:18-20
+  ("the whole database under A, one list or the rows you need under B"). The two restatements are
+  at `docs/runbooks/incident-first-response.md`:46-49 and `docs/runbooks/README.md`:42-44. The
+  guide half, "one list, or chosen tasks", now stands in full at
+  `docs/user-guide-todo-list.md`:65-68, through COH-spec_sync-9.
+- COH-spec_sync-7: landed.
+  - `spec/design/conventions.md`:281 (the `docs/` row names "how each of its screens is used" and
+    "the person using one of its screens") and :285-288 (the paragraph, with `Q-31`'s words).
+  - `docs/user-guide-todo-list.md` exists, and `grep -c "Where this page belongs"` prints `0`.
+  - `docs/README.md`:26 has the row.
+  - `reconcile/` holds only `delta/`.
+- COH-spec_sync-8: landed.
+  - The "Written by" cell at `spec/design/architecture.md`:639 reads "not this change: a text-only
+    pull request with a changelog entry corrects them right after it merges", with `Q-32`'s words.
+  - `reconcile/delta/converge.md`:111-116 (§ This change owns) reads "No path."
+  - `git diff main --stat -- scripts/` still lists only `scripts/seed.sh` and
+    `scripts/seed_golden_set.py` ("2 files changed"), as `Q-32` decided.
+  - `TD-13` is in the record at `todo.12`. `Q-32` lists it under `blocks`. It was resolved at
+    06:32:23Z, five seconds after `Q-32` was answered, and the record's `follow_up` is `null`. So
+    no open record item carries the follow-up pull request past the merge. What does carry it is
+    `architecture.md`:639 and the converge entry. This is noted for the orchestrator. It is not a
+    document this resolution named.
+- COH-spec_sync-9: landed. `docs/user-guide-todo-list.md`:65-68 matches pass 11's ready patch word
+  for word ("the whole list or only the tasks you name").
+- COH-spec_sync-10: landed. `docs/user-guide.md`:60-64 matches pass 11's ready patch word for word
+  ("the whole book or only the entries you name"). In `reconcile/delta/ops.md`:
+  - :39-40 now reads "true of the guestbook now that its restore sentence follows `Q-30`
+    (COH-spec_sync-10)";
+  - :57 reads "and COH-spec_sync-10 names it";
+  - :67-68 record both edits.
+
+  The guest book's guide is no longer called true in one section and untrue in the other.
+- COH-spec_sync-11: landed.
+  - `spec/invariants.md`:81-87: "They are every table's, although the file that holds them is named
+    for the guestbook", with `Q-33`'s words.
+  - `CLAUDE.md`:136-137 ("Two things move before the guestbook goes: the words of the text rule,
+    and the data invariants") and :146-150 (move `D-01`…`D-04` into
+    `contracts/invariants/todo_list.md` first, keeping their identifiers).
+  - `spec/README.md`:69-74.
+  - `spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md`:109-112.
+  - `grep -n "One thing moves"` over `CLAUDE.md`, `spec/README.md` and ADR-0001 prints nothing.
+
+  The pass 11 patch's "Superseded by" clause for `D-04` is absent. Neither the recorded resolution
+  nor `Q-33`'s option A names it, and `reconcile/delta/converge.md`:82-84 says so.
+- COH-spec_sync-12: landed. `reconcile/delta/ops.md` F-1 (:86-97):
+  - it routes `scripts/*.sh` to "a `build-backend` repair (`spec/design/architecture.md` § Who
+    writes what, and where the sets meet; COH-spec_sync-5, COH-spec_sync-8)" at :93-95;
+  - it records the `Q-32` deferral at :95-97;
+  - it names `CLAUDE.md` by section, not by line, at :90-92.
+
+  `grep -n "build-platform\|line 148"` over the fragment prints nothing. The line F-1 describes is
+  now `CLAUDE.md`:166 ("leave both lists empty"), so citing the section avoided a stale number.
+
+The authors' assumptions match the text:
+- review-converge said reconcile-ops would apply the ready patches of COH-spec_sync-9, 10 and 12
+  as written. The two guides match them word for word. `ops.md` takes two small liberties: "now
+  that" for "once", because the fix landed in the same round, and a section for a line number.
+  Neither changes the meaning.
+- review-converge also said the `D-04` "Superseded by" clause was left out. It is absent.
+- reconcile-ops said F-1 cites § Running and developing and the `Q-32` wording. It does, at :90-92
+  and :95-97.
+- reconcile-docs said `docs_touched` still lists `reconcile/user-guide-todo-list.md`.
+  `spec/changes/INDEX.md` still lists it (`git show 034002d`), as pass 11 recorded.
+- reconcile-design and reconcile-spec have not changed since pass 11.
+
+`sdd-specs` prints `frozen-ids: 0 problem(s) in 5 spaces, 24 declared, 206 citations` and `links: 0
+problem(s) in 153 documents, 422 links`. Of the diff-scoped gates, only `change-record` fails
+(stage `spec_sync`, status `draft`), which is expected before delivery.
+
+No `verification` finding. All twelve resolutions landed.

@@ -951,3 +951,8 @@
 {"timestamp": "2026-09-25T06:52:51Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: reconcile-ops", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
 {"timestamp": "2026-09-25T06:54:43Z", "agent": "sdd", "action": "doc_registered", "details": "docs/user-guide.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
 {"timestamp": "2026-09-25T06:54:54Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: reconcile-ops", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:54:54Z", "agent": "sdd", "action": "todo_resolved", "details": "TD-14", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:55:02Z", "agent": "sdd", "action": "critique_round", "details": "ladder spec_sync_critique untouched (a verifying round -- no rung of the ladder): 5 findings, all resolved -- a verifying round", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:55:02Z", "agent": "sdd", "action": "fanout_recorded", "details": "convergence round: cleared review-coherence", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:55:02Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-coherence", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T07:00:15Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-coherence; coherence pass 12 GO, 0 new finding(s); 1 process fault(s): PROC-68", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
