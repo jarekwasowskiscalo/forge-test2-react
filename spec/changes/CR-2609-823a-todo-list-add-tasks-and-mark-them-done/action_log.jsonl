@@ -944,3 +944,10 @@
 {"timestamp": "2026-09-25T06:51:26Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-spec_sync-10", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
 {"timestamp": "2026-09-25T06:51:26Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-spec_sync-11", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
 {"timestamp": "2026-09-25T06:51:26Z", "agent": "sdd", "action": "coherence_resolved", "details": "1 finding(s): COH-spec_sync-12", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:51:36Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-67 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/401", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:51:36Z", "agent": "sdd", "action": "question_raised", "details": "oferta eskalacji ESC-spec_sync-r2 (convergence_round)", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:52:37Z", "agent": "sdd", "action": "question_answered", "details": "ESC-spec_sync-r2 -> B", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:52:45Z", "agent": "sdd", "action": "todo_raised", "details": "TD-14 (agent): Apply the ready patches recorded in review/coherence.md § Pass 11 for the three resolved findings whose repair is in you", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:52:51Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: reconcile-ops", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:54:43Z", "agent": "sdd", "action": "doc_registered", "details": "docs/user-guide.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:54:54Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: reconcile-ops", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}

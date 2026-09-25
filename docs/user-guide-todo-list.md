@@ -63,8 +63,9 @@ be undone." **Cancel** is selected first, so an Enter pressed out of habit delet
 **Delete task** deletes it, and the notice "Task deleted." confirms it.
 
 **Deletion is permanent.** There is no undo and no bin. Whoever operates the environment can bring
-the list back from a backup as it was at an earlier moment, within the backup window, and that takes
-tens of minutes; whatever was changed on the list since that moment is lost.
+back from a backup the whole list or only the tasks you name, as they were at an earlier moment
+within the backup window, and that takes tens of minutes. What comes back replaces what is there
+now, so any change made since that moment to what is brought back is lost.
 
 ## Other people on the same list
 

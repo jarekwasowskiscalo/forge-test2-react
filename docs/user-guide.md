@@ -58,8 +58,10 @@ entry is unchanged."* Nothing has been lost; add a change or cancel.
 ## Deleting an entry
 
 **Deletion is permanent.** There is no undo, no archive and no bin. The entry is gone from the
-database, and a restore from backup is the only way back — which takes tens of minutes and returns
-the whole book to a moment in the past, not one entry.
+database, and a restore from backup is the only way back. Whoever operates the environment can
+bring back the whole book or only the entries you name, as they were at an earlier moment within
+the backup window, and that takes tens of minutes; any change made since that moment to what is
+brought back is lost.
 
 Deleting an entry that somebody else has already deleted is answered with *"There is no such entry.
 Somebody else may have deleted it."* That is the expected answer rather than an error: two people

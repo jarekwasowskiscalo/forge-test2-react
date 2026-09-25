@@ -75,3 +75,10 @@
 - [08:51] coherence_resolved: 1 finding(s): COH-spec_sync-10
 - [08:51] coherence_resolved: 1 finding(s): COH-spec_sync-11
 - [08:51] coherence_resolved: 1 finding(s): COH-spec_sync-12
+- [08:51] process_fault_resolved: PROC-67 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/401
+- [08:51] question_raised: oferta eskalacji ESC-spec_sync-r2 (convergence_round)
+- [08:52] question_answered: ESC-spec_sync-r2 -> B
+- [08:52] todo_raised: TD-14 (agent): Apply the ready patches recorded in review/coherence.md § Pass 11 for the three resolved findings whose repair is in you
+- [08:52] fanout_recorded: dispatched: reconcile-ops
+- [08:54] doc_registered: docs/user-guide.md
+- [08:54] fanout_recorded: returned: reconcile-ops

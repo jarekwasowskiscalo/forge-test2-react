@@ -37,7 +37,7 @@ Read from `git diff main...HEAD` over the operational trees `.specconf/stack.jso
   log line of their own (no logger anywhere under `app/contexts/`).
 - `docs/runbooks/rotate-database-credentials.md`: untouched by this change.
 - `docs/user-guide.md`: it is the guestbook's page (`CLAUDE.md` deletes it with the example) and
-  still true of the guestbook. See F-2.
+  true of the guestbook now that its restore sentence follows `Q-30` (COH-spec_sync-10).
 
 ## The convergence round — `COH-spec_sync-6` and `COH-spec_sync-7`
 
@@ -54,8 +54,19 @@ Applied as the user decided them, with the smallest edit each allows. No other s
 Left alone because no finding named them: `docs/user-guide.md` § Deleting an entry says a restore
 "returns the whole book to a moment in the past, not one entry". That sentence was there before
 this change and is what the to-do guide first copied. Under option B it is not true. A one-line
-repair on the same lines as `Q-30` would fix it, once a finding names it. Also left alone: the runbook candidate `reconcile/delta/docs.md`
+repair on the same lines as `Q-30` would fix it, and COH-spec_sync-10 names it. Also left alone: the runbook candidate `reconcile/delta/docs.md`
 lists for `docs/troubleshooting.md` (another project's container holding port 5432, until `PROC-46`).
+
+## The convergence round of pass 11 — `COH-spec_sync-9`, `COH-spec_sync-10` and `COH-spec_sync-12`
+
+The ready patches of `review/coherence.md` § Pass 11, applied with the smallest edit each allows.
+
+| Finding | Decision | Page | Edit |
+|---|---|---|---|
+| `COH-spec_sync-9` | `Q-30` = A: "one list, or chosen tasks" | `docs/user-guide-todo-list.md` § Deleting a task | "can bring the list back from a backup as it was at an earlier moment, …; whatever was changed on the list since that moment is lost." becomes "can bring back from a backup the whole list or only the tasks you name, as they were at an earlier moment within the backup window, and that takes tens of minutes. What comes back replaces what is there now, so any change made since that moment to what is brought back is lost." |
+| `COH-spec_sync-10` | `Q-30` = A, covering the guest book's guide too | `docs/user-guide.md` § Deleting an entry | "the only way back — which takes tens of minutes and returns the whole book to a moment in the past, not one entry." becomes "the only way back. Whoever operates the environment can bring back the whole book or only the entries you name, as they were at an earlier moment within the backup window, and that takes tens of minutes; any change made since that moment to what is brought back is lost." |
+| `COH-spec_sync-10` | the same | this fragment, § Confirmed correct and left alone and § The convergence round | the guest book's guide is no longer called true in one section and untrue in the other |
+| `COH-spec_sync-12` | AUTO: `spec/design/architecture.md` § Who writes what, and where the sets meet | this fragment, F-1 | routes `scripts/*.sh` to `build-backend`, records the user's deferral at `Q-32`, and no longer cites the `CLAUDE.md` line `reconcile-docs` rewrote |
 
 ## The runbook this change earned
 
@@ -76,11 +87,14 @@ performed on a deployed environment**, and names the only thing that proves it
   `./scripts/start.sh --help` still says `--no-seed` will "leave the guest book empty. By default a
   guest book that has no entries is filled from golden-set/seed/…" (`scripts/start.sh` lines
   48-51). The comments at `scripts/start.sh` lines 106, 113-114 and 170, `scripts/deploy.sh` lines
-  620-622 and `scripts/preview.sh` lines 199-201 still describe one list. `CLAUDE.md` line 148
-  (`--no-seed  # leave the guest book empty; …`) says the same. The behaviour is two lists, each on
-  its own condition. `--help` is what an operator reads, and `scripts/` is outside `docs/`, so it
-  is reported rather than edited: `scripts/*.sh` to a `build-platform` repair, `CLAUDE.md` to
-  `reconcile-docs`, whose write set carries it.
+  620-622 and `scripts/preview.sh` lines 199-201 still describe one list. `CLAUDE.md` said the
+  same, and `reconcile-docs` rewrote that line in this stage (§ Running and developing). The
+  behaviour is two lists, each on its own condition. `--help` is what an operator reads, and
+  `scripts/` is outside `docs/`, so it is reported rather than edited: `scripts/*.sh` to a
+  `build-backend` repair (`spec/design/architecture.md` § Who writes what, and where the sets meet;
+  COH-spec_sync-5, COH-spec_sync-8). The user deferred that repair to a text-only pull request with
+  a changelog entry right after this change merges (`Q-32` = A: "Follow-up fix right after
+  merge."), so no script is edited in this change (`spec/design/architecture.md` § The files).
 - **F-2. Resolved: the to-do screen's user guide.** It became `COH-spec_sync-7`. The user decided
   `Q-31` = A, and `spec/design/conventions.md` § Documentation now gives `docs/` one guide per
   screen. The page stands at `docs/user-guide-todo-list.md` (§ The convergence round above).

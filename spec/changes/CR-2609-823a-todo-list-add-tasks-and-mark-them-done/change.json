@@ -1238,7 +1238,8 @@
     "CLAUDE.md",
     "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/user-guide-todo-list.md",
     "docs/user-guide-todo-list.md",
-    "docs/README.md"
+    "docs/README.md",
+    "docs/user-guide.md"
   ],
   "expected_red": [],
   "fanout": {
@@ -1253,8 +1254,8 @@
       "state": "returned"
     },
     "reconcile-ops": {
-      "assumptions": "reconcile-docs deletes the staged copy reconcile/user-guide-todo-list.md (done, git shows D). COH-spec_sync-6 was applied only in the docs/ copy and the three runbook pages. conventions.md § Documentation as review-converge edited it is the authority for placing the guide. Left alone and recorded in ops.md: the guest book guide sentence \"whole book, not one entry\" (predates this change, now untrue under option B), and a port-5432 troubleshooting candidate.",
-      "at": "2026-09-25T06:15:24Z",
+      "assumptions": "The Q-32 wording is taken from reconcile/delta/converge.md and architecture.md:639. reconcile-docs still owns CLAUDE.md. The scripts help text stays stale until the follow-up PR, as Q-32 decided. F-1 cites CLAUDE.md § Running and developing, not a line number; script line numbers in F-1 were not re-checked.",
+      "at": "2026-09-25T06:54:54Z",
       "state": "returned"
     },
     "reconcile-spec": {
@@ -3330,6 +3331,11 @@
           "at": "2026-09-25T06:51:26Z",
           "note": "review-converge has no route for a finding whose ambiguity_source is outside its write set (docs/, or review/coherence.md): COH-spec_sync-6, -10 and -12 could only be recorded with an improvised 'edited: none ... pending <member>' string in reconciliations[]",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-25T06:51:36Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/401",
+          "state": "filed"
         }
       ],
       "id": "PROC-67",
@@ -3340,8 +3346,8 @@
       "signal": "review-converge has no route for a finding whose ambiguity_source is outside its write set (docs/, or review/coherence.md): COH-spec_sync-6, -10 and -12 could only be recorded with an improvised 'edited: none ... pending <member>' string in reconciliations[]",
       "signature": "review-converge has no route for a finding whose ambiguity_source is outside its write set (docs· or review· COH-spec_sy",
       "stage": "spec_sync",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/401"
     }
   ],
   "files_changed": [],
@@ -4878,6 +4884,48 @@
       "stage": "spec_sync",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-25T06:52:37Z",
+        "choice": "B",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-25T06:51:36Z",
+      "blocks": [],
+      "esc": {
+        "consumed": [],
+        "row": "27a1",
+        "skills": [
+          "review-coherence"
+        ],
+        "trigger": "convergence_round"
+      },
+      "options": [
+        {
+          "consequence": "No extra cost; this offer will not come back for round 2, the next round gets its own.",
+          "key": "B",
+          "label": "No -- the round goes on opus",
+          "recommended": true
+        },
+        {
+          "consequence": "cost: the fable rates per .specconf/pricing.json -- the buckets differ in their multiplier, check the table before consenting; a smarter author applies changes better, a smarter judge verifies more sharply -- it covers the round's members and its coherence pass.",
+          "key": "A",
+          "label": "Yes -- the whole round on fable",
+          "recommended": false
+        }
+      ],
+      "qid": "ESC-spec_sync-r2",
+      "question": "Convergence round no. 2 z 3 of the spec_sync stage is about to start: the previous one brought 5 findings and all of them are resolved. Going out: review-coherence. Send this round on fable? (cost: the fable rates per .specconf/pricing.json -- the buckets differ in their multiplier, check the table before consenting)",
+      "stage": "spec_sync",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -5512,7 +5560,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 934,
+  "revision": 941,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -5671,6 +5719,13 @@
       "resolved_at": "2026-09-25T06:32:23Z",
       "skill": "build-backend",
       "what": "COH-spec_sync-5 (resolved, auto, constitution art. I): the script help text and comments still describe one list and one GET. Apply the ready patch recorded in review/coherence.md pass 10, text only: scripts/start.sh:48-51 (--no-seed help), :106, :113-115, :170; scripts/help.sh:89-91; scripts/deploy.sh:620-622; scripts/preview.sh:198-201 -- two lists, each filled from golden-set/seed/ when it holds nothing yet, one GET per list, as spec/design/architecture.md § What a new environment starts with and seed.sh --help say. No behaviour change."
+    },
+    {
+      "id": "TD-14",
+      "kind": "agent",
+      "raised_at": "2026-09-25T06:52:45Z",
+      "skill": "reconcile-ops",
+      "what": "Apply the ready patches recorded in review/coherence.md § Pass 11 for the three resolved findings whose repair is in your tree (reconciliations REC-48, REC-49, REC-51): COH-spec_sync-9 (Q-30 A) docs/user-guide-todo-list.md:65-67 says the whole list OR only the tasks you name can come back; COH-spec_sync-10 (Q-30 A) docs/user-guide.md:60-62 the same for the guest book (whole book or chosen entries), and reconcile/delta/ops.md:39-40 and :54-57 stop calling that guide both true and untrue; COH-spec_sync-12 reconcile/delta/ops.md F-1 (:79-83) routes scripts/*.sh to build-backend, not build-platform, notes the Q-32 follow-up pull request, and stops citing the rewritten CLAUDE.md line. Minimal diff; touch nothing else."
     }
   ],
   "toolchain": [
@@ -5688,7 +5743,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-25T06:51:26Z",
+  "updated_at": "2026-09-25T06:54:54Z",
   "verification_last": {
     "content_digest": "dd8c251ff7634c10453cf80cd92896b20e4d941582648ab0d0d2ff3fe5345ae3",
     "counts": {
