@@ -1,14 +1,10 @@
 # Using the to-do list
 
 **For:** the person using the screen.
-**Normative source:** `spec/contexts/todo_list.md` for the rules, `spec/design/ui/todo-list.md`
-for every state of the screen, `spec/design/api.md` § The to-do list's refusals for the words of
+**Normative source:** [`spec/contexts/todo_list.md`](../spec/contexts/todo_list.md) for the
+rules, [`spec/design/ui/todo-list.md`](../spec/design/ui/todo-list.md) for every state of the
+screen, [`spec/design/api.md`](../spec/design/api.md) § The to-do list's refusals for the words of
 every refusal.
-
-> **Where this page belongs.** Beside `docs/user-guide.md`, the guest book's guide, as
-> `docs/user-guide-todo-list.md`, with a row in the table of `docs/README.md`. It was written
-> inside the change record because the step that wrote it may not write under `docs/`. Delete this
-> note when the page moves.
 
 ## What it is
 
@@ -66,9 +62,9 @@ Press **Delete**. A question opens: "Delete this task?", with the task quoted, a
 be undone." **Cancel** is selected first, so an Enter pressed out of habit deletes nothing.
 **Delete task** deletes it, and the notice "Task deleted." confirms it.
 
-**Deletion is permanent.** There is no undo and no bin. A restore from backup is the only way back,
-and it returns the whole application, the guest book included, to an earlier moment rather than
-bringing back one task.
+**Deletion is permanent.** There is no undo and no bin. Whoever operates the environment can bring
+the list back from a backup as it was at an earlier moment, within the backup window, and that takes
+tens of minutes; whatever was changed on the list since that moment is lost.
 
 ## Other people on the same list
 
@@ -104,7 +100,7 @@ stay until you dismiss them with **×**. The notices that confirm a success go a
 | "This task no longer exists. Somebody may have deleted it, and nothing was changed." | somebody else deleted the task while your screen still showed it. Your tick, correction or deletion was not applied, and the task was not brought back | reload the page; the task will be gone |
 | "The task was not added: the service could not be reached." | no answer came, and nothing was stored | your text is still in the field; press **Add task** again once the connection is back |
 | "The change was not made: the service could not be reached." | a tick, a correction or a deletion was not stored; the task shows what is stored | try again. After a failed correction the editor stays open with what you typed, so press **Save** again |
-| "The task was not added: the service answered with an error." or "The change was not made: the service answered with an error." | the service failed on its side, and nothing was stored | try again; if it keeps happening, whoever operates the environment should read `docs/troubleshooting.md` |
+| "The task was not added: the service answered with an error." or "The change was not made: the service answered with an error." | the service failed on its side, and nothing was stored | try again; if it keeps happening, whoever operates the environment should read [`troubleshooting.md`](troubleshooting.md) |
 | "The tasks could not be loaded.", with "Could not reach the service" and **Try again** | the list could not be read. This is not an empty list | press **Try again**. You can still add a task meanwhile |
 | "No tasks yet. Add the first one above." | the list is empty. This is not an error | add a task |
 | A task appears twice after a reload, although you were told it was not added | your first attempt did reach the list, but its answer was lost on the way back, and you added it again | delete the copy you do not want |
@@ -134,4 +130,4 @@ Written down because each is a decision rather than a gap:
 - no duplicate detection.
 
 No largest number of tasks has been set: the whole list is shown at once. Adding any of these
-starts with `spec/contexts/todo_list.md`, not with the screen.
+starts with [`spec/contexts/todo_list.md`](../spec/contexts/todo_list.md), not with the screen.

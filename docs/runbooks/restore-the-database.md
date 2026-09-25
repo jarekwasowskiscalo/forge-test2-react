@@ -15,9 +15,9 @@ then — this is slow, disruptive and coarse.
 
 **Not for a bad deploy.** If the code is wrong but the data is intact,
 [`roll-back-a-release.md`](roll-back-a-release.md) takes seconds. Establish which of the two you
-have before doing anything: a restore returns the *whole database*, both lists, to a moment in the
-past. Every entry written and every task added, ticked or corrected since that moment is lost by
-the act of recovering.
+have before doing anything: a restore brings back what it copies as it was at a moment in the past
+— the whole database under A, one list or the rows you need under B (step 3) — and every write
+since that moment to what it brings back is lost.
 
 **Not available past the window.** 14 days on production, 7 on stage, 1 on a preview. Beyond that
 there is no copy of anything.

@@ -4,7 +4,7 @@
 fragment is the intent note, written for whoever changes the to-do list in six months: why each
 part has the shape it has, what lost, and what would have to change for the loser to win. The
 user documentation is a separate page for the person using the screen:
-`reconcile/user-guide-todo-list.md`.*
+`docs/user-guide-todo-list.md`.*
 
 *This member edited nothing under `spec/` outside this change record, so the fragment carries no
 entry for `delta.md`. The two files it edited outside the record, `README.md` and `CLAUDE.md`,
@@ -18,7 +18,7 @@ carried by `close_stage` into `delta-history.md`.*
 |---|---|---|
 | `README.md` | the opening paragraph: "The one feature is an example: a guest book" becomes two features, one of them an example; § Start here: the application opens with the guest book's entries and five example tasks, one of them done | both sentences became false with this change, and the first is the first thing a person taking the template reads |
 | `CLAUDE.md` | the opening line names the to-do list beside the example; § What is an example gains a paragraph: the words of `BR-01` move into `spec/contexts/todo_list.md` before the guestbook is deleted, and the rule's code and the seeder's task half stay; "Everything else … stays" names the to-do list; the `--no-seed` comment names both lists | ADR-0001 § Consequences and `design/delta/spec.md` § Found outside this write set both reported that the deletion list was silent about `BR-01`. Nothing enforces it, and no design or implement author could write it. This stage's write set is the first to hold `CLAUDE.md`. The `--no-seed` comment described one list, and the seeder now fills two |
-| `reconcile/user-guide-todo-list.md` | added: the to-do list for the person using it. It covers adding, ticking, correcting and deleting, other people on the same list, the example tasks, every refusal and failure sentence with what to do about it, what changed on the guest book, and what the list cannot do | this template keeps a screen's user guide in `docs/` (`docs/user-guide.md` for the guest book), and `docs/` is outside this member's write set. So the page is written here, whole, for placement at `docs/user-guide-todo-list.md` with a row in `docs/README.md` |
+| `reconcile/user-guide-todo-list.md` | added, then removed in the convergence round: the to-do list for the person using it. It covers adding, ticking, correcting and deleting, other people on the same list, the example tasks, every refusal and failure sentence with what to do about it, what changed on the guest book, and what the list cannot do. The page now stands at `docs/user-guide-todo-list.md` | `docs/` is outside this member's write set, so the page was first written here with a note naming its destination. COH-spec_sync-7 settled the home (`Q-31`: "Move it to docs/ with the other guide."), and `spec/design/conventions.md` § Documentation now gives `docs/` a screen's user guide. The move and the row in `docs/README.md` are `reconcile-ops`'s; this member removed the copy here |
 
 **The clean room found nothing to correct.** `evidence/cleanroom.md` is GREEN on all four steps
 (setup, migrate, generate, check), so no first-run instruction was proved wrong. Its one warning
@@ -258,7 +258,8 @@ step (§ What we do not know).
 - **Would flip it:** environments that never outlive the arrival of a new list. Then one condition
   per environment would do. While stage and open previews outlive it, one condition cannot.
 - **Source:** the module docstring of `scripts/seed_golden_set.py`; `spec/design/architecture.md`
-  § What a new environment starts with; `spec/design/data-model.md` § `todo_tasks`, its last
+  § What a new environment starts with, whose condition is "a list that holds nothing yet", asked
+  of each list (COH-spec_sync-4); `spec/design/data-model.md` § `todo_tasks`, its last
   paragraphs.
 
 ### 13. The contract: one `PATCH`, an envelope with a count, and the moment of adding on the wire
@@ -337,7 +338,7 @@ step (§ What we do not know).
 | A user decision recorded in the change | 2 (`Q-17`), 6 (`Q-9`), 10 (`Q-25`, `Q-28`, `Q-29`), 11 (`Q-21`), 12 (`Q-10`, `Q-12`) |
 | A design fragment's recorded decision and its rejected alternatives | 3, 4, 7, 8, 9, 13, 14 |
 | A normative document under `spec/design/` | 4, 6, 8, 11, 12, 15 |
-| A resolved coherence finding | 2, 8, 10, 11, and § What broke along the way |
+| A resolved coherence finding | 2, 8, 10, 11, 12, and § What broke along the way |
 | An implementer's module docstring (build-backend, build-migration, build-frontend) | 3, 4, 5, 6, 7, 9, 11, 12, 14 |
 | An implementer's `ASSUMPTIONS`, banked at `loop back` | 6 (build-migration), 16 (build-frontend, build-tests-e2e), 17 (build-platform), and § What broke along the way |
 
@@ -429,7 +430,7 @@ rule without it. If it is to bind, its home is a decision paragraph in that docu
 These are for `reconcile-ops`, whose tree is `docs/`, and for the orchestrator:
 
 - **`docs/user-guide-todo-list.md`**, moved from `reconcile/user-guide-todo-list.md`, with a row in
-  `docs/README.md`'s table.
+  `docs/README.md`'s table. Decided at `Q-31` (COH-spec_sync-7), and `reconcile-ops`'s to make.
 - **`docs/troubleshooting.md`: migrations or tests reaching another project's database.** Symptom,
   cause (another container holds `0.0.0.0:5432`), and fix (find it with `docker ps`, then stop it
   or move one project's port). It is needed until `PROC-46` lands.

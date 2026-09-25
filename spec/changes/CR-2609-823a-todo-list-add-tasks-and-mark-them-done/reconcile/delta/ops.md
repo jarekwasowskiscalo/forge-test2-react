@@ -35,9 +35,27 @@ Read from `git diff main...HEAD` over the operational trees `.specconf/stack.jso
   300-second timeout is not approached.
 - `docs/monitoring.md`: nothing new is observable or monitored. The to-do list's modules write no
   log line of their own (no logger anywhere under `app/contexts/`).
-- `docs/runbooks/rotate-database-credentials.md`, `docs/README.md`: untouched by this change.
+- `docs/runbooks/rotate-database-credentials.md`: untouched by this change.
 - `docs/user-guide.md`: it is the guestbook's page (`CLAUDE.md` deletes it with the example) and
   still true of the guestbook. See F-2.
+
+## The convergence round — `COH-spec_sync-6` and `COH-spec_sync-7`
+
+Applied as the user decided them, with the smallest edit each allows. No other section moved.
+
+| Finding | Decision | Page | Edit |
+|---|---|---|---|
+| `COH-spec_sync-7` | `Q-31` = A: "Move it to docs/ with the other guide." | `docs/user-guide-todo-list.md` (new) | the page `reconcile-docs` wrote at `reconcile/user-guide-todo-list.md`, moved here without its placement note. Its sentences are unchanged apart from the one `COH-spec_sync-6` names. The paths it gave in backticks are now links, relative to `docs/`: its **Normative source:** line, the troubleshooting cell and the last paragraph. `reconcile-docs` removes the copy in the change record (its fragment says so) |
+| `COH-spec_sync-7` | the same | `docs/README.md` § The documents | one row after `user-guide.md`: "`user-guide-todo-list.md` — the to-do list, for the person using it" |
+| `COH-spec_sync-6` | `Q-30` = A: the guide follows the runbook | `docs/user-guide-todo-list.md` § Deleting a task | "A restore from backup is the only way back, and it returns the whole application, the guest book included, …" becomes "Whoever operates the environment can bring the list back from a backup as it was at an earlier moment, within the backup window, and that takes tens of minutes; whatever was changed on the list since that moment is lost." |
+| `COH-spec_sync-6` | the same | `docs/runbooks/restore-the-database.md` § When to use this | "a restore returns the *whole database*, both lists, …" becomes "a restore brings back what it copies as it was at a moment in the past — the whole database under A, one list or the rows you need under B (step 3) — and every write since that moment to what it brings back is lost." |
+| `COH-spec_sync-6` | the same | `docs/runbooks/incident-first-response.md` step 4 and `docs/runbooks/README.md`, the closing paragraph | both restatements now say what option B allows, in the runbook's words |
+
+Left alone because no finding named them: `docs/user-guide.md` § Deleting an entry says a restore
+"returns the whole book to a moment in the past, not one entry". That sentence was there before
+this change and is what the to-do guide first copied. Under option B it is not true. A one-line
+repair on the same lines as `Q-30` would fix it, once a finding names it. Also left alone: the runbook candidate `reconcile/delta/docs.md`
+lists for `docs/troubleshooting.md` (another project's container holding port 5432, until `PROC-46`).
 
 ## The runbook this change earned
 
@@ -63,10 +81,9 @@ performed on a deployed environment**, and names the only thing that proves it
   its own condition. `--help` is what an operator reads, and `scripts/` is outside `docs/`, so it
   is reported rather than edited: `scripts/*.sh` to a `build-platform` repair, `CLAUDE.md` to
   `reconcile-docs`, whose write set carries it.
-- **F-2. The to-do screen has no user guide.** `docs/user-guide.md` is the guestbook's. A guide for
-  the person using `/todo-list` is not operations documentation, so it is not written here, and no
-  other `spec_sync` member's write set names `docs/`. Whether it should exist is the orchestrator's
-  call.
+- **F-2. Resolved: the to-do screen's user guide.** It became `COH-spec_sync-7`. The user decided
+  `Q-31` = A, and `spec/design/conventions.md` § Documentation now gives `docs/` one guide per
+  screen. The page stands at `docs/user-guide-todo-list.md` (§ The convergence round above).
 - **F-3. Present before this change, left alone because the edits are differential.**
   `docs/operations.md` § The logs gives `app.services.guestbook_entries: entry amended id=…` as the
   application's line format, but no module under `app/contexts/` logs anything. `docs/deployment.md`

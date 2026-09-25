@@ -39,4 +39,6 @@ at the end: an operator reads a runbook one step at a time.
 
 Two of these are one decision apart and it is worth knowing which is which before you need either:
 a bad **deploy** is undone in seconds by a rollback, and only bad **data** needs a restore, which
-returns the whole database, both lists, to a moment in the past.
+brings back what it copies as it was at a moment in the past — the whole database under its
+option A, one list or the rows you need under its option B — and every write since that moment to
+what it brings back is lost.

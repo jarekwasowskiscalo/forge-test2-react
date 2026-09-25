@@ -1099,6 +1099,11 @@
       "at": "2026-09-24T12:46:20Z",
       "findings_at_round": 9,
       "rounds": 2
+    },
+    "spec_sync_critique": {
+      "at": "2026-09-25T06:12:18Z",
+      "findings_at_round": 7,
+      "rounds": 1
     }
   },
   "deferred": false,
@@ -1120,7 +1125,9 @@
     "docs/runbooks/incident-first-response.md",
     "README.md",
     "CLAUDE.md",
-    "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/user-guide-todo-list.md"
+    "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/user-guide-todo-list.md",
+    "docs/user-guide-todo-list.md",
+    "docs/README.md"
   ],
   "expected_red": [],
   "fanout": {
@@ -1130,23 +1137,18 @@
       "state": "returned"
     },
     "reconcile-docs": {
-      "assumptions": "reconcile-ops owns docs/. The user guide's home is docs/user-guide-todo-list.md plus a row in docs/README.md, so it was written whole in the change record (reconcile/user-guide-todo-list.md) for someone to move. reconcile-design owns spec/design/; the rejection of an optimistic update has no decision paragraph in architecture.md -- listed as a candidate. ADR-0001 and ADR-0002 are the promoted drafts. Scripts whose help/comments still describe one list (start.sh, deploy.sh:621, preview.sh:199, help.sh:89) are for the orchestrator. No spec/rationale document written on purpose.",
-      "at": "2026-09-24T21:15:58Z",
+      "assumptions": "reconcile-ops owns docs/user-guide-todo-list.md and the docs/README.md row and registers its own docs. The orchestrator checkpoint stages the deletion of reconcile/user-guide-todo-list.md. docs_touched still lists reconcile/user-guide-todo-list.md and there is no verb to remove it.",
+      "at": "2026-09-25T06:15:24Z",
       "state": "returned"
     },
     "reconcile-ops": {
-      "assumptions": "No other member writes docs/. CLAUDE.md belongs to reconcile-docs. The design documents win: pages cite architecture.md § What a new environment starts with, data-model.md § Two writers on one task, contexts/todo_list.md § Open questions. Searched design/delta/*.md rather than reading all. Findings: F-1 start.sh --help (48-51) and comments start.sh:106/113/170, deploy.sh:620-622, preview.sh:199-201, CLAUDE.md:148 still describe only the guest book (outside allowlist); F-2 /todo-list has no user guide under docs/ and no spec_sync write set covers one; F-3 pre-existing: operations.md quotes a log line no module emits, deployment.md says 'seven steps' listing eight.",
-      "at": "2026-09-24T21:15:58Z",
+      "assumptions": "reconcile-docs deletes the staged copy reconcile/user-guide-todo-list.md (done, git shows D). COH-spec_sync-6 was applied only in the docs/ copy and the three runbook pages. conventions.md § Documentation as review-converge edited it is the authority for placing the guide. Left alone and recorded in ops.md: the guest book guide sentence \"whole book, not one entry\" (predates this change, now untrue under option B), and a port-5432 troubleshooting candidate.",
+      "at": "2026-09-25T06:15:24Z",
       "state": "returned"
     },
     "reconcile-spec": {
       "assumptions": "reconcile-design owns the technical request-shape behaviours (a PATCH setting both text and done, the empty-patch refusal, the standard 422); api.md already describes them and the screen never sends them, so they stay out of the context documents and are named in the fragment. reconcile-docs writes for the back-office reader and does not restate BR-13. The converge-written header paragraph of todo_list.md (feature-claim history) was not audited as a design claim. Gap found: BR-13 vs refused corrected text -- the text refusal wins (judge before lookup, api.md 'the lookup last', R-8 test); one paragraph added under BR-13.",
       "at": "2026-09-24T21:15:58Z",
-      "state": "returned"
-    },
-    "review-coherence": {
-      "assumptions": "none -- reads only; all four authors assumption blocks were captured and checked against their neighbours",
-      "at": "2026-09-24T21:25:10Z",
       "state": "returned"
     },
     "review-converge": {
@@ -3088,6 +3090,11 @@
           "at": "2026-09-25T06:12:10Z",
           "note": "change_state add-reconciliation --from-file prints 'OK  ids=5' (a count) for an auto batch instead of the allocated REC ids, while the same verb prints 'ids=REC-45,REC-46' for another batch; the caller cannot confirm which ids it was given",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-25T06:12:27Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/400",
+          "state": "filed"
         }
       ],
       "id": "PROC-63",
@@ -3097,6 +3104,58 @@
       "seen": 1,
       "signal": "change_state add-reconciliation --from-file prints 'OK  ids=5' (a count) for an auto batch instead of the allocated REC ids, while the same verb prints 'ids=REC-45,REC-46' for another batch; the caller cannot confirm which ids it was given",
       "signature": "change_state add-reconciliation --from-file prints · (a count) for an auto batch instead of the allocated REC ids, while",
+      "stage": "spec_sync",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/400"
+    },
+    {
+      "at": "2026-09-25T06:15:24Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-25T06:15:24Z",
+          "note": "reconcile-docs can delete a document it registered with add-doc but has no verb to unregister it, so docs_touched keeps a dead path (reconcile/user-guide-todo-list.md) after the Q-31 move",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-64",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "reconcile-docs",
+      "seen": 1,
+      "signal": "reconcile-docs can delete a document it registered with add-doc but has no verb to unregister it, so docs_touched keeps a dead path (reconcile/user-guide-todo-list.md) after the Q-31 move",
+      "signature": "reconcile-docs can delete a document it registered with add-doc but has no verb to unregister it, so docs_touched keeps ",
+      "stage": "spec_sync",
+      "state": "reported",
+      "url": null
+    },
+    {
+      "at": "2026-09-25T06:15:24Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-25T06:15:24Z",
+          "note": "the convergence round routes each resolved finding to members by the finding's artifacts list, not by whose write set holds the edits its resolution requires: COH-spec_sync-6 (three docs/ runbook edits) reached only reconcile-docs, COH-spec_sync-7 was split across two parallel members so one had to poll for the other's output, and COH-spec_sync-5 (scripts/*.sh, owned by build-backend) reached no member at all",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-65",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "reconcile-ops",
+      "seen": 1,
+      "signal": "the convergence round routes each resolved finding to members by the finding's artifacts list, not by whose write set holds the edits its resolution requires: COH-spec_sync-6 (three docs/ runbook edits) reached only reconcile-docs, COH-spec_sync-7 was split across two parallel members so one had to poll for the other's output, and COH-spec_sync-5 (scripts/*.sh, owned by build-backend) reached no member at all",
+      "signature": "the convergence round routes each resolved finding to members by the finding·s output, and COH-spec_sync-· (scripts· own",
       "stage": "spec_sync",
       "state": "reported",
       "url": null
@@ -3225,6 +3284,13 @@
     },
     "requirements_critique": {
       "last_error": "convergence round: 6 findings, all resolved",
+      "max_attempts": 3,
+      "repeats": 1,
+      "rung": "attempt_1_failed",
+      "signature": "convergence round: · findings, all resolved"
+    },
+    "spec_sync_critique": {
+      "last_error": "convergence round: 7 findings, all resolved",
       "max_attempts": 3,
       "repeats": 1,
       "rung": "attempt_1_failed",
@@ -5129,7 +5195,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 903,
+  "revision": 910,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -5280,7 +5346,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-25T06:12:10Z",
+  "updated_at": "2026-09-25T06:15:24Z",
   "verification_last": {
     "content_digest": "dd8c251ff7634c10453cf80cd92896b20e4d941582648ab0d0d2ff3fe5345ae3",
     "counts": {

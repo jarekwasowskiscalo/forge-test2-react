@@ -23,6 +23,7 @@ something is broken right now.
 | [`security.md`](security.md) | who can do what, where the secrets are, and the fact that the application authenticates nobody |
 | [`troubleshooting.md`](troubleshooting.md) | symptom → cause → fix |
 | [`user-guide.md`](user-guide.md) | the guest book, for the person using it |
+| [`user-guide-todo-list.md`](user-guide-todo-list.md) | the to-do list, for the person using it |
 | [`runbooks/`](runbooks/README.md) | the procedures somebody carries out on a running environment |
 
 ## Two things to know before you rely on any of it
