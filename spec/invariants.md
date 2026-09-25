@@ -78,6 +78,14 @@ the rule at the top of this document demands exactly that:
 - **`D-03`** — every primary key is a UUID generated on the application side, never a number
   from a sequence ([`design/data-model.md`](design/data-model.md) § Identifiers).
 
+**They are every table's, although the file that holds them is named for the guestbook, the
+example a reader may delete.** `D-01`…`D-03` hold for `todo_tasks` as for every table, and the
+to-do list's `D-05` is written as `D-04` for a task. So deleting the guestbook does not delete
+them: `D-01`…`D-04` move first into
+[`contracts/invariants/todo_list.md`](../contracts/invariants/todo_list.md), keeping their
+identifiers, and `contracts/invariants/guestbook.md` goes after them. The user decided it in
+`CR-2609-823a` (`Q-33`) in these words: "Move the four data rules too."
+
 **Why they left.** A data invariant is a statement about a system boundary — about what may be
 relied on without looking inside — and a boundary is a versioned contract (constitution,
 article VI). This file stayed with what has no version: the rule about the rules themselves,

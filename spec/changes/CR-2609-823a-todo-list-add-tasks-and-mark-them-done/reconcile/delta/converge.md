@@ -68,11 +68,49 @@ round's write set belong to their authors afterwards and are not declared here a
   **ADR:** none — a placement rule, in the document where placement rules live (constitution, Article IX).
   **Requirements:** CR-2609-823a/R-5
 
+*Written by the convergence round of coherence pass 11, `spec_sync` stage, for the five findings
+`COH-spec_sync-8` to `COH-spec_sync-12`. Three were settled by the user: `COH-spec_sync-8` at
+`Q-32`, `COH-spec_sync-9` and `COH-spec_sync-10` at `Q-30`, `COH-spec_sync-11` at `Q-33`.
+`COH-spec_sync-12` was settled automatically from `spec/design/architecture.md` § Who writes what,
+and where the sets meet. Three of the five have no entry here. `COH-spec_sync-9` and
+`COH-spec_sync-10` are about `docs/`, which binds nothing, and no document in `spec/` or
+`contracts/` states what a restore brings back. `COH-spec_sync-12` is about `reconcile/delta/ops.md`
+F-1, another member's fragment. Their ambiguity sources, the runbook and pass 10's resolutions in
+`review/coherence.md`, are outside this round's write set. Their repairs are reconcile-ops' and are
+not declared here as made: `docs/user-guide-todo-list.md` § Deleting a task, `docs/user-guide.md`
+§ Deleting an entry, and `reconcile/delta/ops.md` (§ Confirmed correct and left alone, § The
+convergence round, F-1). `CLAUDE.md` § What is an example took `COH-spec_sync-11`'s ready patch,
+with a pointer to `spec/invariants.md` in place of its "Superseded by" clause. It lies outside
+`spec/` and `contracts/` and needs no entry. No script is edited in this change (`Q-32`).*
+
+- `MODIFIED` `spec/design/architecture.md` § The to-do list — where each rule lives › The files — the row for `start.sh`, `help.sh`, `deploy.sh` and `preview.sh`, its "Written by" cell
+  **Was:** "build-backend", which pass 10's round wrote for `COH-spec_sync-5`: the four scripts' seeding text corrected in this change.
+  **Now:** "not this change: a text-only pull request with a changelog entry corrects them right after it merges, because build-backend does not run in the stage that found the text stale. The user decided it in `CR-2609-823a` (`Q-32`) in these words: "Follow-up fix right after merge."" The "Holds" cell is unchanged. It still says what the four scripts' help and comments must say.
+  **Why:** COH-spec_sync-8. The row named a writer, and nobody was dispatched to write it. `git diff main --stat -- scripts/` touches only `seed.sh` and `seed_golden_set.py`, and `./scripts/start.sh --help` still says `--no-seed` leaves "the guest book" empty. Only build-backend may write `scripts/`, and it does not run in `spec_sync`. The user chose at `Q-32` not to send the change back: "This change goes on to delivery now; the stale help text is recorded as a known item and fixed in a small separate pull request with a changelog entry." The row now says who corrects the text and when, as § Who writes what already does for `golden-set/README.md` (`Q-26`).
+  **ADR:** none. It says who writes four files and when; reversing it edits one cell.
+  **Requirements:** CR-2609-823a/R-11
+- `MODIFIED` `spec/invariants.md` § Data invariants: one paragraph added after the three one-sentence summaries of `D-01`…`D-03`
+  **Was:** the section moved `D-01`…`D-03` into `contracts/invariants/guestbook.md` and stated them of every entity and every primary key. It did not say that the file bearing the guestbook's name holds every table's rules, or what happens to them when the guestbook is deleted.
+  **Now:** "They are every table's, although the file that holds them is named for the guestbook, the example a reader may delete." `D-01`…`D-03` hold for `todo_tasks` as for every table, and `D-05` is written as `D-04` for a task. So `D-01`…`D-04` move first into `contracts/invariants/todo_list.md`, keeping their identifiers, and `guestbook.md` goes after them. It closes with the user's words at `Q-33`: "Move the four data rules too."
+  **Why:** COH-spec_sync-11, its ambiguity source. The file's name says the rules are the guestbook's, and its content says they are every table's. The deletion lists in `CLAUDE.md` and `spec/README.md` followed the name: "One thing moves before the guestbook goes: the words of the text rule". `contracts/invariants/todo_list.md` followed the content: "`D-01`…`D-04` stand in `guestbook.md`". Deleting the guestbook as the lists said would turn three checks red. `tests/fitness/test_invariant_witnesses.py` asserts `{"D-01", "D-02", "D-03"} <= found`, `frozen-ids` fails on every citation of `D-04`, and `links` fails on `todo_list.md`:10. The user decided at `Q-33` that the lists name the move.
+  **ADR:** none. It says where four existing invariants go when their file's context is deleted. No invariant's body changes, and neither does the rule for their identifiers.
+  **Requirements:** CR-2609-823a/R-1, CR-2609-823a/R-2
+- `MODIFIED` `spec/README.md` § This directory describes a template — one sentence added after the deletion list
+  **Was:** the list deleted `contracts/invariants/guestbook.md` with the example and named nothing that moves out first.
+  **Now:** "Two things move out first, because the to-do list stays and is held to both: the words of the text rule, `BR-01`, into `contexts/todo_list.md` (its § Neighbours), and the data invariants `D-01`…`D-04`, into `contracts/invariants/todo_list.md`, keeping their identifiers (`invariants.md` § Data invariants)."
+  **Why:** COH-spec_sync-11. The finding names this list beside `CLAUDE.md`'s, and `Q-33` names this file: "CLAUDE.md, spec/README.md and ADR-0001 say D-01 to D-04 move into the to-do list's rules file first, keeping their identifiers, before the guestbook's file is deleted". The sentence names `BR-01` too. Without it this list would name one move where `CLAUDE.md` names two, which is how the finding arose.
+  **ADR:** none. It is a deletion list, brought level with `CLAUDE.md`'s.
+  **Requirements:** CR-2609-823a/R-1
+- `MODIFIED` `spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md` § Consequences — the bullet "Deleting the guestbook is no longer the deletion of one unit", one sentence added after the `BR-01` sentence
+  **Was:** the bullet named the words of `BR-01` as the one thing that moves before the guestbook is deleted.
+  **Now:** "The same holds for `D-01`…`D-04`, which `contracts/invariants/todo_list.md` builds on: they move into it first, keeping their identifiers, before `contracts/invariants/guestbook.md` is deleted (`spec/invariants.md` § Data invariants)."
+  **Why:** COH-spec_sync-11. `Q-33` names ADR-0001 as one of the three texts that say it. The ADR is still `Proposed`, so it can be edited now and not after acceptance (`spec/design/conventions.md` § When a decision is an ADR). The same bullet already explains why `contracts/openapi/todo_list.yaml` does not `$ref` into `guestbook.yaml`. The invariants contract written in this stage points into `guestbook.md`, which is the same trap.
+  **ADR:** this entry edits the ADR itself, before acceptance. The decision is unchanged.
+  **Requirements:** CR-2609-823a/R-1
+
 ## This change owns
 
-| Path | Why |
-|---|---|
-| `scripts/start.sh` | text only: the `--no-seed` help and the comments on seeding, which name one list (COH-spec_sync-5); nothing it does moves (build-backend) |
-| `scripts/help.sh` | text only: the line for `seed.sh`, which names the guest book alone (COH-spec_sync-5) (build-backend) |
-| `scripts/deploy.sh` | text only: the comment on seeding, which counts one `GET` for one list (COH-spec_sync-5) (build-backend) |
-| `scripts/preview.sh` | text only: the same comment as `deploy.sh`'s (COH-spec_sync-5) (build-backend) |
+No path. Pass 10's round listed `scripts/start.sh`, `scripts/help.sh`, `scripts/deploy.sh` and
+`scripts/preview.sh` here, text only and build-backend's, for `COH-spec_sync-5`. The user then
+decided at `Q-32`: "Follow-up fix right after merge". So this change edits none of the four, and
+the pull request after it that corrects them carries its own changelog entry.

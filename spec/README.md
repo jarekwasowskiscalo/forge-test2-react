@@ -66,8 +66,12 @@ entries in `design/api.md` and `design/data-model.md`, the contracts
 files in both halves of the corpus `golden-set/` (never the to-do list's `todo-task-text.json`
 and `todo-tasks-*.json`), the mock-up `rationale/mockup-guestbook/`, the black box
 `e2e/suite/features/guestbook.feature` with the steps that bind it, the user guide
-`docs/user-guide.md` and the request file `http/guestbook-entries.http`. The rest of this
-tree describes the process and stays.
+`docs/user-guide.md` and the request file `http/guestbook-entries.http`. Two things move out
+first, because the to-do list stays and is held to both: the words of the text rule, `BR-01`,
+into `contexts/todo_list.md` (its § Neighbours), and the data invariants `D-01`…`D-04`, into
+`contracts/invariants/todo_list.md`, keeping their identifiers
+([`invariants.md`](invariants.md) § Data invariants). The rest of this tree describes the
+process and stays.
 
 ## Identifier spaces
 

@@ -133,7 +133,8 @@ that bind it, the contracts `contracts/openapi/guestbook.yaml` and
 `spec/rationale/mockup-guestbook/`, the user guide `docs/user-guide.md` and the request file
 `http/guestbook-entries.http`.
 
-**One thing moves before the guestbook goes: the words of the text rule.** Both contexts are held
+**Two things move before the guestbook goes: the words of the text rule, and the data
+invariants.** Both contexts are held
 to one rule for how a text is normalized, trimmed and counted, and its words live in
 `spec/contexts/guestbook.md` § `BR-01`, which the to-do list cites. Move them into
 `spec/contexts/todo_list.md` first; its § Neighbours says so, and the `frozen-ids` gate goes red on
@@ -141,6 +142,12 @@ a citation of `BR-01` left pointing nowhere (`spec/ADR/ADR-0001-todo-list-is-its
 The rule's code is already outside the guestbook, in `app/platform/schemas/text.py` and
 `frontend/src/lib/text.ts`, and stays. So does the seeder: it loses the half that posts the welcome
 entries and keeps the half that posts the example tasks.
+
+The data invariants move the same way. `contracts/invariants/guestbook.md` holds `D-01`…`D-04`:
+the first three hold for every table, `todo_tasks` included, and the to-do list's `D-05` is
+written as `D-04` for a task. Move all four into `contracts/invariants/todo_list.md` first,
+keeping their identifiers, and delete `guestbook.md` after them; otherwise the witness test and
+the `frozen-ids` gate go red (`spec/invariants.md` § Data invariants).
 
 **Everything else is the template and stays**, the to-do list (`todo_list`) included: it is a
 second domain context, not an example. There is no authentication and that is a named

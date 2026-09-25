@@ -106,7 +106,10 @@ shared kernel rather than an upstream".
   prompt.
 - **Deleting the guestbook is no longer the deletion of one unit.** The words of `BR-01` have to
   move into `spec/contexts/todo_list.md` first (§ Neighbours), and the gate `frozen-ids` goes red
-  on a citation of `BR-01` that resolves nowhere. The list in `CLAUDE.md` § What is an example
+  on a citation of `BR-01` that resolves nowhere. The same holds for `D-01`…`D-04`, which
+  `contracts/invariants/todo_list.md` builds on: they move into it first, keeping their
+  identifiers, before `contracts/invariants/guestbook.md` is deleted (`spec/invariants.md`
+  § Data invariants). The list in `CLAUDE.md` § What is an example
   also has to say this. `design-spec` reported that the list was silent, `reconcile-docs` wrote
   the paragraph in the `spec_sync` stage of this change, and nothing enforces it.
   `contracts/openapi/todo_list.yaml` writes out

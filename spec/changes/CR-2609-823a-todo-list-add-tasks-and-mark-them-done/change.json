@@ -1013,9 +1013,12 @@
       "id": "COH-spec_sync-8",
       "kind": "verification",
       "raised_at": "2026-09-25T06:39:50Z",
+      "resolution": "Q-32 = A, in the user's words: 'Follow-up fix right after merge.' The four scripts' --help and seeding comments (start.sh, help.sh, deploy.sh, preview.sh) are not edited in this change; a text-only pull request with a changelog entry corrects them right after it merges (carried as TD-13). The Files row keeps what their text must say and now names that pull request, not build-backend in this change",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-25T06:51:26Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "docs/runbooks/restore-the-database.md § When to use this",
@@ -1029,9 +1032,12 @@
       "id": "COH-spec_sync-9",
       "kind": "verification",
       "raised_at": "2026-09-25T06:39:50Z",
+      "resolution": "Q-30 = A applied in full, in the user's words: 'Keep partial restores; fix the guide' -- the guide says that one list, or chosen tasks, can be brought back on their own. The ambiguity source (docs/runbooks/restore-the-database.md) is under docs/, outside review-converge's write set, and no spec/ or contracts/ document states what a restore brings back. The guide's restore sentence is reconcile-ops",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-25T06:51:26Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-spec_sync-6",
@@ -1047,9 +1053,12 @@
       "id": "COH-spec_sync-10",
       "kind": "contradiction",
       "raised_at": "2026-09-25T06:39:50Z",
+      "resolution": "Q-30 = A ('Keep partial restores; fix the guide') covers the guest book's guide too: it says the whole book, or only the entries named, can be brought back. The ambiguity source (review/coherence.md § COH-spec_sync-6) is outside review-converge's write set, and no spec/ or contracts/ document states what a restore brings back. Both repairs are reconcile-ops's: docs/user-guide.md's restore sentence",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-25T06:51:26Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/invariants.md § Data invariants",
@@ -1065,9 +1074,12 @@
       "id": "COH-spec_sync-11",
       "kind": "contradiction",
       "raised_at": "2026-09-25T06:39:50Z",
+      "resolution": "Q-33 = A, in the user's words: 'Move the four data rules too.' CLAUDE.md, spec/README.md and ADR-0001 (still Proposed) say that D-01...D-04 move into contracts/invariants/todo_list.md first, keeping their identifiers, before contracts/invariants/guestbook.md is deleted, beside the words of BR-01. spec/invariants.md § Data invariants, the ambiguity source, now says the four are every table's althou",
+      "resolution_source": "hitl",
+      "resolved_at": "2026-09-25T06:51:26Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     },
     {
       "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-spec_sync-5",
@@ -1082,9 +1094,12 @@
       "id": "COH-spec_sync-12",
       "kind": "contradiction",
       "raised_at": "2026-09-25T06:39:50Z",
+      "resolution": "AUTO (spec/design/architecture.md § Who writes what, and where the sets meet: build-backend holds scripts/, and .specconf/stack.json names scripts/ as not build-platform's). reconcile/delta/ops.md F-1 routes scripts/*.sh to build-backend, not build-platform, and stops citing CLAUDE.md line 148, which reconcile-docs rewrote in this stage. The ambiguity source (review/coherence.md § COH-spec_sync-5)",
+      "resolution_source": "auto",
+      "resolved_at": "2026-09-25T06:51:26Z",
       "severity": "minor",
       "stage": "spec_sync",
-      "status": "open"
+      "status": "resolved"
     }
   ],
   "coherence_passes": [
@@ -1253,8 +1268,8 @@
       "state": "returned"
     },
     "review-converge": {
-      "assumptions": "The findings ready patches are decided, so they were applied where they land in spec/ or contracts/. COH-2 edits both glossary and spec/README.md because its one resolution names both. COH-6 has no edit in the converge write set: its ambiguity_source is docs/, and BR-13 and the non-goal were judged not to be the cause. Repairs outside the write set: COH-5 -> build-backend (stack.json gives scripts/ to build-backend, not build-platform): start.sh, help.sh, deploy.sh, preview.sh text; COH-6 -> reconcile-ops (Q-30 A): restore runbook, incident-first-response, runbooks/README say whole DB under A, one list or chosen rows under B, guide says one list or chosen tasks can come back; COH-7 -> reconcile-ops (Q-31 A): create docs/user-guide-todo-list.md (without the wrong-place note, with COH-6 applied) and a docs/README.md row; removing reconcile/user-guide-todo-list.md needs reconcile-docs.",
-      "at": "2026-09-25T06:12:10Z",
+      "assumptions": "reconcile-ops applies the ready patches of COH-9, 10 and 12 as written. F-1 new routing (a build-backend repair) might also cite the Q-32 follow-up pull request -- noted, not decided. TD-13 in REC-47 is the task Q-32 blocks. D-04 Superseded-by clause of the COH-11 patch left out because Q-33 A did not decide it; CLAUDE.md gets no delta entry (outside spec/ and contracts/).",
+      "at": "2026-09-25T06:51:26Z",
       "state": "returned"
     }
   },
@@ -3284,6 +3299,11 @@
           "at": "2026-09-25T06:39:50Z",
           "note": "the review-coherence preflight truncates a recorded resolution mid-word (COH-spec_sync-6 ends 'incident-f'), so the verifying pass had to read open_questions through change_state show to check what was decided",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-25T06:48:01Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/407",
+          "state": "filed"
         }
       ],
       "id": "PROC-66",
@@ -3293,6 +3313,32 @@
       "seen": 1,
       "signal": "the review-coherence preflight truncates a recorded resolution mid-word (COH-spec_sync-6 ends 'incident-f'), so the verifying pass had to read open_questions through change_state show to check what was decided",
       "signature": "the review-coherence preflight truncates a recorded resolution mid-word (COH-spec_sync-· ends ·), so the verifying pass ",
+      "stage": "spec_sync",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/407"
+    },
+    {
+      "at": "2026-09-25T06:51:26Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-25T06:51:26Z",
+          "note": "review-converge has no route for a finding whose ambiguity_source is outside its write set (docs/, or review/coherence.md): COH-spec_sync-6, -10 and -12 could only be recorded with an improvised 'edited: none ... pending <member>' string in reconciliations[]",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-67",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-converge",
+      "seen": 1,
+      "signal": "review-converge has no route for a finding whose ambiguity_source is outside its write set (docs/, or review/coherence.md): COH-spec_sync-6, -10 and -12 could only be recorded with an improvised 'edited: none ... pending <member>' string in reconciliations[]",
+      "signature": "review-converge has no route for a finding whose ambiguity_source is outside its write set (docs· or review· COH-spec_sy",
       "stage": "spec_sync",
       "state": "reported",
       "url": null
@@ -4795,6 +4841,43 @@
       "stage": "spec_sync",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-25T06:47:42Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-25T06:40:00Z",
+      "blocking": false,
+      "blocks": [
+        "COH-spec_sync-11"
+      ],
+      "options": [
+        {
+          "consequence": "CLAUDE.md, spec/README.md and ADR-0001 say D-01 to D-04 move into the to-do list's rules file first, keeping their identifiers, before the guestbook's file is deleted",
+          "key": "A",
+          "label": "Move the four data rules too",
+          "recommended": true
+        },
+        {
+          "consequence": "D-01 to D-04 are relocated into a shared rules file today, so deleting the guestbook later needs nothing extra, at the cost of a wider edit to the contracts in this change",
+          "key": "B",
+          "label": "Move them now, in this change",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-33",
+      "question": "The instructions for deleting the example guestbook say only one thing (the text rule) must move to the to-do list first. But the to-do list also relies on four data rules (D-01 to D-04) written in the guestbook's rules file, so deleting it as instructed would turn three checks red. What should the deletion instructions say?",
+      "stage": "spec_sync",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -5353,6 +5436,66 @@
       "id": "REC-46",
       "rule_added": null,
       "source": "hitl"
+    },
+    {
+      "at": "2026-09-25T06:50:37Z",
+      "decision": "Q-32 = A, in the user's words: 'Follow-up fix right after merge.' The four scripts' --help and seeding comments (start.sh, help.sh, deploy.sh, preview.sh) are not edited in this change; a text-only pull request with a changelog entry corrects them right after it merges (carried as TD-13). The Files row keeps what their text must say and now names that pull request, not build-backend in this change, as its writer; the converge fragment's 'This change owns' drops the four scripts.",
+      "edited": [
+        "spec/design/architecture.md § The to-do list — where each rule lives › The files (the start.sh/help.sh/deploy.sh/preview.sh row, Written by)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/delta/converge.md § This change owns"
+      ],
+      "from_finding": "COH-spec_sync-8",
+      "id": "REC-47",
+      "rule_added": null,
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-25T06:50:37Z",
+      "decision": "Q-30 = A applied in full, in the user's words: 'Keep partial restores; fix the guide' -- the guide says that one list, or chosen tasks, can be brought back on their own. The ambiguity source (docs/runbooks/restore-the-database.md) is under docs/, outside review-converge's write set, and no spec/ or contracts/ document states what a restore brings back. The guide's restore sentence is reconcile-ops's to reword, per the finding's ready patch.",
+      "edited": [
+        "none in spec/ or contracts/ -- pending reconcile-ops: docs/user-guide-todo-list.md § Deleting a task (lines 65-67)"
+      ],
+      "from_finding": "COH-spec_sync-9",
+      "id": "REC-48",
+      "rule_added": null,
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-25T06:50:37Z",
+      "decision": "Q-30 = A ('Keep partial restores; fix the guide') covers the guest book's guide too: it says the whole book, or only the entries named, can be brought back. The ambiguity source (review/coherence.md § COH-spec_sync-6) is outside review-converge's write set, and no spec/ or contracts/ document states what a restore brings back. Both repairs are reconcile-ops's: docs/user-guide.md's restore sentence and its own fragment's 'still true of the guestbook' line and the paragraph that says 'once a finding names it'.",
+      "edited": [
+        "none in spec/ or contracts/ -- pending reconcile-ops: docs/user-guide.md § Deleting an entry (lines 60-62)",
+        "none in spec/ or contracts/ -- pending reconcile-ops: spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/delta/ops.md § Confirmed correct and left alone; § The convergence round"
+      ],
+      "from_finding": "COH-spec_sync-10",
+      "id": "REC-49",
+      "rule_added": null,
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-25T06:50:37Z",
+      "decision": "Q-33 = A, in the user's words: 'Move the four data rules too.' CLAUDE.md, spec/README.md and ADR-0001 (still Proposed) say that D-01...D-04 move into contracts/invariants/todo_list.md first, keeping their identifiers, before contracts/invariants/guestbook.md is deleted, beside the words of BR-01. spec/invariants.md § Data invariants, the ambiguity source, now says the four are every table's although their file is named for the guestbook, and where they go when it is deleted.",
+      "edited": [
+        "spec/invariants.md § Data invariants",
+        "CLAUDE.md § What is an example, and what is the template",
+        "spec/README.md § This directory describes a template",
+        "spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md § Consequences"
+      ],
+      "from_finding": "COH-spec_sync-11",
+      "id": "REC-50",
+      "rule_added": "When the guestbook is deleted, D-01...D-04 move first into contracts/invariants/todo_list.md, keeping their identifiers, and contracts/invariants/guestbook.md goes after them (spec/invariants.md § Data invariants).",
+      "source": "hitl"
+    },
+    {
+      "at": "2026-09-25T06:50:38Z",
+      "decision": "AUTO (spec/design/architecture.md § Who writes what, and where the sets meet: build-backend holds scripts/, and .specconf/stack.json names scripts/ as not build-platform's). reconcile/delta/ops.md F-1 routes scripts/*.sh to build-backend, not build-platform, and stops citing CLAUDE.md line 148, which reconcile-docs rewrote in this stage. The ambiguity source (review/coherence.md § COH-spec_sync-5) is outside review-converge's write set; F-1 is reconcile-ops's fragment and its repair.",
+      "edited": [
+        "none in spec/ or contracts/ -- pending reconcile-ops: spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/delta/ops.md § Findings, F-1"
+      ],
+      "from_finding": "COH-spec_sync-12",
+      "id": "REC-51",
+      "rule_added": null,
+      "source": "auto"
     }
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
@@ -5369,7 +5512,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 919,
+  "revision": 934,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -5545,7 +5688,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-25T06:39:50Z",
+  "updated_at": "2026-09-25T06:51:26Z",
   "verification_last": {
     "content_digest": "dd8c251ff7634c10453cf80cd92896b20e4d941582648ab0d0d2ff3fe5345ae3",
     "counts": {
