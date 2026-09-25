@@ -3282,3 +3282,479 @@ specification, as the next section records.
     not restate `BR-13`'s corner.
 - **Glossary and invariants.** No identifier this wave added uses a bare `task`, and `D-01` to
   `D-03` hold.
+
+## Pass 11 — the `spec_sync` stage
+
+The preflight printed `CONVERGENCE ROUND: 1 of 3 -- MODE: DEEP.` Phase 1b ran first, over the
+seven recorded resolutions of this stage. A full hunt over the text the convergence round and the
+re-dispatched members wrote came after it.
+
+Read whole:
+- the four fragments under `reconcile/delta/`, and `reconcile/delta/converge.md`, which the
+  preflight's list leaves out;
+- `git show 42eb0ea` (the convergence round) and `git show c9f9419` (reconcile-docs and
+  reconcile-ops, re-dispatched), over `spec/`, `contracts/`, `docs/` and the change record;
+- `contracts/invariants/todo_list.md`, `contracts/invariants/README.md`,
+  `docs/user-guide-todo-list.md` and `docs/runbooks/restore-the-database.md`;
+- the five `ASSUMPTIONS` blocks from the preflight, all captured.
+
+Read in the parts the new text answers to:
+- `spec/design/conventions.md` § Documentation — where a document goes;
+- `spec/design/architecture.md` § What a new environment starts with, § The files and § Who writes
+  what, and where the sets meet;
+- `spec/design/data-model.md` § Identifiers and § `todo_tasks`;
+- `spec/design/testing.md`, the paragraph "The witness for a task's text";
+- `contracts/invariants/guestbook.md` and `tests/fitness/test_invariant_witnesses.py`;
+- `CLAUDE.md` § What is an example, and `spec/README.md` § This directory describes a template;
+- ADR-0001 § Consequences;
+- `docs/user-guide.md` § Deleting an entry, and `docs/README.md`;
+- the four scripts, and `.specconf/stack.json` § `skills`;
+- the options and answers of `Q-30` and `Q-31`, from
+  `sdd-engine change_state show --cr CR-2609-823a --field open_questions`.
+
+The ranked documents read above them: `spec/constitution.md` (Article VIII in full),
+`spec/invariants.md`, `spec/glossary.md` and `contracts/README.md`.
+
+Two commands frame the pass:
+- `sdd-specs`. The content gates print `contracts: 0 problem(s) in 3 directories, 5 contracts, 5
+  documents`, `frozen-ids: 0 problem(s) in 5 spaces, 24 declared, 196 citations` and `links: 0
+  problem(s) in 153 documents, 420 links`. The diff-scoped gate fails only on `change-record`
+  (stage `spec_sync`, status `draft`), which is expected before delivery.
+- `./scripts/test.sh fitness` prints `364 passed in 3.93s`, `test_invariant_witnesses.py`
+  included.
+
+### Recorded resolutions
+
+- COH-spec_sync-1: landed. `contracts/invariants/todo_list.md`:15-27 holds `D-05`. Each of its three
+  witnesses is defined: `tests/integration/test_todo_tasks_service.py`:134, and
+  `tests/unit/test_todo_task_text_rules.py`:165 and :393. Also `contracts/invariants/README.md`:3-4
+  and `spec/invariants.md`:107-110.
+- COH-spec_sync-2: landed. `spec/glossary.md`:56 and `spec/README.md`:14-18.
+  `grep -n "empty today" spec/README.md` prints nothing.
+- COH-spec_sync-3: landed. `spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md`:109-111.
+- COH-spec_sync-4: landed. `spec/design/architecture.md`:418-419.
+- COH-spec_sync-5: the specification half landed, at `spec/design/architecture.md`:639. The script
+  half did not land: COH-spec_sync-8.
+- COH-spec_sync-6: the runbook half landed:
+  - `docs/runbooks/restore-the-database.md`:18-20;
+  - `docs/runbooks/incident-first-response.md`:46-49;
+  - `docs/runbooks/README.md`:41-44.
+
+  The guide half landed only in part: COH-spec_sync-9.
+- COH-spec_sync-7: landed.
+  - `spec/design/conventions.md`:281 and :285-288.
+  - `docs/user-guide-todo-list.md` is a rename of the change-record copy. Its placement note is
+    gone: `grep -c "Where this page belongs"` prints `0`.
+  - `docs/README.md`:26 has the row.
+  - `reconcile/` now holds only `delta/`.
+
+Pairs compared in the hunt:
+- `converge.md` ↔ the edits of `42eb0ea`, in both directions;
+- `docs.md` and `ops.md` ↔ the edits of `c9f9419`, in both directions;
+- `D-05` ↔ `data-model.md` § `todo_tasks`, the testing paragraph that named its witnesses, `BR-06`
+  and `BR-07`, and the witness reader;
+- the new invariants contract ↔ the deletion lists in `CLAUDE.md` and `spec/README.md`, and
+  ADR-0001 § Consequences;
+- the new row in § The files ↔ the four scripts, § Who writes what, the profile, `ops.md` F-1 and
+  `docs.md`'s candidates;
+- the new paragraph in conventions § Documentation ↔ `docs/README.md`, `CLAUDE.md`'s line on
+  `docs/`, and the moved guide's **For:** and **Normative source:** lines;
+- the moved guide ↔ the runbook ↔ `Q-30` option A ↔ `docs/user-guide.md` ↔
+  `docs/backup-and-recovery.md`;
+- `spec/README.md` and the glossary ↔ conventions § When a decision is an ADR, and
+  `spec/ADR/index.md`;
+- each author's assumptions ↔ what its neighbours wrote.
+
+### COH-spec_sync-8 — Do the scripts' help and comments now describe two lists, as COH-spec_sync-5 resolved?
+
+- **kind:** verification
+- **severity:** minor
+- **decision_mode:** AUTO
+- **auto_basis:** spec/constitution.md § Article I — The specification is the source of truth
+- **ambiguity_source:** spec/design/architecture.md § The files
+- **artifacts:** scripts/start.sh, scripts/help.sh, scripts/deploy.sh, scripts/preview.sh
+
+**What each says.** The recorded resolution of COH-spec_sync-5: "The Files table gains a text-only
+row for start.sh, help.sh, deploy.sh and preview.sh, written by build-backend … The script text
+itself is build-backend's to apply." The row stands at `spec/design/architecture.md`:639: "every
+`--help` line and comment of theirs that describes the seeding says what `seed.sh` does — each list
+filled on its own when it holds nothing". `reconcile/delta/converge.md` § This change owns lists the
+four scripts as "text only … (build-backend)".
+
+The scripts did not change:
+- `git diff main --stat -- scripts/` lists `scripts/seed.sh` and `scripts/seed_golden_set.py`, and
+  prints "2 files changed".
+- `./scripts/start.sh --help` still prints "--no-seed leave the guest book empty. By default a guest
+  book that has no entries is filled from golden-set/seed/".
+- `./scripts/help.sh` still prints "seed.sh Fill an environment's guest book from golden-set/seed/".
+- Comments still describe one list: `scripts/start.sh`:106, :113-115 and :170,
+  `scripts/deploy.sh`:620-622 ("a single GET"), and `scripts/preview.sh`:198-201.
+
+**Why it did not land.** The convergence round could not write `scripts/`, and its fragment says
+so: the repairs "belong to their authors afterwards". This stage then re-dispatched reconcile-docs
+and reconcile-ops for COH-spec_sync-6 and COH-spec_sync-7. No build-backend was dispatched
+(`git show --stat c9f9419`: "Members: reconcile-docs, reconcile-ops"). So the contradiction
+COH-spec_sync-5 recorded still stands. The specification also now describes, at :639, help text
+that no script prints.
+
+**What settles it.** Inherited: `spec/constitution.md` § Article I. Code contradicting `spec/` is a
+defect in the code.
+
+**Resolution.** Dispatch build-backend for the four text-only paths. The patch is COH-spec_sync-5's,
+with the line numbers read again.
+
+Ready patch (text only, each wrapped to the file's own column):
+- `scripts/start.sh`:48-51. Replace the `--no-seed` help with "leave both lists empty. By default a
+  guest book with no entries and a to-do list with no task are each filled from golden-set/seed/
+  once the application answers, so a fresh clone opens on screens worth looking at; a list that
+  already holds something is never touched."
+- `scripts/start.sh`:106 becomes "#: Fill each empty list from `golden-set/seed/` once the
+  application answers." At :113-114, "skips a guest book that already has entries" becomes "skips a
+  list that already holds something". At :115 and :170, "an empty guest book" becomes "an empty
+  list".
+- `scripts/help.sh`:89-91. Replace with "Fill an environment's guest book and to-do list from
+  golden-set/seed/, each on its own condition, through the API. start.sh does this on its own for a
+  list that is empty; this is the way to point it at a preview, or to run it again by hand."
+- `scripts/deploy.sh`:620-622. Replace with "A new environment with an empty list is a screen nobody
+  can judge. `seed.sh` refuses production and skips a list that already holds something, so on
+  every deploy after the first this is one GET per list and a printed line for each."
+- `scripts/preview.sh`:198-201. Replace with "A new environment with an empty list is a screen nobody
+  can judge, and a preview exists to be looked at. `seed.sh` refuses production and skips a list
+  that already holds something, so a re-raised preview is one GET per list and a printed line for
+  each."
+
+**What was ambiguous.** Inherited. § The files named `seed.sh`'s own help and no row placed its
+callers' text. That row now exists. What is left is who gets dispatched to write it, and
+COH-spec_sync-12 is about exactly that.
+
+**What was not found.** No behaviour has to move. `--no-seed` skips `seed.sh` altogether
+(`scripts/start.sh`:172), and the seeder already fills each list on its own condition.
+
+### COH-spec_sync-9 — Does the to-do list's guide say that chosen tasks can come back on their own, as `Q-30` decided?
+
+- **kind:** verification
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** docs/runbooks/restore-the-database.md § When to use this
+- **artifacts:** docs/user-guide-todo-list.md
+
+**What each says.** The option the user chose at `Q-30`, from
+`sdd-engine change_state show --cr CR-2609-823a --field open_questions`:
+`A | Keep partial restores; fix the guide | The guide and the runbook's opening lines say that one
+list, or chosen tasks, can be brought back on their own`. The recorded resolution of
+COH-spec_sync-6 repeats "one list, or chosen tasks".
+
+The runbook's opening lines now say it: `docs/runbooks/restore-the-database.md`:18-20, "the whole
+database under A, one list or the rows you need under B (step 3)".
+
+The guide does not, at `docs/user-guide-todo-list.md`:65-67: "Whoever operates the environment can
+bring the list back from a backup as it was at an earlier moment, within the backup window, and
+that takes tens of minutes; whatever was changed on the list since that moment is lost."
+
+**Why it did not land.** The guide names one way back, the whole list as it was at a moment. It
+prices that as every change made to the list since. The runbook's option B is the default (:73),
+and it copies "the rows you need" (:69-71). So one deleted task can come back while the rest of the
+list stays as it is now.
+
+Take a person who deleted one task by mistake. The guide tells them that getting it back costs
+everything the others have done since. That is the under-promise COH-spec_sync-6 recorded ("A person
+who reads the guide would not ask for what the operator can do"), now about one task rather than
+about the guest book. The guide half of the resolution landed for "one list" and not for "chosen
+tasks".
+
+Where it came from: the sentence reconcile-ops applied is, word for word, the text that pass 10
+recommended under COH-spec_sync-6. So the narrowing began in that pass's own patch. The option the
+user then chose names chosen tasks, and it is the later and wider authority.
+
+**What settles it.** Inherited: nothing ranked above both, and `docs/` binds nothing. The user has
+already decided (`Q-30` → A). The human step is to confirm that the guide carries the option's
+whole wording. It is not a new question (constitution, Article VII).
+
+**Resolution.** reconcile-ops rewords the one sentence so that it carries option A's "one list, or
+chosen tasks".
+
+Ready patch, `docs/user-guide-todo-list.md`:65-67. Replace "Whoever operates the environment can
+bring the list back from a backup as it was at an earlier moment, within the backup window, and
+that takes tens of minutes; whatever was changed on the list since that moment is lost." with
+"Whoever operates the environment can bring back from a backup the whole list or only the tasks you
+name, as they were at an earlier moment within the backup window, and that takes tens of minutes.
+What comes back replaces what is there now, so any change made since that moment to what is
+brought back is lost."
+
+**What was ambiguous.** Inherited. The runbook said two things before this change. On top of that,
+pass 10's patch said "the list" where option B says "the rows you need".
+
+**What was not found.** The other three restatements do carry the whole option: the runbook's lead,
+`incident-first-response.md` step 4 and `runbooks/README.md`. `docs/backup-and-recovery.md`:66
+agrees with them.
+
+### COH-spec_sync-10 — Can a restore bring back one guest book entry, or only the whole book?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-spec_sync-6
+- **artifacts:** docs/user-guide.md, docs/runbooks/restore-the-database.md, reconcile/delta/ops.md
+
+**What each says.** `docs/user-guide.md` § Deleting an entry (:60-62): "a restore from backup is the
+only way back — which takes tens of minutes and returns the whole book to a moment in the past, not
+one entry."
+
+The runbook, as this stage edited it, says otherwise:
+- :18-20: "one list or the rows you need under B (step 3)";
+- :69-71: "you can copy the rows you need instead of the whole database";
+- :73: "B is the default."
+
+`reconcile/delta/ops.md` says both things about the page. § Confirmed correct and left alone (:39-40)
+says "`docs/user-guide.md` … still true of the guestbook. See F-2." § The convergence round (:54-57)
+says of the same sentence "Under option B it is not true. A one-line repair on the same lines as
+`Q-30` would fix it, once a finding names it."
+
+**Why they cannot both be true.** Under B, an operator copies the one entry's row back and leaves
+the rest of the book as it is. The guide says a restore never returns one entry and always rewinds
+the whole book.
+
+Before this stage, the runbook's lead said "the whole book", so it agreed with this guide. This stage
+rewrote that lead to name the rows, for COH-spec_sync-6. That leaves this guide as the only page that
+says a restore is always whole. Evidence:
+`grep -rn -i "whole book\|whole database\|whole application"` over `docs`, `README.md` and
+`CLAUDE.md` finds `docs/user-guide.md`:62, plus the two runbook restatements, which name A and B.
+
+`ops.md` also contradicts itself about this page. Graded minor: nothing is stored wrong, and the page
+is deleted with the example.
+
+**What settles it.** Nothing ranked above both, because `docs/` binds nothing
+(`spec/design/conventions.md` § Documentation — where a document goes). `Q-30` → A settled the to-do
+guide in the words "Keep partial restores; fix the guide", and that answer is recorded only in the
+change record. Confirm that it covers the second guide. It is not a new question.
+
+**Resolution.** Recommended (A): reconcile-ops applies `Q-30`'s rule to the guest book's guide, and
+`ops.md`'s "still true of the guestbook" line follows it. The alternative (B) leaves the guest book's
+guide as it is, because the page goes with the example. `ops.md` then drops "still true of the
+guestbook".
+
+Ready patch for A:
+- `docs/user-guide.md`:60-62. Replace "a restore from backup is the only way back — which takes tens
+  of minutes and returns the whole book to a moment in the past, not one entry." with "a restore
+  from backup is the only way back. Whoever operates the environment can bring back the whole book
+  or only the entries you name, as they were at an earlier moment within the backup window, and
+  that takes tens of minutes; any change made since that moment to what is brought back is lost."
+- `reconcile/delta/ops.md`:39-40. Replace "and still true of the guestbook. See F-2." with "and true
+  of the guestbook once its restore sentence follows `Q-30` (COH-spec_sync-10)." In the paragraph at
+  :54-57, replace "once a finding names it" with "and COH-spec_sync-10 names it".
+
+**What was ambiguous.** COH-spec_sync-6's "What was ambiguous" paragraph named both guides: "The
+guestbook's guide took the first …, and the to-do guide copied that." Its resolution, and the `Q-30`
+options written from it, spoke only of "the guide". So the round fixed the copy and left the
+original.
+
+**What was not found.** The recovery time agrees. "Tens of minutes" matches the runbook's 20 to 45
+minutes for its long step. No other page under `docs/` states what a restore brings back.
+
+### COH-spec_sync-11 — Is the text rule the only thing that must move before the guestbook is deleted?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** HITL
+- **auto_basis:**
+- **ambiguity_source:** spec/invariants.md § Data invariants
+- **artifacts:** CLAUDE.md, spec/README.md, contracts/invariants/todo_list.md
+
+**What each says.** `CLAUDE.md` § What is an example, and what is the template, was edited by
+reconcile-docs in this stage:
+- :128-131: "Deleting it deletes with it: … the contracts `contracts/openapi/guestbook.yaml` and
+  `contracts/invariants/guestbook.md`".
+- :136: "**One thing moves before the guestbook goes: the words of the text rule.**"
+
+`spec/README.md`:63-65 carries the same deletion list. ADR-0001 § Consequences (:107-110) names the
+same single move.
+
+`contracts/invariants/todo_list.md` was written by the convergence round in this stage:
+- :9-10: "`D-01`…`D-04` stand in `guestbook.md`, and the first three hold for `todo_tasks` as for
+  every table".
+- `D-05`, at :19-20: "It is `D-04` for the to-do list's one field".
+
+Three more citations survive the deletion:
+- `spec/design/data-model.md` § Identifiers (:72-74) points `D-03` into `guestbook.md`;
+- § `todo_tasks` (:199) says "the counterpart of `D-04`";
+- `spec/design/testing.md`:803 says the same.
+
+**Why they cannot both be true.** Suppose someone follows the list and moves only `BR-01`'s words.
+The context that stays then loses the three invariants its table is held to. Command: `python3`,
+running the witness reader's own heading pattern over `contracts/invariants/*.md` with
+`guestbook.md` left out. Output: `without guestbook.md, defined: ['D-05'] | D-01..D-03 present:
+False`. The same run lists `D-04` still cited at `contracts/invariants/todo_list.md`:9 and :19,
+`spec/design/data-model.md`:199, and `spec/design/testing.md`:547, :738, :803 and :1009.
+
+Three checks would then go red:
+- `tests/fitness/test_invariant_witnesses.py`:115 asserts `{"D-01", "D-02", "D-03"} <= found`.
+- `frozen-ids` goes red on every citation of `D-04`, because it holds the `D-xx` space
+  (`spec/glossary.md` § Identifiers and their spaces: "an identifier named in prose and defined
+  nowhere goes red").
+- `links` goes red on `contracts/invariants/todo_list.md`:10.
+
+So "one thing moves" is false. `D-01`…`D-04` would have to move too, with their identifiers, because
+`contracts/invariants/README.md` § Identifiers says they are "never renamed, never reused", and a
+superseded one keeps its heading.
+
+This change already avoided the same trap once. ADR-0001 § Consequences says that
+`contracts/openapi/todo_list.yaml` writes out `Refusal` and its siblings itself, "rather than using a
+`$ref` into `guestbook.yaml`, so it stays readable when the guestbook is deleted". The invariants
+contract written in this stage points into the file that the deletion lists delete.
+
+Graded minor: the deletion would fail loudly on three checks, and nothing runs wrong today. Part of
+this predates the change, because `data-model.md` § Identifiers and the fitness assertion already
+depended on `guestbook.md`. What this stage added is two texts that now say opposite things: "one
+thing moves", and a contract that stays and builds on `guestbook.md`.
+
+**What settles it.** Nothing ranked above both. `contracts/invariants/todo_list.md` stands on the
+invariants rung, where only the constitution is higher, and nothing up there says where an invariant
+goes when it outlives its context. The README's "One file per domain" and the glossary's home,
+`contracts/invariants/<domain>.md`, give `D-01`…`D-03` no domain of their own, although they hold
+for every table. Where they go is a structural decision.
+
+**Resolution.** Recommended (A): the deletion lists say that two things move before the guestbook
+goes. One is the words of the text rule. The other is `D-01`…`D-04`, which move into
+`contracts/invariants/todo_list.md` with their identifiers and headings, and `D-04` gains a
+"Superseded by" line as the guestbook's own. This is text in two lists and one ADR sentence, and it
+follows the `BR-01` precedent.
+
+The alternative (B) moves `D-01`…`D-03` now into a file named for no domain, and repoints
+`spec/invariants.md`, `data-model.md` § Identifiers, `testing.md` and `todo_list.md`. That also
+changes the README's "One file per domain" and the glossary's home. The shape is right, and the
+price is a contract change in this pull request.
+
+Ready patch for A:
+- `CLAUDE.md`:136. Replace "**One thing moves before the guestbook goes: the words of the text
+  rule.**" with "**Two things move before the guestbook goes: the words of the text rule, and the
+  data invariants.**" After the paragraph's `BR-01` sentences, add: "`contracts/invariants/guestbook.md`
+  holds `D-01`…`D-04`: the first three hold for every table, `todo_tasks` included, and the to-do
+  list's `D-05` is written as `D-04` for a task. Move all four into
+  `contracts/invariants/todo_list.md` first, with identifiers and headings unchanged and `D-04`
+  gaining a "Superseded by" line; otherwise the witness test and the `frozen-ids` gate go red."
+- `spec/README.md`, after the deletion list's last item (:69), add: "Before that, `D-01`…`D-04` move
+  out of `contracts/invariants/guestbook.md` into `contracts/invariants/todo_list.md` with their
+  identifiers unchanged, because the to-do list's table is held to them."
+- ADR-0001 § Consequences, which is still `Proposed`. After "a citation of `BR-01` that resolves
+  nowhere.", add "The same holds for `D-01`…`D-04`, which `contracts/invariants/todo_list.md`
+  builds on."
+
+**What was ambiguous.** `spec/invariants.md` § Data invariants moved `D-01`…`D-03` into
+`contracts/invariants/guestbook.md`, while its own summary (:74-79) states them of every entity and
+every primary key. The file's name says the rules are the guestbook's, and its content says they
+are every table's. The deletion lists read the name. The new contract reads the content.
+
+**What was not found.** Nothing else in the to-do list's contracts reaches into a guestbook file.
+`todo_list.yaml` copies its shared schemas. `tests/fitness/test_data_invariants.py` sweeps
+`Base.metadata`, and names `guestbook.md` only in its docstring.
+
+### COH-spec_sync-12 — Who repairs the scripts' help: build-platform, or build-backend?
+
+- **kind:** contradiction
+- **severity:** minor
+- **decision_mode:** AUTO
+- **auto_basis:** spec/design/architecture.md § Who writes what, and where the sets meet
+- **ambiguity_source:** spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-spec_sync-5
+- **artifacts:** reconcile/delta/ops.md, reconcile/delta/converge.md
+
+**What each says.** `reconcile/delta/ops.md` F-1 (:75-83), which the re-dispatch left unchanged,
+routes the repair: "`scripts/*.sh` to a `build-platform` repair, `CLAUDE.md` to `reconcile-docs`,
+whose write set carries it". It also says "`CLAUDE.md` line 148 (`--no-seed  # leave the guest book
+empty; …`) says the same."
+
+`reconcile/delta/converge.md`, the § The files entry, routes it elsewhere: "The writer is
+build-backend because § Who writes what gives it `scripts/`, as does `.specconf/stack.json`, which
+names `scripts/` as deliberately not build-platform's." `spec/design/architecture.md`:639 names
+build-backend too.
+
+**Why they cannot both be true.** Each path has one writer. `spec/design/architecture.md` § Who
+writes what (:648-649) says "build-backend holds `app/`, `scripts/` and `golden-set/seed/`". The
+profile agrees. `python3` printing the `skills.build-platform` comment of `.specconf/stack.json`
+shows "`scripts/` is deliberately NOT here". A dispatch that follows F-1 would send the repair of
+COH-spec_sync-8 to a member that cannot write it.
+
+F-1's half about `CLAUDE.md` is stale too. `grep -n no-seed CLAUDE.md` prints `159:./scripts/start.sh
+--no-seed       # leave both lists empty; by default an empty guest book or`. reconcile-docs rewrote
+that line in the same wave that wrote F-1, as pass 10 recorded. The fragment goes into
+`delta-history.md`. Graded minor.
+
+**What settles it.** `spec/design/architecture.md` § Who writes what, and where the sets meet. It is
+part of `spec/design/**`, which ranks above both change fragments.
+
+**Resolution.** reconcile-ops rewrites F-1 so that it routes the scripts to build-backend and
+records the `CLAUDE.md` line as fixed.
+
+Ready patch, `reconcile/delta/ops.md` F-1:
+- :79-80. Replace "`CLAUDE.md` line 148 (`--no-seed  # leave the guest book empty; …`) says the
+  same." with "`CLAUDE.md` said the same, and `reconcile-docs` rewrote it in this stage
+  (`CLAUDE.md`:159-160)."
+- :81-83. Replace "`scripts/*.sh` to a `build-platform` repair, `CLAUDE.md` to `reconcile-docs`,
+  whose write set carries it." with "`scripts/*.sh` to a `build-backend` repair
+  (`spec/design/architecture.md` § Who writes what; COH-spec_sync-5, COH-spec_sync-8)."
+
+**What was ambiguous.** Pass 10's resolution of COH-spec_sync-5 read "made by the author whose write
+set holds `scripts/*.sh`. reconcile-ops names build-platform." It quoted F-1's routing without
+correcting it, and it named no author. The convergence round then chose build-backend, but wrote
+that only into `architecture.md` and its own fragment. reconcile-ops was re-dispatched for
+COH-spec_sync-6 and COH-spec_sync-7 alone, so F-1 kept its routing.
+
+Why reconcile-ops read it that way: `.specconf/stack.json` `trees.operational` lists `scripts/*.sh`
+among the trees that run the application, and running the application is the class build-platform is
+named for.
+
+**What was not found.** `docs.md`'s candidate list says "Scripts belong to no reconcile member, so
+this item is the orchestrator's". That is true and names no builder, so it contradicts neither side.
+
+### What was checked and agrees
+
+- **`converge.md` against `42eb0ea`.** Each of its nine entries is in the commit, and every edit
+  under `spec/` or `contracts/` in the commit has an entry. Its § This change owns names the four
+  scripts, which the commit does not touch. That is COH-spec_sync-8.
+- **`docs.md` and `ops.md` against `c9f9419`.** `ops.md` § The convergence round claims the rename,
+  the row in `docs/README.md`, the three runbook edits and the guide's sentence. `docs.md`'s three
+  edited rows and sources match. `ops.md`'s first table still describes the runbook as the first wave
+  left it ("both lists rewind together", row 1). Its later section names the sentence that replaced
+  that one and says "No other section moved". So it reads as a record in order, and it is not
+  raised.
+- **`D-05` against the design.** It states what `data-model.md`:198-200 and `testing.md`:802-813
+  state: NFC, trimmed at both ends, 1 to 200 code points, no line break. It names the three
+  witnesses `testing.md` named. Neither design document names `D-05` by its number, which is a
+  difference, not a contradiction. No other invariant is owed (`spec/invariants.md`:107-110),
+  because the two documents call for this one alone. Its "Kind of evidence: three, because …"
+  follows the form `guestbook.md` uses for `D-03` and `D-04` ("two, because …").
+- **The ADR's home.** `spec/README.md` and the glossary agree with conventions § When a decision is
+  an ADR and with `spec/ADR/index.md`. `sdd-specs` prints `spec/ADR/index.md is up to date`.
+- **Conventions § Documentation against `docs/`.** The moved guide has a **For:** line and a
+  **Normative source:** line, and its three links resolve (`test -f` on each target).
+  - `docs/README.md` says "**For:** whoever operates, maintains or takes delivery of this
+    application", and `CLAUDE.md`:66 says "for whoever operates it". Neither names the person using
+    a screen, and neither excludes that person.
+  - `docs/README.md`'s own table lists both guides "for the person using it".
+  - So they are not raised. They are the two remaining copies of the wording that COH-spec_sync-7
+    found in the home.
+- **The guide against the rest.** Only the restore sentence (COH-spec_sync-9) and three links
+  changed. "Within the backup window" and "tens of minutes" agree with the runbook's 14, 7 and 1
+  days and its 20 to 45 minutes. Its refill paragraph (:86-88) is the one `docs.md` entry 12 says
+  the guide carries.
+- **The runbook's § Before you start.** Items 1 and 3 say "Everything after it will be gone" and
+  "anything written after 11:04 is gone". `git diff main` shows no line changed there. Read against
+  the scoped lead, both speak of what the restore brings back, so they are not raised.
+- **`spec/changes/INDEX.md`.** "Documents touched" still lists `reconcile/user-guide-todo-list.md`,
+  which is gone. It records what the change touched. reconcile-docs reported that no verb removes
+  the entry. It is not a contradiction between artefacts.
+- **Each author's assumptions** against what the neighbour wrote:
+  - reconcile-design: both "empty today" sentences are gone (COH-spec_sync-2), and the invariant is
+    written (COH-spec_sync-1). The drift it named is on `main` already (pass 10).
+  - reconcile-docs: reconcile-ops owns the guide and its row, and made both. The copy is gone.
+  - reconcile-ops: COH-spec_sync-6 was applied in the guide and in the three runbook pages, as it
+    says. The guide's wording is COH-spec_sync-9. The guest book's guide it left alone is
+    COH-spec_sync-10. The port-5432 candidate is routing.
+  - reconcile-spec: nothing changed since pass 10, and `BR-13`'s paragraph still agrees with
+    `api.md`.
+  - review-converge: every edit it names is in `42eb0ea`. Its COH-spec_sync-5 repair was not
+    dispatched (COH-spec_sync-8). For COH-spec_sync-6 it expected the guide to say that "one list
+    or chosen tasks" can come back, which is the wording the guide lacks (COH-spec_sync-9).
+- **Glossary and invariants.** The new contract's front matter and file follow the glossary's home
+  for `D-xx`, `contracts/invariants/<domain>.md`. `D-05` was free.

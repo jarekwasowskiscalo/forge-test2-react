@@ -997,6 +997,94 @@
       "severity": "minor",
       "stage": "spec_sync",
       "status": "resolved"
+    },
+    {
+      "ambiguity_source": "spec/design/architecture.md § The files",
+      "artifacts": [
+        "scripts/start.sh",
+        "scripts/help.sh",
+        "scripts/deploy.sh",
+        "scripts/preview.sh"
+      ],
+      "auto_basis": "spec/constitution.md § Article I — The specification is the source of truth",
+      "contradiction": "Do the scripts' help and comments now describe two lists, as COH-spec_sync-5 resolved?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-8",
+      "kind": "verification",
+      "raised_at": "2026-09-25T06:39:50Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "docs/runbooks/restore-the-database.md § When to use this",
+      "artifacts": [
+        "docs/user-guide-todo-list.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Does the to-do list's guide say that chosen tasks can come back on their own, as `Q-30` decided?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-9",
+      "kind": "verification",
+      "raised_at": "2026-09-25T06:39:50Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-spec_sync-6",
+      "artifacts": [
+        "docs/user-guide.md",
+        "docs/runbooks/restore-the-database.md",
+        "reconcile/delta/ops.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Can a restore bring back one guest book entry, or only the whole book?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-10",
+      "kind": "contradiction",
+      "raised_at": "2026-09-25T06:39:50Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/invariants.md § Data invariants",
+      "artifacts": [
+        "CLAUDE.md",
+        "spec/README.md",
+        "contracts/invariants/todo_list.md"
+      ],
+      "auto_basis": null,
+      "contradiction": "Is the text rule the only thing that must move before the guestbook is deleted?",
+      "decision_mode": "HITL",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-11",
+      "kind": "contradiction",
+      "raised_at": "2026-09-25T06:39:50Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
+    },
+    {
+      "ambiguity_source": "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-spec_sync-5",
+      "artifacts": [
+        "reconcile/delta/ops.md",
+        "reconcile/delta/converge.md"
+      ],
+      "auto_basis": "spec/design/architecture.md § Who writes what, and where the sets meet",
+      "contradiction": "Who repairs the scripts' help: build-platform, or build-backend?",
+      "decision_mode": "AUTO",
+      "file": "review/coherence.md",
+      "id": "COH-spec_sync-12",
+      "kind": "contradiction",
+      "raised_at": "2026-09-25T06:39:50Z",
+      "severity": "minor",
+      "stage": "spec_sync",
+      "status": "open"
     }
   ],
   "coherence_passes": [
@@ -1079,6 +1167,14 @@
       "pass": 10,
       "stage": "spec_sync",
       "verdict": "GO_WITH_QUESTIONS"
+    },
+    {
+      "at": "2026-09-25T06:39:50Z",
+      "epoch": 1,
+      "inputs": "d2cefff8540363b08368df3145434e4716bcbe08f5c5169f2f4248f975d3d6c3",
+      "pass": 11,
+      "stage": "spec_sync",
+      "verdict": "GO_WITH_QUESTIONS"
     }
   ],
   "contention_events": 0,
@@ -1149,6 +1245,11 @@
     "reconcile-spec": {
       "assumptions": "reconcile-design owns the technical request-shape behaviours (a PATCH setting both text and done, the empty-patch refusal, the standard 422); api.md already describes them and the screen never sends them, so they stay out of the context documents and are named in the fragment. reconcile-docs writes for the back-office reader and does not restate BR-13. The converge-written header paragraph of todo_list.md (feature-claim history) was not audited as a design claim. Gap found: BR-13 vs refused corrected text -- the text refusal wins (judge before lookup, api.md 'the lookup last', R-8 test); one paragraph added under BR-13.",
       "at": "2026-09-24T21:15:58Z",
+      "state": "returned"
+    },
+    "review-coherence": {
+      "assumptions": "none -- reads only; all five author blocks were captured and checked",
+      "at": "2026-09-25T06:39:50Z",
       "state": "returned"
     },
     "review-converge": {
@@ -3121,6 +3222,11 @@
           "at": "2026-09-25T06:15:24Z",
           "note": "reconcile-docs can delete a document it registered with add-doc but has no verb to unregister it, so docs_touched keeps a dead path (reconcile/user-guide-todo-list.md) after the Q-31 move",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-25T06:32:52Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/401",
+          "state": "filed"
         }
       ],
       "id": "PROC-64",
@@ -3131,8 +3237,8 @@
       "signal": "reconcile-docs can delete a document it registered with add-doc but has no verb to unregister it, so docs_touched keeps a dead path (reconcile/user-guide-todo-list.md) after the Q-31 move",
       "signature": "reconcile-docs can delete a document it registered with add-doc but has no verb to unregister it, so docs_touched keeps ",
       "stage": "spec_sync",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/401"
     },
     {
       "at": "2026-09-25T06:15:24Z",
@@ -3147,6 +3253,11 @@
           "at": "2026-09-25T06:15:24Z",
           "note": "the convergence round routes each resolved finding to members by the finding's artifacts list, not by whose write set holds the edits its resolution requires: COH-spec_sync-6 (three docs/ runbook edits) reached only reconcile-docs, COH-spec_sync-7 was split across two parallel members so one had to poll for the other's output, and COH-spec_sync-5 (scripts/*.sh, owned by build-backend) reached no member at all",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-25T06:32:54Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/402",
+          "state": "filed"
         }
       ],
       "id": "PROC-65",
@@ -3156,6 +3267,32 @@
       "seen": 1,
       "signal": "the convergence round routes each resolved finding to members by the finding's artifacts list, not by whose write set holds the edits its resolution requires: COH-spec_sync-6 (three docs/ runbook edits) reached only reconcile-docs, COH-spec_sync-7 was split across two parallel members so one had to poll for the other's output, and COH-spec_sync-5 (scripts/*.sh, owned by build-backend) reached no member at all",
       "signature": "the convergence round routes each resolved finding to members by the finding·s output, and COH-spec_sync-· (scripts· own",
+      "stage": "spec_sync",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/402"
+    },
+    {
+      "at": "2026-09-25T06:39:50Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-25T06:39:50Z",
+          "note": "the review-coherence preflight truncates a recorded resolution mid-word (COH-spec_sync-6 ends 'incident-f'), so the verifying pass had to read open_questions through change_state show to check what was decided",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-66",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-coherence",
+      "seen": 1,
+      "signal": "the review-coherence preflight truncates a recorded resolution mid-word (COH-spec_sync-6 ends 'incident-f'), so the verifying pass had to read open_questions through change_state show to check what was decided",
+      "signature": "the review-coherence preflight truncates a recorded resolution mid-word (COH-spec_sync-· ends ·), so the verifying pass ",
       "stage": "spec_sync",
       "state": "reported",
       "url": null
@@ -4621,6 +4758,43 @@
       "stage": "spec_sync",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-25T06:32:18Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-25T06:15:39Z",
+      "blocking": false,
+      "blocks": [
+        "TD-13"
+      ],
+      "options": [
+        {
+          "consequence": "This change goes on to delivery now; the stale help text is recorded as a known item and fixed in a small separate pull request with a changelog entry",
+          "key": "A",
+          "label": "Follow-up fix right after merge",
+          "recommended": true
+        },
+        {
+          "consequence": "The backend builder fixes the text in this change, but the change re-runs the from-nothing check and this reconciliation stage, which costs another hour or more",
+          "key": "B",
+          "label": "Send the change back to implementation",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-32",
+      "question": "Four scripts' --help text and comments (start.sh, help.sh, deploy.sh, preview.sh) still describe only the guest book being filled with example data, while the spec now says both lists are. Only the backend builder may edit scripts, and it cannot run in this stage. How should this text-only fix be made?",
+      "stage": "spec_sync",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -5195,7 +5369,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 910,
+  "revision": 919,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -5230,7 +5404,24 @@
   "stage_status": "in_progress",
   "status": "draft",
   "supersedes": [],
-  "tasks": [],
+  "tasks": [
+    {
+      "evidence": "./scripts/start.sh --help prints that --no-seed leaves both lists empty, and changelog/<date>-seed-help-text-names-both-lists.md exists",
+      "history": [
+        {
+          "at": "2026-09-25T06:32:23Z",
+          "note": "Deferred by the user (Q-32 A) to a follow-up pull request after this change merges: correct the seeding text in scripts/start.sh --help and comments, scripts/help.sh, scripts/deploy.sh and scripts/preview.sh to say both lists are filled (COH-spec_sync-5 patch in review/coherence.md pass 10)",
+          "state": "decided"
+        }
+      ],
+      "id": "T-1",
+      "namespace": "Q",
+      "owner": "the repository owner, in a changelog pull request after merge",
+      "source": "Q-32",
+      "state": "decided",
+      "what": "Deferred by the user (Q-32 A) to a follow-up pull request after this change merges: correct the seeding text in scripts/start.sh --help and comments, scripts/help.sh, scripts/deploy.sh and scripts/preview.sh to say both lists are filled (COH-spec_sync-5 patch in review/coherence.md pass 10)"
+    }
+  ],
   "tier": "p3",
   "title": "Todo list - add tasks and mark them done",
   "todo": [
@@ -5329,6 +5520,14 @@
       "resolved_at": "2026-09-24T20:27:39Z",
       "skill": "build-tests-e2e",
       "what": "COH-implement-9 (constitution Art. I): in e2e/suite/steps/guestbook_steps.py:25 replace \"The one resource this suite drives.\" with \"The one resource this module drives.\", as the ready patch in spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/review/coherence.md § COH-implement-9 gives it (the change boundary now lists the file for exactly this one comment). Prose only: no step text, binding or behaviour changes, nothing else in the file; prove ./scripts/test.sh e2e --collect-only and ./scripts/lint.sh green."
+    },
+    {
+      "id": "TD-13",
+      "kind": "agent",
+      "raised_at": "2026-09-25T06:15:32Z",
+      "resolved_at": "2026-09-25T06:32:23Z",
+      "skill": "build-backend",
+      "what": "COH-spec_sync-5 (resolved, auto, constitution art. I): the script help text and comments still describe one list and one GET. Apply the ready patch recorded in review/coherence.md pass 10, text only: scripts/start.sh:48-51 (--no-seed help), :106, :113-115, :170; scripts/help.sh:89-91; scripts/deploy.sh:620-622; scripts/preview.sh:198-201 -- two lists, each filled from golden-set/seed/ when it holds nothing yet, one GET per list, as spec/design/architecture.md § What a new environment starts with and seed.sh --help say. No behaviour change."
     }
   ],
   "toolchain": [
@@ -5346,7 +5545,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-25T06:15:24Z",
+  "updated_at": "2026-09-25T06:39:50Z",
   "verification_last": {
     "content_digest": "dd8c251ff7634c10453cf80cd92896b20e4d941582648ab0d0d2ff3fe5345ae3",
     "counts": {

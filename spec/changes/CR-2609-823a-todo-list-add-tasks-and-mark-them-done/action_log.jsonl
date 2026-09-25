@@ -920,3 +920,12 @@
 {"timestamp": "2026-09-25T06:14:25Z", "agent": "sdd", "action": "doc_registered", "details": "docs/user-guide-todo-list.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
 {"timestamp": "2026-09-25T06:14:25Z", "agent": "sdd", "action": "doc_registered", "details": "docs/README.md", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
 {"timestamp": "2026-09-25T06:15:24Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: reconcile-docs, reconcile-ops; 2 process fault(s): PROC-64, PROC-65", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:15:32Z", "agent": "sdd", "action": "todo_raised", "details": "TD-13 (agent): COH-spec_sync-5 (resolved, auto, constitution art. I): the script help text and comments still describe one list and one", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:15:39Z", "agent": "sdd", "action": "question_raised", "details": "1 question(s): Q-32", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:32:18Z", "agent": "sdd", "action": "question_answered", "details": "Q-32 -> A", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:32:23Z", "agent": "sdd", "action": "task_filed", "details": "T-1 <- Q-32 (the repository owner, in a changelog pull request after merge)", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:32:23Z", "agent": "sdd", "action": "todo_resolved", "details": "TD-13", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:32:35Z", "agent": "sdd", "action": "fanout_recorded", "details": "dispatched: review-coherence", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:32:52Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-64 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/401", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:32:54Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-65 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/402", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T06:39:50Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-coherence; coherence pass 11 GO_WITH_QUESTIONS, 5 new finding(s); 1 process fault(s): PROC-66", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}

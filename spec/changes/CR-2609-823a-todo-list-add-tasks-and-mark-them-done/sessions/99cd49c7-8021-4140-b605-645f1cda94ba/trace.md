@@ -51,3 +51,12 @@
 - [08:14] doc_registered: docs/user-guide-todo-list.md
 - [08:14] doc_registered: docs/README.md
 - [08:15] fanout_recorded: returned: reconcile-docs, reconcile-ops; 2 process fault(s): PROC-64, PROC-65
+- [08:15] todo_raised: TD-13 (agent): COH-spec_sync-5 (resolved, auto, constitution art. I): the script help text and comments still describe one list and one
+- [08:15] question_raised: 1 question(s): Q-32
+- [08:32] question_answered: Q-32 -> A
+- [08:32] task_filed: T-1 <- Q-32 (the repository owner, in a changelog pull request after merge)
+- [08:32] todo_resolved: TD-13
+- [08:32] fanout_recorded: dispatched: review-coherence
+- [08:32] process_fault_resolved: PROC-64 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/401
+- [08:32] process_fault_resolved: PROC-65 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/402
+- [08:39] fanout_recorded: returned: review-coherence; coherence pass 11 GO_WITH_QUESTIONS, 5 new finding(s); 1 process fault(s): PROC-66
