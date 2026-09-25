@@ -3,7 +3,7 @@
 *A new bounded context, the to-do list, opened only after placing the requirements in the one
 context that exists was tried and failed. The evidence for both is below the entries.*
 
-- `ADDED` `spec/contexts/todo_list.md`
+- ADDED `spec/contexts/todo_list.md`
   **Why:** The requirements bring a stored thing no context describes — a task with a state that
   is switched both ways — and every rule about it (`R-1`…`R-4`, `R-6`…`R-9`) needs one owner.
   The guestbook cannot be that owner: its flow `P-01` states that an entry "either exists or it
@@ -29,7 +29,7 @@ context that exists was tried and failed. The evidence for both is below the ent
   **Requirements:** CR-2609-823a/R-1, CR-2609-823a/R-2, CR-2609-823a/R-3, CR-2609-823a/R-4,
   CR-2609-823a/R-6, CR-2609-823a/R-7, CR-2609-823a/R-8, CR-2609-823a/R-9
 
-- `MODIFIED` `spec/glossary.md` — the opening paragraph, the rows **Guestbook**, **To-do list**
+- MODIFIED `spec/glossary.md` — the opening paragraph, the rows **Guestbook**, **To-do list**
   and **Task**, and the process row **Task (process)**
   **Was:** "today there is one context, so the split is an exercise for the future"; Guestbook
   "The only bounded context of this system"; no row for the to-do list, the task or the process

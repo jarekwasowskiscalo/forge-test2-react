@@ -7,14 +7,14 @@ written into the live tree; this fragment says what moved and why. The two quest
 left open went to the person who asked for the change and are applied as answered (`Q-15` → A,
 `Q-16` → A; § The two questions, answered).*
 
-- `ADDED` `spec/design/ui/todo-list.md`
+- ADDED `spec/design/ui/todo-list.md`
   **Why:** The requirements add a screen (`R-1` clause 1: one field for a new task with the list below it) and the mock-up that records what was agreed about it cannot be diffed, merged or made to cite a requirement (`spec/design/ui/README.md`). The document gives the builder and the frontend test author one source: the regions top to bottom, every component with the states it has on the built screen and the reason for each state it lacks, starting with `empty`; every string verbatim; each element bound to a field of `spec/design/api.md` through the resource's one hook; the interactions with what the person sees while a write travels and after it fails; the keyboard paths; and the tokens by name. It takes the frozen screen id `S-02` (the next free one after the guestbook's `S-01`) and the route `/todo-list` (C-3), which is the value `spec/design/architecture.md` leaves to the screen specification for the route constant. Two points neither the mock-up nor the requirements fixed were decided by the person who asked for the change and are written in as answered: the words of a change the service answered with an error of no sentence of its own (`Q-15` → A, § Copy and § Interactions), and where the focus goes back once a write's control is unlocked or removed (`Q-16` → A, § Keyboard and accessibility); the document's § States with no defined behaviour now says none remain.
   **ADR:** none — a screen document applies the rules already in force (`spec/design/ui/README.md`, the template, `spec/design/conventions.md` § Frontend and § Language); every choice in it was approved in the mock-up, and each is reversed by an edit to this document and the screen's own files.
   **Requirements:** CR-2609-823a/R-1, CR-2609-823a/R-2, CR-2609-823a/R-3, CR-2609-823a/R-4,
   CR-2609-823a/R-5, CR-2609-823a/R-6, CR-2609-823a/R-7, CR-2609-823a/R-8, CR-2609-823a/R-9,
   CR-2609-823a/R-10
 
-- `MODIFIED` `spec/design/ui/system-states.md` — the front matter's `requirements`; § One column
+- MODIFIED `spec/design/ui/system-states.md` — the front matter's `requirements`; § One column
   (both paragraphs); § Regions (the header, content and footer items, the not-found item, the
   lockup paragraph, one sentence added to the lockup-link paragraph); § Components and their
   states (§ The navigation between the screens added; the paragraph under § `Toast`); § Copy
@@ -40,7 +40,7 @@ left open went to the person who asked for the change and are applied as answere
   **ADR:** none — the navigation's shape, the placeholder's two strings, the 404 sentence and the footer's home are each reversed by an edit to the frame's one file and this document (`spec/design/ui/system-states.md` § One column names that seam); the toast sentence now describes the primitive as it already behaves.
   **Requirements:** CR-2609-823a/R-5, CR-2609-823a/R-10
 
-- `MODIFIED` `spec/design/ui/guestbook.md` — the opening sentence; § Regions, item 1; § Copy (the
+- MODIFIED `spec/design/ui/guestbook.md` — the opening sentence; § Regions, item 1; § Copy (the
   footer row added)
   **Was:** "The only screen of this application."; the header region as "the lockup, the number of
   entries…"; no footer row, because the footer's words stood in `system-states.md` § Copy.

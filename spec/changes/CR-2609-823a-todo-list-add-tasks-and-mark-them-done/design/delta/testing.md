@@ -6,7 +6,7 @@ fixtures, which tests must be seen red first and which are green by design. Writ
 the owner per requirement, where this design departs from `scenarios.md` and from a neighbour's
 fragment, and what nobody in the composition can write.*
 
-- `MODIFIED` `spec/design/testing.md` — § Fitness functions (the rows for
+- MODIFIED `spec/design/testing.md` — § Fitness functions (the rows for
   `test_context_boundaries.py`, `test_context_declarations.py`, `test_golden_set.py`,
   `test_data_invariants.py` and `test_length_constants.py`); § The fixture half (the lead-in
   sentence, four table rows, the sentence on browser readers, one paragraph and one rejected-

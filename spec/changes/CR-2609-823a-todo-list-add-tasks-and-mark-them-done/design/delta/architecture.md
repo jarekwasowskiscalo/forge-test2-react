@@ -6,7 +6,7 @@ modified or removed, and which implementer writes each of them. The live documen
 what belongs to the change alone: the requirement per file, the nine write sets written out,
 what the change leaves alone, what nobody in this composition can write, and the boundary.*
 
-- `MODIFIED` `spec/design/architecture.md` — § What this is, and for whom (one paragraph
+- MODIFIED `spec/design/architecture.md` — § What this is, and for whom (one paragraph
   added); § Contexts and their boundaries (the lead sentence, one table row, the diagram);
   § Rules between contexts (the lead-in paragraph, two bullets extended by one clause each);
   § What a new environment starts with (three paragraphs); § What a new feature adds (the

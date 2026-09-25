@@ -87,3 +87,12 @@
 - [08:55] fanout_recorded: convergence round: cleared review-coherence
 - [08:55] fanout_recorded: dispatched: review-coherence
 - [09:00] fanout_recorded: returned: review-coherence; coherence pass 12 GO, 0 new finding(s); 1 process fault(s): PROC-68
+- [09:00] process_fault_resolved: PROC-68 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/407
+- [09:04] process_fault_reported: PROC-69 (engine): delta-entries gate red at the spec_sync boundary (40 problems): delta.py supersedes entries by their
+- [09:05] process_fault_resolved: PROC-69 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/322
+- [09:05] question_raised: 1 question(s): Q-34
+- [09:08] question_answered: Q-34 -> A
+- [09:09] todo_raised: TD-15 (agent): Q-34 A (the user's decision), a mechanical workaround for engine bug marketplace #317/#322 (PROC-69): in this change's 1
+- [09:09] fanout_recorded: dispatched: review-converge
+- [09:10] reconciliation_added: 1 reconciliation(s): REC-52
+- [09:11] fanout_recorded: returned: review-converge; 1 process fault(s): PROC-70

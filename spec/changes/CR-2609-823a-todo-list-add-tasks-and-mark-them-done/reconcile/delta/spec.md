@@ -9,7 +9,7 @@ different reasons for one corner case. The build settles it, deliberately and un
 the context document now says so in one paragraph. No rule identifier is minted, and no
 behaviour was found wrong.*
 
-- `MODIFIED` `spec/contexts/todo_list.md` — § `BR-13` (one paragraph added after its second
+- MODIFIED `spec/contexts/todo_list.md` — § `BR-13` (one paragraph added after its second
   paragraph; every other paragraph byte-identical)
   **Was:** `BR-13` said that a change aimed at a task that no longer exists "tells the person the
   task no longer exists — a marking, a correction and a second deletion alike". `BR-10` said

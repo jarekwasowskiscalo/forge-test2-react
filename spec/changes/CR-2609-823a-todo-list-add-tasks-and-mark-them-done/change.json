@@ -1277,8 +1277,8 @@
       "state": "returned"
     },
     "review-converge": {
-      "assumptions": "reconcile-ops applies the ready patches of COH-9, 10 and 12 as written. F-1 new routing (a build-backend repair) might also cite the Q-32 follow-up pull request -- noted, not decided. TD-13 in REC-47 is the task Q-32 blocks. D-04 Superseded-by clause of the COH-11 patch left out because Q-33 A did not decide it; CLAUDE.md gets no delta entry (outside spec/ and contracts/).",
-      "at": "2026-09-25T06:51:26Z",
+      "assumptions": "loop close reassembles delta.md on the real change directory; superseded bullets will then carry repo-relative source paths. Fragments inside the change record need no delta entry of their own.",
+      "at": "2026-09-25T07:11:54Z",
       "state": "returned"
     }
   },
@@ -3370,6 +3370,11 @@
           "at": "2026-09-25T07:00:15Z",
           "note": "the record's coherence resolution field is cut at about 400 characters mid-word in storage, not only in the preflight: change_state show returns the same cut text for COH-spec_sync-6, 8, 9, 10, 11, 12",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-25T07:00:26Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/407",
+          "state": "filed"
         }
       ],
       "id": "PROC-68",
@@ -3379,6 +3384,63 @@
       "seen": 1,
       "signal": "the record's coherence resolution field is cut at about 400 characters mid-word in storage, not only in the preflight: change_state show returns the same cut text for COH-spec_sync-6, 8, 9, 10, 11, 12",
       "signature": "the record's coherence resolution field is cut at about · characters mid-word in storage, not only in the preflight: cha",
+      "stage": "spec_sync",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/407"
+    },
+    {
+      "at": "2026-09-25T07:04:48Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-25T07:04:48Z",
+          "note": "delta-entries gate red at the spec_sync boundary (40 problems): delta.py supersedes entries by their first backticked token, which the shipped fragment form makes the kind (`MODIFIED`), so every design entry is 'superseded' by any reconcile entry of the same kind and listed as '- `MODIFIED` — the design phase, ...' bullets that check_specs.py:472 then parses as entries with no Why; all product suites green, the stage cannot close",
+          "state": "reported"
+        },
+        {
+          "at": "2026-09-25T07:05:01Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/322",
+          "state": "filed"
+        }
+      ],
+      "id": "PROC-69",
+      "owner": "engine",
+      "reason": null,
+      "reporter": null,
+      "seen": 1,
+      "signal": "delta-entries gate red at the spec_sync boundary (40 problems): delta.py supersedes entries by their first backticked token, which the shipped fragment form makes the kind (`MODIFIED`), so every design entry is 'superseded' by any reconcile entry of the same kind and listed as '- `MODIFIED` — the design phase, ...' bullets that check_specs.py:472 then parses as entries with no Why; all product suites green, the stage cannot close",
+      "signature": "delta-entries gate red at the spec_sync boundary (· problems): delta.py supersedes entries by their first backticked tok",
+      "stage": "spec_sync",
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/322"
+    },
+    {
+      "at": "2026-09-25T07:11:54Z",
+      "cost": null,
+      "destination": {
+        "label": "from-instance",
+        "repo": "Scalo-Sales-Engineering-Consulting/claude-marketplace"
+      },
+      "destination_gap": null,
+      "history": [
+        {
+          "at": "2026-09-25T07:11:54Z",
+          "note": "the review-converge preflight spells the state call as '[--edited EDITED ...]' (one flag, several values) while add-reconciliation takes one value per --edited and must be repeated; the first call exited 2",
+          "state": "reported"
+        }
+      ],
+      "id": "PROC-70",
+      "owner": "engine",
+      "reason": null,
+      "reporter": "review-converge",
+      "seen": 1,
+      "signal": "the review-converge preflight spells the state call as '[--edited EDITED ...]' (one flag, several values) while add-reconciliation takes one value per --edited and must be repeated; the first call exited 2",
+      "signature": "the review-converge preflight spells the state call as · (one flag, several values) while add-reconciliation takes one v",
       "stage": "spec_sync",
       "state": "reported",
       "url": null
@@ -4960,6 +5022,47 @@
       "stage": "spec_sync",
       "status": "answered",
       "supersedes": null
+    },
+    {
+      "allow_free_text": true,
+      "answer": {
+        "announced": false,
+        "announcement": "",
+        "answered_at": "2026-09-25T07:08:57Z",
+        "choice": "A",
+        "delegated_scope": "",
+        "free_text": "",
+        "interpreted_as": null,
+        "kind": "chosen"
+      },
+      "asked_at": "2026-09-25T07:05:01Z",
+      "blocking": false,
+      "blocks": [],
+      "options": [
+        {
+          "consequence": "A worker removes the backticks around ADDED/MODIFIED in this change's 13 delta notes (the parser already accepts that form), the summary rebuilds correctly and the gate can go green; nothing in the product or spec changes, and nothing needs undoing later",
+          "key": "A",
+          "label": "Reformat the change's notes, then close",
+          "recommended": true
+        },
+        {
+          "consequence": "The stage closes with a signed 'accepted red', and the pull request needs the spec-exempt label to merge, hiding this and any other spec failure from CI",
+          "key": "B",
+          "label": "Close red and mark the pull request exempt",
+          "recommended": false
+        },
+        {
+          "consequence": "The change stays here, fully reconciled, until the plugin team fixes #317/#322 and a new version is installed",
+          "key": "C",
+          "label": "Stop and wait for the plugin fix",
+          "recommended": false
+        }
+      ],
+      "qid": "Q-34",
+      "question": "The stage cannot close: every test passes, but the plugin's own change-summary builder produces a list its own checker rejects (a known open plugin bug, marketplace #317/#322). The same red would block the pull request's spec check. How do we get past it?",
+      "stage": "spec_sync",
+      "status": "answered",
+      "supersedes": null
     }
   ],
   "parent_cr_id": null,
@@ -5578,6 +5681,27 @@
       "id": "REC-51",
       "rule_added": null,
       "source": "auto"
+    },
+    {
+      "at": "2026-09-25T07:10:57Z",
+      "decision": "Reformat the change's notes, then close -- a mechanical workaround for marketplace #317/#322 (PROC-69): every delta entry line in the fragments drops only the backticks around its kind ('- MODIFIED `path`'), so delta.py takes the path, not the kind, as the entry's first backticked token and supersedes by file",
+      "edited": [
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/api.md § every entry line (3)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/architecture.md § every entry line (1)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/converge.md § every entry line (27)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/data-model.md § every entry line (1)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/domain.md § every entry line (2)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/spec.md § every entry line (2)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/testing.md § every entry line (1)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/design/delta/ui.md § every entry line (3)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/delta/converge.md § every entry line (13)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/delta/design.md § every entry line (7)",
+        "spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/reconcile/delta/spec.md § every entry line (1)"
+      ],
+      "from_finding": "Q-34",
+      "id": "REC-52",
+      "rule_added": null,
+      "source": "hitl"
     }
   ],
   "request_verbatim": "chce zrobic nowa zmiane. Chce dodac funkcje. Chce liste zadan do zrobienia liste todo, chce by kazdy mogl dodac nowe zadanie i by dalo sie zaznaczyc ze zadanie jest zrealizowane. Prosty widok z polem do dodwania zadan oraz lista dodanych zadan. przy kazdym zadaniu opcja odznaczenia ze zadanie zostalo zrobione i ew usuniecie lub edycja zadania.",
@@ -5594,7 +5718,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 946,
+  "revision": 955,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -5761,6 +5885,13 @@
       "resolved_at": "2026-09-25T06:54:54Z",
       "skill": "reconcile-ops",
       "what": "Apply the ready patches recorded in review/coherence.md § Pass 11 for the three resolved findings whose repair is in your tree (reconciliations REC-48, REC-49, REC-51): COH-spec_sync-9 (Q-30 A) docs/user-guide-todo-list.md:65-67 says the whole list OR only the tasks you name can come back; COH-spec_sync-10 (Q-30 A) docs/user-guide.md:60-62 the same for the guest book (whole book or chosen entries), and reconcile/delta/ops.md:39-40 and :54-57 stop calling that guide both true and untrue; COH-spec_sync-12 reconcile/delta/ops.md F-1 (:79-83) routes scripts/*.sh to build-backend, not build-platform, notes the Q-32 follow-up pull request, and stops citing the rewritten CLAUDE.md line. Minimal diff; touch nothing else."
+    },
+    {
+      "id": "TD-15",
+      "kind": "agent",
+      "raised_at": "2026-09-25T07:09:02Z",
+      "skill": "review-converge",
+      "what": "Q-34 A (the user's decision), a mechanical workaround for engine bug marketplace #317/#322 (PROC-69): in this change's 13 delta fragments -- design/delta/*.md and reconcile/delta/*.md under spec/changes/CR-2609-823a-todo-list-add-tasks-and-mark-them-done/ -- rewrite every entry line of the form '- `ADDED` `path` ...' / '- `MODIFIED` ...' / '- `REMOVED` ...' to drop ONLY the backticks around the kind ('- MODIFIED `path` ...'); delta_grammar.ENTRY accepts the kind with or without backticks, and the first backticked token then becomes the file path, so supersession works by file. Change no other character: no wording, no Why, no path. Do not touch delta.md or delta-history.md (loop close assembles them). Record it with add-reconciliation --from-finding Q-34 --source hitl. Prove it: sdd-specs must report delta-entries with 0 problems once delta.md is reassembled -- if you cannot reassemble, say so and the orchestrator's loop close will."
     }
   ],
   "toolchain": [
@@ -5778,7 +5909,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-25T07:00:15Z",
+  "updated_at": "2026-09-25T07:11:54Z",
   "verification_last": {
     "content_digest": "dd8c251ff7634c10453cf80cd92896b20e4d941582648ab0d0d2ff3fe5345ae3",
     "counts": {

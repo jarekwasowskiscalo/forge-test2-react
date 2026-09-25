@@ -6,7 +6,7 @@ every requirement, brought the guestbook's document level with the new boundary,
 gaps in the rules. No rule identifier is minted: the highest in use is `BR-13`, and every edit
 below amends a section that already has one.*
 
-- `MODIFIED` `spec/contexts/guestbook.md` — the front matter's `neighbours`, the opening sentence,
+- MODIFIED `spec/contexts/guestbook.md` — the front matter's `neighbours`, the opening sentence,
   § `BR-01` (one paragraph added) and § Boundaries (its first paragraph, and the lead-in of its
   second)
   **Was:** "The only bounded context of this system and the only feature it has";
@@ -23,7 +23,7 @@ below amends a section that already has one.*
   **ADR:** none — the decision behind this edit (a to-do list context of its own, joined to the guestbook by a shared kernel that is the text rule alone) is the ADR `design/delta/domain.md` marks as required for `design-adr`; this entry records the guestbook's side of that boundary and changes no rule.
   **Requirements:** CR-2609-823a/R-1, CR-2609-823a/R-2
 
-- `MODIFIED` `spec/contexts/todo_list.md` — § `BR-07` (one paragraph added) and § `BR-10` (one
+- MODIFIED `spec/contexts/todo_list.md` — § `BR-07` (one paragraph added) and § `BR-10` (one
   paragraph added)
   **Was:** `BR-06` refused a text over 200 code points as too long and `BR-07` refused a text with
   an inner line break as more than one line, "never 'empty' or 'too long'", and neither said
