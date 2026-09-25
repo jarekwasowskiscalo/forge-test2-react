@@ -1,0 +1,576 @@
+commit 00c97dced8b4b411a2ec435870cd61a0aac3f37a
+Author: Jaroslaw Wasowski <jaroslaw.wasowski@scalosoft.com>
+Date:   Thu Sep 24 23:15:58 2026 +0200
+
+    chore(sdd): CR-2609-823a -- step “reconcile-spec, reconcile-design, reconcile-docs, reconcile-ops” verified
+    
+    The spec_sync stage's wave returned and passed its own verify.
+    Members: reconcile-spec, reconcile-design, reconcile-docs, reconcile-ops.
+
+diff --git a/CLAUDE.md b/CLAUDE.md
+index 4363187..2121cfb 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -1,7 +1,8 @@
+ # sdd-app-template
+ 
+ An application template built with the SDD process: FastAPI (`app/`) + React/TS (`frontend/`) +
+-Postgres, one process on `:8080`. One example feature — **a guestbook**.
++Postgres, one process on `:8080`. One example feature — **a guestbook** — and beside it a to-do
++list, which is not an example and stays.
+ 
+ This repository's value is the **process**, not the product. The system's normative
+ specification lives in `spec/`; the change process's contract (SDD) in
+@@ -132,7 +133,17 @@ that bind it, the contracts `contracts/openapi/guestbook.yaml` and
+ `spec/rationale/mockup-guestbook/`, the user guide `docs/user-guide.md` and the request file
+ `http/guestbook-entries.http`.
+ 
+-**Everything else is the template and stays.** There is no authentication and that is a named
++**One thing moves before the guestbook goes: the words of the text rule.** Both contexts are held
++to one rule for how a text is normalized, trimmed and counted, and its words live in
++`spec/contexts/guestbook.md` § `BR-01`, which the to-do list cites. Move them into
++`spec/contexts/todo_list.md` first; its § Neighbours says so, and the `frozen-ids` gate goes red on
++a citation of `BR-01` left pointing nowhere (`spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md`).
++The rule's code is already outside the guestbook, in `app/platform/schemas/text.py` and
++`frontend/src/lib/text.ts`, and stays. So does the seeder: it loses the half that posts the welcome
++entries and keeps the half that posts the example tasks.
++
++**Everything else is the template and stays**, the to-do list (`todo_list`) included: it is a
++second domain context, not an example. There is no authentication and that is a named
+ non-goal (`spec/invariants.md`), not an absence nobody noticed.
+ 
+ ## Running and developing
+@@ -145,8 +156,8 @@ checks its own prerequisites and takes `--help`. The full list: `./scripts/help.
+ ./scripts/start.sh --development   # the backend on :8000 with reload + Vite on :5173
+ ./scripts/start.sh --container     # EVERYTHING in Docker: the image + the migration + Postgres
+ ./scripts/start.sh --port 8090     # another port — it decides the poll and TARGET_BASE_URL too
+-./scripts/start.sh --no-seed       # leave the guest book empty; by default an empty one is
+-                                   # filled from golden-set/seed/ once the app answers
++./scripts/start.sh --no-seed       # leave both lists empty; by default an empty guest book or
++                                   # to-do list is filled from golden-set/seed/ once the app answers
+ ./scripts/seed.sh --base-url ...   # fill some other environment — a preview, a stage
+ ./scripts/stop.sh                  # stopping
+ ./scripts/status.sh --json         # the state of the machine and the application
+diff --git a/README.md b/README.md
+index 259e973..201262b 100644
+--- a/README.md
++++ b/README.md
+@@ -9,10 +9,12 @@ black box in Gherkin and a smoke in a real browser. One process on `:8080` serve
+ screen. On AWS it is a Lambda behind CloudFront with an Aurora Serverless cluster, and there is a
+ disposable environment per branch.
+ 
+-**The one feature is an example: a guest book.** It exists so that every step of the process has
+-something real to travel through, and it is meant to be deleted once your first feature replaces it.
+-[`CLAUDE.md`](CLAUDE.md) § What is an example, and what is the template says exactly what goes with
+-it.
++**There are two features, and only one of them is an example.** The guest book exists so that every
++step of the process has something real to travel through, and it is meant to be deleted once your
++first feature replaces it. The to-do list beside it (one shared list of one-line tasks, ticked done
++and back) was added through the process as change `CR-2609-823a`, and it stays when the guest book
++goes. [`CLAUDE.md`](CLAUDE.md) § What is an example, and what is the template says exactly what
++goes with the guest book, and the one thing that has to move before it does.
+ 
+ ## Start here
+ 
+@@ -21,7 +23,8 @@ it.
+ ```
+ 
+ On a machine that already has `uv`, Docker and Node, `./scripts/start.sh` is enough. Either way the
+-application is at <http://127.0.0.1:8080> with a guest book that already has entries in it.
++application is at <http://127.0.0.1:8080>. The guest book already has entries in it, and the to-do
++list, one link away in the header, opens with five example tasks, one of them already done.
+ 
+ **Every task has a script, and the scripts are the interface** — not the commands inside them, and
+ not this file. `./scripts/help.sh` lists them all and each takes `--help`. Before a push,
+diff --git a/spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md b/spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md
+new file mode 100644
+index 0000000..2736908
+--- /dev/null
++++ b/spec/ADR/ADR-0001-todo-list-is-its-own-bounded-context.md
+@@ -0,0 +1,149 @@
++---
++id: ADR-0001
++title: The to-do list is a bounded context of its own, sharing only the text rule with the guestbook
++status: Proposed
++date: 2026-09-24
++cr: CR-2609-823a
++supersedes: []
++superseded_by: null
++aliases: []
++---
++
++# ADR-0001 — The to-do list is a bounded context of its own, sharing only the text rule with the guestbook
++
++## Context
++
++Before this change the system had one bounded context, the guestbook. It declared
++`neighbours: []`, and every context sweep in `tests/fitness/` was vacuously true. The
++requirements of `CR-2609-823a` bring something no context described: a **task**, which has a
++text, a state switched both ways (done and not done) and a moment of adding (`R-1`, `R-3`,
++`R-4`, `R-6`). Every rule about it (`R-1`…`R-4`, `R-6`…`R-9`) needs one owner. The search that
++found the concept absent is in `design/delta/domain.md` § The concept is absent.
++
++These constraints forced the choice:
++
++- **The guestbook's flow rules out a state.** `P-01` says: "There are no intermediate states,
++  no lifecycle … An entry either exists or it does not." Tasks placed there would make that
++  sentence false for its own context (requirements Self-check 24).
++- **No word, rule or flow crosses.** The guestbook's words (entry, author, message, edited)
++  describe nothing a task has, and no requirement relates a task to an entry. `Q-10` fills each
++  list on its own. The same seven characters mean opposite things on the two sides: a message
++  keeps its line breaks, while a task refuses them (`Q-11`, `BR-07`).
++- **The guestbook is deletable, and the list has to survive that.** The guestbook is the
++  template's example, "deleted as a unit" (`CLAUDE.md` § What is an example;
++  `spec/contexts/guestbook.md`). The user chose to keep the to-do list beside it (`Q-1`).
++- **One rule really is shared.** Both contexts use the text rule of `BR-01`: NFC, the written
++  30-code-point trim set, then a count in code points. Its code was already outside the
++  guestbook, in `app/platform/schemas/text.py`, which `spec/design/conventions.md` § Backend
++  calls "a fact about EVERY text field this API accepts".
++- **Platform holds no domain rules** by definition (`spec/design/architecture.md` § Platform).
++
++## Decision
++
++The to-do list is a bounded context of its own, `todo_list`, and it sits beside the guestbook
++in every tree: `spec/contexts/todo_list.md`, `app/contexts/todo_list/`,
++`frontend/src/contexts/todo_list/`, the table `todo_tasks`, the contract
++`contracts/openapi/todo_list.yaml` and the feature file `e2e/suite/features/todo_list.feature`.
++It owns `P-02` and `BR-06`…`BR-13`, and nothing of the guestbook's. The two contexts are peers
++that share exactly one rule, how a text is normalized, trimmed and measured, and the words of
++that rule stay in `spec/contexts/guestbook.md` § `BR-01`. They share nothing else. No record on
++one side refers to a record on the other. Neither reads the other's list. Neither imports the
++other's code, on the server or in the browser.
++
++## Rejected alternatives
++
++- **Tasks inside the guestbook context.** `P-01`'s "no states" would become false for its own
++  context, and two vocabularies would sit under one owner. Worst, the list the user kept would
++  be tied to an example the template tells its reader to delete: removing the guestbook would
++  remove the list.
++- **Tasks in Platform.** Platform holds no domain rules by definition, and `BR-06`…`BR-13` are
++  nothing but domain rules.
++- **The guestbook as upstream, the to-do list as conformist.** That describes where the words of
++  the text rule happen to be written, not whose rule it is. The rule is a fact about every text
++  field the API accepts, and its code lives in neither context.
++- **Separate ways, with each context keeping its own copy of the text rule.** Both contexts are
++  held to one rule, and a change to it changes both. Two copies are how the browser and the
++  service once came to disagree about one number (`contracts/invariants/guestbook.md` § `D-04`).
++- **Buying it, by integrating a vendor's to-do product as a generic context.** It would bring
++  the accounts that `spec/invariants.md` § Deliberate non-goals refuses, and a second place for
++  people to go.
++
++The designer also recorded two choices that are routed elsewhere rather than put here. The
++classification `supporting` rather than `core` is recorded in `spec/contexts/todo_list.md`
++§ Strategic classification, and reversing it is a front-matter edit. The declared pattern
++`guestbook:peer:shared-kernel` is argued in the same document under § Neighbours, "Why a
++shared kernel rather than an upstream".
++
++## Consequences
++
++- **The context is registered once in each composition point.** Those points are
++  `app/contexts/__init__.py`, `app/api.py` and `frontend/src/router.tsx`, and the front matter
++  of `spec/contexts/todo_list.md` declares the table, the screen and the feature file. These
++  are held by `test_every_context_directory_is_registered_and_every_registration_exists`,
++  `test_every_context_document_has_code_and_every_context_directory_has_a_document`,
++  `test_every_table_a_context_owns_is_declared_by_the_data_model`,
++  `test_every_context_the_api_register_names_is_a_declared_context`, the two claim sweeps for
++  screens and feature files, and
++  `test_every_neighbour_names_a_context_and_a_pairing_the_rules_allow`. The context sweeps that
++  were vacuously true now see a second context (`spec/design/testing.md` § Fitness functions).
++- **The shared rule's code lives in neither context's folder.** The server half stays in
++  `app/platform/schemas/text.py`. The browser half moves out of the guestbook, from
++  `frontend/src/contexts/guestbook/lib/entryText.ts` to `frontend/src/lib/text.ts`, and three
++  guestbook imports point at the new home. `spec/design/conventions.md` § Frontend prescribes
++  that move "the day a second context needs it". The boundary is held by
++  `test_no_context_imports_another_contexts_internals` and
++  `test_no_screen_reaches_into_another_contexts_folder`.
++- **Each side keeps what is its own.** The guestbook keeps its bounds of 80 and 1000 and keeps
++  line breaks as content. The to-do list keeps its bound of 200 and `LINE_BREAKS`, which sit
++  beside `TodoTask` and not in Platform, because the guestbook keeps those characters. Each
++  constant is held equal to its one browser copy by `tests/fitness/test_length_constants.py`.
++- **A change to the text rule changes both contexts.** `spec/contexts/guestbook.md` § `BR-01`
++  now names its second holder. The rule has two sets of corpus tests: the guestbook's in
++  `tests/unit/test_entry_text_rules.py`, over `text-measurement.json`, and the to-do list's in
++  `tests/unit/test_todo_task_text_rules.py`, over `todo-task-text.json`, which the implement
++  stage writes. A change that breaks either side turns that side red. Nothing makes the person
++  changing the rule read the to-do list's rules first; the paragraph in `BR-01` is the only
++  prompt.
++- **Deleting the guestbook is no longer the deletion of one unit.** The words of `BR-01` have to
++  move into `spec/contexts/todo_list.md` first (§ Neighbours), and the gate `frozen-ids` goes red
++  on a citation of `BR-01` that resolves nowhere. The list in `CLAUDE.md` § What is an example
++  also has to say this. That edit is outside every write set of this change and was reported by
++  `design-spec`, and nothing enforces it. `contracts/openapi/todo_list.yaml` writes out
++  `Refusal`, `RefusalDetail`, `HTTPValidationError` and `ValidationError` itself, rather than
++  using a `$ref` into `guestbook.yaml`, so it stays readable when the guestbook is deleted.
++  `./scripts/contracts.sh` holds both copies to the dump's one definition.
++- **The frame belongs to no context.** The way between the two screens, the main address and the
++  not-found page live in `frontend/src/components/shell/`, `frontend/src/pages/` and the
++  composition root. They are held by `test_no_screen_reaches_into_another_contexts_folder`, from
++  which only `frontend/src/router.tsx` is exempt.
++- **No record refers across.** `todo_tasks` has no foreign key and copies no column
++  (`spec/design/data-model.md` § `todo_tasks`).
++  `tests/fitness/test_data_invariants.py::test_no_column_is_a_copy_of_another_tables_column`
++  refuses a copied column. **Nothing refuses a foreign key from `todo_tasks` to
++  `guestbook_entries`**: one declared by table name needs no import, so no boundary test sees
++  it, and only review stands in the way.
++- **The context can have an owner of its own.** `.github/CODEOWNERS` gains the per-context
++  rows the file already describes. No test reads `CODEOWNERS`, so this rests on the file's own
++  comment.
++- **Reversing this is expensive.** Folding the list back into another context needs a data
++  migration for `todo_tasks` and a rewritten contract (the paths under `/api/todo-tasks`, the
++  `todo_task_*` codes and the schema names), and it moves a screen, a feature file and a test
++  tree. This describes a cost, not a rule, so no check applies to it.
++
++## Enforced by
++
++- `tests/fitness/test_context_boundaries.py` — `test_no_context_imports_another_contexts_internals`
++  and `test_no_screen_reaches_into_another_contexts_folder` catch either context importing the
++  other on either side of the wire, including a to-do module that reaches for the guestbook's
++  `lib/`. `test_every_context_directory_is_registered_and_every_registration_exists` and
++  `test_every_context_document_has_code_and_every_context_directory_has_a_document` catch a
++  context with a document and no code, or code that is registered in one aggregate only.
++- `tests/fitness/test_context_declarations.py` catches three things. The first is a table the
++  context owns that `spec/design/data-model.md` does not declare. The second is a screen or
++  feature file claimed by no context, or by two. The third is an illegal neighbour pairing.
++- `tests/fitness/test_length_constants.py` catches a browser copy of the 200 or of
++  `LINE_BREAKS` that drifts from its home beside `TodoTask`.
++- `tests/fitness/test_data_invariants.py` — `test_no_column_is_a_copy_of_another_tables_column`
++  catches a guestbook fact transcribed into `todo_tasks`.
++- Gate `frozen-ids` catches a citation of `BR-01` left pointing nowhere after the guestbook is
++  deleted.
+diff --git a/spec/ADR/ADR-0002-task-text-refusals-are-coded-not-schema-constraints.md b/spec/ADR/ADR-0002-task-text-refusals-are-coded-not-schema-constraints.md
+new file mode 100644
+index 0000000..bde93a6
+--- /dev/null
++++ b/spec/ADR/ADR-0002-task-text-refusals-are-coded-not-schema-constraints.md
+@@ -0,0 +1,134 @@
++---
++id: ADR-0002
++title: A task's text is refused with a stable code, never by a constraint in the published schema
++status: Proposed
++date: 2026-09-24
++cr: CR-2609-823a
++supersedes: []
++superseded_by: null
++aliases: []
++---
++
++# ADR-0002 — A task's text is refused with a stable code, never by a constraint in the published schema
++
++## Context
++
++The requirements ask for three reasons, and the person must be told which one applies. A text
++that is empty once trimmed is refused as empty (`R-2` clause 2). A text over 200 code points is
++refused as too long (clause 3). A text that still carries a line break is refused "with a reason
++of its own" (clause 6, `Q-11`). `BR-07` settles the overlap: a text that is both too long and on
++two lines is refused as more than one line, "on the screen and by the application alike". The
++scenarios tell the three reasons apart (`S-6`, `S-8`, `S-33`), and the integration corpus test
++proves each on the wire (`spec/design/testing.md` § CR-2609-823a). The screen chooses where
++to show a refusal by its `detail.code` (`spec/design/ui/todo-list.md` § The refusals this screen
++can show).
++
++**The convention in force answers differently.** Every text bound in this API was a schema
++constraint, `Field(min_length, max_length)` over `NormalizedText`. An empty or over-long
++`author` or `message` is answered with FastAPI's list of `{loc, msg, type}`
++(`spec/design/api.md` § Refusals). `frontend/src/api/problem.ts` reduces that list to its `msg`.
++
++**Two facts about the machinery forced the choice:**
++
++- **A Pydantic length constraint runs before anything else can look at the text.** A
++  201-code-point text with a line break inside would therefore be refused as too long, which is
++  the opposite of what `BR-07` requires.
++- **FastAPI never puts a refusal code in `openapi.json`.** A code is held still only by
++  `x-refusals` in `contracts/openapi/*.yaml`, and `scripts/openapi_contract.py` looks for each
++  code there as a string literal in a router module under `app/`. A code raised anywhere else is
++  frozen by nothing.
++
++**This does not supersede a recorded decision.** The decision of 2026-09-16 in
++`spec/design/api.md` § Refusals rejected making "the router raise a coded refusal for the
++Pydantic cases too". For the guestbook, that would have meant re-validating each field by hand
++in the router, and minting codes whose only purpose was to make an over-narrow declaration come
++true. That decision still holds for the guestbook's fields. This one concerns a new resource and
++differs on three points: its rule belongs to the context (`BR-06`, `BR-07`); it is decided where
++business rules are decided; and its three codes exist because a requirement asks for three
++reasons. `spec/ADR/index.md` records no ADR that this contradicts.
++
++## Decision
++
++Every refusal of a task's text answers `422` with a stable code and a finished sentence in the
++`Refusal` envelope, never with FastAPI's list of `{loc, msg, type}`. This holds for adding
++(`POST`) and correcting (`PATCH`) alike. The codes are `todo_task_text_empty`,
++`todo_task_text_multiline` and `todo_task_text_too_long`, decided in that order, so a text earns
++exactly one of them. The text rule is not a field constraint: the published `text` of
++`TodoTaskCreate` and `TodoTaskUpdate` is a string with no `minLength` or `maxLength`. The bounds
++are stated in `spec/design/api.md` § The to-do list's refusals and under `x-refusals` in
++`contracts/openapi/todo_list.yaml`. The verdict is decided outside Pydantic's field constraints,
++where the context's rules are decided, and the router only translates it. The codes and their
++sentences are literals in `app/contexts/todo_list/routers/todo_tasks.py`. The guestbook keeps
++its own convention, so its fields still answer with FastAPI's list.
++
++## Rejected alternatives
++
++- **The guestbook's convention: bounds as `Field(min_length, max_length)`, answered with
++  FastAPI's list.** It gives no code this contract owns, only Pydantic's type strings. Its
++  length constraint also answers before any later check sees the text, so a text too long and on
++  two lines would be refused as too long, against `BR-07`.
++- **Custom Pydantic error types raised from a schema validator.** The code would be ours, but it
++  would sit inside the list shape, which `frontend/src/api/problem.ts` reduces to its `msg`, so
++  the screen could not branch on it. The code would also sit outside every router module, where
++  the contract gate looks for each `x-refusals` literal, so nothing would hold it still.
++- **A handler in `app/core/errors.py` that turns Pydantic errors into coded refusals.** It would
++  put domain knowledge into the framework module, which by rule knows nothing about the domain.
++
++## Consequences
++
++- **One API now has two regimes for refusing a text.** The guestbook's fields answer with
++  FastAPI's list, and a task's text answers with a code. `spec/design/api.md` § The to-do list's
++  refusals states the difference, so that neither side is later "harmonised" toward the other.
++  Each side is held by a test that sends real requests and checks each answer against the schema
++  published for its status: `tests/integration/test_guestbook_entries_contract.py` for the
++  guestbook, and `tests/integration/test_todo_tasks_contract.py`, which the implement stage
++  writes, for the to-do list.
++- **The three codes are part of the contract.** Removing or renaming one is a breaking change and
++  a major version of `todo_list.yaml` (`contracts/README.md` § Compatibility mode).
++  `./scripts/contracts.sh` goes red when a frozen code is missing as a literal from every router
++  module.
++- **The contract gate cannot see a length constraint added to the request schema later.** The
++  comparison checks a subset, so the dump may carry more than the contract, and a `max_length`
++  would pass the gate. Such a constraint would quietly bring back FastAPI's list for an over-long
++  text and break `BR-07`. The tests that catch it are in
++  `tests/integration/test_todo_tasks_router.py`: `test_each_text_refusal_answers_with_its_own_code`,
++  on `POST` and on `PATCH`, and `test_a_text_too_long_and_on_two_lines_is_refused_as_multiline`.
++  Both are written in the implement stage (`spec/design/testing.md` § CR-2609-823a).
++- **`422` has two shapes on `POST` and `PATCH`, and both are published** as an `anyOf` over
++  `Refusal` and `HTTPValidationError`, following the rule of 2026-09-16. A malformed body keeps
++  FastAPI's list: a missing `text`, a `text` that is not a string, a `done` that is not a
++  boolean, or an identifier that is not a UUID. This is held by
++  `test_a_body_of_the_wrong_shape_gets_the_standard_validation_refusal` and by the contract test.
++- **Refusals are decided before the task is looked up.** A request that could never succeed is
++  refused for what it is, and never with `404`. This is held by
++  `test_a_request_is_refused_for_what_it_is_whatever_its_identifier_names`.
++- **The browser gives the same verdict in the same order** before it sends anything
++  (`frontend/src/contexts/todo_list/lib/todoTask.ts`). It is held by
++  `frontend/src/contexts/todo_list/lib/todoTask.test.ts`, which reads the same
++  `todo-task-text.json` as the service's tests, and by `tests/fitness/test_length_constants.py`
++  for the copies of the 200 and of `LINE_BREAKS`.
++- **The store still refuses an over-long text.** The column is `String(200)`
++  (`spec/design/data-model.md` § `todo_tasks`), which is a last line of defence and not the
++  refusal path. It is held by `tests/unit/test_todo_task_model.py`.
++- **The five sentences have two copies, and nothing compares them.** They are product text in
++  the router module and are copied word for word into `spec/design/api.md`. The guestbook's two
++  sentences rest on the same hope.
++
++## Enforced by
++
++- `scripts/openapi_contract.py`, run by `./scripts/contracts.sh` (gate `contracts`), catches a
++  code under `x-refusals` in `contracts/openapi/todo_list.yaml` that no router module under
++  `app/` holds as a literal.
++- `tests/integration/test_todo_tasks_router.py` (implement stage):
++  - `test_each_text_refusal_answers_with_its_own_code` catches an empty, over-long or multi-line
++    text answered with FastAPI's list or with the wrong code.
++  - `test_a_text_too_long_and_on_two_lines_is_refused_as_multiline` catches the length being
++    decided first.
++  - `test_a_request_is_refused_for_what_it_is_whatever_its_identifier_names` catches the lookup
++    running before the refusal.
++- `tests/integration/test_todo_tasks_contract.py` (implement stage) catches an answer whose body
++  does not match the schema published for its status, both shapes of `422` included.
++- `tests/integration/test_todo_tasks_corpus.py` (implement stage) catches a case of
++  `todo-tasks-refused.json` refused with a code other than the one the file states.
++- `frontend/src/contexts/todo_list/lib/todoTask.test.ts` (implement stage) catches the browser's
++  verdict drifting from the corpus the service is held to.
+diff --git a/spec/ADR/index.md b/spec/ADR/index.md
+index 9294498..8d7ae43 100644
+--- a/spec/ADR/index.md
++++ b/spec/ADR/index.md
+@@ -22,4 +22,5 @@ because renaming would break the citations they are worth having for.
+ 
+ | ADR | Decision | Status | Date | Supersedes | Aliases | Superseded by |
+ |---|---|---|---|---|---|---|
+-| — | no decisions recorded | — | — | — | — | — |
++| [ADR-0001](ADR-0001-todo-list-is-its-own-bounded-context.md) | The to-do list is a bounded context of its own, sharing only the text rule with the guestbook | Proposed | 2026-09-24 | — | — | — |
++| [ADR-0002](ADR-0002-task-text-refusals-are-coded-not-schema-constraints.md) | A task's text is refused with a stable code, never by a constraint in the published schema | Proposed | 2026-09-24 | — | — | — |
+diff --git a/spec/contexts/todo_list.md b/spec/contexts/todo_list.md
+index b1303ab..4605575 100644
+--- a/spec/contexts/todo_list.md
++++ b/spec/contexts/todo_list.md
+@@ -218,6 +218,12 @@ that created the task again on finding it absent would bring back what somebody
+ reporting success for a deletion that was not performed is what makes a person believe they
+ deleted twice.
+ 
++**A correction whose text is refused is told about its text first.** When a corrected text that
++`BR-06` or `BR-07` refuses is aimed at a task that no longer exists, the person is told the
++text's reason — on the screen and by the application alike, because the screen refuses such a
++text before anything is sent and cannot know the task is gone. Only a change that could
++otherwise be made learns that its task no longer exists.
++
+ ## Deliberate non-goals
+ 
+ Named, so that an absence does not read as an oversight. The system-wide ones — no accounts, no
+diff --git a/spec/design/architecture.md b/spec/design/architecture.md
+index 18d5678..5df0483 100644
+--- a/spec/design/architecture.md
++++ b/spec/design/architecture.md
+@@ -613,7 +613,7 @@ Paths in the second column are relative to the tree in the first.
+ | `app/contexts/` | `todo_list/__init__.py` | the context's public API — `TodoTask`, the bound, `LINE_BREAKS` — and, by importing the model, `todo_tasks` on the shared `Base` | build-backend |
+ | | `todo_list/models/todo_task.py` | `TodoTask`, `TODO_TASK_TEXT_MAX_LENGTH`, `LINE_BREAKS` written as code-point numbers the way the trim set is, and the ordering index | build-backend |
+ | | `todo_list/schemas/todo_tasks.py` | no text rule, only the read and write shapes [`api.md`](api.md) names, read and write kept apart | build-backend |
+-| | `todo_list/services/todo_tasks.py` | add, read, correct, mark and delete; the session and the transaction; `TodoTaskNotFoundError`, and the text's judgement with its three domain exceptions | build-backend |
++| | `todo_list/services/todo_tasks.py` | add, read, change and delete; the session and the transaction; `TodoTaskNotFoundError`, and the text's judgement with its three domain exceptions. A `PATCH` reaches one operation, `change_todo_task`, which judges the text when there is one and then writes exactly the columns the body carried in one statement; the correction and the marking are its two one-field forms | build-backend |
+ | | `todo_list/routers/todo_tasks.py` | the HTTP binding of every to-do route, the declared refusals and their sentences | build-backend |
+ | | `todo_list/{models,schemas,services,routers}/__init__.py` | each layer's docstring, as the guestbook's say it | build-backend |
+ | | `__init__.py` | one appended line registering `todo_list` | build-backend |
+@@ -624,12 +624,12 @@ Paths in the second column are relative to the tree in the first.
+ | | `contexts/todo_list/components/TodoTaskRow.tsx` | one task: its done control, its text drawn done or not done, its correction in place, its delete | build-frontend |
+ | | `contexts/todo_list/components/DeleteTodoTaskDialog.tsx` | the one question before a delete, over the `Modal` primitive | build-frontend |
+ | | `contexts/todo_list/hooks/useTodoTasks.ts` | the resource's query and its four mutations, `todoTaskKeys`, the cache written only from answers | build-frontend |
+-| | `contexts/todo_list/lib/todoTask.ts` | the `TodoTask` type, the browser copies of the bound and of `LINE_BREAKS`, the verdict in the order `BR-07` then `BR-06`, and its sentences | build-frontend |
++| | `contexts/todo_list/lib/todoTask.ts` | the `TodoTask` type, the browser copies of the bound and of `LINE_BREAKS`, the verdict in the service's order — empty, then more than one line, then too long — and its sentences | build-frontend |
+ | | `lib/text.ts` | the shared text rule's browser half, moved up out of the guestbook's `lib/` (where it was `entryText.ts`) because a second context needs it — the move `conventions.md` § Frontend prescribes for that day | build-frontend |
+ | | `contexts/guestbook/lib/guestbookEntry.ts`, `contexts/guestbook/components/EntryComposer.tsx`, `contexts/guestbook/hooks/useEntryQueryParams.ts` | the same three imports of the text rule, from its new home; nothing else about the guestbook moves | build-frontend |
+ | | `contexts/guestbook/pages/GuestbookPage.tsx` | the one exception to "nothing else moves", and prose alone: the line of its module docstring that called `S-01` the only screen names it one of two ([`ui/system-states.md`](ui/system-states.md) § One column); nothing the screen does moves | build-frontend |
+ | | `components/ui/Checkbox.tsx` | the done control: a design-system primitive, with its first caller | build-frontend |
+-| | `components/shell/PageFrame.tsx` | the way between the two screens, and the frame's words for two of them | build-frontend |
++| | `components/shell/PageFrame.tsx` | the way between the two screens, and the frame's words for two of them. It also holds the guestbook's footer sentence, as the default of its `footer`, because `GuestbookPage.tsx` passes none of its own; the to-do list passes its sentence and the not-found page passes none | build-frontend |
+ | | `pages/StatusPages.tsx` | a not-found page that no longer says there is one screen | build-frontend |
+ | | `routes.ts`, `router.tsx` | one constant, one route; the main address still leads to the guestbook | build-frontend |
+ | | `api/schema.d.ts` | regenerated by `./scripts/generate.sh`, never edited | build-frontend |
+@@ -707,7 +707,7 @@ words: "Fix it in a follow-up."
+ | the context is registered in one aggregate and not the other, or has a document and no code | the same file, `test_every_context_directory_is_registered_and_every_registration_exists` and `test_every_context_document_has_code_and_every_context_directory_has_a_document` |
+ | `services/`, `models/` or `schemas/` import `fastapi` or `starlette`; a lower layer imports an upper one; a router reaches for the session | `tests/fitness/test_layering.py` |
+ | a browser copy of the bound or of the line-break set drifts from its home | `tests/fitness/test_length_constants.py`, which holds each constant equal to its one browser copy |
+-| a second module in `frontend/src/` reads the text-measurement corpus | `tests/fitness/test_golden_set.py`, `test_the_frontend_reads_no_corpus_file` |
++| a module in `frontend/src/` reads a corpus file, other than the one reader each context has for its own file — `text-measurement.json` for the guestbook, `todo-task-text.json` for the to-do list — or either reader reaches for the other's | `tests/fitness/test_golden_set.py`, `test_the_frontend_reads_no_corpus_file` |
+ | a suite reads the example tasks | `tests/fitness/test_golden_set.py`, `test_no_suite_reads_the_seed_corpus` |
+ 
+ ## When a context outgrows this shape
+diff --git a/spec/design/conventions.md b/spec/design/conventions.md
+index a9acdd9..75bf0d6 100644
+--- a/spec/design/conventions.md
++++ b/spec/design/conventions.md
+@@ -186,16 +186,18 @@ frontend/src/
+   per file, named after it (`datetime.ts`, `relativeTime.ts`, `number.ts`, `cn.ts`). A rule
+   about one context's data lives in that context's `lib/`
+   (`contexts/guestbook/lib/guestbookEntry.ts`, `contexts/guestbook/lib/entryListCopy.ts`,
+-  `contexts/guestbook/lib/entryText.ts`), and moves up here the day a second context needs it —
++  `contexts/todo_list/lib/todoTask.ts`), and moves up here the day a second context needs it —
+   never before, because a shared module with one caller is a boundary drawn in the wrong place.
+   **Only the rule moves up.** A test that proves it through one context's bounds stays beside
+   that context's modules and changes one import. The corpus reader
+   `frontend/src/contexts/guestbook/lib/entryText.test.ts` is one such test. Moved up here, it
+   would have to import a context's bound, and nothing here imports from `contexts/`.
+-  `entryText.ts` is the case worth naming: its Python counterpart sits in `app/platform/`
+-  because the server has more than one caller for it, and this one stays in the context because
+-  the browser has exactly one. The asymmetry is each tree following its own rule rather than an
+-  oversight in either.
++  `text.ts` is the case worth naming: the browser half of the shared text rule, whose Python
++  counterpart is `app/platform/schemas/text.py`. It was the guestbook's `lib/entryText.ts` while
++  the browser had one caller, and it moved up here, unchanged and under the name that pairs it
++  with its other half, when the to-do list became the second (`CR-2609-823a`). Until then the
++  two halves sat asymmetrically, each tree following its own rule rather than an oversight in
++  either.
+ 
+   Rejected (decision of 2026-09-17, `cr: historical` — where the two halves of the text rule go,
+   decided on GitHub issue #28, outside `/forge:sdd`):
+@@ -580,7 +582,8 @@ date and without a rejected alternative — and that is the knowledge whose abse
+ take the same lost decision again two years later); an ADR editable in place (after a year it
+ says what somebody thinks today, not what was decided then).
+ 
+-**The state of `spec/ADR/`: empty, until the first change carried out through `/sdd`.** Eleven
++**The state of `spec/ADR/`: the decisions of changes carried out through `/sdd`, the first two
++from `CR-2609-823a`.** It was empty until that change. Eleven
+ decisions taken between 2026-08-30 and 2026-09-02 without a change record (`cr: historical`)
+ were written on 2026-09-02 into the normative documents they concern — with a date, a reason and
+ the rejected alternatives, where the rule stands — because an ADR with no parent in
+diff --git a/spec/design/data-model.md b/spec/design/data-model.md
+index 329bd9c..36b5989 100644
+--- a/spec/design/data-model.md
++++ b/spec/design/data-model.md
+@@ -385,7 +385,7 @@ becomes a query called more often than the screen is opened; the change is then
+ | Revision | Parent | What it does |
+ |---|---|---|
+ | `a1b2c3d4e5f6` | — | creates `guestbook_entries` and the ordering index |
+-| issued by `./scripts/db.sh revision` | the head at the time of implementation | creates `todo_tasks` and its ordering index |
++| `5c58af1f8e8a` | `a1b2c3d4e5f6` | creates `todo_tasks` and its ordering index |
+ 
+ Two revisions, and the second is the head. Every next one declares as its parent the head **at
+ the time of implementation**, never the one the author remembered.
+@@ -401,7 +401,8 @@ applied that revision will not learn about the correction.
+ 
+ ### The revision that creates `todo_tasks`
+ 
+-Its parent is the head at the time of implementation. `upgrade()`, in this order:
++`5c58af1f8e8a`, whose parent is `a1b2c3d4e5f6`, the head at the time of implementation.
++`upgrade()`, in this order:
+ 
+ 1. `op.create_table("todo_tasks", …)` with the four columns of § `todo_tasks` exactly — `id`
+    `sa.Uuid()` as the primary key, `text` `sa.String(length=200)`, `done` `sa.Boolean()`,
+@@ -446,7 +447,7 @@ code:
+ **History:** `a1b2c3d4e5f6` — the initial one, creating the schema from nothing. The mode does
+ not apply here: there is nothing to break, because there is no previous state.
+ 
+-The revision that creates `todo_tasks` — **`backward compatible`**. A new table and an index on
++`5c58af1f8e8a`, the revision that creates `todo_tasks` — **`backward compatible`**. A new table and an index on
+ it: the code released before it never names `todo_tasks`, so it runs unchanged over the new
+ schema, and a rollback that moves the code back while the table stays is safe for the same
+ reason. The release migrates before it moves the alias ([`architecture.md`](architecture.md)
+diff --git a/spec/design/testing.md b/spec/design/testing.md
+index ce3a129..2761f2b 100644
+--- a/spec/design/testing.md
++++ b/spec/design/testing.md
+@@ -216,7 +216,7 @@ source rather than importing it; two import `app` for the constants they compare
+ | `test_design_tokens.py` | article XIII, the half with no mechanism: no component carries a raw hex or an arbitrary pixel value (`rounded-[14px]`), no stylesheet writes `border-radius` as a number, and every declared radius and type-size token is used somewhere. The only file in which a value may be written as a number is `frontend/src/styles/theme.css`. It also holds the palette's **contrast floor** (`spec/design/ui/system-states.md` § Tokens): every text token clears 4.5:1 against every surface it can be painted on, with one written exemption (`--color-disabled`, which WCAG 1.4.3 exempts) |
+ | `test_data_invariants.py` | the data invariants `D-01`…`D-03` swept over `Base.metadata` rather than checked on one table: no table is another's archive, no column is a copy of somebody else's with no key between them, every primary key is a UUID with an application-side default. The first two were **vacuously true** while there was one table, which is why each carries a known positive over synthetic metadata; `todo_tasks` made them real, and the sweep reached it with no edit, which is the property a sweep is chosen for |
+ | `test_invariant_witnesses.py` | every invariant in `contracts/invariants/` carries a `**Witness:**` and a `**Kind of evidence:**`, and the witness resolves to an existing test. `none — <reason>` is a legal answer and costs a sentence: a gap counted is a different thing from a gap passed over |
+-| `test_length_constants.py` | the four length bounds have one home beside the model or the schemas and one named copy in the browser — the guestbook's three in `frontend/src/contexts/guestbook/lib/guestbookEntry.ts`, and since `CR-2609-823a` the to-do list's `TODO_TASK_TEXT_MAX_LENGTH`, beside `TodoTask`, with its copy in the to-do list's own browser rule — and the copy is legal only while the literals are equal — the generated contract carries no `maxLength`, so nothing else binds them. **It compares numbers and cannot compare units**, which is why `golden-set/fixtures/text-measurement.json` exists beside it: for the whole life of this repository all four literals read `80` while the browser counted UTF-16 code units and every other layer counted code points |
++| `test_length_constants.py` | the four length bounds have one home beside the model or the schemas and one named copy in the browser — the guestbook's three in `frontend/src/contexts/guestbook/lib/guestbookEntry.ts`, and since `CR-2609-823a` the to-do list's `TODO_TASK_TEXT_MAX_LENGTH`, beside `TodoTask`, with its copy in the to-do list's own browser rule, together with `LINE_BREAKS` beside it, held equal to its browser copy as a set of code points — and the copy is legal only while the literals are equal — the generated contract carries no `maxLength`, so nothing else binds them. **It compares numbers and cannot compare units**, which is why `golden-set/fixtures/text-measurement.json` exists beside it: for the whole life of this repository all four literals read `80` while the browser counted UTF-16 code units and every other layer counted code points |
+ | `test_alembic_env_metadata.py` | the metadata `alembic/env.py` hands to autogeneration knows every table: the file's own `app.*` imports are replayed in a fresh interpreter and `Base.metadata` is asked what it holds. The integration suite could not see an empty metadata, because the session fixture imports every `app.*` module first — this asks about the imports `env.py` itself makes, which is what `--autogenerate` reads |
+ | `test_gate_parity.py` | the script contract's mechanical half, from this template's side: `check.sh` still files exit 4 as a named gap rather than a failure, it leaves the junit of every suite handed `--junitxml` (backend, fitness) at the path `.specconf/stack.json` names, the two pytest suites are disjoint and cover every group under `tests/`, and every contract script the profile names is committed executable |
+ | `test_profile_mechanisms.py` | `.specconf/stack.json` answers all four mechanism questions the engine renders into a worker's brief (`storage_contract`, `migration_mechanism`, `readiness`, `binding_target`), every path those sentences name exists, and the readiness route is the one `scripts/_lib.sh` polls and `app/platform/routers/health.py` serves. The engine keeps the four optional, so a key dropped here fails nothing there; this row is what does |
+@@ -747,8 +747,8 @@ The map the test authors of `CR-2609-823a` write from. The citation is always fu
+ names a requirement, never an acceptance criterion: `@pytest.mark.req("CR-2609-823a/R-n")` in
+ `tests/unit/` and `tests/integration/`, the tag `@req:CR-2609-823a/R-n` on a Gherkin scenario, and
+ `[req:CR-2609-823a/R-n]` in a vitest test's name. A test that proves two requirements carries two
+-citations. A file the test wave will create is named in bold rather than in backticks, because
+-it does not exist until then. The contract the tests hold the application to is
++citations. A file the test wave created is named in bold rather than in backticks, because the map
++was written before it existed. The contract the tests hold the application to is
+ [`api.md`](api.md) § The to-do list's refusals, the schema and the write shapes are
+ [`data-model.md`](data-model.md) § `todo_tasks`, and the files and their writers are
+ [`architecture.md`](architecture.md) § The to-do list — where each rule lives.
+@@ -936,11 +936,11 @@ application answers.
+ - **frontend/src/components/shell/PageFrame.test.tsx** — "offers the way to the other screen on
+   each screen" (`[req:CR-2609-823a/R-5]`).
+ - **frontend/src/pages/StatusPages.test.tsx** — "does not say the application has one screen"
+-  (`[req:CR-2609-823a/R-5]`) — red today on the sentence "There is one screen in this application: the guestbook."
++  (`[req:CR-2609-823a/R-5]`) — red before the implementation, on the sentence "There is one screen in this application: the guestbook."
+ - **e2e/suite/features/todo_list.feature** — every scenario it holds, by title, as listed in the
+   map above.
+ - Edits of existing tests, red until the code they wait for: in `tests/unit/test_guestbook_entry_model.py`,
+-  `test_this_schema_holds_exactly_one_table`, renamed for the two tables it expects,
++  `test_this_schema_holds_exactly_one_table`, renamed `test_this_schema_holds_exactly_two_tables` for the two tables it expects,
+   `guestbook_entries` and `todo_tasks`, until `TodoTask` is registered; in
+   `tests/integration/test_migrations.py`, the new cases for the `todo_tasks` columns and its
+   ordering index, until the revision; in `tests/tooling/test_seed_golden_set.py`,
+@@ -1029,7 +1029,7 @@ and the example-task file's name, in `tests/_golden_set.py`.
+   or `todo_task_text_multiline`) rather than the guestbook's mechanism word.
+ - **todo-task-text.json** — `cases`: each `{case, description, input, verdict}`, plus `length`
+   exactly when the verdict is `accepted`; no `field`, because there is one. The verdicts are
+-  `accepted`, `empty`, `too_long` and `multiline`. The cases are the nineteen `scenarios.md` lists
++  `accepted`, `empty`, `too_long` and `multiline`. The cases are the eighteen `scenarios.md` lists
+   for the task's text, and one more that `BR-07` added after it was written: 201 letters with a
+   line feed after the hundredth, `multiline`. Every input is written in escapes.
+ - The example-task file — **todo-tasks-example.json** under `golden-set/seed/`, written by
+diff --git a/spec/design/ui/todo-list.md b/spec/design/ui/todo-list.md
+index 801bf60..0029bfe 100644
+--- a/spec/design/ui/todo-list.md
++++ b/spec/design/ui/todo-list.md
+@@ -339,8 +339,8 @@ Keyboard: every action above works without a mouse — see the next section.
+   "Add task"; the box; the edit field, "Save" or "Cancel" — and a person who has put the focus
+   somewhere else meanwhile keeps it where they put it.
+ - **The question takes the focus on "Cancel"**, keeps Tab inside itself, and on closing hands the
+-  focus back to the "Delete" that opened it — or, when that row is gone, to the list, never to
+-  the page's start.
++  focus back to the "Delete" that opened it — or, when that row is gone, to the list, and to the
++  empty sentence when it was the last task; never to the page's start.
+ - **The focus ring is the screen's**, in the accent colour, on everything that can take the focus:
+   the add field, each box (drawn around the box), "Edit", "Delete", the edit field, "Save",
+   "Cancel", the question's buttons and a notice's "×". No component removes it

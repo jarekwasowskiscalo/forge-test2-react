@@ -98,3 +98,6 @@
 - [09:11] fanout_recorded: returned: review-converge; 1 process fault(s): PROC-70
 - [09:11] todo_resolved: TD-15
 - [09:14] stage_closed: closed spec_sync, opened deliver (boundary -> GREEN; 308 files from git; delta.md from 13 fragments (31 current, 30 superseded))
+- [09:14] stage spec_sync closed, deliver opened, state persisted
+- [09:14] process_fault_resolved: PROC-70 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/411
+- [09:15] session_archive_committed: archive committed for session 99cd49c7-8021-4140-b605-645f1cda94ba

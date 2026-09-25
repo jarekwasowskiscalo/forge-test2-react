@@ -14,6 +14,7 @@
     "session-76720804": "sessions/76720804-74cc-4a32-b0f2-3b64b73aa9dd/summary.md",
     "session-7ec2cbab": "sessions/7ec2cbab-2ca5-4c1d-aa74-27673dae7ea6/summary.md",
     "session-870fece5": "sessions/870fece5-b8f9-4a47-84da-b3456aa1de97/summary.md",
+    "session-99cd49c7": "sessions/99cd49c7-8021-4140-b605-645f1cda94ba/summary.md",
     "session-e1e6d306": "sessions/e1e6d306-158d-4d94-9ad9-252c7383101f/summary.md",
     "session-fb772134": "sessions/fb772134-4626-4cf4-a734-3930e8cb1dbd/summary.md"
   },
@@ -3401,6 +3402,11 @@
           "at": "2026-09-25T07:11:54Z",
           "note": "the review-converge preflight spells the state call as '[--edited EDITED ...]' (one flag, several values) while add-reconciliation takes one value per --edited and must be repeated; the first call exited 2",
           "state": "reported"
+        },
+        {
+          "at": "2026-09-25T07:14:40Z",
+          "note": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/411",
+          "state": "filed"
         }
       ],
       "id": "PROC-70",
@@ -3411,8 +3417,8 @@
       "signal": "the review-converge preflight spells the state call as '[--edited EDITED ...]' (one flag, several values) while add-reconciliation takes one value per --edited and must be repeated; the first call exited 2",
       "signature": "the review-converge preflight spells the state call as · (one flag, several values) while add-reconciliation takes one v",
       "stage": "spec_sync",
-      "state": "reported",
-      "url": null
+      "state": "filed",
+      "url": "https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/411"
     }
   ],
   "files_changed": [
@@ -5996,7 +6002,7 @@
     "CR-2609-823a/R-10",
     "CR-2609-823a/R-11"
   ],
-  "revision": 957,
+  "revision": 959,
   "schema_version": 3,
   "signals": {
     "absent": [
@@ -6189,7 +6195,7 @@
   ],
   "touches_ui": true,
   "tracker": "",
-  "updated_at": "2026-09-25T07:14:29Z",
+  "updated_at": "2026-09-25T07:15:50Z",
   "verification_last": {
     "content_digest": "f36723bced6fd75aaff8379c81e695f193c6f9acebc69770e8cf4cbe86ae7977",
     "counts": {

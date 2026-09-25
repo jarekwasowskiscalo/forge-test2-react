@@ -967,3 +967,6 @@
 {"timestamp": "2026-09-25T07:11:54Z", "agent": "sdd", "action": "fanout_recorded", "details": "returned: review-converge; 1 process fault(s): PROC-70", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
 {"timestamp": "2026-09-25T07:11:54Z", "agent": "sdd", "action": "todo_resolved", "details": "TD-15", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
 {"timestamp": "2026-09-25T07:14:29Z", "agent": "sdd", "action": "stage_closed", "details": "closed spec_sync, opened deliver (boundary -> GREEN; 308 files from git; delta.md from 13 fragments (31 current, 30 superseded))", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T07:14:40Z", "agent": "sdd", "action": "process_fault_resolved", "details": "PROC-70 -> filed: https://github.com/Scalo-Sales-Engineering-Consulting/claude-marketplace/issues/411", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T07:15:02Z", "agent": "sdd-retro", "action": "session_captured", "details": "30 files, 21723811 bytes, session 99cd49c7-8021-4140-b605-645f1cda94ba", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
+{"timestamp": "2026-09-25T07:15:50Z", "agent": "sdd-retro", "action": "session_archive_committed", "details": "archive committed for session 99cd49c7-8021-4140-b605-645f1cda94ba", "session_id": "99cd49c7-8021-4140-b605-645f1cda94ba"}
