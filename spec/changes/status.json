@@ -9,10 +9,10 @@
         "coherence_open": 0,
         "docs_touched": 20,
         "expected_red": 0,
-        "files_changed": 0,
+        "files_changed": 308,
         "questions_open": 0,
         "requirements": 11,
-        "todo_open": 1
+        "todo_open": 0
       },
       "created_at": "2026-09-24T11:26:53Z",
       "deferred": false,
@@ -26,12 +26,12 @@
       "open": true,
       "parent_cr_id": null,
       "slug": "todo-list-add-tasks-and-mark-them-done",
-      "stage": "spec_sync",
-      "stage_status": "in_progress",
+      "stage": "deliver",
+      "stage_status": "not_started",
       "status": "draft",
       "title": "Todo list - add tasks and mark them done",
       "tracker": "",
-      "updated_at": "2026-09-25T07:11:54Z"
+      "updated_at": "2026-09-25T07:14:29Z"
     },
     "CR-2609-8ef9": {
       "base_branch": "audit/2026-09-08",

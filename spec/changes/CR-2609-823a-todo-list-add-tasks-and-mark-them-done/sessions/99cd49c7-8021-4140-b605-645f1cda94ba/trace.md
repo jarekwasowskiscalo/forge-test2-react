@@ -96,3 +96,5 @@
 - [09:09] fanout_recorded: dispatched: review-converge
 - [09:10] reconciliation_added: 1 reconciliation(s): REC-52
 - [09:11] fanout_recorded: returned: review-converge; 1 process fault(s): PROC-70
+- [09:11] todo_resolved: TD-15
+- [09:14] stage_closed: closed spec_sync, opened deliver (boundary -> GREEN; 308 files from git; delta.md from 13 fragments (31 current, 30 superseded))
